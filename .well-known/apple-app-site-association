@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["6VMVGUPDY5.com.spotout.app"],
+        "components": [
+          { "/": "*" }
+        ]
+      }
+    ]
+  }
+}
