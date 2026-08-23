@@ -1,18 +1,9 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/.well-known/apple-app-site-association",
-      "destination": "/aasa.json"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/.well-known/apple-app-site-association",
-      "headers": [
-        { "key": "Content-Type", "value": "application/json" }
-      ]
+      "source": "/",
+      "has": [{ "type": "query", "key": "join" }],
+      "destination": "/api/einladung"
     }
   ]
 }
