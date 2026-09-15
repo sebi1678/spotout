@@ -9057,8 +9057,12 @@ const V_SVG = {
   netz:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>',
 };
 
-// Kleine Marke, die überall dranhängt, wo ein Verein auftaucht
-function vereinMarke(){
+/* Kleine Marke, die überall dranhängt, wo ein Verein auftaucht. Sie sagt
+   "Verein" – das soll nur stimmen, wenn der Verein geprueft ist. Ohne
+   bekannten Status (Karten, Gastgeber) bleibt sie: dort erscheinen ohnehin
+   nur bestaetigte Vereine, die Datenbank laesst andere nicht posten. */
+function vereinMarke(status){
+  if(status&&status!=='bestaetigt')return '';
   return '<span class="verein-marke">'+V_SVG.haus+'Verein</span>';
 }
 
@@ -9090,27 +9094,27 @@ async function renderVereinHome(){
   const av=cProfile.avatar_url
     ? '<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>' : esc(init);
 
-  // Was fehlt noch, bevor der Verein posten darf?
+  /* Was fehlt noch, bevor der Verein posten darf? Zuerst der Pruefstatus,
+     darunter das Logo – vorher verdeckte der Logo-Hinweis den Status. */
   let status='';
+  if(cProfile.verein_status==='neu'){
+    status+='<div class="vh-status warten">'+V_SVG.uhr
+      +'<span><b>Bestätige noch deine E-Mail.</b> Danach kannst du Anlässe veröffentlichen.</span></div>';
+  }else if(cProfile.verein_status==='handpruefung'){
+    status+='<div class="vh-status warten">'+V_SVG.uhr
+      +'<span><b>Wir prüfen deinen Verein.</b> Meist dauert das nur wenige Minuten – '
+      +'du bekommst eine Nachricht, sobald er bestätigt ist.</span></div>';
+  }else if(cProfile.verein_status==='abgelehnt'){
+    status+='<div class="vh-status fehlt">'+V_SVG.warn
+      +'<span><b>Dieses Vereinskonto wurde nicht freigegeben.</b> '
+      +'Ist das ein Irrtum? Schreib an support@spotoutapp.ch.</span></div>';
+  }
   if(!(cProfile.avatar_url||'').trim()){
-    status='<div class="vh-status fehlt">'+V_SVG.warn
+    status+='<div class="vh-status fehlt">'+V_SVG.warn
       +'<span><b>Es fehlt noch ein Logo.</b> Ohne Bild erkennt niemand, wer hinter '
       +'einem Anlass steht – deshalb braucht ein Vereinskonto eines. '
       +'<a href="#" onclick="event.preventDefault();showPage(\'profile\');openEditProfile()" '
       +'style="color:#fff;text-decoration:underline">Jetzt hochladen</a></span></div>';
-  }else if(cProfile.verein_status==='neu'){
-    status='<div class="vh-status warten">'+V_SVG.uhr
-      +'<span><b>Wir warten auf deine Bestätigung.</b> Öffne die E-Mail, die wir an '
-      +esc(cProfile.website?('deine Adresse auf '+cProfile.website.replace(/^https?:\/\//,'')):'deine Adresse')
-      +' geschickt haben. Danach kannst du Anlässe veröffentlichen.</span></div>';
-  }else if(cProfile.verein_status==='handpruefung'){
-    status='<div class="vh-status warten">'+V_SVG.uhr
-      +'<span><b>Dein Verein wird von Hand geprüft.</b> Das dauert ein paar Tage. '
-      +'Schneller geht es mit einer E-Mail-Adresse auf deiner eigenen Website.</span></div>';
-  }else if(cProfile.verein_status==='abgelehnt'){
-    status='<div class="vh-status fehlt">'+V_SVG.warn
-      +'<span><b>Dieses Vereinskonto wurde nicht freigegeben.</b> '
-      +'Schreib uns, wenn das ein Irrtum ist.</span></div>';
   }
 
   const liste=(l)=>l.map(e=>cardHTML(e)).join('');
@@ -12170,9 +12174,11 @@ function openCreate(type){
   // Ein Verein hat genau eine Art von Anlass. Die Auswahl entfällt.
   if(istVerein()){
     if(!vereinDarfPosten()){
-      toast(cProfile?.avatar_url
-        ? 'Dein Verein ist noch nicht bestätigt'
-        : 'Bitte zuerst dein Vereinslogo hochladen','warn');
+      toast(cProfile?.verein_status==='abgelehnt'
+        ? 'Dieses Vereinskonto wurde nicht freigegeben'
+        : cProfile?.verein_status!=='bestaetigt'
+          ? 'Wir prüfen deinen Verein noch'
+          : 'Bitte zuerst dein Vereinslogo hochladen','warn');
       return;
     }
   }
@@ -13556,6 +13562,14 @@ async function openUserProf(userId){
   const canChat=cProfile?.is_pro && p.kontoart!=='verein' && !istVerein();
   const partyZahl=(evs||[]).length;
   const istV=p.kontoart==='verein';
+  // profil_ansehen liefert den Pruefstatus nicht mit – eine kleine Abfrage dazu.
+  let vStatus=null;
+  if(istV){
+    try{
+      const{data:vs}=await sb.from('profiles').select('verein_status').eq('id',p.id).maybeSingle();
+      vStatus=vs?.verein_status||null;
+    }catch(e){}
+  }
   const webLink=istV&&p.website
     ? '<a class="up2-web" href="'+escAttr(p.website)+'" target="_blank" rel="noopener">'
       +V_SVG.netz+esc(p.website.replace(/^https?:\/\//,'').replace(/\/$/,''))+'</a>'
@@ -13580,7 +13594,7 @@ async function openUserProf(userId){
     +'</div>'
     // Name, Handle, Bio – alles an derselben linken Kante
     +'<div class="up2-name">'+esc(p.full_name||p.username||'Unbekannt')
-      +(istV?vereinMarke():'')
+      +(istV?vereinMarke(vStatus):'')
       +(p.is_pro?proMarke():'')
       +(p.day_one?dayOneMarke():'')+'</div>'
     +'<div class="up2-handle">@'+esc(p.username||'')
@@ -14546,6 +14560,18 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Bestätige noch deine E-Mail.":"Please confirm your email.",
+  "Danach kannst du Anlässe veröffentlichen.":"Then you can publish events.",
+  "Wir prüfen deinen Verein.":"We’re checking your club.",
+  "Meist dauert das nur wenige Minuten – du bekommst eine Nachricht, sobald er bestätigt ist.":"This usually takes just a few minutes – you’ll get a notification once it’s confirmed.",
+  "Dieses Vereinskonto wurde nicht freigegeben.":"This club account was not approved.",
+  "Ist das ein Irrtum? Schreib an support@spotoutapp.ch.":"Is this a mistake? Write to support@spotoutapp.ch.",
+  "Dieses Vereinskonto wurde nicht freigegeben":"This club account was not approved",
+  "Wir prüfen deinen Verein noch":"We’re still checking your club",
+  "Dein Verein ist bestätigt":"Your club is confirmed",
+  "Du kannst jetzt Anlässe veröffentlichen – ein Logo braucht es noch dazu.":"You can now publish events – you just need a logo too.",
+  "Dein Verein konnte nicht bestätigt werden":"Your club could not be confirmed",
+  "Schreib uns an support@spotoutapp.ch, dann schauen wir es gemeinsam an.":"Write to us at support@spotoutapp.ch and we’ll look at it together.",
   "Support":"Support",
   "Aufheben":"Unblock",
   "Du hast niemanden blockiert.":"You haven’t blocked anyone.",
@@ -15028,7 +15054,6 @@ en:{
   "Angaben zum Veranstalter":"Organiser details",
   "Wir prüfen sie, bevor das Event ein Häkchen bekommt.":"We check them before the event gets a badge.",
   "Angaben gespeichert – wir schauen sie an":"Details saved — we’ll review them",
-  "Dein Verein ist noch nicht bestätigt":"Your club isn’t confirmed yet",
   "Bitte zuerst dein Vereinslogo hochladen":"Please upload a club logo first",
   "Was für ein Konto?":"What kind of account?",
   "Für mich":"For me",
@@ -15605,6 +15630,18 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Bestätige noch deine E-Mail.":"Confirme encore ton e-mail.",
+  "Danach kannst du Anlässe veröffentlichen.":"Ensuite tu pourras publier des événements.",
+  "Wir prüfen deinen Verein.":"Nous vérifions ton association.",
+  "Meist dauert das nur wenige Minuten – du bekommst eine Nachricht, sobald er bestätigt ist.":"Cela ne prend généralement que quelques minutes – tu recevras une notification dès qu’elle est confirmée.",
+  "Dieses Vereinskonto wurde nicht freigegeben.":"Ce compte d’association n’a pas été validé.",
+  "Ist das ein Irrtum? Schreib an support@spotoutapp.ch.":"C’est une erreur ? Écris à support@spotoutapp.ch.",
+  "Dieses Vereinskonto wurde nicht freigegeben":"Ce compte d’association n’a pas été validé",
+  "Wir prüfen deinen Verein noch":"Nous vérifions encore ton association",
+  "Dein Verein ist bestätigt":"Ton association est confirmée",
+  "Du kannst jetzt Anlässe veröffentlichen – ein Logo braucht es noch dazu.":"Tu peux maintenant publier des événements – il faut encore un logo.",
+  "Dein Verein konnte nicht bestätigt werden":"Ton association n’a pas pu être confirmée",
+  "Schreib uns an support@spotoutapp.ch, dann schauen wir es gemeinsam an.":"Écris-nous à support@spotoutapp.ch, nous regarderons ensemble.",
   "Support":"Support",
   "Aufheben":"Débloquer",
   "Du hast niemanden blockiert.":"Tu n’as bloqué personne.",
@@ -16087,7 +16124,6 @@ fr:{
   "Angaben zum Veranstalter":"Informations sur l’organisateur",
   "Wir prüfen sie, bevor das Event ein Häkchen bekommt.":"On les vérifie avant que l’événement obtienne un badge.",
   "Angaben gespeichert – wir schauen sie an":"Informations enregistrées – on les regarde",
-  "Dein Verein ist noch nicht bestätigt":"Ton association n’est pas encore confirmée",
   "Bitte zuerst dein Vereinslogo hochladen":"Merci d’ajouter d’abord le logo de l’association",
   "Was für ein Konto?":"Quel type de compte ?",
   "Für mich":"Pour moi",
@@ -16664,6 +16700,18 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Bestätige noch deine E-Mail.":"Conferma ancora la tua e-mail.",
+  "Danach kannst du Anlässe veröffentlichen.":"Poi potrai pubblicare eventi.",
+  "Wir prüfen deinen Verein.":"Stiamo verificando la tua associazione.",
+  "Meist dauert das nur wenige Minuten – du bekommst eine Nachricht, sobald er bestätigt ist.":"Di solito bastano pochi minuti – riceverai una notifica appena sarà confermata.",
+  "Dieses Vereinskonto wurde nicht freigegeben.":"Questo account associazione non è stato approvato.",
+  "Ist das ein Irrtum? Schreib an support@spotoutapp.ch.":"È un errore? Scrivi a support@spotoutapp.ch.",
+  "Dieses Vereinskonto wurde nicht freigegeben":"Questo account associazione non è stato approvato",
+  "Wir prüfen deinen Verein noch":"Stiamo ancora verificando la tua associazione",
+  "Dein Verein ist bestätigt":"La tua associazione è confermata",
+  "Du kannst jetzt Anlässe veröffentlichen – ein Logo braucht es noch dazu.":"Ora puoi pubblicare eventi – serve ancora un logo.",
+  "Dein Verein konnte nicht bestätigt werden":"Non è stato possibile confermare la tua associazione",
+  "Schreib uns an support@spotoutapp.ch, dann schauen wir es gemeinsam an.":"Scrivici a support@spotoutapp.ch e lo vediamo insieme.",
   "Support":"Supporto",
   "Aufheben":"Sblocca",
   "Du hast niemanden blockiert.":"Non hai bloccato nessuno.",
@@ -17146,7 +17194,6 @@ it:{
   "Angaben zum Veranstalter":"Dati dell’organizzatore",
   "Wir prüfen sie, bevor das Event ein Häkchen bekommt.":"Li controlliamo prima che l’evento riceva la spunta.",
   "Angaben gespeichert – wir schauen sie an":"Dati salvati – li controlliamo noi",
-  "Dein Verein ist noch nicht bestätigt":"La vostra associazione non è ancora confermata",
   "Bitte zuerst dein Vereinslogo hochladen":"Carica prima il logo dell’associazione",
   "Was für ein Konto?":"Che tipo di account?",
   "Für mich":"Per me",
@@ -18454,6 +18501,9 @@ const NT_ICON={
   invite:{cls:'ein',svg:'<path d="M4 6.5h16a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5z"/><path d="m3 8 9 6 9-6"/>'},
   event_changed:{cls:'frage',svg:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/>'},
   event_gone:{cls:'no',svg:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2v.01"/>'},
+  verein_bestaetigt:{cls:'ok',svg:'<path d="M20 6 9 17l-5-5"/>'},
+  verein_abgelehnt:{cls:'no',svg:'<path d="M18 6 6 18M6 6l12 12"/>'},
+  verein_pruefen:{cls:'frage',svg:'<path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/>'},
   nachricht:{cls:'ein',svg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
 };
 
@@ -18607,6 +18657,11 @@ async function oeffneNotif(id){
     closeNotifs();
     await gespraechOeffnen(n.conversation_id);
     return;
+  }
+  // Vereinsmeldungen fuehren dorthin, wo man etwas damit anfangen kann
+  if(n.art==='verein_pruefen'&&cProfile?.ist_admin){ closeNotifs(); vereinePruefenOeffnen(); return; }
+  if(n.art==='verein_bestaetigt'||n.art==='verein_abgelehnt'){
+    closeNotifs(); await loadProf(); showPage('main'); return;
   }
   if(!n.event_id){renderNotifs();return;}
   closeNotifs();
