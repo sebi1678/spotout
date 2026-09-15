@@ -10278,7 +10278,7 @@ function attNote(txt,tone){
   return '<div class="attend-note attend-note-'+(tone||'muted')+'">'+txt+'</div>';
 }
 
-function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attCount){
+function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attCount,aufWarteliste){
   if(isOver)return attNote('Diese Party ist vorbei');
   // Ein Vereinskonto steht auf keiner Gästeliste – es veranstaltet.
   if(istVerein())return attNote('Vereinskonten melden sich nicht an');
@@ -10287,6 +10287,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
     return attNote('Anmeldefrist war am '+fmtD(deadline.toISOString().slice(0,10))+' um '+fmtT(deadline),'warn');
   }
   if(isFull&&!isAtt){
+    if(aufWarteliste)return attNote('Du stehst auf der Warteliste');
     if(cProfile?.is_pro){
       return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">✦ Auf die Warteliste</button>';
     }
@@ -10318,20 +10319,30 @@ function anmeldungRest(stunden){
   return 'Anmeldung noch '+Math.max(1,Math.round(stunden*60))+' Min. möglich';
 }
 
+let detailSeq=0;
 async function openDetail(id){
+  const seq=++detailSeq;
   let e=evts.find(x=>x.id===id);
   /* Nicht in der Liste? Dann ist es eine vergangene Party aus "Besucht"
      oder ein geteilter Link. Einzeln nachladen statt nichts zu tun. */
   if(!e){
-    const{data}=await sb.from('events')
+    const{data,error:ladeFehler}=await sb.from('events')
       .select(`*,profiles(username,full_name,avatar_url,kontoart,verein_ort,website),event_attendees(count)`)
       .eq('id',id).maybeSingle();
-    if(!data){ toast('Diese Party gibt es nicht mehr','info'); return; }
+    if(seq!==detailSeq)return;
+    if(ladeFehler||!data){
+      // Offline, privat oder geloescht – nicht alles ist "gibt es nicht mehr"
+      toast(ladeFehler?'Party konnte nicht geladen werden – prüf dein Internet'
+                      :'Diese Party ist nicht mehr verfügbar','info');
+      if(document.getElementById('detailOverlay')?.classList.contains('open'))closeDetail();
+      return;
+    }
     e={...data,attending:data.gaeste_zahl ?? (data.event_attendees?.[0]?.count||0)};
     evts=[...evts,e];
   }
   window.__offenePartyId=id;
   const{data:atts}=await sb.from('event_attendees').select('*,profiles(id,username,full_name,avatar_url)').eq('event_id',id);
+  if(seq!==detailSeq)return;               // inzwischen zu oder eine andere Party
   /* Begleitpersonen, die selbst ein Konto haben, sollen mit ihrem
      eigenen Bild dastehen und nicht als grauer Buchstabe. Eine Abfrage
      für alle zusammen – und nur dann, wenn es überhaupt welche gibt. */
@@ -10342,6 +10353,7 @@ async function openDetail(id){
   if(begleitIds.length){
     const{data:bp}=await sb.from('profiles')
       .select('id,username,full_name,avatar_url').in('id',begleitIds);
+    if(seq!==detailSeq)return;
     (bp||[]).forEach(p=>begleitKonten.set(p.id,p));
   }
   const isAtt=atts?.some(a=>a.user_id===cUser?.id);
@@ -10350,6 +10362,13 @@ async function openDetail(id){
   /* Voll heisst: so viele Koepfe stehen vor der Tuer – nicht so viele
      Konten sind eingetragen. Eine Begleitung braucht auch einen Platz. */
   const isFull=e.capacity!=null&&gaesteZahl(atts)>=e.capacity;
+  let aufWarteliste=false;
+  if(isFull&&!isAtt&&cUser&&cProfile?.is_pro){
+    const{data:wl}=await sb.from('event_waitlist').select('user_id')
+      .eq('event_id',id).eq('user_id',cUser.id).limit(1);
+    if(seq!==detailSeq)return;
+    aufWarteliste=!!(wl&&wl.length);
+  }
   const free=!e.price||e.price==0;
   const hasDrink=e.drink_price&&e.drink_price>0;
   const tot=(e.price||0)+(e.drink_price||0);
@@ -10588,7 +10607,7 @@ async function openDetail(id){
       ${invH}
     </div>
     <div style="padding:0 20px 20px">
-      ${buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attCount)}
+      ${buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attCount,aufWarteliste)}
     </div>
     <div style="padding:0 20px">
       <div id="plusSec"></div>
@@ -10621,6 +10640,7 @@ async function openDetail(id){
 }
 
 function closeDetail(){
+  detailSeq++;                             // spaete Antworten nicht mehr anzeigen
 
   document.getElementById('detailOverlay').classList.remove('open');
   delArm=null;
@@ -10664,6 +10684,9 @@ async function deleteEvent(id){
   }
   toast('Party gelöscht','success');
   closeDetail();
+  // Geloescht wird auch aus "Verwalten" – das Fenster darf nicht offen bleiben
+  if(document.getElementById('manageOverlay')?.classList.contains('open'))closeManage();
+  mgEvent=null;
   await loadEvts();
   if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
   if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
@@ -10693,6 +10716,8 @@ async function toggleAtt(id,isAtt){
     }
     await loadEvts();
     await openDetail(id);
+    if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
+    if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
     // Frisch angemeldet? Dann gleich fragen, was man mitbringt – sofern es
     // überhaupt eine Liste gibt.
     if(!isAtt)setTimeout(()=>maybeOpenBringSheet(id),350);
@@ -10705,13 +10730,29 @@ async function toggleAtt(id,isAtt){
   }
 }
 
+let wartelisteLaeuft=false;
 async function joinWaitlist(eventId){
-  if(!cUser){toast('Bitte anmelden','warn');return;}
+  if(!cUser){kontoNoetig();return;}
   if(!cProfile?.is_pro){showPage('pro');return;}
-  const{error}=await sb.from('event_waitlist').insert({event_id:eventId,user_id:cUser.id});
-  if(error&&error.code!=='23505'){toast('Fehler: '+error.message,'error');return;}
-  toast('Anfrage gesendet! Der Host wird benachrichtigt.','success');
-  openDetail(eventId);
+  if(wartelisteLaeuft)return;
+  wartelisteLaeuft=true;
+  const btn=document.querySelector('.attend-btn-wait');
+  if(btn)btn.disabled=true;
+  try{
+    const{error}=await sb.from('event_waitlist').insert({event_id:eventId,user_id:cUser.id});
+    if(error&&error.code==='23505'){
+      toast('Du stehst schon auf der Warteliste','info');
+    }else if(error){
+      toast('Fehler: '+error.message,'error');
+      if(btn)btn.disabled=false;
+      return;
+    }else{
+      toast('Anfrage gesendet! Der Host wird benachrichtigt.','success');
+    }
+    openDetail(eventId);
+  }finally{
+    wartelisteLaeuft=false;
+  }
 }
 
 /* ══════════ NUTZERSUCHE — eigene Seite, wie bei Instagram ══════════ */
@@ -11335,13 +11376,40 @@ function kalFensterMitHinweis(){
   if(grund)grund.style.display='none';
 }
 
+/* Absagen ging mit einem Tipp – bei einer vollen Party kommt man danach
+   nicht mehr rein. Jetzt wie beim Loeschen: zweimal tippen. */
+let calAbsagenArm=null,calAbsagenLaeuft=false;
 async function leaveFromCal(id){
-  if(!cUser)return;
-  const{error}=await sb.from('event_attendees').delete()
-    .eq('event_id',id).eq('user_id',cUser.id);
-  if(error){toast('Hat nicht geklappt: '+error.message,'error');return;}
-  toast('Du bist ausgetragen','info');
-  renderCalendar();
+  if(!cUser||calAbsagenLaeuft)return;
+  const ev=window.event;
+  const btn=(ev&&ev.currentTarget instanceof HTMLElement)?ev.currentTarget:null;
+  if(calAbsagenArm!==id){
+    calAbsagenArm=id;
+    if(btn){ btn.dataset.text=btn.textContent; btn.textContent='Wirklich absagen?'; btn.classList.add('armed'); }
+    setTimeout(()=>{
+      if(calAbsagenArm!==id)return;
+      calAbsagenArm=null;
+      if(btn&&btn.isConnected){ btn.textContent=btn.dataset.text||'Absagen'; btn.classList.remove('armed'); }
+    },4000);
+    return;
+  }
+  calAbsagenArm=null;
+  calAbsagenLaeuft=true;
+  if(btn)btn.disabled=true;
+  try{
+    const{error}=await sb.from('event_attendees').delete()
+      .eq('event_id',id).eq('user_id',cUser.id);
+    if(error){
+      toast('Hat nicht geklappt: '+error.message,'error');
+      if(btn){ btn.disabled=false; btn.textContent=btn.dataset.text||'Absagen'; btn.classList.remove('armed'); }
+      return;
+    }
+    toast('Du bist ausgetragen','info');
+    await loadEvts();
+    renderCalendar();
+  }finally{
+    calAbsagenLaeuft=false;
+  }
 }
 
 // Countdown zur nächsten Party, aktualisiert sich jede Minute
@@ -12253,6 +12321,7 @@ async function checkFeeSuccess(){
     }
   }
   await loadEvts();
+  openDetail(id);                          // zeigt den Stand ("Noch nicht sichtbar")
   toast('Die Freischaltung dauert noch einen Moment. Lade die Seite gleich neu.','warn');
 }
 
@@ -12793,6 +12862,15 @@ function openCreate(type){
   document.getElementById('vstep2').innerHTML='<span class="vstep-n">2</span><span>Unternehmen verifizieren</span>';
   document.getElementById('vstep3').className='vstep';
   bringDraft=[];
+  // Auch das, was frueher von der letzten Party haengen blieb
+  endeWahl=''; dressWahl='';
+  document.querySelectorAll('#endPresets .cset').forEach((b,i)=>b.classList.toggle('on',i===0));
+  document.querySelectorAll('#dressPresets .cset').forEach((b,i)=>b.classList.toggle('on',i===0));
+  ['fgEnde','fgDress'].forEach(id=>{const el=document.getElementById(id); if(el)el.style.display='none';});
+  ['fEnde','fDress','fSpotify','fDrink','fDrinkDesc'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
+  document.querySelectorAll('#zahlPresets .cset').forEach(b=>b.classList.toggle('on',b.dataset.z==='bar'));
+  linkModus='pers';
+  try{ linkModusZeigen(); }catch(err){}
   const bdi=document.getElementById('bringDraftInput');
   if(bdi)bdi.value='';
   document.querySelectorAll('#bringQuick .cset').forEach(b=>b.classList.remove('on'));
@@ -12803,8 +12881,32 @@ function openCreate(type){
 
 function closeCreate(){
   document.getElementById('createOverlay').classList.remove('open');
-
 }
+
+/* Neun Schritte waren mit einem Tipp neben das Fenster, dem X oder einem
+   Wisch weg – und beim naechsten Oeffnen leer. Jetzt sichert jedes
+   Schliessen still einen Entwurf, sobald es einen Namen gibt. Egal auf
+   welchem Weg das Fenster zugeht: der Beobachter merkt es. */
+let entwurfNichtSichern=false;
+function entwurfStillSichern(){
+  if(entwurfNichtSichern){ entwurfNichtSichern=false; return; }
+  const name=(document.getElementById('fName')?.value||'').trim();
+  if(!name||typeof cStep==='undefined'||cStep<2)return;
+  try{
+    localStorage.setItem(ENTWURF_SCHLUESSEL,JSON.stringify(entwurfSammeln()));
+    toast('Entwurf gesichert – du findest ihn unter Erstellen','success');
+  }catch(err){}
+}
+(function entwurfBeimSchliessen(){
+  const ov=document.getElementById('createOverlay');
+  if(!ov||!window.MutationObserver)return;
+  let offen=ov.classList.contains('open');
+  new MutationObserver(()=>{
+    const jetzt=ov.classList.contains('open');
+    if(offen&&!jetzt)entwurfStillSichern();
+    offen=jetzt;
+  }).observe(ov,{attributes:true,attributeFilter:['class']});
+})();
 
 /* ══════════ ENTWÜRFE ══════════
    Sieben Schritte sind lang. Wer dazwischen unterbrochen wird, soll
@@ -12849,6 +12951,7 @@ function entwurfSichern(){
   }
   try{ localStorage.setItem(ENTWURF_SCHLUESSEL,JSON.stringify(e)); }
   catch(err){ toast('Entwurf konnte nicht gespeichert werden','error'); return; }
+  entwurfNichtSichern=true;
   closeCreate();
   toast(e.bildFehlt
     ? 'Entwurf gesichert – das Bild musst du nachher neu wählen'
@@ -12895,6 +12998,7 @@ function entwurfFortsetzen(){
     deadlineOn=!!e.frist;
     bringDraft=Array.isArray(e.mitbringen)?e.mitbringen:[];
     upImg=null;
+    try{ entwurfKnoepfe(e); }catch(err){}
     // Die Anzeigen nachziehen, die sonst aus den Feldern gerechnet werden
     try{ updateWhenBox(); }catch(err){}
     try{ renderBringDraft&&renderBringDraft(); }catch(err){}
@@ -12902,6 +13006,35 @@ function entwurfFortsetzen(){
     goCreateStep(Math.min(Math.max(e.schritt||1,1),CTOTAL),true);
     if(e.bildFehlt)toast('Das Titelbild musst du neu wählen','info');
   },260);
+}
+
+/* Nach dem Fortsetzen stand "Gratis" da, gespeichert waren CHF 20 – die
+   Werte kamen zurueck, die Knoepfe nicht. */
+function chipsetWahl(gruppe,treffer,fgId){
+  const knoepfe=[...document.querySelectorAll('#'+gruppe+' .cset')];
+  if(!knoepfe.length)return;
+  const k=knoepfe.find(treffer)||knoepfe[knoepfe.length-1];
+  knoepfe.forEach(b=>b.classList.toggle('on',b===k));
+  const fg=fgId?document.getElementById(fgId):null;
+  if(fg)fg.style.display=(k===knoepfe[knoepfe.length-1]&&!treffer(k))?'block':'none';
+}
+function entwurfKnoepfe(e){
+  const f=e.felder||{};
+  const ruft=(b,teil)=>(b.getAttribute('onclick')||'').includes(teil);
+  const preis=Number(String(f.fPrice||'').trim()||0);
+  chipsetWahl('pricePresets',b=>ruft(b,'setPrice('+preis+','),'fgPrice');
+  const cap=parseInt(f.fCap,10);
+  chipsetWahl('capPresets',b=>!isNaN(cap)&&ruft(b,'setCap('+cap+','),'fgCap');
+  chipsetWahl('endPresets',b=>ruft(b,"setEnde('"+(e.ende||'')+"',"),'fgEnde');
+  chipsetWahl('dressPresets',b=>ruft(b,"setDress('"+(e.dress||'')+"',"),'fgDress');
+  const dr=document.getElementById('fDress');
+  if(dr&&e.dress)dr.value=e.dress;
+  if(f.fEmoji){ const cat=f.fCat; selectIcon(f.fEmoji); if(cat!=null)document.getElementById('fCat').value=cat; }
+  document.getElementById('drinkTog')?.classList.toggle('on',!!e.getraenke);
+  document.getElementById('drinkFields')?.classList.toggle('open',!!e.getraenke);
+  document.getElementById('deadlineTog')?.classList.toggle('on',!!e.frist);
+  document.getElementById('deadlineFields')?.classList.toggle('open',!!e.frist);
+  try{ updateFeeBox(); }catch(err){}
 }
 
 function fgErr(id,on){
@@ -13766,7 +13899,7 @@ async function submitEventInner(){
   // Letzte Sicherung: ohne Koordinaten wäre die Party auf der Karte unsichtbar
   if(selLat==null&&!(await ensureGeo())){
     toast('Adresse konnte nicht gefunden werden – bitte einen Vorschlag antippen','warn');
-    goCreateStep(2,true); fgErr('fgAddr',true); return;
+    goCreateStep(5,true); fgErr('fgAddr',true); return;
   }
   let imgUrl=null;
   if(upImg){
@@ -13776,13 +13909,16 @@ async function submitEventInner(){
       const path=`events/${cUser.id}_${Date.now()}.jpg`;
       const{error:upErr}=await sb.storage.from('event-images').upload(path,blob,{contentType:blob.type||'image/jpeg',upsert:true});
       if(upErr){
+        // Nicht ohne Bild weitermachen – der Hinweis ginge sonst unter
         toast(bildFehlerText(upErr,blob),'error');
+        return;
       }else{
         const{data:u}=sb.storage.from('event-images').getPublicUrl(path);
         imgUrl=u.publicUrl;
       }
     }catch(ex){
       toast('Bild konnte nicht hochgeladen werden','error');
+      return;
     }
   }
   // Sechs eindeutige Zeichen, ohne 0/O und 1/I – die verwechselt man am Telefon
@@ -14709,7 +14845,7 @@ async function doJoin(){
   if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Wird beigetreten…';}
   const{data,error}=await sb.rpc('join_by_invite',{p_code:window.__joinCode});
   const r=Array.isArray(data)?data[0]:data;
-  if(error||!r){toast('Beitritt fehlgeschlagen','error');if(btn)btn.disabled=false;return;}
+  if(error||!r){toast('Beitritt fehlgeschlagen','error');if(btn){btn.disabled=false;btn.textContent='Ich bin dabei!';}return;}
   const meldung={
     beigetreten:'Du bist dabei!',
     schon_dabei:'Du warst schon dabei',
@@ -15897,6 +16033,12 @@ en:{
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
   "Pro verschenken":"Gift Pro",
+  "Diese Party ist nicht mehr verfügbar":"This party is no longer available",
+  "Party konnte nicht geladen werden – prüf dein Internet":"Couldn't load the party – check your internet",
+  "Du stehst auf der Warteliste":"You're on the waitlist",
+  "Du stehst schon auf der Warteliste":"You're already on the waitlist",
+  "Wirklich absagen?":"Really cancel?",
+  "Entwurf gesichert – du findest ihn unter Erstellen":"Draft saved – you'll find it under Create",
   "Day One vergeben":"Grant Day One",
   "Für Leute, die von Anfang an dabei sind. Benutzername ohne @ – die Person bekommt eine Benachrichtigung.":"For people who've been here from the start. Username without @ – they'll get a notification.",
   "Vergeben":"Grant",
@@ -17044,6 +17186,12 @@ fr:{
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
   "Pro verschenken":"Offrir Pro",
+  "Diese Party ist nicht mehr verfügbar":"Cette soirée n'est plus disponible",
+  "Party konnte nicht geladen werden – prüf dein Internet":"Impossible de charger la soirée – vérifie ta connexion",
+  "Du stehst auf der Warteliste":"Tu es sur la liste d'attente",
+  "Du stehst schon auf der Warteliste":"Tu es déjà sur la liste d'attente",
+  "Wirklich absagen?":"Vraiment annuler ?",
+  "Entwurf gesichert – du findest ihn unter Erstellen":"Brouillon enregistré – tu le retrouves sous Créer",
   "Day One vergeben":"Attribuer Day One",
   "Für Leute, die von Anfang an dabei sind. Benutzername ohne @ – die Person bekommt eine Benachrichtigung.":"Pour celles et ceux qui sont là depuis le début. Nom d'utilisateur sans @ – la personne reçoit une notification.",
   "Vergeben":"Attribuer",
@@ -18191,6 +18339,12 @@ it:{
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
   "Pro verschenken":"Regala Pro",
+  "Diese Party ist nicht mehr verfügbar":"Questa festa non è più disponibile",
+  "Party konnte nicht geladen werden – prüf dein Internet":"Impossibile caricare la festa – controlla la connessione",
+  "Du stehst auf der Warteliste":"Sei in lista d'attesa",
+  "Du stehst schon auf der Warteliste":"Sei già in lista d'attesa",
+  "Wirklich absagen?":"Annullare davvero?",
+  "Entwurf gesichert – du findest ihn unter Erstellen":"Bozza salvata – la trovi in Crea",
   "Day One vergeben":"Assegna Day One",
   "Für Leute, die von Anfang an dabei sind. Benutzername ohne @ – die Person bekommt eine Benachrichtigung.":"Per chi c'è fin dall'inizio. Nome utente senza @ – la persona riceve una notifica.",
   "Vergeben":"Assegna",
@@ -18909,6 +19063,7 @@ async function warteAufFreischaltung(eventId){
     }
   }
   await loadEvts();
+  openDetail(eventId);
   toast('Die Freischaltung dauert noch einen Moment. Schau gleich nochmal.','warn');
 }
 
@@ -19907,12 +20062,15 @@ let mgEvent=null,mgBusy=false;
 
 function closeManage(){
   document.getElementById('manageOverlay').classList.remove('open');
-  window.__offenePartyId=null;
+  delArm=null;
+  // Liegt die Partyseite noch darunter, ist sie weiterhin die offene Party
+  if(!document.getElementById('detailOverlay')?.classList.contains('open'))window.__offenePartyId=null;
   merkeOrt();
 }
 
 async function openManage(eventId){
   window.__offenePartyId=eventId;
+  delArm=null;
   const ov=document.getElementById('manageOverlay');
   const body=document.getElementById('manageBody');
   ov.classList.add('open');
@@ -20082,12 +20240,18 @@ async function saveManage(){
       if(co){patch.lat=co.lat;patch.lng=co.lng;}
       else toast('Adresse nicht gefunden – der Kartenpin bleibt, wo er war','warn');
     }
-    const{error}=await sb.from('events').update(patch).eq('id',mgEvent.id);
+    const{data:gespeichert,error}=await sb.from('events').update(patch).eq('id',mgEvent.id).select('id');
     if(error){toast('Speichern fehlgeschlagen: '+error.message,'error');return;}
+    if(!(gespeichert||[]).length){
+      toast('Diese Party ist nicht mehr verfügbar','warn');
+      closeManage(); await loadEvts(); return;
+    }
     toast('Gespeichert','success');
     mgEvent={...mgEvent,...patch};
     await loadEvts();
     if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
+    if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
+    if(document.getElementById('detailOverlay')?.classList.contains('open'))openDetail(mgEvent.id);
   }finally{
     mgBusy=false;
     if(btn){btn.disabled=false;btn.innerHTML=label;}
@@ -20377,6 +20541,7 @@ async function fotoEntfernen(){
     toast((r&&r.meldung)||'Das hat nicht geklappt. Versuch es nochmal.','warn');
     fotoScharf=null; fotoZeigen(); return;
   }
+  if(f.uploader===cUser?.id)st.status.eigene=Math.max(0,(Number(st.status.eigene)||0)-1);
   st.fotos.splice(st.index,1);
   fotoScharf=null;
   toast('Foto ist weg','success');
