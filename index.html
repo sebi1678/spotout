@@ -21186,6 +21186,8 @@ const I18N_PAT=[
   // Der Zaehler in der gefuehrten Erklaerung: "2 von 6"
   [/^(\d+) von (\d+)$/,        {en:'$1 of $2',            fr:'$1 sur $2',      it:'$1 di $2'}],
   [/^(\d+) Treffer$/,          {en:'$1 result(s)',        fr:'$1 résultat(s)', it:'$1 risultati'}],
+  [/^(\d+) dabei$/,           {en:'$1 going',           fr:'$1 y vont',      it:'$1 partecipano'}],
+  [/^(\d+) von – dabei$/,     {en:'$1 going',           fr:'$1 y vont',      it:'$1 partecipano'}],
   [/^(\d+) Gast dabei$/,       {en:'$1 guest attending',  fr:'$1 invité présent', it:'$1 ospite presente'}],
   [/^(\d+) Gäste dabei$/,      {en:'$1 guests attending', fr:'$1 invités présents', it:'$1 ospiti presenti'}],
   [/^(\d+) Gast$/,             {en:'$1 guest',            fr:'$1 invité', it:'$1 ospite'}],
@@ -21342,6 +21344,15 @@ function setLang(code){
   document.querySelectorAll('#langRow .lang-opt').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
   document.documentElement.lang=LANG;
   applyLang();
+  /* Datum und Uhrzeit baut der Browser aus der Sprache (toLocaleDateString).
+     Das Woerterbuch kann sie nicht uebersetzen – erst beim Neuzeichnen steht
+     "samedi" statt "Samstag". Darum die sichtbaren Listen nachziehen. */
+  try{
+    if(typeof filterAll==='function')filterAll();
+    if(document.getElementById('page-calendar')?.classList.contains('active')&&typeof renderCalendar==='function')renderCalendar();
+    if(document.getElementById('page-profile')?.classList.contains('active')&&typeof renderProf==='function')renderProf();
+    if(document.getElementById('detailOverlay')?.classList.contains('open')&&window.__offenePartyId&&typeof openDetail==='function')openDetail(window.__offenePartyId);
+  }catch(err){ console.warn('[sprache]',err); }
 }
 
 function initLang(){
