@@ -1610,52 +1610,56 @@
    unteren Rand – bei jeder Kleinigkeit, und immer dort, wo man gerade
    nicht hinschaut. Lange Meldungen brauchen mehr Platz als ein Wort;
    dafuer streckt sich das Feld zu einer Karte. */
+    /* ── HINWEISE (Toast) ──
+       Unten statt mitten im Bild: ein Hinweis soll bestaetigen, nicht die
+       Sicht versperren. Er sitzt ueber der Leiste, kommt mit etwas Schwung,
+       zeigt mit einem feinen Strich, wie lange er bleibt, und geht auf
+       Antippen oder Wischen nach unten sofort weg. */
     .toast{
-      position:fixed;left:50%;top:50%;z-index:999;
-      transform:translate(-50%,-50%) scale(.86);
-      min-width:158px;max-width:min(78vw,320px);
-      padding:26px 22px 20px;border-radius:26px;
-      background:rgba(16,20,44,.96);
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:0 20px 60px rgba(0,0,0,.5);
-      display:flex;flex-direction:column;align-items:center;gap:13px;
-      font-size:.92rem;font-weight:600;color:#fff;line-height:1.35;text-align:center;
+      --toast-farbe:#FF7FA5;--toast-grund:rgba(255,127,165,.16);
+      position:fixed;left:50%;z-index:999;
+      bottom:calc(max(var(--toast-unten,0px),var(--safe-bottom)) + 12px);
+      transform:translate(-50%,22px) scale(.96);
+      width:max-content;max-width:min(92vw,420px);min-height:52px;
+      padding:10px 16px 10px 10px;border-radius:18px;overflow:hidden;
+      background:rgba(20,24,52,.92);
+      -webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+      border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 14px 40px rgba(0,0,0,.45);
+      display:flex;align-items:center;gap:11px;
+      font-size:.88rem;font-weight:600;color:#fff;line-height:1.35;text-align:left;
       opacity:0;pointer-events:none;
-      transition:opacity var(--takt) ease,transform var(--takt-lang) var(--kurve);
+      transition:opacity 180ms ease,transform 380ms var(--kurve-schwung);
     }
-    .toast::before{
-      content:'';width:46px;height:46px;flex:none;border-radius:50%;
-      background:rgba(255,255,255,.10) no-repeat center/24px 24px;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 8v5'/%3E%3Cpath d='M12 16.5v.01'/%3E%3C/svg%3E");
+    .toast.show{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto;cursor:pointer}
+    .toast.geht{transition:opacity 160ms ease,transform 220ms var(--kurve)}
+    .toast.stoss{animation:toastStoss 260ms var(--kurve-schwung)}
+    @keyframes toastStoss{0%{transform:translate(-50%,0) scale(.95)}100%{transform:translate(-50%,0) scale(1)}}
+    .toast-ic{
+      flex:0 0 32px;height:32px;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;
+      color:var(--toast-farbe);background:var(--toast-grund);
     }
-    .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-    /* Mit left:50% gab der Browser dem Feld hoechstens die halbe
-       Bildschirmbreite – ein laengerer Satz stand dann als schmale Saeule
-       da. max-content nimmt die Breite, die der Text braucht, bis zur
-       Obergrenze. */
-    .toast{width:max-content}
-    .toast.success::before{
-      background-color:rgba(43,217,138,.16);
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232BD98A' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4.5 12.5 5 5 10-10'/%3E%3C/svg%3E");
+    .toast-ic svg{width:18px;height:18px}
+    .toast-txt{min-width:0;overflow-wrap:anywhere}
+    .toast::after{
+      content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+      background:var(--toast-farbe);opacity:.5;transform-origin:left;transform:scaleX(0);
     }
-    .toast.error::before{
-      background-color:rgba(255,90,110,.16);
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF5A6E' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E");
-    }
-    .toast.warn::before{
-      background-color:rgba(255,194,75,.16);
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFC24B' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M12 7v6'/%3E%3Cpath d='M12 17v.01'/%3E%3C/svg%3E");
-    }
-    /* Ein langer Satz laesst sich nicht in ein Quadrat zwingen. */
-    .toast.lang{
-      flex-direction:row;align-items:center;gap:14px;text-align:left;
-      padding:16px 20px;border-radius:20px;min-width:0;
-      max-width:min(86vw,380px);font-size:.87rem;
-    }
-    .toast.lang::before{width:34px;height:34px;background-size:19px 19px}
+    .toast.show::after{animation:toastZeit var(--toast-dauer,2400ms) linear forwards}
+    @keyframes toastZeit{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+    .toast.success{--toast-farbe:#2BD98A;--toast-grund:rgba(43,217,138,.16)}
+    .toast.error{--toast-farbe:#FF5A6E;--toast-grund:rgba(255,90,110,.16)}
+    .toast.warn{--toast-farbe:#FFC24B;--toast-grund:rgba(255,194,75,.16)}
+    /* Mit offener Tastatur ueber der Tastatur, nicht darunter */
+    .toast.ueber-tastatur{bottom:auto;top:calc(var(--tastatur,100vh) - 68px)}
+    /* Eine Strichstaerke fuer die runden Knoepfe oben und auf dem Partybild */
+    .nav-bell svg,.nav-suche svg,.nav-icon-btn svg,.d-hero-btn svg{stroke-width:2}
     @media(prefers-reduced-motion:reduce){
-      .toast{transition:opacity var(--takt) ease}
-      .toast.show{transform:translate(-50%,-50%) scale(1)}
+      .toast,.toast.geht{transition:opacity var(--takt) ease}
+      .toast,.toast.show{transform:translate(-50%,0)}
+      .toast.stoss{animation:none}
+      .toast.show::after{animation:none}
     }
 
     /* ── LOCATION BANNER ── */
@@ -7408,7 +7412,7 @@
 </div>
 
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 
@@ -21482,18 +21486,71 @@ function alleFensterZu(){
 }
 function copyCode(code){navigator.clipboard.writeText(code).catch(()=>{});toast('Code kopiert!','success');}
 let toastUhr=null;
+const TOAST_SYM={
+  info:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.01"/></svg>',
+  success:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  error:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M17 7 7 17M7 7l10 10"/></svg>',
+  warn:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 4 2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4M12 17v.01"/></svg>'
+};
+
 function toast(msg,type='info'){
   const t=document.getElementById('toast');
   if(!t)return;
+  const art=TOAST_SYM[type]?type:'info';
   const text=String(msg||'');
-  t.textContent=text;
-  // Bis etwa dreissig Zeichen passt es ins Quadrat, danach wird es
-  // eine Karte – sonst steht dort eine Wortsaeule.
-  t.className='toast show '+type+(text.length>30?' lang':'');
+  const warDa=t.classList.contains('show');
+  t.innerHTML='<span class="toast-ic">'+TOAST_SYM[art]+'</span><span class="toast-txt"></span>';
+  t.querySelector('.toast-txt').textContent=text;
+
+  /* Ueber dem, was unten klebt: Leiste und Gast-Leiste. */
+  let oben=window.innerHeight;
+  ['bnav','gastLeiste'].forEach(id=>{
+    const el=document.getElementById(id);
+    // offsetParent ist bei position:fixed immer null – darum ueber display pruefen
+    if(!el||el.hidden||el.classList.contains('hidden')||getComputedStyle(el).display==='none')return;
+    const r=el.getBoundingClientRect();
+    if(r.height>0&&r.top<oben)oben=r.top;
+  });
+  t.style.setProperty('--toast-unten',Math.max(0,Math.round(window.innerHeight-oben))+'px');
+  // Ueber die Tastatur nur, wenn wirklich gerade getippt wird
+  const feld=document.activeElement;
+  const tippt=document.body.classList.contains('tastatur-offen')&&feld
+    &&/^(INPUT|TEXTAREA)$/.test(feld.tagName);
+
+  // Lange Saetze bleiben laenger stehen – man soll sie lesen koennen.
+  const dauer=Math.max(2000,Math.min(5200,900+text.length*55));
+  t.style.setProperty('--toast-dauer',dauer+'ms');
+  const lage=tippt?' ueber-tastatur':'';
+  t.className='toast '+art+lage;
+  void t.offsetWidth;                       // Strich und Schwung neu starten
+  t.className='toast show '+art+lage+(warDa?' stoss':'');
   clearTimeout(toastUhr);
-  toastUhr=setTimeout(()=>{t.className='toast'+(text.length>30?' lang':'');},
-    text.length>30?3200:1900);
+  toastUhr=setTimeout(toastWeg,dauer);
+
+  if((art==='error'||art==='warn')&&typeof istApp==='function'&&istApp()){
+    try{ nativeCall('haptik',{art:'mittel'},1500); }catch(e){}
+  }
 }
+
+function toastWeg(){
+  const t=document.getElementById('toast');
+  if(!t||!t.classList.contains('show'))return;
+  clearTimeout(toastUhr);
+  t.classList.add('geht');
+  t.classList.remove('show','stoss');
+}
+
+(function toastGesten(){
+  const t=document.getElementById('toast');
+  if(!t)return;
+  let y0=null;
+  t.addEventListener('click',toastWeg);
+  t.addEventListener('touchstart',e=>{ y0=e.touches[0].clientY; },{passive:true});
+  t.addEventListener('touchend',e=>{
+    if(y0!=null&&e.changedTouches[0].clientY-y0>16)toastWeg();
+    y0=null;
+  },{passive:true});
+})();
 
 // ── SETTINGS MODAL ──
 function showSettingsModal(){
