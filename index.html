@@ -6882,6 +6882,21 @@
   </div>
 </div>
 
+<!-- ════ BLOCKIERTE PERSONEN ════ -->
+<div class="overlay" id="blockiertOverlay" onclick="closeIfOutside(event,'blockiertOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Blockierte Personen</div>
+      <button class="modal-x" onclick="closeOverlay('blockiertOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="set-hilfe">Hebst du eine Blockierung auf, könnt ihr euch wieder schreiben und seht eure Partys.</div>
+      <div id="blockiertListe"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ════ BENACHRICHTIGUNGEN ════ -->
 <div class="overlay" id="notifOverlay" onclick="closeIfOutside(event,'notifOverlay')">
   <div class="modal no-swipe">
@@ -14531,6 +14546,9 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Aufheben":"Unblock",
+  "Du hast niemanden blockiert.":"You haven’t blocked anyone.",
+  "Hebst du eine Blockierung auf, könnt ihr euch wieder schreiben und seht eure Partys.":"If you unblock someone, you can message each other and see each other’s parties again.",
   "Privatsphäre":"Privacy",
   "Hilfe":"Help",
   "Wer darf dir schreiben?":"Who can message you?",
@@ -15587,6 +15605,9 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Aufheben":"Débloquer",
+  "Du hast niemanden blockiert.":"Tu n’as bloqué personne.",
+  "Hebst du eine Blockierung auf, könnt ihr euch wieder schreiben und seht eure Partys.":"Si tu débloques quelqu’un, vous pourrez de nouveau vous écrire et voir vos soirées.",
   "Privatsphäre":"Confidentialité",
   "Hilfe":"Aide",
   "Wer darf dir schreiben?":"Qui peut t’écrire ?",
@@ -16643,6 +16664,9 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Aufheben":"Sblocca",
+  "Du hast niemanden blockiert.":"Non hai bloccato nessuno.",
+  "Hebst du eine Blockierung auf, könnt ihr euch wieder schreiben und seht eure Partys.":"Se sblocchi qualcuno, potrete di nuovo scrivervi e vedere le vostre feste.",
   "Privatsphäre":"Privacy",
   "Hilfe":"Aiuto",
   "Wer darf dir schreiben?":"Chi può scriverti?",
@@ -18360,10 +18384,53 @@ async function blockUser(id){
 
 async function unblockUser(id){
   const{error}=await sb.from('blocks').delete().eq('blocker_id',cUser.id).eq('blocked_id',id);
-  if(error){toast('Hat nicht geklappt','error');return;}
+  if(error){toast('Das hat nicht geklappt. Versuch es nochmals.','error');return false;}
   window.__blocked.delete(id);
   toast('Blockierung aufgehoben','info');
   loadEvts();
+  return true;
+}
+
+/* ── Blockierte Personen ───────────────────────────────────────────
+   Blockieren ging schon immer, aufheben nicht – es gab keinen Ort dafuer. */
+async function blockiertOeffnen(){
+  if(!cUser){kontoNoetig();return;}
+  const ov=document.getElementById('blockiertOverlay');
+  const box=document.getElementById('blockiertListe');
+  if(!ov||!box)return;
+  box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
+  ov.classList.add('open');
+  const{data:reihen,error}=await sb.from('blocks').select('blocked_id')
+    .eq('blocker_id',cUser.id).order('created_at',{ascending:false});
+  if(error){box.innerHTML='<div class="up-empty">Das hat nicht geklappt. Versuch es nochmals.</div>';return;}
+  const ids=(reihen||[]).map(r=>r.blocked_id);
+  window.__blocked=new Set(ids);
+  if(!ids.length){box.innerHTML='<div class="up-empty">Du hast niemanden blockiert.</div>';return;}
+  // Namen getrennt holen: ist ein Profil nicht mehr lesbar, bleibt die Zeile trotzdem aufhebbar.
+  const{data:leute}=await sb.from('profiles').select('id,username,full_name,avatar_url').in('id',ids);
+  const profil=new Map((leute||[]).map(p=>[p.id,p]));
+  box.innerHTML=ids.map(id=>{
+    const p=profil.get(id)||{};
+    const nm=p.full_name||p.username||'Unbekannt';
+    const av=p.avatar_url
+      ? '<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>'
+      : esc(nm.charAt(0).toUpperCase());
+    return '<div class="mg-guest"><div class="av-sm">'+av+'</div>'
+      +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
+      +(p.username?'<div class="mg-req-s">@'+esc(p.username)+'</div>':'')+'</div>'
+      +'<button class="sec-btn" onclick="blockAufheben(this,\''+id+'\')">Aufheben</button></div>';
+  }).join('');
+}
+
+async function blockAufheben(btn,id){
+  if(btn)btn.disabled=true;
+  const ok=await unblockUser(id);
+  if(!ok){ if(btn)btn.disabled=false; return; }
+  btn?.closest('.mg-guest')?.remove();
+  const box=document.getElementById('blockiertListe');
+  if(box&&!box.querySelector('.mg-guest'))box.innerHTML='<div class="up-empty">Du hast niemanden blockiert.</div>';
+  const bz=document.getElementById('setBlockZahl');
+  if(bz)bz.textContent=window.__blocked.size?String(window.__blocked.size):'';
 }
 
 /* Eine Flagge statt drei Punkten: der Knopf oeffnet kein Menue, sondern
@@ -20116,9 +20183,13 @@ function setMsgSettingUI(val){
 }
 
 async function setMsgSetting(val){
-  setMsgSettingUI(val);
   if(!cUser)return;
-  await sb.from('profiles').update({allow_messages:val}).eq('id',cUser.id);
+  const vorher=cProfile?.allow_messages||'everyone';
+  setMsgSettingUI(val);
+  /* Vorher kam immer "aktiviert", auch wenn das Speichern scheiterte –
+     die Einstellung sah umgestellt aus und war es nicht. */
+  const{error}=await sb.from('profiles').update({allow_messages:val}).eq('id',cUser.id);
+  if(error){ setMsgSettingUI(vorher); toast(fehlerText(error),'error'); return; }
   cProfile={...cProfile,allow_messages:val};
   toast({everyone:'Jeder kann dir schreiben',requests:'Nur Anfragen aktiviert',nobody:'Nachrichten deaktiviert'}[val],'success');
 }
