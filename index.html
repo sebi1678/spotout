@@ -4680,6 +4680,10 @@
     /* Symbole mitten im Text (Kacheln, Hinweise) stehen in der Zeile, nicht darueber */
     .pk.d-sym{display:inline-block;vertical-align:-3px;margin-right:6px}
     .d-hero-btn .pk{width:19px;height:19px}
+    .segbtn .pk,.karte-knopf .pk,.oe-knopf .pk,.fy-neu .pk{width:18px;height:18px}
+    /* Auf dem pinken Reiter-Hintergrund bleibt das Symbol hell, daneben in Farbe */
+    .segbtn.active .pk [fill^="url(#pk"]{fill:rgba(255,255,255,.3)}
+    .fy-row .pk.d-sym,.fy-chip .pk.d-sym,.fy-reason .pk.d-sym{margin-right:0}
     .nt-ic .pk{width:20px;height:20px}
     @media(prefers-reduced-motion:reduce){.bnav-btn.active .pk{animation:none}.pk{transition:none}}
     .pl-card{
@@ -6042,14 +6046,14 @@
   <!-- Search + Map buttons -->
   <div class="search-bar-wrap" id="searchWrap">
     <div class="search-bar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:rgba(255,255,255,.35)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <svg class="pk" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <input type="text" id="searchInput" placeholder="Ort, Club oder Party…" oninput="filterAll();ortVorschlagPruefen()"/>
       <button class="s-loeschen" id="sLoeschen" onclick="sucheLeeren()" aria-label="Suche löschen" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <button class="karte-knopf" id="mapBtn" onclick="toggleMap()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+      <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.2 8.5 4l7 2.2 5-2V18l-5 2.2-7-2.2-5 2.2z" fill="url(#pkMint)"/><path d="M3.5 6.2 8.5 4l7 2.2 5-2V18l-5 2.2-7-2.2-5 2.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 4v14M15.5 6.2v14" fill="none" stroke="#fff" stroke-width="1.3" opacity=".7"/><path d="M15.5 12.8s-2.6-2.3-2.6-4.3a2.6 2.6 0 0 1 5.2 0c0 2-2.6 4.3-2.6 4.3z" fill="url(#pkPink)"/><circle cx="15.5" cy="8.5" r=".95" fill="#fff"/></svg>
       <span>Karte</span>
     </button>
   </div>
@@ -6102,15 +6106,15 @@
     <div class="segbar" id="segbar">
       <div class="segbar-thumb" id="segThumb"></div>
       <button class="segbtn" onclick="switchTab('events',this)" data-col="events">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.2" r="7.4" fill="url(#pkEis)"/><path d="M4.8 13.2h14.4M6.6 9.2c3.5 1.5 7.3 1.5 10.8 0M6.6 17.2c3.5-1.5 7.3-1.5 10.8 0M12 5.8c-2.2 2-3.3 4.5-3.3 7.4s1.1 5.4 3.3 7.4M12 5.8c2.2 2 3.3 4.5 3.3 7.4s-1.1 5.4-3.3 7.4" fill="none" stroke="#fff" stroke-width="1.1" opacity=".65"/><circle cx="12" cy="13.2" r="7.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2.2v3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.6 5) scale(1)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/><path transform="translate(4.4 5.8) scale(0.8)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
         <span>Events</span>
       </button>
       <button class="segbtn active" onclick="switchTab('public',this)" data-col="public">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Öffentlich</span>
       </button>
       <button class="segbtn" onclick="switchTab('private',this)" data-col="private">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+        <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="url(#pkViolett)"/><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(12 15.3) scale(1.1)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
         <span>Privat</span>
       </button>
     </div>
@@ -6130,12 +6134,12 @@
       </div>
       <div class="oe-leiste" id="oeLeiste" hidden>
         <button class="oe-knopf" id="oeKnopf" onclick="oeFilterOeffnen()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+          <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="2.3" fill="url(#pkPink)"/><circle cx="9" cy="7" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="12" r="2.3" fill="url(#pkSonne)"/><circle cx="15" cy="12" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="17" r="2.3" fill="url(#pkMint)"/><circle cx="8" cy="17" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Filter</span><i id="oeZahl" hidden>0</i>
         </button>
       </div>
       <button class="fy-neu" onclick="fyRefresh()" aria-label="Empfehlungen aktualisieren">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+        <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M20.2 3.8v4.6h-4.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.7" fill="url(#pkPink)"/><path transform="translate(18.6 17.6) scale(0.8)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
     </div>
     <div class="oe-zurueck" id="oeReset" hidden onclick="oeFilterZuruecksetzen()">Filter zurücksetzen</div>
@@ -7615,6 +7619,37 @@ Object.assign(PIKTO,{
   binich: PK_PERSON('Pink')
       +'<circle cx="18" cy="15.4" r="3.6" fill="url(#pkRot)"/>'
       +'<path d="m16.6 14 2.8 2.8M19.4 14l-2.8 2.8" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>',
+});
+/* ── Startseite ── */
+Object.assign(PIKTO,{
+  karte: PK_F('Mint','M3.5 6.2 8.5 4l7 2.2 5-2V18l-5 2.2-7-2.2-5 2.2z')
+      +PK_P('M3.5 6.2 8.5 4l7 2.2 5-2V18l-5 2.2-7-2.2-5 2.2z')
+      +'<path d="M8.5 4v14M15.5 6.2v14" fill="none" stroke="#fff" stroke-width="1.3" opacity=".7"/>'
+      +'<path d="M15.5 12.8s-2.6-2.3-2.6-4.3a2.6 2.6 0 0 1 5.2 0c0 2-2.6 4.3-2.6 4.3z" fill="url(#pkPink)"/>'
+      +'<circle cx="15.5" cy="8.5" r=".95" fill="#fff"/>',
+  events: '<circle cx="12" cy="13.2" r="7.4" fill="url(#pkEis)"/>'
+      +'<path d="M4.8 13.2h14.4M6.6 9.2c3.5 1.5 7.3 1.5 10.8 0M6.6 17.2c3.5-1.5 7.3-1.5 10.8 0M12 5.8c-2.2 2-3.3 4.5-3.3 7.4s1.1 5.4 3.3 7.4M12 5.8c2.2 2 3.3 4.5 3.3 7.4s-1.1 5.4-3.3 7.4" fill="none" stroke="#fff" stroke-width="1.1" opacity=".65"/>'
+      +'<circle cx="12" cy="13.2" r="7.4" '+PK_L+'/>'+PK_P('M12 2.2v3.6')
+      +PK_FUNKEN(19.6,5,1)+PK_FUNKEN(4.4,5.8,.8),
+  privat: '<rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="url(#pkViolett)"/>'
+      +'<rect x="5" y="10.5" width="14" height="10" rx="2.6" '+PK_L+'/>'
+      +PK_P('M8 10.5V8a4 4 0 0 1 8 0v2.5')+PK_HERZ(12,15.3,1.1),
+  filter: PK_P('M4 7h16M4 12h16M4 17h16')
+      +'<circle cx="9" cy="7" r="2.3" fill="url(#pkPink)"/><circle cx="9" cy="7" r="2.3" '+PK_L+'/>'
+      +'<circle cx="15" cy="12" r="2.3" fill="url(#pkSonne)"/><circle cx="15" cy="12" r="2.3" '+PK_L+'/>'
+      +'<circle cx="8" cy="17" r="2.3" fill="url(#pkMint)"/><circle cx="8" cy="17" r="2.3" '+PK_L+'/>',
+  neuladen: '<path d="M20 12a8 8 0 1 1-2.4-5.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>'
+      +'<path d="M20.2 3.8v4.6h-4.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>'
+      +'<circle cx="12" cy="12" r="2.7" fill="url(#pkPink)"/>'+PK_FUNKEN(18.6,17.6,.8),
+  /* Gruende auf den Party-Karten */
+  blitz: PK_F('Sonne','M13.2 2.5 5 13.6h6.2l-1 7.9 8.8-11.7h-6.3z')+PK_P('M13.2 2.5 5 13.6h6.2l-1 7.9 8.8-11.7h-6.3z')
+      +PK_FUNKEN(19.2,4.4,.85),
+  feuer: PK_F('Pink','M12 2.6s5.6 4.3 5.6 9.9a5.6 5.6 0 0 1-11.2 0c0-2 .9-3.6 2-4.8.2 1.6 1 2.6 2.1 2.9-.4-2.8.2-5.5 1.5-8z')
+      +PK_P('M12 2.6s5.6 4.3 5.6 9.9a5.6 5.6 0 0 1-11.2 0c0-2 .9-3.6 2-4.8.2 1.6 1 2.6 2.1 2.9-.4-2.8.2-5.5 1.5-8z')
+      +PK_F('Sonne','M12 20.2a2.8 2.8 0 0 1-2.8-2.8c0-1.6 1.3-2.9 2.8-4.4 1.5 1.5 2.8 2.8 2.8 4.4a2.8 2.8 0 0 1-2.8 2.8z'),
+  funken: PK_F('Pink','M12 2.8c.6 4.3 2.9 6.6 7.2 7.2-4.3.6-6.6 2.9-7.2 7.2-.6-4.3-2.9-6.6-7.2-7.2 4.3-.6 6.6-2.9 7.2-7.2z')
+      +PK_P('M12 2.8c.6 4.3 2.9 6.6 7.2 7.2-4.3.6-6.6 2.9-7.2 7.2-.6-4.3-2.9-6.6-7.2-7.2 4.3-.6 6.6-2.9 7.2-7.2z')
+      +PK_FUNKEN(19,17.6,1)+PK_FUNKEN(5.4,18.2,.8),
 });
 PIKTO.foto_weg=PIKTO.ohne_ok;
 PIKTO.nachricht=PIKTO.chat;
@@ -9806,11 +9841,11 @@ function entfernungText(km){
 
 // Grund-Chip oben links: warum sehe ich das?
 function fyReason(e){
-  const pin='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>';
-  const fire='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2s5 4.5 5 9a5 5 0 0 1-10 0c0-1.5.6-2.8 1.4-3.8C9 9.5 10 8 10 6.5c0 0 2 1 2 3 0-3 0-5.5 0-7.5z"/></svg>';
-  const bolt='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 4 14 11 14 10 22 20 10 13 10 13 2"/></svg>';
-  const check='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>';
-  const spark='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>';
+  const pin=pikto('ort',14,'d-sym');
+  const fire=pikto('feuer',14,'d-sym');
+  const bolt=pikto('blitz',14,'d-sym');
+  const check=pikto('ok',14,'d-sym');
+  const spark=pikto('funken',14,'d-sym');
 
   if(e._dist!=null&&e._dist<=3)
     return{ic:pin,txt:entfernungText(e._dist),roh:true};
@@ -10034,9 +10069,9 @@ function renderFeed(){
   const top=beliebt?scored.slice(0,4):fyDiversify(scored,4);
 
   const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-  const pinSm='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>';
-  const calSm='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>';
-  const users='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>';
+  const pinSm=pikto('ort',14,'d-sym');
+  const calSm=pikto('datum',14,'d-sym');
+  const users=pikto('gaeste',13,'d-sym');
 
   const cards=top.map(e=>{
     const w=worldVars(e.type);
@@ -10659,7 +10694,7 @@ async function openDetail(id){
   const hoursUntilDeadline=deadline?(deadline-now)/(1000*60*60):null;
   let statusBanner='';
   if(isExpired){statusBanner=`<div style="background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#c0392b">Diese Party wird bald automatisch gelöscht.</div>`;}
-  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div style="background:rgba(91,94,166,.08);border:1px solid rgba(91,94,166,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9b9de0" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><div style="font-size:.82rem;color:#9b9de0">${anmeldungRest(hoursUntilDeadline)}</div></div>`;}
+  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div style="background:rgba(91,94,166,.08);border:1px solid rgba(91,94,166,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">${pikto('zeit',16)}<div style="font-size:.82rem;color:#9b9de0">${anmeldungRest(hoursUntilDeadline)}</div></div>`;}
   // Die Gästeliste ist ein Pro-Merkmal – auch im Rückblick. Ohne Pro
   // bleibt sie zu, sonst wäre Pro nach der Party wertlos.
   const showFullList=(deadlinePassed||isOver)&&!!cProfile?.is_pro;
