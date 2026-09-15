@@ -505,7 +505,30 @@
       padding:9px 10px 9px 13px;border-radius:14px;
       background:#090d24;border:1px solid rgba(255,255,255,.08);
     }
-    /* Tour-Karte Party-Fotos */
+    /* Tour-Karte Party-Fotos – sieht aus wie die echte Galerie */
+    .tour-bild .tb-fk svg{width:auto;height:auto;display:inline-block}
+    .tb-fk{padding:14px 14px 12px}
+    .tb-fk-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .tb-fk-kopf b{font-size:.88rem;font-weight:800;color:#fff}
+    .tb-fk-uhr{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;
+      background:rgba(255,255,255,.08);font-size:.7rem;font-weight:700;color:var(--text2);white-space:nowrap}
+    .tb-fk-raster{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .tb-fk-neu,.tb-fk-bild{aspect-ratio:1/1;border-radius:12px;position:relative;overflow:hidden}
+    .tb-fk-neu{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+      border:1.5px dashed rgba(255,255,255,.24);background:rgba(255,255,255,.04);color:#fff;font-size:.66rem;font-weight:800}
+    .tb-fk-bild::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.38))}
+    .tb-fk-bild.b1{background:radial-gradient(circle at 26% 30%,rgba(255,255,255,.6) 0 5%,transparent 6%),radial-gradient(circle at 72% 24%,rgba(255,214,120,.65) 0 8%,transparent 9%),radial-gradient(circle at 58% 72%,rgba(255,255,255,.22) 0 14%,transparent 15%),linear-gradient(150deg,#ff2d76,#7b2cff)}
+    .tb-fk-bild.b2{background:radial-gradient(circle at 70% 34%,rgba(255,255,255,.5) 0 6%,transparent 7%),radial-gradient(circle at 30% 64%,rgba(120,220,255,.45) 0 11%,transparent 12%),linear-gradient(160deg,#ff9f1c,#ff2d76)}
+    .tb-fk-bild.b3{background:radial-gradient(circle at 34% 26%,rgba(255,255,255,.45) 0 7%,transparent 8%),radial-gradient(circle at 76% 62%,rgba(255,120,200,.5) 0 10%,transparent 11%),linear-gradient(140deg,#00c2ff,#5b2cff)}
+    .tb-fk-bild.b4{background:radial-gradient(circle at 60% 30%,rgba(255,240,170,.55) 0 9%,transparent 10%),radial-gradient(circle at 22% 70%,rgba(255,255,255,.3) 0 6%,transparent 7%),linear-gradient(155deg,#12c2a0,#0b4f6c)}
+    .tb-fk-bild.b5{background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.4) 0 8%,transparent 9%),radial-gradient(circle at 78% 20%,rgba(255,170,90,.55) 0 7%,transparent 8%),linear-gradient(145deg,#f72585,#3a0ca3)}
+    .tb-fk-bild i{position:absolute;left:5px;bottom:5px;z-index:1;width:19px;height:19px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.58rem;font-weight:800;color:#fff;
+      background:rgba(9,13,36,.72);border:1px solid rgba(255,255,255,.35)}
+    .tb-fk-fuss{display:flex;align-items:center;gap:8px;margin-top:11px;padding:9px 11px;border-radius:12px;
+      background:rgba(255,255,255,.05);font-size:.74rem;line-height:1.4;color:var(--text2)}
+    .tb-fk-fuss svg{flex:none}
+    /* Tour-Karte Party-Fotos (alt) */
     .tb-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
     .tb-foto{aspect-ratio:1/1;border-radius:10px}
     .tb-foto-neu{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;
@@ -4812,6 +4835,31 @@
     .fa-zeile.weg{opacity:0;transform:translateX(-12px)}
     .fa-zeile .fl-knopf{min-width:0}
     #notifBody .nt-akt-unten .fl-knopf{min-width:0;margin-left:10px;padding:7px 12px;font-size:.76rem}
+    /* ── Abzeichen ── */
+    .abz-reihe{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px;cursor:pointer;
+      background:none;border:none;padding:0;font-family:var(--font)}
+    .abz-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:4px 10px 4px 7px;border-radius:999px;
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);
+      font-size:.72rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .abz-leer{display:inline-flex;align-items:center;gap:6px;width:auto;padding:5px 11px 5px 8px;border-radius:999px;
+      border:1px dashed rgba(255,255,255,.2);font-size:.72rem;font-weight:700;color:var(--muted)}
+    .abz-kopf{margin-bottom:14px}
+    .abz-kopf b{display:block;font-size:1.05rem;font-weight:800;color:#fff}
+    .abz-kopf span{display:block;font-size:.78rem;line-height:1.5;color:var(--muted);margin-top:3px}
+    .abz-raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+    .abz-karte{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;padding:12px;border-radius:15px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+    .abz-karte.hat{background:rgba(124,92,252,.12);border-color:rgba(124,92,252,.35)}
+    .abz-karte:not(.hat) .abz-ic{opacity:.45}
+    .abz-ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.07);color:#fff;margin-bottom:5px}
+    .abz-karte b{font-size:.84rem;font-weight:800;color:#fff;overflow-wrap:anywhere}
+    .abz-karte span{font-size:.72rem;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+    .abz-karte em{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-style:normal;font-size:.7rem;font-weight:800;color:#2BD98A}
+    .abz-balken{width:100%;height:5px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden;margin-top:8px}
+    .abz-balken i{display:block;height:100%;border-radius:999px;background:var(--grad-cta)}
+    .abz-karte small{font-size:.66rem;font-weight:700;color:var(--muted);margin-top:3px}
+    .insta-tile.archiv{cursor:default}
     .pl-card{
       display:flex;align-items:center;gap:13px;width:100%;cursor:pointer;
       text-decoration:none;
@@ -7385,6 +7433,17 @@
   </div>
 </div>
 
+<div class="overlay" id="abzeichenOverlay" onclick="closeIfOutside(event,'abzeichenOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Abzeichen</div>
+      <button class="modal-x" onclick="closeOverlay('abzeichenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="abzeichenListe"></div></div>
+  </div>
+</div>
+
 <!-- ════ BENACHRICHTIGUNGEN ════ -->
 <div class="overlay" id="notifOverlay" onclick="closeIfOutside(event,'notifOverlay')">
   <div class="modal no-swipe">
@@ -7642,10 +7701,9 @@ const PIKTO={
       +'<path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" '+PK_W+'/>'+PK_FUNKEN(19.8,4.6,.9),
 
   /* ── Partyseite ── */
-  melden: PK_F('Pink','M6.6 4.2h10.7c.6 0 1 .7.6 1.2L16 8.6l1.9 3.2c.4.5 0 1.2-.6 1.2H6.6z')
-      +PK_P('M6.6 4.2h10.7c.6 0 1 .7.6 1.2L16 8.6l1.9 3.2c.4.5 0 1.2-.6 1.2H6.6z')
-      +'<path d="M6 21V3.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>'
-      +'<path d="M9.2 6.9h3.6" '+PK_W+' opacity=".8"/>',
+  melden: '<circle cx="12" cy="12" r="8.8" fill="none" stroke="currentColor" stroke-width="1.9"/>'
+      +'<path d="M12 7.4v5.6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>'
+      +'<circle cx="12" cy="16.4" r="1.3" fill="currentColor"/>',
   teilen: '<rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="url(#pkMint)" opacity=".35"/>'
       +PK_P('M7.5 10H7a2.5 2.5 0 0 0-2.5 2.5V18A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-5.5A2.5 2.5 0 0 0 17 10h-.5')
       +'<path d="M12 14.5V3.8M8 7.6l4-3.8 4 3.8" fill="none" stroke="#34E3A4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -8261,17 +8319,17 @@ const TOUREN={
     {
       t:'Fotos von der Party',
       s:'Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 24 Stunden sind sie wieder weg.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-kopf"><span>Party-Fotos</span><span class="tb-uhr">'+pikto('zeit',14)+'24 h</span></div>'
-        +'<div class="tb-fotos">'
-          +'<div class="tb-foto tb-foto-neu">'+pikto('plus',18)+'<span>Foto</span></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#ff2d76,#7b2cff)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#ff9f1c,#ff2d76)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#00c2ff,#7b2cff)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#1dd3b0,#086375)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#f72585,#3a0ca3)"></div>'
+      b:()=>'<div class="tb tb-fk">'
+        +'<div class="tb-fk-kopf"><b>Party-Fotos</b><span class="tb-fk-uhr">'+pikto('zeit',13)+'noch 21 h</span></div>'
+        +'<div class="tb-fk-raster">'
+          +'<div class="tb-fk-neu">'+pikto('kamera',20)+'<span>Teilen</span></div>'
+          +'<div class="tb-fk-bild b1"><i>L</i></div>'
+          +'<div class="tb-fk-bild b2"></div>'
+          +'<div class="tb-fk-bild b3"><i>J</i></div>'
+          +'<div class="tb-fk-bild b4"></div>'
+          +'<div class="tb-fk-bild b5"><i>S</i></div>'
         +'</div>'
-        +'<div class="tb-hinweis-klein">'+pikto('binich',14)+'<span>Wer drauf ist, kann ein Foto sofort entfernen.</span></div>'
+        +'<div class="tb-fk-fuss">'+pikto('binich',15)+'<span>Du bist drauf? Ein Tipp, und das Foto ist weg.</span></div>'
         +'</div>',
     },
     {
@@ -11942,6 +12000,14 @@ async function renderProf(){
   if(!cProfile)return;
   const{data:myEvts}=await sb.from('events').select('*').eq('created_by',cUser.id).order('date',{ascending:false});
   const{data:atts}=await sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id);
+  /* 24 Stunden nach Beginn ist eine Party geloescht. Wo man war, bleibt im
+     Archiv – als Kachel ohne Link, weil es die Party selbst nicht mehr gibt. */
+  const [{data:archiv},{data:abz},{data:abzStand}]=await Promise.all([
+    sb.from('besucht_archiv').select('*').eq('user_id',cUser.id).order('datum',{ascending:false}).limit(300),
+    sb.from('abzeichen').select('schluessel,created_at').eq('user_id',cUser.id),
+    sb.from('abzeichen_stand').select('*').eq('user_id',cUser.id).maybeSingle(),
+  ]);
+  abzCache={eigene:(abz||[]).map(a=>a.schluessel),stand:abzStand||{}};
   const age=calcAge(cProfile.birthdate);
   // Die Striche blieben stehen, weil die Zahlen nie geholt wurden
   const{data:fstats}=await sb.rpc('get_follow_stats',
@@ -11951,9 +12017,14 @@ async function renderProf(){
   const init=(cProfile.full_name||cProfile.username||'?').charAt(0).toUpperCase();
   // "Besucht" ist das Archiv: Hier bleibt, wo man war – dauerhaft.
   // Vorher verschwand alles nach 24 Stunden, dann war der Reiter leer.
-  const visitedEvts=(atts||[])
-    .filter(a=>a.events&&istVorbei(a.events))
-    .sort((x,y)=>new Date(y.events.date)-new Date(x.events.date));
+  const archivBesucht=(archiv||[]).filter(r=>!r.war_host);
+  const archivGehostet=(archiv||[]).filter(r=>r.war_host).length;
+  const visitedEvts=[
+    ...(atts||[]).filter(a=>a.events&&istVorbei(a.events)&&a.events.created_by!==cUser.id),
+    ...archivBesucht.map(r=>({archiv:true,events:{id:r.event_id,name:r.name,image_url:r.image_url,
+        type:r.type,category:r.category,emoji:r.emoji,date:r.datum,time:r.zeit,address:r.ort}})),
+  ].filter((a,i,l)=>l.findIndex(b=>b.events.id===a.events.id)===i)
+   .sort((x,y)=>new Date(y.events.date)-new Date(x.events.date));
   const warBesucht=document.getElementById('tab-visited')?.classList.contains('active');
   document.getElementById('profContent').innerHTML=`
     <div class="prof-wrap-insta">
@@ -11971,7 +12042,7 @@ async function renderProf(){
           <input type="file" id="avFileProfil" accept="image/*" style="display:none" onchange="upAv(event)"/>
         </div>
         <div class="prof-stats-row">
-          <div class="insta-stat"><div class="insta-stat-num">${myEvts?.length||0}</div><div class="insta-stat-lbl">Partys</div></div>
+          <div class="insta-stat"><div class="insta-stat-num">${(myEvts?.length||0)+archivGehostet}</div><div class="insta-stat-lbl">Partys</div></div>
           <div class="insta-stat" style="cursor:pointer" onclick="openFollowList('${cUser.id}','followers')">
             <div class="insta-stat-num" id="myFollowers">${fs?.followers??0}</div><div class="insta-stat-lbl">Follower</div></div>
           <div class="insta-stat" style="cursor:pointer" onclick="openFollowList('${cUser.id}','following')">
@@ -11987,6 +12058,7 @@ async function renderProf(){
         </div>
         <div class="insta-handle">@${esc(cProfile.username)}${age?' · '+age:''}</div>
         ${cProfile.is_pro&&cProfile.bio?'<div class="insta-bio">'+esc(cProfile.bio)+'</div>':''}
+        ${istVerein()?'':abzeichenReihe(abzCache.eigene,true)}
         ${buildSocialLinks(cProfile)}
         ${proSelfTeaser()}
 
@@ -12031,7 +12103,7 @@ async function renderProf(){
       <div id="prof-panel-visited" class="insta-grid" style="display:none">
         ${visitedEvts.length?visitedEvts.map(a=>{
           const img=a.events.image_url?('<img loading="lazy" decoding="async" src="'+a.events.image_url+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(a.events.type,a.events.category)+'">'+iconSvg(evIconKey(a.events),26)+'</div>');
-          return '<div class="insta-tile" onclick="openDetail(\''+a.events.id+'\')">'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(a.events.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(a.events.date)+'</div></div></div>';
+          return '<div class="insta-tile'+(a.archiv?' archiv':'')+'"'+(a.archiv?'':' onclick="openDetail(\''+a.events.id+'\')"')+'>'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(a.events.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(a.events.date)+'</div></div></div>';
         }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Noch keine Events besucht</div>'}
       </div>
       <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
@@ -14851,6 +14923,7 @@ async function openUserProf(userId){
       +(p.day_one?dayOneMarke():'')+'</div>'
     +'<div class="up2-handle">@'+esc(p.username||'')
       +(istV&&p.verein_ort?' · '+esc(p.verein_ort):'')+'</div>'
+    +(istV?'':abzeichenPlatz(p.id))
     +((p.is_pro||istV)&&p.bio?'<div class="up2-bio">'+esc(p.bio)+'</div>':'')
     +webLink
     +(socials||socialLockHint(p))
@@ -16773,6 +16846,28 @@ en:{
   "Gerade ist hier nichts los. Schau später wieder vorbei oder mach selbst eine Party.":"Nothing going on here right now. Check back later or throw a party yourself.",
   "Deine Anfrage läuft schon":"Your request is already pending",
   "Diese Person möchte gerade keine Nachrichten":"This person doesn’t want messages right now",
+  "noch 21 h":"21 h left",
+  "Du bist drauf? Ein Tipp, und das Foto ist weg.":"You’re in it? One tap and the photo is gone.",
+  "Abzeichen sammeln":"Collect badges",
+  "Neu dabei":"New here",
+  "Deine erste Party besucht":"Went to your first party",
+  "Partymaus":"Party animal",
+  "5 Partys besucht":"Went to 5 parties",
+  "Partylegende":"Party legend",
+  "20 Partys besucht":"Went to 20 parties",
+  "Mitbringer":"Bringer",
+  "3-mal etwas mitgebracht":"Brought something 3 times",
+  "Gastgeber":"Host",
+  "Deine erste eigene Party":"Your first own party",
+  "Superhost":"Superhost",
+  "3 Partys mit 10 oder mehr Gästen":"3 parties with 10+ guests",
+  "Fotograf":"Photographer",
+  "10 Party-Fotos geteilt":"Shared 10 party photos",
+  "Nachteule":"Night owl",
+  "3 Partys bis nach 2 Uhr":"3 parties past 2 a.m.",
+  "25 Follower":"25 followers",
+  "Geschafft":"Done",
+  "Abzeichen bekommst du, indem du SPOTOUT nutzt – an Partys gehen, mitbringen, selbst feiern.":"You earn badges by using SPOTOUT – going to parties, bringing things, hosting.",
   "Pro verschenken":"Gift Pro",
   "Deine Anfrage ist beim Host.":"Your request is with the host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
@@ -19957,6 +20052,72 @@ async function nativePushAnmelden(erzwingen){
 }
 
 function nativeHaptik(art){ if(istApp())nativeCall('haptik',{art},3000); }
+
+/* ══════════ ABZEICHEN ══════════
+   Verdient, nicht gekauft: der Server zaehlt beim Archivieren einer Party,
+   bei Fotos und Followern mit und vergibt sie selbst. Hier wird nur gezeigt. */
+const ABZEICHEN=[
+  {k:'neu_dabei',    n:'Neu dabei',    s:'Deine erste Party besucht',     f:'besucht',     z:1,  i:'funken'},
+  {k:'partymaus',    n:'Partymaus',    s:'5 Partys besucht',              f:'besucht',     z:5,  i:'feuer'},
+  {k:'partylegende', n:'Partylegende', s:'20 Partys besucht',             f:'besucht',     z:20, i:'stern'},
+  {k:'mitbringer',   n:'Mitbringer',   s:'3-mal etwas mitgebracht',       f:'mitgebracht', z:3,  i:'drink'},
+  {k:'gastgeber',    n:'Gastgeber',    s:'Deine erste eigene Party',      f:'gehostet',    z:1,  i:'home'},
+  {k:'superhost',    n:'Superhost',    s:'3 Partys mit 10 oder mehr Gästen', f:'superhost', z:3,  i:'ticket'},
+  {k:'fotograf',     n:'Fotograf',     s:'10 Party-Fotos geteilt',        f:'fotos',       z:10, i:'kamera'},
+  {k:'nachteule',    n:'Nachteule',    s:'3 Partys bis nach 2 Uhr',       f:'nachteule',   z:3,  i:'blitz'},
+  {k:'beliebt',      n:'Beliebt',      s:'25 Follower',                   f:'follower',    z:25, i:'gaeste'},
+];
+let abzCache={eigene:[],stand:{}};
+function abzeichenReihe(schluessel,eigen){
+  const hat=ABZEICHEN.filter(a=>(schluessel||[]).includes(a.k));
+  if(!hat.length){
+    return eigen
+      ? '<button class="abz-reihe abz-leer" onclick="abzeichenOeffnen()">'+pikto('stern',13)+'<span>Abzeichen sammeln</span></button>'
+      : '';
+  }
+  return '<div class="abz-reihe"'+(eigen?' role="button" onclick="abzeichenOeffnen()"':'')+'>'
+    +hat.map(a=>'<span class="abz-chip">'+pikto(a.i,13)+'<span>'+a.n+'</span></span>').join('')
+    +'</div>';
+}
+function abzeichenPlatz(uid){
+  queueMicrotask(()=>abzeichenFremdLaden(uid));
+  return '<div class="abz-platz" data-uid="'+uid+'"></div>';
+}
+async function abzeichenFremdLaden(uid){
+  const{data}=await sb.from('abzeichen').select('schluessel').eq('user_id',uid);
+  const box=document.querySelector('.abz-platz[data-uid="'+uid+'"]');
+  if(box)box.innerHTML=abzeichenReihe((data||[]).map(a=>a.schluessel),false);
+}
+async function abzeichenOeffnen(){
+  if(!cUser){kontoNoetig();return;}
+  const ov=document.getElementById('abzeichenOverlay');
+  const box=document.getElementById('abzeichenListe');
+  if(!ov||!box)return;
+  ov.classList.add('open');
+  if(!abzCache.stand||!Object.keys(abzCache.stand).length){
+    box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
+    const [{data:abz},{data:stand}]=await Promise.all([
+      sb.from('abzeichen').select('schluessel').eq('user_id',cUser.id),
+      sb.from('abzeichen_stand').select('*').eq('user_id',cUser.id).maybeSingle(),
+    ]);
+    abzCache={eigene:(abz||[]).map(a=>a.schluessel),stand:stand||{}};
+  }
+  let follower=0;
+  try{ follower=(await loadMyFollowStats()).followers||0; }catch(e){}
+  const stand={...abzCache.stand,follower};
+  const zahl=abzCache.eigene.length;
+  box.innerHTML='<div class="abz-kopf"><b>'+zahl+' von '+ABZEICHEN.length+'</b><span>Abzeichen bekommst du, indem du SPOTOUT nutzt – an Partys gehen, mitbringen, selbst feiern.</span></div>'
+    +'<div class="abz-raster">'+ABZEICHEN.map(a=>{
+      const hat=abzCache.eigene.includes(a.k);
+      const ist=Math.min(a.z,Number(stand[a.f]||0));
+      return '<div class="abz-karte'+(hat?' hat':'')+'">'
+        +'<div class="abz-ic">'+pikto(a.i,22)+'</div>'
+        +'<b>'+a.n+'</b><span>'+a.s+'</span>'
+        +(hat?'<em>'+pikto('ok',12)+'Geschafft</em>'
+             :'<div class="abz-balken"><i style="width:'+Math.round(ist/a.z*100)+'%"></i></div><small>'+ist+' / '+a.z+'</small>')
+        +'</div>';
+    }).join('')+'</div>';
+}
 
 /* ── Benachrichtigungen einzeln abschalten ─────────────────────────
    Wie auf TikTok: ein Schalter fuer alles, darunter Gruppen. Der Server
