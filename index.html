@@ -7678,17 +7678,25 @@ async function kontoWegLoeschen(){
     /* Reihenfolge zählt: erst das, was auf das Profil zeigt, dann das
        Profil selbst. Umgekehrt bliebe bei einem Abbruch ein Konto ohne
        Profil zurück – angemeldet, aber ohne alles. */
-    await sb.from('event_attendees').delete().eq('user_id',cUser.id);
-    await sb.from('search_history').delete().eq('user_id',cUser.id);
-    await sb.from('event_waitlist').delete().eq('user_id',cUser.id);
-    await sb.from('messages').delete().eq('sender_id',cUser.id);
-    await sb.from('follows').delete().eq('follower_id',cUser.id);
-    await sb.from('follows').delete().eq('following_id',cUser.id);
-    await sb.from('events').delete().eq('created_by',cUser.id);
-    const{error}=await sb.from('profiles').delete().eq('id',cUser.id);
-    if(error)throw error;
+    // Jeder Schritt wird geprueft – vorher kam trotz Fehler die naechste Loeschung
+    const uid=cUser.id;
+    const schritte=[
+      ()=>sb.from('event_attendees').delete().eq('user_id',uid),
+      ()=>sb.from('search_history').delete().eq('user_id',uid),
+      ()=>sb.from('event_waitlist').delete().eq('user_id',uid),
+      ()=>sb.from('messages').delete().eq('sender_id',uid),
+      ()=>sb.from('follows').delete().eq('follower_id',uid),
+      ()=>sb.from('follows').delete().eq('following_id',uid),
+      ()=>sb.from('events').delete().eq('created_by',uid),
+      ()=>sb.from('profiles').delete().eq('id',uid),
+    ];
+    for(const schritt of schritte){
+      const{error}=await schritt();
+      if(error)throw error;
+    }
+    try{ kontenSchreiben(kontenLesen().filter(k=>k.id!==uid)); }catch(e){}
     zurueckZurAnmeldung();
-    await sb.auth.signOut();
+    try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
     toast('Konto gelöscht','success');
     setTimeout(()=>location.reload(),800);
   }catch(err){
@@ -7745,8 +7753,22 @@ async function init(){
     if(ev==='PASSWORD_RECOVERY'&&s){cUser=s.user;pwAnsicht('neu');return;}
     // Solange das neue Passwort noch nicht gesetzt ist, bleibt man hier.
     if(pwNeuOffen&&ev!=='SIGNED_OUT')return;
-    if(ev==='SIGNED_IN'&&s){cUser=s.user;await loadProf();kontoMerken();enterApp();}
-    else if(ev==='SIGNED_OUT'){cUser=null;cProfile=null;zurueckZurAnmeldung();}
+    if(ev==='SIGNED_IN'&&s){
+      /* Supabase meldet SIGNED_IN auch, wenn man nur in den Tab
+         zurueckkommt. Frueher lief dann der ganze Start nochmals – und
+         warf einen aus dem Chat. Dasselbe Konto, App laeuft: nichts tun. */
+      const schonDrin=cUser?.id===s.user.id
+        &&!document.getElementById('page-auth')?.classList.contains('active');
+      cUser=s.user;
+      if(schonDrin||kontoWechselLaeuft)return;
+      await loadProf();kontoMerken();enterApp();
+    }
+    else if(ev==='SIGNED_OUT'){
+      cUser=null;cProfile=null;
+      // "Weiteres Konto": die Registrierung ist schon offen, nicht auf Anmelden umstellen
+      if(kontoNeuLaeuft)return;
+      zurueckZurAnmeldung();
+    }
   });
 }
 
@@ -8229,12 +8251,26 @@ function kontenZeichnen(){
     +'<div class="konten-hinweis">Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.</div>';
 }
 
+/* Nach dem Abmelden bekam das Handy weiter die Meldungen des alten
+   Kontos – mit Inhalt auf dem Sperrbildschirm. */
+async function pushTokenLoesen(){
+  if(!cUser)return;
+  try{ await sb.from('profiles').update({push_token:null}).eq('id',cUser.id); }catch(e){}
+  if(cProfile)cProfile.push_token=null;
+}
+
+let kontoWechselLaeuft=false,kontoNeuLaeuft=false;
 async function kontoWechseln(id){
   if(id===cUser?.id){ closeOverlay('kontenOverlay'); return; }
   const k=kontenLesen().find(x=>x.id===id);
   if(!k)return;
   closeOverlay('kontenOverlay');
   toast('Wird gewechselt…','info');
+  kontoWechselLaeuft=true;
+  alleFensterZu();
+  seitenVorher.length=0;
+  vergissOrt();
+  await pushTokenLoesen();
   try{
     const{data,error}=await sb.auth.setSession({
       access_token:k.zugang, refresh_token:k.erneuerung });
@@ -8252,19 +8288,35 @@ async function kontoWechseln(id){
     // Sitzungen laufen ab. Dann nicht meckern, sondern den Weg zeigen.
     const liste=kontenLesen().filter(x=>x.id!==id);
     kontenSchreiben(liste);
+    // Laeuft das bisherige Konto noch, bleibt man einfach drin
+    try{
+      const{data:noch}=await sb.auth.getSession();
+      if(noch?.session&&cUser&&noch.session.user.id===cUser.id){
+        nativePushAnmelden();
+        toast('Bitte melde dich für dieses Konto neu an','info');
+        return;
+      }
+    }catch(e){}
+    spurenLoeschen();
+    cUser=null;
     zurAnmeldung('login');
     const feld=document.getElementById('login-email');
     if(feld&&k.email)feld.value=k.email;
     toast('Bitte melde dich für dieses Konto neu an','info');
+  }finally{
+    kontoWechselLaeuft=false;
   }
 }
 
-function kontoHinzufuegen(){
+async function kontoHinzufuegen(){
   closeOverlay('kontenOverlay');
   // Die anderen Konten bleiben gespeichert – nur die laufende Sitzung
   // endet. Sonst kaeme man mit dem neuen Konto in einer halb alten
-  // Ansicht heraus.
-  sb.auth.signOut().catch(()=>{});
+  // Ansicht heraus. scope 'local': nur dieses Geraet, nicht alle.
+  kontoNeuLaeuft=true;
+  await pushTokenLoesen();
+  try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
+  kontoNeuLaeuft=false;
   spurenLoeschen();
   cUser=null;
   zurAnmeldung('register');
@@ -8332,10 +8384,11 @@ function enterApp(){
     t0.style.transform='translateX('+(i0*100)+'%)';
     t0.style.background=worldVars(curCol).grad;
   }
-  loadEvts().then(()=>stelleOrtHer());
+  // Erst die Blockliste, dann der Feed – sonst filterte der erste Feed mit der alten
+  loadBlocks().catch(()=>{}).then(()=>loadEvts()).then(()=>stelleOrtHer());
   loadUnread();autoLoc();
   initFyModus();
-  loadBlocks();checkJoinLink();checkFeeSuccess();checkEventLink();checkProfilLink();startNotifPolling();
+  checkJoinLink();checkFeeSuccess();checkEventLink();checkProfilLink();startNotifPolling();
   netzWaechterAn();
   proTourPruefen();
   nativePushAnmelden();
@@ -8926,8 +8979,13 @@ function calcAge(bd){
 async function doLogout(){
   // Erst aufraeumen, dann abmelden: sonst liegt das Einstellungsfenster
   // ueber der Anmeldeseite und es sieht aus, als waere nichts passiert.
+  const warId=cUser?.id;
+  await pushTokenLoesen();
   zurueckZurAnmeldung();
-  await sb.auth.signOut();
+  // Nur dieses Geraet – vorher flog man ueberall raus
+  try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
+  // Die Sitzung ist damit ungueltig; in der Kontoliste bliebe ein toter Eintrag
+  try{ if(warId)kontenSchreiben(kontenLesen().filter(k=>k.id!==warId)); }catch(e){}
   toast('Abgemeldet','info');
 }
 
@@ -8952,7 +9010,17 @@ function spurenLoeschen(){
   try{ freundeMap&&freundeMap.clear&&freundeMap.clear(); }catch(e){}
   try{ clearTimeout(notifTimer); }catch(e){}
   try{ convSub_&&convSub_.unsubscribe&&convSub_.unsubscribe(); }catch(e){}
-  convId=null; convUser=null;
+  convId=null; convUser=null; convSub_=null;
+  // Was vom alten Konto sonst stehen blieb: Chat-Punkt, angefangener Text,
+  // Benachrichtigungs-Stand, Blockliste und Partyliste
+  const ub=document.getElementById('unreadBadge'); if(ub)ub.style.display='none';
+  const ci=document.getElementById('convInput'); if(ci)ci.value='';
+  try{
+    notifFirst=true; ntVorher=0; notifStand=''; notifWarNeu=new Set();
+    ntErledigt.clear(); ntGesendet.clear(); ntGezeigt.clear(); ntLeute.clear();
+  }catch(e){}
+  window.__blocked=new Set();
+  try{ evts=[]; }catch(e){}
   ['convMsgs','chatList','profContent','calContent'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.innerHTML='';
@@ -9066,6 +9134,11 @@ function showPage(name){
   // Ein Verein hat für diese Seiten keinen Inhalt – gar nicht erst hin.
   if(istVerein()&&['calendar','chat','conv','pro','search'].includes(name))name='main';
   const jetzt=document.querySelector('.page.active')?.id?.replace('page-','');
+  // Wer den Chat verlaesst, braucht dessen Live-Verbindung nicht mehr
+  if(jetzt==='conv'&&name!=='conv'){
+    try{ convSub_?.unsubscribe?.(); }catch(e){}
+    convSub_=null;
+  }
   if(jetzt&&jetzt!==name){
     seitenVorher.push(jetzt);
     if(seitenVorher.length>10)seitenVorher.shift();
@@ -9200,6 +9273,9 @@ function netzStreifen(zeigen){
 let netzWarWeg=false;
 
 function netzWaechterAn(){
+  // Nur einmal – sonst kamen bei jedem Anmelden neue "Wieder verbunden"-Meldungen dazu
+  if(window.__netzAn)return;
+  window.__netzAn=true;
   window.addEventListener('offline',()=>{ netzWarWeg=true; netzStreifen(true); });
   window.addEventListener('online',()=>{
     netzStreifen(false);
@@ -12041,6 +12117,7 @@ async function startChat(uid,name,un){
     // Send message request instead
     const{error}=await sb.from('message_requests').upsert({from_user_id:cUser.id,to_user_id:uid,message:'Möchte dir schreiben',status:'pending'},{onConflict:'from_user_id,to_user_id'});
     if(!error)toast('Anfrage gesendet! '+name+' wird benachrichtigt.','success');
+    else toast(fehlerText(error),'error');
     return;
   }
   // allow_messages === 'everyone' — Unterhaltung direkt öffnen
@@ -12562,13 +12639,18 @@ async function answerMsgReq(reqId,fromId,accept){
       .or(`and(user1_id.eq.${cUser.id},user2_id.eq.${fromId}),and(user1_id.eq.${fromId},user2_id.eq.${cUser.id})`)
       .maybeSingle();
     if(!conv){
-      const{data:nc}=await sb.from('conversations')
+      const{data:nc,error:neuFehler}=await sb.from('conversations')
         .insert({user1_id:cUser.id,user2_id:fromId}).select().single();
+      if(neuFehler||!nc){
+        toast(neuFehler?fehlerText(neuFehler):'Das Gespräch konnte nicht geöffnet werden','error');
+        try{ loadChats(); }catch(e){}
+        return;
+      }
       conv=nc;
     }
     const{data:p}=await sb.from('profiles').select('id,username,full_name,avatar_url').eq('id',fromId).maybeSingle();
     toast('Anfrage angenommen','success');
-    if(conv)await openConv(conv.id,p||{id:fromId});
+    await openConv(conv.id,p||{id:fromId});
     return;
   }
   toast('Anfrage abgelehnt','info');
@@ -12593,6 +12675,13 @@ async function gespraechOeffnen(cid){
 }
 
 async function openConv(cid,other){
+  // Angefangener Text gehoert zu diesem Gespraech, nicht zum naechsten
+  const eingabe=document.getElementById('convInput');
+  if(eingabe&&convId!==cid)eingabe.value='';
+  // Aus einer Push-Nachricht: offene Fenster zu, Zurueck fuehrt dorthin, wo man war
+  alleFensterZu();
+  const vorher=document.querySelector('.page.active')?.id?.replace('page-','');
+  if(vorher&&vorher!=='conv'){ seitenVorher.push(vorher); if(seitenVorher.length>10)seitenVorher.shift(); }
   convId=cid;convUser=other;
   const av=other?.avatar_url?('<img loading="lazy" decoding="async" src="'+other.avatar_url+'"/>'):((other?.full_name||other?.username||'?').charAt(0).toUpperCase());
   const elAv=document.getElementById('convAv');
@@ -12603,6 +12692,7 @@ async function openConv(cid,other){
   if(elSub)elSub.textContent='@'+(other?.username||'');
   showOnly('conv');await loadMsgs();
   await sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser.id);
+  loadUnread();
   try{convSub_?.unsubscribe?.();}catch(e){console.warn('[chat] unsubscribe',e);}
   convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},()=>loadMsgs()).subscribe();
 }
@@ -14207,6 +14297,7 @@ async function openUserProf(userId){
   if(!userId)return;
   if(userId===cUser?.id){ closeUserSearch(); showPage('profile'); return; }
   document.getElementById('userProfOverlay').classList.add('open');
+  const marke={}; openUserProf.t=marke;     // wer zuletzt getippt wurde, gewinnt
   const body=document.getElementById('userProfBody');
   const kopfLeer=document.getElementById('upMehr');
   if(kopfLeer)kopfLeer.innerHTML='';
@@ -14215,11 +14306,13 @@ async function openUserProf(userId){
   // Über die Funktion statt direkt: sie entscheidet, was ein privates
   // Profil einem Fremden zeigt – und zwar in der Datenbank, nicht hier.
   const{data:pl,error}=await sb.rpc('profil_ansehen',{p_id:userId});
+  if(openUserProf.t!==marke)return;
   const p=Array.isArray(pl)?pl[0]:pl;
   if(error||!p){body.innerHTML='<div class="up-empty" style="margin:20px">Profil nicht gefunden</div>';return;}
   upUser=p;
 
   const{data:stats}=await sb.rpc('get_follow_stats',{p_user_id:userId,p_viewer_id:cUser?.id||null});
+  if(openUserProf.t!==marke)return;
   const st=Array.isArray(stats)?stats[0]:stats;
   const followers=st?.followers??0, following=st?.following??0;
   const iFollow=!!st?.viewer_follows;
@@ -14229,6 +14322,7 @@ async function openUserProf(userId){
     .eq('created_by',userId).neq('type','private')
     .gte('date',new Date(Date.now()-864e5).toISOString().slice(0,10))
     .order('date',{ascending:true}).limit(5);
+  if(openUserProf.t!==marke)return;
 
   const init=(p.full_name||p.username||'?').charAt(0).toUpperCase();
   const av=p.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'"/>'):('<span>'+esc(init)+'</span>');
@@ -14255,6 +14349,7 @@ async function openUserProf(userId){
       const{data:vs}=await sb.from('profiles').select('verein_status').eq('id',p.id).maybeSingle();
       vStatus=vs?.verein_status||null;
     }catch(e){}
+    if(openUserProf.t!==marke)return;
   }
   const webLink=istV&&p.website
     ? '<a class="up2-web" href="'+escAttr(p.website)+'" target="_blank" rel="noopener">'
@@ -14359,6 +14454,7 @@ async function beantworteAnfrage(von, ja){
   const{data,error}=await sb.rpc('anfrage_beantworten',{p_von:von,p_ja:ja});
   if(error){toast(fehlerText(error),'error');return;}
   toast(ja?'Angenommen':'Abgelehnt','info');
+  try{ ntErledigt.set(von, ja?'Angenommen':'Abgelehnt'); renderNotifs(); }catch(e){}
   renderFolgeAnfragen();
   if(ja)renderProf();
 }
@@ -14471,7 +14567,8 @@ function bumpFollowers(delta){
   setTimeout(()=>num.classList.remove('bump'),280);
 }
 
-function closeUserProf(){document.getElementById('userProfOverlay').classList.remove('open');}
+function closeUserProf(){
+  openUserProf.t=null;document.getElementById('userProfOverlay').classList.remove('open');}
 
 async function openFollowList(userId,mode){
   document.getElementById('followListOverlay').classList.add('open');
@@ -16033,6 +16130,7 @@ en:{
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
   "Pro verschenken":"Gift Pro",
+  "Das Gespräch konnte nicht geöffnet werden":"Couldn't open the conversation",
   "Diese Party ist nicht mehr verfügbar":"This party is no longer available",
   "Party konnte nicht geladen werden – prüf dein Internet":"Couldn't load the party – check your internet",
   "Du stehst auf der Warteliste":"You're on the waitlist",
@@ -17186,6 +17284,7 @@ fr:{
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
   "Pro verschenken":"Offrir Pro",
+  "Das Gespräch konnte nicht geöffnet werden":"Impossible d'ouvrir la conversation",
   "Diese Party ist nicht mehr verfügbar":"Cette soirée n'est plus disponible",
   "Party konnte nicht geladen werden – prüf dein Internet":"Impossible de charger la soirée – vérifie ta connexion",
   "Du stehst auf der Warteliste":"Tu es sur la liste d'attente",
@@ -18339,6 +18438,7 @@ it:{
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
   "Pro verschenken":"Regala Pro",
+  "Das Gespräch konnte nicht geöffnet werden":"Impossibile aprire la conversazione",
   "Diese Party ist nicht mehr verfügbar":"Questa festa non è più disponibile",
   "Party konnte nicht geladen werden – prüf dein Internet":"Impossibile caricare la festa – controlla la connessione",
   "Du stehst auf der Warteliste":"Sei in lista d'attesa",
@@ -19514,6 +19614,7 @@ async function loadNotifs(){
   }
   list.forEach(n=>notifSeen.add(n.id));
   notifFirst=false;
+  loadUnread();                            // der Chat-Punkt lebt jetzt mit
 
   if(document.getElementById('notifOverlay').classList.contains('open'))renderNotifs();
 }
@@ -19709,11 +19810,13 @@ async function ntSenden(id,vorlage){
   const inp=el?.querySelector('input');
   const txt=String(vorlage!=null?vorlage:(inp?.value||'')).trim();
   if(!n?.conversation_id||!txt||!cUser)return;
+  if(el?.classList.contains('sendet'))return;   // Enter zweimal = zweimal gesendet
   el?.classList.add('sendet');
+  if(inp&&vorlage==null)inp.value='';
   const{error}=await sb.from('messages')
     .insert({conversation_id:n.conversation_id,sender_id:cUser.id,content:txt});
   el?.classList.remove('sendet');
-  if(error){ toast(fehlerText(error),'error'); return; }
+  if(error){ if(inp&&vorlage==null)inp.value=txt; toast(fehlerText(error),'error'); return; }
   ntGesendet.add(id);
   if(!n.gelesen){ n.gelesen=true; sb.from('notifications').update({gelesen:true}).eq('id',id); }
   if(el)el.hidden=true;
@@ -19732,6 +19835,7 @@ async function ntAnfrage(btn,von,ja){
   ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Angenommen':'Abgelehnt'));
   renderNotifs();
   try{ renderFolgeAnfragen(); }catch(e){}
+  if(ja&&document.getElementById('page-profile')?.classList.contains('active'))renderProf();
 }
 
 async function oeffneNotif(id){
@@ -21803,6 +21907,7 @@ function toastWeg(){
 
 // ── SETTINGS MODAL ──
 function showSettingsModal(){
+  try{ clearTimeout(kontoWegUhr); kontoWegAbbrechen(); }catch(e){}
   document.getElementById('settingsOverlay').classList.add('open');
   // Die Pro-Tour nur zeigen, wenn es auch etwas zu zeigen gibt
   const pt=document.getElementById('setProTour');
