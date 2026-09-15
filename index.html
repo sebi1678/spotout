@@ -3782,11 +3782,12 @@
     /* Jeder Knopf gibt beim Druecken nach – ohne diese Rueckmeldung
        wirkt eine App traege, auch wenn sie schnell ist. */
     .segbtn:active,.fy-modus button:active,.cal-act:active,.cset:active,
-    .mpro-btn:active,.card-cta:active,.prof-action-btn:active,
-    .insta-tab:active,.sh-send:active,.sh-alle:active,.route-opt:active,
+    .mpro-btn:active,.sh-send:active,.sh-alle:active,
     .nav-bell:active,.nav-create-btn:active,.nav-icon-btn:active{
-      transform:scale(var(--druck-klein));
+      transform:scale(var(--druck));
     }
+    .card-cta:active,.prof-action-btn:active,.route-opt:active{transform:scale(var(--druck-gross))}
+    .insta-tab:active{transform:none;opacity:.7}
     .segbtn,.fy-modus button,.cal-act,.cset,.mpro-btn,.card-cta,
     .prof-action-btn,.insta-tab,.sh-send,.sh-alle,.route-opt,
     .nav-bell,.nav-create-btn,.nav-icon-btn{
@@ -4801,16 +4802,26 @@
     .mod-akt .nt-knopf.armed{background:rgba(255,60,60,.2);border-color:rgba(255,80,80,.5)}
     /* ── Benachrichtigungen: Schalter wie auf TikTok ── */
     .sw{
-      position:relative;flex:0 0 48px;width:48px;height:28px;border-radius:999px;border:none;padding:0;cursor:pointer;
-      background:rgba(255,255,255,.16);transition:background var(--takt-kurz,.18s) ease;
+      -webkit-appearance:none;appearance:none;position:relative;display:block;box-sizing:border-box;
+      flex:0 0 51px;width:51px;height:31px;min-width:51px;min-height:31px;margin:0;padding:0;border:none;border-radius:999px;
+      background:rgba(120,120,128,.36);cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;
+      transition:background-color .22s ease;
     }
-    .sw span{
-      position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;
-      box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform var(--takt-kurz,.18s) ease;
+    .sw>i{
+      position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:999px;background:#fff;
+      box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);
+      transition:transform .26s cubic-bezier(.3,1.3,.5,1),width .18s ease;
     }
-    .sw.an{background:var(--grad-cta)}
-    .sw.an span{transform:translateX(20px)}
-    .sw:disabled{opacity:.45;cursor:default}
+    .sw.an{background:#FF2D76}
+    .sw.an>i{transform:translateX(20px)}
+    .sw:active,.sw:active>i{scale:none}
+    button.sw:active{transform:none}
+    .sw:not(:disabled):active>i{width:31px}
+    .sw.an:not(:disabled):active>i{transform:translateX(16px)}
+    .sw:disabled{cursor:default}
+    .push-gruppe.ruhig .sw{background:rgba(120,120,128,.22)}
+    .push-immer{flex:none;font-size:.74rem;font-weight:700;color:var(--muted);padding:5px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);white-space:nowrap}
     .push-karte{
       display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px 15px;margin-bottom:14px;
       border-radius:15px;background:rgba(124,92,252,.10);border:1px solid rgba(124,92,252,.26);
@@ -4824,8 +4835,8 @@
       border-bottom:1px solid rgba(255,255,255,.07);
     }
     .push-zeile>div{flex:1;min-width:0}
-    .push-zeile b{display:block;font-size:.88rem;font-weight:700;color:#fff;overflow-wrap:anywhere}
-    .push-zeile span{display:block;font-size:.75rem;line-height:1.45;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+    .push-zeile>div>b{display:block;font-size:.88rem;font-weight:700;color:#fff;overflow-wrap:anywhere}
+    .push-zeile>div>span{display:block;font-size:.75rem;line-height:1.45;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
     .push-zeile.haupt{padding:14px 15px;border:1px solid rgba(255,255,255,.08);border-radius:15px;background:rgba(255,255,255,.05)}
     .push-zeile.fix{border-bottom:none;margin-top:6px}
     .push-gruppe{transition:opacity var(--takt-kurz,.18s) ease}
@@ -5620,7 +5631,7 @@
        ueberall gleich blass und flach. Ein Knopf, der gerade arbeitet
        (Ladekreis), bleibt gut lesbar – er ist beschaeftigt, nicht aus. */
     button:disabled{cursor:default;box-shadow:none;filter:none}
-    button:disabled:not(.is-busy):not(.busy):not(.send-btn){opacity:.5}
+    button:disabled:not(.is-busy):not(.busy):not(.send-btn):not(.sw){opacity:.5}
     button.is-busy:disabled,button.busy:disabled{opacity:.8}
 
     /* ── Fokus ──
@@ -5900,6 +5911,134 @@
       .nav-raus svg,.nav-bell svg,.nav-suche svg,.nav-icon-btn svg{width:16px;height:16px}
     }
 
+
+    /* ══════════ POLITUR: eine Linie fuer die ganze App ══════════ */
+    /* Schalter: Farben und Zeiten aus den Tokens, 44px Tippflaeche */
+    .sw.an{background:var(--pink)}
+    .sw{transition:background-color var(--takt) ease}
+    .sw>i{transition:transform var(--takt) cubic-bezier(.3,1.3,.5,1),width var(--takt-kurz) ease}
+    .sw::after{content:'';position:absolute;inset:-7px -6px}
+    /* Der zweite Schalter (Erstellen) sieht jetzt gleich aus */
+    .tog{width:51px;height:31px;flex:0 0 51px;border-radius:999px;background:rgba(120,120,128,.36);
+      -webkit-appearance:none;appearance:none;padding:0}
+    .tog::after{top:2px;left:2px;width:27px;height:27px;border-radius:999px;
+      box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);
+      transition:transform var(--takt) cubic-bezier(.3,1.3,.5,1)}
+    .tog.on{background:var(--pink)}
+    .tog.on::after{transform:translateX(20px)}
+    .tog:active{transform:none}
+
+    /* Hinweisbalken auf der Partyseite */
+    .d-banner{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:16px;border-radius:14px;
+      font-size:.82rem;font-weight:600;line-height:1.4}
+    .d-banner svg{flex:none}
+    .d-banner.rot{background:rgba(255,59,48,.10);border:1px solid rgba(255,59,48,.28);color:#FF8A80}
+    .d-banner.info{background:rgba(124,92,252,.10);border:1px solid rgba(124,92,252,.26);color:#C9BCFF}
+
+    /* Ausgewaehlt sieht ueberall gleich aus */
+    .gender-opt.active,.msg-setting-opt.active{background:rgba(255,45,118,.12);border-color:rgba(255,45,118,.5);color:#fff}
+    .oe-zeile button.on,.map-filter button.on{background:var(--grad-cta);border-color:transparent;color:#fff}
+
+    /* Abschnittstitel: eine Schrift */
+    .set-lbl,.csec,.d-section-title,.invite-lbl,.d-info-cell-lbl,.up-sec-lbl,.cal-section-title,.rep-trenn{
+      font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+    /* Kleine Schliessen-Knoepfe: ein Kreis */
+    .mpro-x,.ez-weg,.plus-konto-x,.os-weg{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.09);color:rgba(255,255,255,.86)}
+    .mpro-x svg,.ez-weg svg,.plus-konto-x svg,.os-weg svg{width:12px;height:12px;stroke-width:2.4}
+    .mreq-no{display:inline-flex;align-items:center;justify-content:center}
+    .nav-raus{width:34px;height:34px;border-radius:50%}
+
+    /* Kompakte Knoepfe: eine Rundung */
+    .fl-knopf,#notifBody .nt-knopf,.push-karte .nt-knopf,.sh-alle,.ein-neu button,.mg-warn button{border-radius:var(--knopf-r-klein)}
+    .nt-fertig{display:inline-flex;align-items:center;gap:4px}
+
+    /* Karten in den Einstellungen */
+    .settings-btn,.msg-setting-opt,.lang-opt,.gender-opt,.push-karte,.push-zeile.haupt{border-radius:16px}
+    .msg-setting-opt,.lang-opt,.gender-opt{border-width:1px}
+    .msg-setting-opt{transition:transform var(--takt-kurz)}
+    .msg-setting-opt:active{transform:scale(var(--druck-gross))}
+
+    /* Lesbarkeit */
+    .rdatenschutz,.auth-divider span{color:rgba(255,255,255,.5)}
+    .cal-group-hdr b{color:rgba(255,255,255,.55)}
+
+    /* 320 px: nichts quetscht sich */
+    .segbtn{min-width:0;overflow:hidden}
+    @media(max-width:340px){.segbtn svg{display:none}}
+    .fl-knopf{min-width:0;max-width:46%;overflow:hidden;text-overflow:ellipsis}
+    .tcp-check svg{width:12px;height:12px;display:block}
+
+    /* Langes Druecken markiert keinen Text und zeigt keine Link-Vorschau */
+    a.settings-btn,.msg-setting-opt,.push-zeile,.fl-row,.abz-karte{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+    /* ══════════ FREMDES PROFIL: eine ganze Seite wie das eigene ══════════ */
+    #userProfOverlay{align-items:stretch;justify-content:stretch;background:rgba(0,0,0,.35)}
+    #userProfOverlay .modal{
+      position:fixed;inset:0;width:100%;max-width:none;height:100%;max-height:none!important;margin:0;
+      border-radius:0;border:none;padding:0;background:#090D24;display:flex;flex-direction:column;
+      transform:translateX(100%);transition:transform .34s cubic-bezier(.2,.8,.2,1);
+    }
+    #userProfOverlay.open .modal{transform:none}
+    .up-kopf{flex:none;display:flex;align-items:center;gap:8px;
+      padding:calc(env(safe-area-inset-top) + 10px) 14px 10px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .up-zurueck{width:38px;height:38px;flex:none;border-radius:50%;border:none;background:none;color:#fff;
+      display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .up-zurueck svg{width:22px;height:22px}
+    .up-zurueck:active{background:rgba(255,255,255,.1)}
+    .up-kopf-titel{flex:1;min-width:0;font-size:1rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .up-rolle{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+    .up-stat-knopf{background:none;border:none;padding:0;cursor:pointer;font-family:var(--font);color:inherit}
+    .up-folgt-dir{margin:0 0 0 8px;height:20px;vertical-align:1px}
+    .up-akt .follow-btn,.up-akt .up-msg-btn{flex:1 1 0;min-width:0;padding:10px;border-radius:12px;font-size:.86rem;box-shadow:none}
+    .up-kachel-n{font-size:.8rem;font-weight:700;color:#fff;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .up-kachel-d{font-size:.68rem;color:rgba(255,255,255,.65);margin-top:2px}
+    .up-leer{display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px 20px;color:var(--muted);font-size:.84rem}
+    .up-seite .up2-zu{margin:10px 20px 0}
+
+    /* ── Follow-Anfragen gesammelt, Profilbesuche ── */
+    .nt-anfr{display:flex;align-items:center;gap:12px;width:100%;margin:2px 0 10px;padding:12px 12px 12px 10px;border-radius:16px;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);cursor:pointer;font-family:var(--font);text-align:left;color:#fff}
+    .nt-anfr:active{background:rgba(255,255,255,.09)}
+    .nt-anfr-avs{position:relative;flex:none;width:44px;height:44px}
+    .nt-anfr-av{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#7C3AED,#FF2D76);font-size:.95rem;font-weight:800;color:#fff;border:2px solid #0d1230}
+    .nt-anfr-av img{width:100%;height:100%;object-fit:cover}
+    .nt-anfr-avs.zwei .nt-anfr-av{width:34px;height:34px;font-size:.78rem}
+    .nt-anfr-avs.zwei .nt-anfr-av:last-child{left:10px;top:10px}
+    .nt-anfr-txt{flex:1;min-width:0}
+    .nt-anfr-txt b{display:block;font-size:.9rem;font-weight:800}
+    .nt-anfr-txt span{display:block;font-size:.78rem;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nt-anfr-zahl{flex:none;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--pink);color:#fff;
+      font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+    .nt-anfr-pfeil{flex:none;width:16px;height:16px;color:var(--muted)}
+    .nt-mehr{display:inline-flex;align-items:center;height:18px;padding:0 6px;margin-left:4px;border-radius:999px;
+      background:rgba(255,255,255,.1);font-size:.66rem;font-weight:800;color:#fff;vertical-align:1px}
+    .anfr-zeile,.bes-zeile{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);transition:opacity .25s ease,transform .25s ease}
+    .anfr-zeile.weg{opacity:0;transform:translateX(-12px)}
+    .anfr-knoepfe{display:flex;gap:6px;flex:none}
+    .anfr-knoepfe .nt-knopf{padding:7px 11px;font-size:.76rem}
+    .anfr-zeile .att-name,.anfr-zeile .att-user,.bes-zeile .att-name,.bes-zeile .att-user{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bes-zeile{gap:10px}
+    .anfr-zeile{gap:10px}
+    @media(max-width:360px){
+      .anfr-knoepfe{gap:5px}
+      .anfr-knoepfe .nt-knopf{padding:6px 9px;font-size:.72rem}
+      .anfr-zeile .av-sm{width:34px;height:34px;flex:0 0 34px}
+    }
+    .bes-leer{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:26px 10px 10px}
+    .bes-leer b{font-size:.98rem;color:#fff}
+    .bes-leer span{font-size:.8rem;line-height:1.5;color:var(--muted);max-width:290px}
+    .bes-leer .nt-knopf{margin-top:8px}
+    .bes-ic{width:54px;height:54px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);color:#fff;margin-bottom:4px}
+    .bes-ic svg{width:26px;height:26px}
+    .bes-neu{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--pink);margin-left:6px;vertical-align:2px}
+    .bes-hilfe{margin:0 0 6px}
+    .besuch-knopf{position:relative}
+    .besuch-knopf svg{width:16px;height:16px}
+    .besuch-punkt{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 2px #090D24}
+    .set-besuche{margin:4px 0 6px}
   </style>
 </head>
 <body>
@@ -6628,17 +6767,17 @@
         <div class="type-card-pro sel-public" data-type="public" onclick="selTypePro('public',this)">
           <div class="tcp-icon" style="background:rgba(255,45,118,.12);color:#FF2D76"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Öffentliche Party</div><div class="tcp-desc">Jeder kann teilnehmen</div></div>
-          <div class="tcp-check">✓</div>
+          <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
         <div class="type-card-pro" data-type="private" onclick="selTypePro('private',this)">
           <div class="tcp-icon" style="background:rgba(99,59,255,.12);color:#7C5CFC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Private Party</div><div class="tcp-desc">Nur mit Einladungscode</div></div>
-          <div class="tcp-check">✓</div>
+          <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
         <div class="type-card-pro" data-type="events" onclick="selTypePro('events',this)">
           <div class="tcp-icon" style="background:rgba(255,215,0,.08);color:#FFD700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Event</div><div class="tcp-desc">Als Veranstalter oder Club</div></div>
-          <div class="tcp-check">✓</div>
+          <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
       </div>
       <div id="verify-step" style="display:none">
@@ -7059,18 +7198,16 @@
 </div>
 
 <!-- ════ FREMDES PROFIL ════ -->
-<div class="overlay" id="userProfOverlay" onclick="closeIfOutside(event,'userProfOverlay')">
-  <div class="modal no-swipe" style="max-height:88vh;max-height:88dvh">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr">
-      <div class="modal-title">Profil</div>
-      <div class="up2-kopfaktion" id="upMehr"></div>
-      <button class="modal-x" onclick="closeUserProf()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+<div class="overlay up-vollseite" id="userProfOverlay">
+  <div class="modal no-swipe">
+    <div class="up-kopf">
+      <button class="up-zurueck" onclick="closeUserProf()" aria-label="Zurück">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
+      <div class="up-kopf-titel" id="upTitel"></div>
+      <div class="up2-kopfaktion" id="upMehr"></div>
     </div>
-    <div id="userProfBody"><div class="loading"><div class="spinner"></div> Wird geladen…</div></div>
-    <div style="height:26px"></div>
+    <div class="up-rolle" id="userProfBody"><div class="loading"><div class="spinner"></div> Wird geladen…</div></div>
   </div>
 </div>
 
@@ -7119,6 +7256,10 @@
             <div><div class="set-opt-t">Privat</div><div class="set-opt-s">Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.</div></div>
           </label>
           </div>
+        </div>
+        <div class="push-zeile set-besuche">
+          <div><b>Profilbesuche</b><span>An: Wer Pro hat, sieht, dass du sein Profil angesehen hast – und mit Pro siehst du, wer bei dir war. Aus: beides nicht.</span></div>
+          <span id="setBesucheSchalter"></span>
         </div>
         <div id="setNachrichtenBox">
           <div class="set-frage">Wer darf dir schreiben?</div>
@@ -7441,6 +7582,27 @@
       <button class="modal-x" onclick="closeOverlay('abzeichenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body"><div id="abzeichenListe"></div></div>
+  </div>
+</div>
+
+<div class="overlay" id="anfragenOverlay" onclick="closeIfOutside(event,'anfragenOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Follow-Anfragen</div>
+      <button class="modal-x" onclick="closeOverlay('anfragenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="anfragenListe"></div></div>
+  </div>
+</div>
+<div class="overlay" id="besucherOverlay" onclick="closeIfOutside(event,'besucherOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Profilbesuche</div>
+      <button class="modal-x" onclick="closeOverlay('besucherOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="besucherListe"></div></div>
   </div>
 </div>
 
@@ -10831,7 +10993,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
   if(isFull&&!isAtt){
     if(aufWarteliste)return attNote('Du stehst auf der Warteliste');
     if(cProfile?.is_pro){
-      return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">✦ Auf die Warteliste</button>';
+      return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">Auf die Warteliste</button>';
     }
     return attNote('Party ist voll – nur Pro kann auf die Warteliste','warn');
   }
@@ -10952,8 +11114,8 @@ async function openDetail(id){
   const deadlinePassed=deadline?now>deadline:false;
   const hoursUntilDeadline=deadline?(deadline-now)/(1000*60*60):null;
   let statusBanner='';
-  if(isOver&&bisLoeschen<3){statusBanner=`<div style="background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#c0392b">Diese Party wird bald automatisch gelöscht.</div>`;}
-  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div style="background:rgba(91,94,166,.08);border:1px solid rgba(91,94,166,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">${pikto('zeit',16)}<div style="font-size:.82rem;color:#9b9de0">${anmeldungRest(hoursUntilDeadline)}</div></div>`;}
+  if(isOver&&bisLoeschen<3){statusBanner=`<div class="d-banner rot">${pikto('zeit',16)}<span>Diese Party wird bald automatisch gelöscht.</span></div>`;}
+  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div class="d-banner info">${pikto('zeit',16)}<span>${anmeldungRest(hoursUntilDeadline)}</span></div>`;}
   // Die Gästeliste ist ein Pro-Merkmal – auch im Rückblick. Ohne Pro
   // bleibt sie zu, sonst wäre Pro nach der Party wertlos.
   const showFullList=(deadlinePassed||isOver)&&!!cProfile?.is_pro;
@@ -12075,6 +12237,7 @@ async function renderProf(){
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>
           Profil teilen
         </button>
+        <button class="prof-action-btn prof-action-quadrat besuch-knopf" onclick="besucherOeffnen()" aria-label="Profilbesuche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="besuch-punkt" id="besuchPunkt" hidden></span></button>
         <button class="prof-action-btn prof-action-quadrat" onclick="showPage('search')" aria-label="Leute finden">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7.5" r="3.5"/><path d="M19 8v6M22 11h-6"/></svg>
         </button>
@@ -12110,6 +12273,7 @@ async function renderProf(){
     </div>`;
   if(warBesucht)switchProfTab('visited');
   renderFolgeAnfragen();
+  besucherPunkt();
 }
 
 function switchProfTab(tab){
@@ -12665,6 +12829,7 @@ const PRO_ICON={
   geld:'<circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.9-1.8-1.4-3-1.4-1.9 0-3 1-3 2.3 0 3 6 1.6 6 4.6 0 1.4-1.2 2.4-3 2.4-1.3 0-2.4-.5-3.1-1.5"/><path d="M12 5.4v13.2"/>',
   stern:'<path d="M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 16.9 6.6 19.8l1-6.1L3.2 9.4l6.1-.9z"/>',
   check:'<path d="M20 6 9 17l-5-5"/>',
+  auge:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
 };
 function proIcon(k,w){return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.7)+'" stroke-linecap="round" stroke-linejoin="round">'+PRO_ICON[k]+'</svg>';}
 
@@ -12676,6 +12841,8 @@ const PRO_VORTEILE=[
    d:'Starte Unterhaltungen mit allen, die du auf SPOTOUT triffst. Ohne Pro kannst du nur antworten.'},
   {k:'profil',t:'Dein Profil sehen alle',
    d:'Bio, Instagram und Snapchat stehen offen auf deinem Profil – auch <b>Gratis-Nutzer</b> sehen sie und können dir folgen.'},
+  {k:'auge',t:'Sehen, wer bei dir war',
+   d:'Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.'},
   {k:'geld',t:'Günstiger veröffentlichen',
    d:'Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.'},
 ];
@@ -12691,6 +12858,7 @@ const PRO_VERGLEICH=[
   ['Bio & Social-Links im Profil',0,1],
   ['Chats selbst starten',0,1],
   ['Gästeliste sehen',0,1],
+  ['Sehen, wer dein Profil besucht hat',0,1],
   ['Gebühr fürs Veröffentlichen','5 / 15 / 30','3 / 8 / 15'],
 ];
 
@@ -13139,7 +13307,7 @@ async function loadMsgRequests(){
         +'<div style="flex:1;min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'Unbekannt')+'</div>'
         +'<div class="att-user">möchte dir schreiben</div></div>'
         +'<button class="mreq-yes" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',true,this)">Annehmen</button>'
-        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false,this)" aria-label="Ablehnen">✕</button>'
+        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false,this)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
         +'</div>';
     }).join('');
 }
@@ -14832,10 +15000,19 @@ document.addEventListener('click',e=>{if(!e.target.closest('.addr-wrap'))documen
 
 let upUser=null;   // gerade geöffnetes Fremdprofil
 
-async function openUserProf(userId){
+/* Profil A → Follower → Profil B: Zurueck fuehrt wieder zu A, nicht raus. */
+let upStapel=[];
+async function openUserProf(userId,zurueck){
   if(!userId)return;
-  if(userId===cUser?.id){ closeUserSearch(); showPage('profile'); return; }
-  document.getElementById('userProfOverlay').classList.add('open');
+  if(userId===cUser?.id){ upStapel=[]; closeUserProf(true); closeUserSearch(); showPage('profile'); return; }
+  const ov=document.getElementById('userProfOverlay');
+  if(!ov.classList.contains('open'))upStapel=[];
+  else if(!zurueck&&upUser?.id&&upUser.id!==userId)upStapel.push(upUser.id);
+  ov.classList.add('open');
+  const titel=document.getElementById('upTitel'); if(titel)titel.textContent='';
+  document.getElementById('userProfBody')?.scrollTo?.(0,0);
+  // Profilbesuch – der Server entscheidet, ob er gezaehlt wird (Einstellung, Blockierung)
+  if(cUser&&!zurueck)sb.rpc('profil_besucht',{p_id:userId}).then(()=>{},()=>{});
   const marke={}; openUserProf.t=marke;     // wer zuletzt getippt wurde, gewinnt
   const body=document.getElementById('userProfBody');
   const kopfLeer=document.getElementById('upMehr');
@@ -14849,6 +15026,7 @@ async function openUserProf(userId){
   const p=Array.isArray(pl)?pl[0]:pl;
   if(error||!p){body.innerHTML='<div class="up-empty" style="margin:20px">Profil nicht gefunden</div>';return;}
   upUser=p;
+  { const t=document.getElementById('upTitel'); if(t)t.textContent=p.username?'@'+p.username:''; }
 
   const{data:stats}=await sb.rpc('get_follow_stats',{p_user_id:userId,p_viewer_id:cUser?.id||null});
   if(openUserProf.t!==marke)return;
@@ -14898,53 +15076,59 @@ async function openUserProf(userId){
   const kopf=document.getElementById('upMehr');
   if(kopf)kopf.innerHTML=moreBtn('user',p.id,p.full_name||p.username);
 
+  const kacheln=(evs||[]).length
+    ? '<div class="insta-grid">'+evs.map(e=>{
+        const img=e.image_url
+          ? '<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
+          : '<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>';
+        return '<div class="insta-tile" onclick="closeUserProf(true);openDetail(\''+e.id+'\')">'+img
+          +'<div class="insta-tile-overlay"><div class="up-kachel-n">'+esc(e.name||'Party')+'</div>'
+          +'<div class="up-kachel-d">'+fmtD(e.date)+'</div></div></div>';
+      }).join('')+'</div>'
+    : '<div class="insta-empty up-leer">'+pikto('kalender',30)+'<span>Gerade keine kommenden Partys</span></div>';
+
   body.innerHTML=
-    '<div class="up2">'
-    // Bild und Zahlen auf einer Höhe – das ist der Kern des Aufbaus
-    +'<div class="up2-top">'
-      +'<div class="up2-av'+(p.is_pro?' pro':'')+'">'+av+'</div>'
-      +'<div class="up2-zahlen">'
-        +'<div class="up2-zahl" style="cursor:default"><b>'+(p.offen===false?'–':partyZahl)+'</b><span>'
-          +(istV?'Anlässe':'Partys')+'</span></div>'
+    '<div class="prof-wrap-insta up-seite">'
+    +'<div class="prof-header">'
+      +'<div class="insta-av'+(p.is_pro?' pro-glow':'')+'">'+av+'</div>'
+      +'<div class="prof-stats-row">'
+        +'<div class="insta-stat"><div class="insta-stat-num">'+(p.offen===false?'–':partyZahl)+'</div><div class="insta-stat-lbl">'+(istV?'Anlässe':'Partys')+'</div></div>'
         +(p.offen===false
-          // Zu: keine Listen, keine Zahlen – sonst waere "privat" nur ein Wort
-          ? '<div class="up2-zahl" style="cursor:default"><b id="upFollowers">–</b><span>Follower</span></div>'
-            +'<div class="up2-zahl" style="cursor:default"><b>–</b><span>Folgt</span></div>'
-          : '<button class="up2-zahl" onclick="openFollowList(\''+p.id+'\',\'followers\')">'
-            +'<b id="upFollowers">'+followers+'</b><span>Follower</span></button>'
-            +'<button class="up2-zahl" onclick="openFollowList(\''+p.id+'\',\'following\')">'
-            +'<b>'+following+'</b><span>Folgt</span></button>')
+          ? '<div class="insta-stat"><div class="insta-stat-num" id="upFollowers">–</div><div class="insta-stat-lbl">Follower</div></div>'
+            +'<div class="insta-stat"><div class="insta-stat-num">–</div><div class="insta-stat-lbl">Folgt</div></div>'
+          : '<button class="insta-stat up-stat-knopf" onclick="openFollowList(\''+p.id+'\',\'followers\')"><div class="insta-stat-num" id="upFollowers">'+followers+'</div><div class="insta-stat-lbl">Follower</div></button>'
+            +'<button class="insta-stat up-stat-knopf" onclick="openFollowList(\''+p.id+'\',\'following\')"><div class="insta-stat-num">'+following+'</div><div class="insta-stat-lbl">Folgt</div></button>')
       +'</div>'
     +'</div>'
-    // Name, Handle, Bio – alles an derselben linken Kante
-    +'<div class="up2-name">'+esc(p.full_name||p.username||'Unbekannt')
-      +(istV?vereinMarke(vStatus):'')
-      +(p.is_pro?proMarke():'')
-      +(p.day_one?dayOneMarke():'')+'</div>'
-    +'<div class="up2-handle">@'+esc(p.username||'')
-      +(istV&&p.verein_ort?' · '+esc(p.verein_ort):'')+'</div>'
-    +(istV?'':abzeichenPlatz(p.id))
-    +((p.is_pro||istV)&&p.bio?'<div class="up2-bio">'+esc(p.bio)+'</div>':'')
-    +webLink
-    +(socials||socialLockHint(p))
-    +'<div class="up2-akt">'
-      +(st?.folgt_dir&&p.id!==cUser?.id?'<span class="folgt-dir">Folgt dir</span>':'')
+    +'<div class="prof-bio">'
+      +'<div class="prof-name-row"><span class="insta-name">'+esc(p.full_name||p.username||'Unbekannt')+'</span>'
+        +(istV?vereinMarke(vStatus):'')+(p.is_pro?proMarke():'')+(p.day_one?dayOneMarke():'')+'</div>'
+      +'<div class="insta-handle">@'+esc(p.username||'')
+        +(istV&&p.verein_ort?' · '+esc(p.verein_ort):'')
+        +(st?.folgt_dir&&p.id!==cUser?.id?'<span class="folgt-dir up-folgt-dir">Folgt dir</span>':'')+'</div>'
+      +(istV?'':abzeichenPlatz(p.id))
+      +((p.is_pro||istV)&&p.bio?'<div class="insta-bio">'+esc(p.bio)+'</div>':'')
+      +webLink
+      +(socials||socialLockHint(p))
+    +'</div>'
+    +'<div class="prof-actions up-akt">'
       +(p.privat&&!iFollow
         ? buildAnfrageBtn(p.id,!!p.anfrage_laeuft,!!st?.folgt_dir)
         : buildFollowBtn(p.id,iFollow,!!st?.folgt_dir))
       +(canChat?'<button class="up-msg-btn" onclick="startChat(upUser.id,upUser.full_name||upUser.username||\'\',upUser.username||\'\')">'
         +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Schreiben</button>':'')
     +'</div>'
-    +'<div class="up2-trenn"></div>'
-    +'</div>'
     +(p.offen===false
       ? '<div class="up2-zu">'
         +'<div class="up2-zu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>'
         +'<b>Dieses Profil ist privat</b>'
         +'<span>Stell eine Anfrage. Sobald '+esc((p.full_name||p.username||'die Person').split(' ')[0])
-        +' zustimmt, siehst du Angaben und Partys – und ihr könnt euch gegenseitig einladen.</span>'
-        +'</div>'
-      : '<div class="up-sec"><div class="up-sec-lbl">Kommende Partys</div>'+evHTML+'</div>');
+        +' zustimmt, siehst du Angaben und Partys – und ihr könnt euch gegenseitig einladen.</span></div>'
+      : '<div class="insta-tabs"><button class="insta-tab active" style="cursor:default">'
+        +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>'
+        +'Kommende Partys</button></div>'+kacheln)
+    +'<div style="height:calc(40px + env(safe-area-inset-bottom))"></div>'
+    +'</div>';
 }
 
 /* ── Öffentlich oder privat ────────────────────────────────────────
@@ -15053,8 +15237,33 @@ function anfrageErledigtZeigen(von,angenommen,schonErledigt){
 /* ── Folgen oder anfragen ─────────────────────────────────────────
    Bei einem offenen Profil folgt man direkt. Bei einem privaten geht
    eine Anfrage raus, und der Knopf sagt danach "Angefragt". */
+/* "Angefragt" ist kein Endzustand: zweimal tippen zieht die Anfrage zurueck. */
+function knopfScharf(btn,text,ms){
+  if(btn.dataset.arm)return false;
+  btn.dataset.arm='1';
+  const f=btn.querySelector('.fb-on'); if(f){btn.dataset.alt=f.innerHTML; f.textContent=text;}
+  nativeHaptik('leicht');
+  clearTimeout(btn._armUhr);
+  btn._armUhr=setTimeout(()=>knopfEntschaerfen(btn),ms||3000);
+  return true;
+}
+function knopfEntschaerfen(btn){
+  clearTimeout(btn._armUhr); delete btn.dataset.arm;
+  const f=btn.querySelector('.fb-on'); if(f&&btn.dataset.alt){f.innerHTML=btn.dataset.alt; delete btn.dataset.alt;}
+}
 async function folgenOderAnfragen(userId, btn){
   if(!cUser){kontoNoetig();return;}
+  if(btn&&btn.classList.contains('following')){
+    if(knopfScharf(btn,'Zurückziehen?'))return;
+    knopfEntschaerfen(btn);
+    btn.disabled=true;
+    const{error}=await sb.from('follow_anfragen').delete().eq('von',cUser.id).eq('an',userId);
+    btn.disabled=false;
+    if(error){toast(fehlerText(error),'error');return;}
+    btn.classList.remove('following');
+    toast('Anfrage zurückgezogen','info');
+    return;
+  }
   // Kreisel an, Beschriftung bleibt stehen – kein harter Textwechsel mehr
   if(btn){btn.disabled=true;btn.classList.add('busy');}
   const{data,error}=await sb.rpc('folgen_anfragen',{p_an:userId});
@@ -15065,7 +15274,7 @@ async function folgenOderAnfragen(userId, btn){
     if(btn){
       btn.classList.add('following');   // blendet auf "Angefragt" um
       btn.classList.remove('pulse');void btn.offsetWidth;btn.classList.add('pulse');
-      btn.disabled=true;
+      btn.disabled=false;
     }
     toast('Anfrage ist unterwegs','success');
   }else if(data==='folgt'||data==='folgst_schon'){
@@ -15085,7 +15294,7 @@ function buildAnfrageBtn(userId,laeuft,folgtDir){
   const plus='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>';
   const uhr='<svg class="fb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   return '<button class="follow-btn fb-anfrage'+(laeuft?' following':'')+'" id="followBtn" data-uid="'+userId+'" '
-    +(laeuft?'disabled ':'')+'onclick="folgenOderAnfragen(\''+userId+'\',this)">'
+    +'onclick="folgenOderAnfragen(\''+userId+'\',this)">'
     +'<span class="fb-face fb-off">'+plus+(folgtDir?'Auch folgen':'Folgen anfragen')+'</span>'
     +'<span class="fb-face fb-on">'+uhr+'Angefragt</span>'
     +'<span class="fb-spin"><span class="btn-spin"></span></span>'
@@ -15112,6 +15321,11 @@ async function toggleFollow(btnOrId,legacyFlag){
   const userId=typeof btnOrId==='string'?btnOrId:btn?.dataset.uid;
   if(!userId||followBusy)return;
   const wasFollowing=btn?btn.classList.contains('following'):!!legacyFlag;
+  // Privat: nach dem Entfolgen muss man neu anfragen – darum einmal nachfragen
+  if(wasFollowing&&btn&&upUser?.id===userId&&upUser?.privat){
+    if(knopfScharf(btn,'Wirklich entfolgen?'))return;
+    knopfEntschaerfen(btn);
+  }
 
   followBusy=true;
   // Sofort umschalten – der Nutzer sieht die Reaktion, nicht die Wartezeit
@@ -15164,7 +15378,10 @@ function bumpFollowers(delta){
   setTimeout(()=>num.classList.remove('bump'),280);
 }
 
-function closeUserProf(){
+function closeUserProf(ganz){
+  const vorher=ganz?null:upStapel.pop();
+  if(vorher){ openUserProf(vorher,true); return; }
+  upStapel=[];
   openUserProf.t=null;document.getElementById('userProfOverlay').classList.remove('open');}
 
 async function openFollowList(userId,mode){
@@ -15175,9 +15392,9 @@ async function openFollowList(userId,mode){
 
   const col=mode==='followers'?'follower_id':'following_id';
   const other=mode==='followers'?'following_id':'follower_id';
-  const{data,error}=await sb.from('follows').select(col).eq(other,userId).limit(200);
+  const{data,error}=await sb.rpc('folge_liste',{p_user:userId,p_art:mode==='followers'?'followers':'following'});
   if(error){body.innerHTML='<div class="up-empty">Konnte nicht geladen werden</div>';return;}
-  const ids=(data||[]).map(r=>r[col]).filter(Boolean);
+  const ids=(data||[]).map(r=>r.id).filter(Boolean);
   if(!ids.length){
     body.innerHTML='<div class="up-empty">'+(mode==='followers'?'Noch keine Follower':'Folgt noch niemandem')+'</div>';
     return;
@@ -15211,7 +15428,6 @@ function flKnopf(uid,stand,folgtMir){
   const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Auch folgen',folgen:'Folgen'}[stand]||'Folgen';
   const haupt=(stand==='auch'||stand==='folgen');
   return '<button class="fl-knopf'+(haupt?' haupt':'')+'" data-stand="'+stand+'" data-folgt-mir="'+(folgtMir?'1':'')+'"'
-    +(stand==='angefragt'?' disabled':'')
     +' onclick="event.stopPropagation();flFolgen(this,\''+uid+'\')">'+text+'</button>';
 }
 function flKnopfSetzen(btn,stand){
@@ -15227,6 +15443,18 @@ async function flFolgen(btn,uid){
   try{
     if(btn.dataset.stand==='folge'){
       const{error}=await sb.from('follows').delete().eq('follower_id',cUser.id).eq('following_id',uid);
+      if(error)throw error;
+      flKnopfSetzen(btn,btn.dataset.folgtMir?'auch':'folgen');
+    }else if(btn.dataset.stand==='angefragt'){
+      // Zweimal tippen zieht die Anfrage zurueck
+      if(!btn.dataset.arm){
+        btn.dataset.arm='1'; btn.textContent='Zurückziehen?';
+        clearTimeout(btn._armUhr);
+        btn._armUhr=setTimeout(()=>{ if(btn.dataset.arm){delete btn.dataset.arm; flKnopfSetzen(btn,'angefragt');} },3000);
+        return;
+      }
+      clearTimeout(btn._armUhr); delete btn.dataset.arm;
+      const{error}=await sb.from('follow_anfragen').delete().eq('von',cUser.id).eq('an',uid);
       if(error)throw error;
       flKnopfSetzen(btn,btn.dataset.folgtMir?'auch':'folgen');
     }else{
@@ -15245,7 +15473,7 @@ async function flFolgen(btn,uid){
   }catch(err){
     toast(fehlerText(err),'error');
   }finally{
-    btn.disabled=btn.dataset.stand==='angefragt';
+    btn.disabled=false;
   }
 }
 
@@ -15461,7 +15689,7 @@ async function einladungTeilen(code,eventId,label){
   // Kein Teilen-Blatt (Desktop): dann kommt der Link in den Text.
   try{
     await navigator.clipboard.writeText(txt+'\n'+url);
-    toast('Einladung kopiert – jetzt in WhatsApp einfügen','success');
+    toast('Einladung kopiert – jetzt einfügen und senden','success');
   }catch(err){ einladungKopieren(code); }
 }
 
@@ -15766,11 +15994,10 @@ async function openShare(eventId,opts){
         +'<div class="offl" style="margin-top:10px"><div class="offl-code">'
           +esc(einladungUrl(e.invite_code))+'</div></div>'
         +'<div class="inv-btns" style="margin-top:10px">'
-        +'<button class="inv-btn inv-wa" onclick="shareVia(\'wa\')">'+wa+'WhatsApp</button>'
         +'<button class="inv-btn inv-share" onclick="shareVia(\'share\')">'+shareIc+'Teilen</button>'
         +'<button class="inv-btn inv-copy" onclick="einladungKopieren(\''+e.invite_code+'\')">'+cp+'Link</button>'
         +'</div>'
-      : '<div class="mg-sec">Über WhatsApp einladen</div>'
+      : '<div class="mg-sec">Persönlich einladen</div>'
         +'<div class="ein-leer">Jede Einladung ist ein eigener Link. Du findest sie auf der '
         +'Partyseite unter <b style="color:#fff">Einladungen</b> – dort einen Namen eintippen, '
         +'und der Link geht direkt an diese Person.</div>'
@@ -15778,7 +16005,6 @@ async function openShare(eventId,opts){
         +'onclick="closeShare();openDetail(\''+e.id+'\')">Zu den Einladungen</button>')
     : '<div class="mg-sec">Anderswo teilen</div>'
       +'<div class="inv-btns">'
-      +'<button class="inv-btn inv-wa" onclick="shareVia(\'wa\')">'+wa+'WhatsApp</button>'
       +'<button class="inv-btn inv-share" onclick="shareVia(\'share\')">'+shareIc+'Teilen</button>'
       +'<button class="inv-btn inv-copy" onclick="shareVia(\'copy\')">'+cp+'Link</button>'
       +'</div>';
@@ -15806,7 +16032,7 @@ async function openShare(eventId,opts){
       +'<div class="ep-locked-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.4l-5.25 2.75 1-5.85L3.5 9.15l5.9-.85z"/></svg></div>'
       +'<div><div class="ep-locked-t">Direkt in SPOTOUT senden</div>'
       +'<div class="ep-locked-s">Mit Pro schickst du die Party als Nachricht an deine Kontakte. '
-      +'Über WhatsApp und andere Apps geht es auch ohne Pro.</div></div>'
+      +'Über „Teilen“ geht es auch ohne Pro.</div></div>'
       +'<svg class="ep-locked-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 6 15 12 9 18"/></svg></div>';
     return;
   }
@@ -15835,7 +16061,7 @@ async function renderShareContacts(alsEinladung){
     .filter(id=>id&&id!==cUser.id);
   if(!ids.length){
     box.innerHTML='<div class="mg-empty">Du hast noch keine Kontakte. Folge jemandem über die Suche – '
-      +'oder teil die Party unten über WhatsApp.</div>';
+      +'oder teil die Party unten über „Teilen“.</div>';
     return;
   }
   const{data:leute}=await sb.from('profiles')
@@ -15963,7 +16189,6 @@ async function shareVia(art){
   // das haengt ihn selbst an. Sonst kam er zweimal an.
   const txt   =shareEv.type==='private'?inviteText(shareEv)     :shareText(shareEv);
   const txtRoh=shareEv.type==='private'?inviteText(shareEv,null,null,true):shareText(shareEv,true);
-  if(art==='wa'){ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank'); return; }
   if(art==='share'){
     if(istApp()){
       const a=await nativeCall('teilen',{text:txtRoh,url},30000);
@@ -16868,6 +17093,34 @@ en:{
   "25 Follower":"25 followers",
   "Geschafft":"Done",
   "Abzeichen bekommst du, indem du SPOTOUT nutzt – an Partys gehen, mitbringen, selbst feiern.":"You earn badges by using SPOTOUT – going to parties, bringing things, hosting.",
+  "Immer an":"Always on",
+  "Follow-Anfragen":"Follow requests",
+  "Keine offenen Anfragen":"No pending requests",
+  "Wer deinem privaten Profil folgen möchte, erscheint hier.":"People who want to follow your private profile show up here.",
+  "Profilbesuche":"Profile views",
+  "Sieh, wer bei dir vorbeischaut":"See who stops by",
+  "Mit Pro siehst du, wer dein Profil in den letzten 30 Tagen angesehen hat.":"With Pro you see who viewed your profile in the last 30 days.",
+  "Pro ansehen":"See Pro",
+  "Profilbesuche sind aus":"Profile views are off",
+  "Solange sie aus sind, siehst du nicht, wer bei dir war – und andere sehen nicht, dass du bei ihnen warst.":"While they’re off, you can’t see who visited you – and others can’t see that you visited them.",
+  "Einschalten":"Turn on",
+  "Noch keine Besuche":"No views yet",
+  "Hier siehst du, wer dein Profil in den letzten 30 Tagen angesehen hat.":"Here you see who viewed your profile in the last 30 days.",
+  "Letzte 30 Tage. Ausschalten kannst du das in den Einstellungen – dann siehst du hier aber auch niemanden mehr.":"Last 30 days. You can turn this off in settings – but then you won’t see anyone here either.",
+  "Gerade nicht verfügbar":"Not available right now",
+  "An: Wer Pro hat, sieht, dass du sein Profil angesehen hast – und mit Pro siehst du, wer bei dir war. Aus: beides nicht.":"On: Pro users see that you viewed their profile – and with Pro you see who visited you. Off: neither.",
+  "Profilbesuche sind an":"Profile views are on",
+  "Zurückziehen?":"Withdraw?",
+  "Anfrage zurückgezogen":"Request withdrawn",
+  "Wirklich entfolgen?":"Really unfollow?",
+  "Gerade keine kommenden Partys":"No upcoming parties right now",
+  "Persönlich einladen":"Invite personally",
+  "Über „Teilen“ geht es auch ohne Pro.":"You can also use “Share” without Pro.",
+  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"You have no contacts yet. Follow someone via search – or share the party below with “Share”.",
+  "Einladung kopiert – jetzt einfügen und senden":"Invitation copied – now paste and send",
+  "Sehen, wer bei dir war":"See who visited you",
+  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Like on TikTok: see who viewed your profile in the last 30 days. You can turn it off anytime – but then you won’t see it either.",
+  "Sehen, wer dein Profil besucht hat":"See who visited your profile",
   "Pro verschenken":"Gift Pro",
   "Deine Anfrage ist beim Host.":"Your request is with the host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
@@ -18098,6 +18351,14 @@ fr:{
   "Gelöscht":"Supprimé",
   "Öffnen":"Ouvrir",
   "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Ouvre Réglages › Notifications › Spotout",
+  "Immer an":"Toujours activé",
+  "Persönlich einladen":"Inviter personnellement",
+  "Über „Teilen“ geht es auch ohne Pro.":"Avec « Partager », ça marche aussi sans Pro.",
+  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"Tu n’as pas encore de contacts. Suis quelqu’un via la recherche – ou partage la fête avec « Partager ».",
+  "Einladung kopiert – jetzt einfügen und senden":"Invitation copiée – colle-la et envoie",
+  "Sehen, wer bei dir war":"Voir qui est passé",
+  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Comme sur TikTok : vois qui a consulté ton profil ces 30 derniers jours. Tu peux désactiver à tout moment – mais tu ne le verras plus.",
+  "Sehen, wer dein Profil besucht hat":"Voir qui a visité ton profil",
 "Pro verschenken":"Offrir Pro",
   "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
@@ -19328,6 +19589,14 @@ it:{
   "Gelöscht":"Eliminato",
   "Öffnen":"Apri",
   "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Apri Impostazioni › Notifiche › Spotout",
+  "Immer an":"Sempre attivo",
+  "Persönlich einladen":"Invita personalmente",
+  "Über „Teilen“ geht es auch ohne Pro.":"Con “Condividi” funziona anche senza Pro.",
+  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"Non hai ancora contatti. Segui qualcuno dalla ricerca – oppure condividi la festa con “Condividi”.",
+  "Einladung kopiert – jetzt einfügen und senden":"Invito copiato – ora incollalo e invia",
+  "Sehen, wer bei dir war":"Vedi chi è passato",
+  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Come su TikTok: vedi chi ha visto il tuo profilo negli ultimi 30 giorni. Puoi disattivarlo in qualsiasi momento – ma poi non lo vedrai più.",
+  "Sehen, wer dein Profil besucht hat":"Vedere chi ha visitato il tuo profilo",
 "Pro verschenken":"Regala Pro",
   "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
@@ -20053,6 +20322,127 @@ async function nativePushAnmelden(erzwingen){
 
 function nativeHaptik(art){ if(istApp())nativeCall('haptik',{art},3000); }
 
+/* ══════════ FOLLOW-ANFRAGEN (gesammelt) ══════════ */
+function anfragenOeffnen(){
+  if(!cUser){kontoNoetig();return;}
+  document.getElementById('anfragenOverlay').classList.add('open');
+  anfragenZeichnen();
+}
+function anfragenZeichnen(){
+  const box=document.getElementById('anfragenListe');
+  if(!box)return;
+  const a=window.__anfragen||[];
+  if(!a.length){
+    box.innerHTML='<div class="bes-leer"><b>Keine offenen Anfragen</b><span>Wer deinem privaten Profil folgen möchte, erscheint hier.</span></div>';
+    return;
+  }
+  box.innerHTML=a.map(x=>{
+    const p=x.profiles||{};
+    const nm=p.full_name||p.username||'Jemand';
+    const av=p.avatar_url?'<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>':esc(nm.charAt(0).toUpperCase());
+    return '<div class="fl-row anfr-zeile" data-von="'+x.von+'" onclick="closeOverlay(\'anfragenOverlay\');openUserProf(\''+x.von+'\')">'
+      +'<div class="av-sm">'+av+'</div>'
+      +'<div style="min-width:0;flex:1"><div class="att-name">'+esc(nm)+'</div><div class="att-user anfr-status">@'+esc(p.username||'')+' · '+ntZeit(x.created_at)+'</div></div>'
+      +'<div class="anfr-knoepfe">'
+        +'<button class="nt-knopf haupt" onclick="event.stopPropagation();anfrageImBlatt(this,\''+x.von+'\',true)">Bestätigen</button>'
+        +'<button class="nt-knopf" onclick="event.stopPropagation();anfrageImBlatt(this,\''+x.von+'\',false)">Löschen</button>'
+      +'</div></div>';
+  }).join('');
+}
+async function anfrageImBlatt(btn,von,ja){
+  const zeile=btn.closest('.anfr-zeile'); const knoepfe=zeile.querySelector('.anfr-knoepfe');
+  if(knoepfe.querySelector('button:disabled'))return;
+  knoepfe.querySelectorAll('button').forEach(b=>b.disabled=true);
+  const{data,error}=await sb.rpc('anfrage_beantworten',{p_von:von,p_ja:!!ja});
+  if(error){ toast(fehlerText(error),'error'); knoepfe.querySelectorAll('button').forEach(b=>b.disabled=false); return; }
+  window.__anfragen=(window.__anfragen||[]).filter(x=>x.von!==von);
+  const angenommen=ja&&data==='angenommen';
+  ntErledigt.set(von,data==='keine_anfrage'?'Schon erledigt':(angenommen?'Bestätigt':'Gelöscht'));
+  const status=zeile.querySelector('.anfr-status');
+  if(angenommen){
+    await anfrageFolgeStand(von);
+    const st=ntFolge.get(von)||{};
+    if(status)status.textContent='folgt dir jetzt';
+    knoepfe.innerHTML=flKnopf(von,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true);
+  }else{
+    if(status)status.textContent=data==='keine_anfrage'?'Schon erledigt':'Anfrage gelöscht';
+    knoepfe.innerHTML='';
+    setTimeout(()=>{ zeile.classList.add('weg'); setTimeout(()=>{ zeile.remove(); if(!(window.__anfragen||[]).length&&!document.querySelector('#anfragenListe .anfr-zeile'))anfragenZeichnen(); },260); },700);
+  }
+  anfrageErledigtZeigen(von,angenommen,data==='keine_anfrage');
+  try{ renderNotifs(); }catch(e){}
+}
+
+/* ══════════ PROFILBESUCHE (Pro) ══════════
+   Wie auf TikTok. Wer die Einstellung ausschaltet, wird bei anderen nicht
+   mehr gezaehlt und sieht selbst auch niemanden – beides entscheidet der Server. */
+const BES_AUGE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+async function besucherOeffnen(){
+  if(!cUser){kontoNoetig();return;}
+  const ov=document.getElementById('besucherOverlay'), box=document.getElementById('besucherListe');
+  if(!ov||!box)return;
+  ov.classList.add('open');
+  box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
+  const{data,error}=await sb.rpc('meine_besucher');
+  if(error){box.innerHTML='<div class="bes-leer"><b>Gerade nicht verfügbar</b><span>'+esc(fehlerText(error))+'</span></div>';return;}
+  const st=data?.status;
+  if(st==='kein_pro'){
+    box.innerHTML='<div class="bes-leer"><div class="bes-ic">'+BES_AUGE+'</div><b>Sieh, wer bei dir vorbeischaut</b>'
+      +'<span>Mit Pro siehst du, wer dein Profil in den letzten 30 Tagen angesehen hat.</span>'
+      +'<button class="nt-knopf haupt" onclick="closeOverlay(\'besucherOverlay\');showPage(\'pro\')">Pro ansehen</button></div>';
+    return;
+  }
+  if(st==='aus'){
+    box.innerHTML='<div class="bes-leer"><div class="bes-ic">'+BES_AUGE+'</div><b>Profilbesuche sind aus</b>'
+      +'<span>Solange sie aus sind, siehst du nicht, wer bei dir war – und andere sehen nicht, dass du bei ihnen warst.</span>'
+      +'<button class="nt-knopf haupt" onclick="besucheSetzen(null,true).then(besucherOeffnen)">Einschalten</button></div>';
+    return;
+  }
+  const liste=data?.besucher||[];
+  sb.rpc('besucher_gesehen').then(()=>{},()=>{});
+  const punkt=document.getElementById('besuchPunkt'); if(punkt)punkt.hidden=true;
+  if(!liste.length){
+    box.innerHTML='<div class="bes-leer"><div class="bes-ic">'+BES_AUGE+'</div><b>Noch keine Besuche</b>'
+      +'<span>Hier siehst du, wer dein Profil in den letzten 30 Tagen angesehen hat.</span></div>';
+    return;
+  }
+  box.innerHTML='<div class="set-hilfe bes-hilfe">Letzte 30 Tage. Ausschalten kannst du das in den Einstellungen – dann siehst du hier aber auch niemanden mehr.</div>'
+    +liste.map(b=>{
+      const nm=b.full_name||b.username||'Jemand';
+      const av=b.avatar_url?'<img loading="lazy" decoding="async" src="'+escAttr(b.avatar_url)+'" alt=""/>':esc(nm.charAt(0).toUpperCase());
+      const stand=b.ich_folge?'folge':b.angefragt?'angefragt':(b.folgt_mir?'auch':'folgen');
+      return '<div class="fl-row bes-zeile" onclick="closeOverlay(\'besucherOverlay\');openUserProf(\''+b.id+'\')">'
+        +'<div class="av-sm">'+av+'</div>'
+        +'<div style="min-width:0;flex:1"><div class="att-name">'+esc(nm)+(b.is_pro?' '+proMarke(true):'')+(b.neu?'<span class="bes-neu" aria-label="neu"></span>':'')+'</div>'
+        +'<div class="att-user">'+ntZeit(b.zuletzt)+'</div></div>'
+        +flKnopf(b.id,stand,b.folgt_mir)+'</div>';
+    }).join('');
+}
+async function besucherPunkt(){
+  const punkt=document.getElementById('besuchPunkt');
+  if(!punkt||!cProfile?.is_pro||cProfile?.besuche_an===false){ if(punkt)punkt.hidden=true; return; }
+  try{ const{data}=await sb.rpc('besucher_neu'); punkt.hidden=!(Number(data)>0); }catch(e){}
+}
+function besucheSchalterZeigen(){
+  const el=document.getElementById('setBesucheSchalter');
+  if(el)el.innerHTML=schalter(cProfile?.besuche_an!==false,'besucheSetzen(this)');
+}
+async function besucheSetzen(btn,an){
+  if(!cUser||!cProfile)return;
+  const vorher=cProfile.besuche_an!==false;
+  const neu=an===true?true:!vorher;
+  cProfile.besuche_an=neu;
+  if(btn){btn.classList.toggle('an',neu);btn.setAttribute('aria-checked',neu?'true':'false');}
+  nativeHaptik('leicht');
+  const{error}=await sb.from('profiles').update({besuche_an:neu}).eq('id',cUser.id);
+  if(error){
+    cProfile.besuche_an=vorher;
+    if(btn){btn.classList.toggle('an',vorher);btn.setAttribute('aria-checked',vorher?'true':'false');}
+    toast(fehlerText(error),'error'); return;
+  }
+  toast(neu?'Profilbesuche sind an':'Profilbesuche sind aus','info');
+}
+
 /* ══════════ ABZEICHEN ══════════
    Verdient, nicht gekauft: der Server zaehlt beim Archivieren einer Party,
    bei Fotos und Followern mit und vergibt sie selbst. Hier wird nur gezeigt. */
@@ -20147,7 +20537,7 @@ function pushWertZeigen(){
 }
 function schalter(an,klick,gesperrt){
   return '<button class="sw'+(an?' an':'')+'" role="switch" aria-checked="'+(an?'true':'false')+'"'
-    +(gesperrt?' disabled':'')+' onclick="'+klick+'"><span></span></button>';
+    +(gesperrt?' disabled':'')+' onclick="'+klick+'"><i></i></button>';
 }
 async function pushEinstOeffnen(){
   if(!cUser){kontoNoetig();return;}
@@ -20180,22 +20570,39 @@ function pushEinstZeichnen(){
   st.innerHTML=status;
   li.innerHTML=
     '<div class="push-zeile haupt"><div><b>Alle pausieren</b><span>Keine Push-Nachrichten, bis du es wieder einschaltest</span></div>'
-      +schalter(alle,"pushSetzen('alle')")+'</div>'
+      +schalter(alle,"pushSetzen('alle',this)")+'</div>'
     +'<div class="set-frage">Was du bekommst</div>'
     +'<div class="push-gruppe'+(alle?' ruhig':'')+'">'
     +PUSH_GRUPPEN.map(g=>'<div class="push-zeile"><div><b>'+g.t+'</b><span>'+g.s+'</span></div>'
-        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"')",alle)+'</div>').join('')
+        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"',this)",alle)+'</div>').join('')
     +'</div>'
     +'<div class="push-zeile fix"><div><b>Konto & Sicherheit</b><span>Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.</span></div>'
-      +schalter(true,'',true)+'</div>';
+      +'<span class="push-immer">Immer an</span></div>';
   pushWertZeigen();
 }
-async function pushSetzen(k){
+/* Nur den getippten Schalter umstellen – neu zeichnen hiesse, der Knopf
+   springt statt zu gleiten. */
+function pushSchalterStellen(){
+  const aus=pushAus(), alle=aus.includes('alle');
+  const haupt=document.querySelector('#pushListe .push-zeile.haupt .sw');
+  if(haupt){haupt.classList.toggle('an',alle);haupt.setAttribute('aria-checked',alle?'true':'false');}
+  const gruppe=document.querySelector('#pushListe .push-gruppe');
+  if(gruppe){
+    gruppe.classList.toggle('ruhig',alle);
+    gruppe.querySelectorAll('.sw').forEach((b,i)=>{
+      const an=!alle&&!aus.includes(PUSH_GRUPPEN[i]?.k);
+      b.classList.toggle('an',an); b.setAttribute('aria-checked',an?'true':'false'); b.disabled=alle;
+    });
+  }
+  pushWertZeigen();
+}
+async function pushSetzen(k,btn){
   if(!cUser||!cProfile)return;
   const vorher=pushAus();
   const neu=vorher.includes(k)?vorher.filter(x=>x!==k):[...vorher,k];
   cProfile.push_aus=neu;
-  pushEinstZeichnen();
+  if(btn&&document.getElementById('pushListe')?.contains(btn))pushSchalterStellen();
+  else pushEinstZeichnen();
   nativeHaptik('leicht');
   const{error}=await sb.from('profiles').update({push_aus:neu}).eq('id',cUser.id);
   if(error){
@@ -20717,7 +21124,7 @@ async function blockUser(id){
   if(error&&error.code!=='23505'){toast('Das hat nicht geklappt. Versuch es nochmals.','error');return;}
   window.__blocked.add(id);
   closeReport();
-  closeUserProf();
+  closeUserProf(true);
   // Wer mitten im Gespraech blockiert, soll nicht darin sitzen bleiben.
   if(convUser?.id===id&&document.getElementById('page-conv')?.classList.contains('active'))showPage('chat');
   toast('Blockiert – ihr seht euch gegenseitig nicht mehr','success');
@@ -20781,7 +21188,7 @@ async function blockAufheben(btn,id){
 function moreBtn(art,id,name){
   return '<button class="more-btn" onclick="event.stopPropagation();openReport(\''+art+'\',\''+id+'\',\''
     +String(name||'').replace(/'/g,'')+'\')" aria-label="Melden">'
-    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11.5l-2.3 4 2.3 4H5"/></svg></button>';
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.6v5.2"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></button>';
 }
 
 /* ══════════ BENACHRICHTIGUNGEN ══════════
@@ -20838,8 +21245,14 @@ function ntZeit(iso){
 
 async function loadNotifs(){
   if(!cUser)return;
-  const{data,error}=await sb.from('notifications').select('*')
-    .eq('user_id',cUser.id).order('created_at',{ascending:false}).limit(50);
+  const [{data,error},{data:anfr}]=await Promise.all([
+    sb.from('notifications').select('*')
+      .eq('user_id',cUser.id).order('created_at',{ascending:false}).limit(50),
+    // Offene Follow-Anfragen stehen gesammelt oben – wie auf Instagram
+    sb.from('follow_anfragen').select('von,created_at,profiles:von(id,username,full_name,avatar_url)')
+      .eq('an',cUser.id).order('created_at',{ascending:false}).limit(100),
+  ]);
+  window.__anfragen=anfr||[];
   if(error){console.error('[notif]',error);return;}
   const list=data||[];
   // Gesichter zu den Meldungen – nur die, die noch nicht bekannt sind
@@ -20967,7 +21380,7 @@ function ntAktionen(n){
       const zurueck=(was==='Bestätigt'&&st)
         ? flKnopf(n.actor_id,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true) : '';
       return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'
-        +(was==='Bestätigt'?'✓ ':'')+esc(was)+'</span>'+zurueck+'</div>';
+        +(was==='Bestätigt'?'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>':'')+esc(was)+'</span>'+zurueck+'</div>';
     }
     return '<div class="nt-akt nt-akt-unten">'
       +'<button class="nt-knopf haupt" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',true)">Bestätigen</button>'
@@ -21021,10 +21434,50 @@ async function ntFolgeLaden(){
   renderNotifs();
 }
 
+/* Was in der Liste steht, soll logisch sein:
+   - offene Follow-Anfragen stehen gesammelt oben, nicht einzeln dazwischen
+   - eine Anfrage, die schon erledigt ist, verschwindet (ausser man hat sie
+     gerade hier bestaetigt – dann bleibt sie mit "Auch folgen" stehen)
+   - mehrere Nachrichten aus demselben Gespraech sind eine Zeile */
+function ntSichtbar(liste){
+  const proGespraech=new Map(), raus=[];
+  for(const roh of liste){
+    if(roh.art==='folge_anfrage'&&!ntErledigt.has(roh.actor_id))continue;
+    const n={...roh};
+    if(n.art==='nachricht'&&n.conversation_id){
+      const erste=proGespraech.get(n.conversation_id);
+      if(erste){ erste._mehr++; continue; }
+      n._mehr=1; proGespraech.set(n.conversation_id,n);
+    }
+    raus.push(n);
+  }
+  return raus;
+}
+function ntAnfragenZeile(){
+  const a=window.__anfragen||[];
+  if(!a.length)return '';
+  const p0=a[0].profiles||{};
+  const nm=p0.full_name||p0.username||'Jemand';
+  const avs=a.slice(0,2).map(x=>{
+    const p=x.profiles||{};
+    return '<span class="nt-anfr-av">'+(p.avatar_url
+      ? '<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>'
+      : esc((p.full_name||p.username||'?').charAt(0).toUpperCase()))+'</span>';
+  }).join('');
+  const rest=a.length-1;
+  return '<button class="nt-anfr" onclick="anfragenOeffnen()">'
+    +'<span class="nt-anfr-avs'+(a.length>1?' zwei':'')+'">'+avs+'</span>'
+    +'<span class="nt-anfr-txt"><b>Follow-Anfragen</b><span>'+esc(nm)
+      +(rest>0?(rest===1?' und 1 weitere Person':' und '+rest+' weitere'):'')+'</span></span>'
+    +'<span class="nt-anfr-zahl">'+a.length+'</span>'+'<svg class="nt-anfr-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>'
+    +'</button>';
+}
+
 function renderNotifs(){
   const box=document.getElementById('notifBody');
   if(!box)return;
-  const list=window.__notifs||[];
+  const list=ntSichtbar(window.__notifs||[]);
+  const anfrZeile=ntAnfragenZeile();
 
   /* Die Liste wird im Hintergrund neu gezeichnet. Ein halb geschriebenes
      Antwortfeld darf dabei nicht verschwinden. */
@@ -21054,7 +21507,7 @@ function renderNotifs(){
       : '';
   }
 
-  if(!list.length){
+  if(!list.length&&!anfrZeile){
     box.innerHTML=sys+'<div class="nt-leer"><div class="nt-leer-ic">'+NT_GLOCKE+'</div>'
       +'<b>Hier wird’s gleich lebendig</b>'
       +'<span>Nachrichten, Einladungen und wer von deinen Leuten wohin geht – alles landet hier.</span>'
@@ -21062,7 +21515,7 @@ function renderNotifs(){
     return;
   }
 
-  let html=sys, gruppe='', stufe=0;
+  let html=sys+anfrZeile, gruppe='', stufe=0;
   list.forEach(n=>{
     const g=ntGruppe(n);
     if(g!==gruppe){ html+='<div class="nt-gruppe">'+g+'</div>'; gruppe=g; }
@@ -21070,7 +21523,7 @@ function renderNotifs(){
     const frisch=!ntGezeigt.has(n.id);
     const zeigText=n.text&&!NT_ALT_HINWEIS.includes(n.text);
     const text=zeigText
-      ? '<div class="nt-s">'+(n.art==='nachricht'?'„'+esc(n.text)+'“':esc(n.text))+'</div>'
+      ? '<div class="nt-s">'+(n.art==='nachricht'?'„'+esc(n.text)+'“'+(n._mehr>1?' <span class="nt-mehr">+'+(n._mehr-1)+'</span>':''):esc(n.text))+'</div>'
       : '';
     html+='<div class="nt-row'+(neu?' neu':'')+(frisch?' frisch':'')+'" style="--i:'+(frisch?stufe++:0)+'" '
       +'onclick="oeffneNotif(\''+n.id+'\')">'
@@ -23175,6 +23628,7 @@ function showSettingsModal(){
   if(pt)pt.hidden=!cProfile?.is_pro;
   setKartenApp(kartenAppGespeichert());
   pushWertZeigen();
+  besucheSchalterZeigen();
   rausWahlAnzeigen();
   schenkenAnzeigen();
   setProfilUI(!!cProfile?.privat);
