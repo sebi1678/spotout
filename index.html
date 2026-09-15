@@ -18813,9 +18813,11 @@ function renderGastgeber(e){
     : esc(nm.charAt(0).toUpperCase());
   const unter=veranst
     ? '<span>Veranstalter'+(konto&&konto!==veranst?'<em style="font-style:normal"> · '+esc(konto)+'</em>':'')+'</span>'
-    : '<span>'+(verein
-        ? 'Verein'+(pr.verein_ort?' · '+esc(pr.verein_ort):'')
-        : 'Privatperson')+'</span>';
+    /* Bei einem Verein sagt die Marke daneben schon "Verein" – darunter
+       steht nur noch der Ort. */
+    : (verein
+        ? (pr.verein_ort?'<span>'+esc(pr.verein_ort)+'</span>':'')
+        : '<span>Privatperson</span>');
 
   box.innerHTML='<div class="d-gastgeber">'
     +'<div class="av-sm">'+av+'</div>'
