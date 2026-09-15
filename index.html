@@ -7135,6 +7135,19 @@
           <button class="schenk-weg" onclick="proZurueck()">Zurücknehmen</button>
         </div>
         <div class="ein-leer" id="schenkStand" hidden></div>
+
+        <div class="set-frage">Day One vergeben</div>
+        <div class="set-hilfe">Für Leute, die von Anfang an dabei sind. Benutzername ohne @ – die Person bekommt eine Benachrichtigung.</div>
+        <div class="schenk-reihe">
+          <input type="text" id="d1Name" placeholder="benutzername" autocapitalize="off"
+            spellcheck="false" maxlength="40"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();dayOneVergeben()}"/>
+        </div>
+        <div class="schenk-btns">
+          <button class="schenk-ja" id="d1Btn" onclick="dayOneVergeben()">Vergeben</button>
+          <button class="schenk-weg" onclick="dayOneEntfernen()">Entfernen</button>
+        </div>
+        <div class="ein-leer" id="d1Stand" hidden></div>
       </div>
     </div>
   </div>
@@ -10297,6 +10310,14 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
     +'Ich bin dabei!</button>';
 }
 
+/* "Anmeldung noch 100h 37min moeglich" liest niemand gern. Ab zwei
+   Tagen in Tagen, darunter in Stunden, zum Schluss in Minuten. */
+function anmeldungRest(stunden){
+  if(stunden>=48)return 'Anmeldung noch '+Math.floor(stunden/24)+' Tage möglich';
+  if(stunden>=1)return 'Anmeldung noch '+Math.floor(stunden)+' Std. möglich';
+  return 'Anmeldung noch '+Math.max(1,Math.round(stunden*60))+' Min. möglich';
+}
+
 async function openDetail(id){
   let e=evts.find(x=>x.id===id);
   /* Nicht in der Liste? Dann ist es eine vergangene Party aus "Besucht"
@@ -10369,7 +10390,7 @@ async function openDetail(id){
   const hoursUntilDeadline=deadline?(deadline-now)/(1000*60*60):null;
   let statusBanner='';
   if(isExpired){statusBanner=`<div style="background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#c0392b">Diese Party wird bald automatisch gelöscht.</div>`;}
-  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div style="background:rgba(91,94,166,.08);border:1px solid rgba(91,94,166,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9b9de0" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><div style="font-size:.82rem;color:#9b9de0">Anmeldung noch ${h>0?h+'h ':''} ${m}min möglich</div></div>`;}
+  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div style="background:rgba(91,94,166,.08);border:1px solid rgba(91,94,166,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9b9de0" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><div style="font-size:.82rem;color:#9b9de0">${anmeldungRest(hoursUntilDeadline)}</div></div>`;}
   // Die Gästeliste ist ein Pro-Merkmal – auch im Rückblick. Ohne Pro
   // bleibt sie zu, sonst wäre Pro nach der Party wertlos.
   const showFullList=(deadlinePassed||isOver)&&!!cProfile?.is_pro;
@@ -15130,8 +15151,8 @@ en:{
   ". Es wird nichts abgebucht.":". Nothing will be charged.",
   "Gekündigt – es wird nichts abgebucht.":"Cancelled – nothing will be charged.",
   "Aktiv bis":"Active until",
-  "Day One – einer der ersten 100 auf SPOTOUT":"Day One – one of the first 100 on SPOTOUT",
-  "Day One – einer der ersten 100":"Day One – one of the first 100",
+  "Day One – von Anfang an bei SPOTOUT dabei":"Day One – with SPOTOUT from the very start",
+  "Day One – von Anfang an dabei":"Day One – here from the start",
   "Person melden":"Report person",
   "Nachricht melden":"Report message",
   "Foto melden":"Report photo",
@@ -15876,6 +15897,12 @@ en:{
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
   "Pro verschenken":"Gift Pro",
+  "Day One vergeben":"Grant Day One",
+  "Für Leute, die von Anfang an dabei sind. Benutzername ohne @ – die Person bekommt eine Benachrichtigung.":"For people who've been here from the start. Username without @ – they'll get a notification.",
+  "Vergeben":"Grant",
+  "Entfernen":"Remove",
+  "Du bist jetzt Day One":"You're Day One now",
+  "Von Anfang an dabei – das Abzeichen steht ab sofort in deinem Profil.":"Here from the start – the badge now shows on your profile.",
   "Party-Fotos":"Party photos",
   "Foto":"Photo",
   "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"From the start of the party you share photos here – guests only, for 27 hours.",
@@ -16271,8 +16298,8 @@ fr:{
   ". Es wird nichts abgebucht.":". Rien ne sera prélevé.",
   "Gekündigt – es wird nichts abgebucht.":"Résilié – rien ne sera prélevé.",
   "Aktiv bis":"Actif jusqu’au",
-  "Day One – einer der ersten 100 auf SPOTOUT":"Day One – parmi les 100 premiers sur SPOTOUT",
-  "Day One – einer der ersten 100":"Day One – parmi les 100 premiers",
+  "Day One – von Anfang an bei SPOTOUT dabei":"Day One – sur SPOTOUT depuis le tout début",
+  "Day One – von Anfang an dabei":"Day One – là depuis le début",
   "Person melden":"Signaler la personne",
   "Nachricht melden":"Signaler le message",
   "Foto melden":"Signaler la photo",
@@ -17017,6 +17044,12 @@ fr:{
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
   "Pro verschenken":"Offrir Pro",
+  "Day One vergeben":"Attribuer Day One",
+  "Für Leute, die von Anfang an dabei sind. Benutzername ohne @ – die Person bekommt eine Benachrichtigung.":"Pour celles et ceux qui sont là depuis le début. Nom d'utilisateur sans @ – la personne reçoit une notification.",
+  "Vergeben":"Attribuer",
+  "Entfernen":"Retirer",
+  "Du bist jetzt Day One":"Tu es maintenant Day One",
+  "Von Anfang an dabei – das Abzeichen steht ab sofort in deinem Profil.":"Là depuis le début – le badge apparaît désormais sur ton profil.",
   "Party-Fotos":"Photos de la soirée",
   "Foto":"Photo",
   "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"Dès le début de la soirée, vous partagez vos photos ici – réservé aux invités, pendant 27 heures.",
@@ -17412,8 +17445,8 @@ it:{
   ". Es wird nichts abgebucht.":". Non verrà addebitato nulla.",
   "Gekündigt – es wird nichts abgebucht.":"Disdetto – non verrà addebitato nulla.",
   "Aktiv bis":"Attivo fino al",
-  "Day One – einer der ersten 100 auf SPOTOUT":"Day One – tra i primi 100 su SPOTOUT",
-  "Day One – einer der ersten 100":"Day One – tra i primi 100",
+  "Day One – von Anfang an bei SPOTOUT dabei":"Day One – su SPOTOUT fin dall'inizio",
+  "Day One – von Anfang an dabei":"Day One – qui dall'inizio",
   "Person melden":"Segnala la persona",
   "Nachricht melden":"Segnala il messaggio",
   "Foto melden":"Segnala la foto",
@@ -18158,6 +18191,12 @@ it:{
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
   "Pro verschenken":"Regala Pro",
+  "Day One vergeben":"Assegna Day One",
+  "Für Leute, die von Anfang an dabei sind. Benutzername ohne @ – die Person bekommt eine Benachrichtigung.":"Per chi c'è fin dall'inizio. Nome utente senza @ – la persona riceve una notifica.",
+  "Vergeben":"Assegna",
+  "Entfernen":"Rimuovi",
+  "Du bist jetzt Day One":"Ora sei Day One",
+  "Von Anfang an dabei – das Abzeichen steht ab sofort in deinem Profil.":"Qui dall'inizio – il badge ora è sul tuo profilo.",
   "Party-Fotos":"Foto della festa",
   "Foto":"Foto",
   "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"Dall'inizio della festa condividete qui le foto – solo per gli ospiti, per 27 ore.",
@@ -18521,6 +18560,9 @@ function locale(){ return LOCALE[LANG]||'de-CH'; }
 
 // Texte mit Zahlen darin – Muster statt fester Einträge
 const I18N_PAT=[
+  [/^Anmeldung noch (\d+) Tage möglich$/,{en:'Registration open for $1 more days', fr:'Inscription possible encore $1 jours', it:'Iscrizione possibile ancora per $1 giorni'}],
+  [/^Anmeldung noch (\d+) Std\. möglich$/,{en:'Registration open for $1 more hours', fr:'Inscription possible encore $1 h', it:'Iscrizione possibile ancora per $1 ore'}],
+  [/^Anmeldung noch (\d+) Min\. möglich$/,{en:'Registration open for $1 more minutes', fr:'Inscription possible encore $1 min', it:'Iscrizione possibile ancora per $1 minuti'}],
   // Kontakte auf der Partyseite – mit oder ohne angehaengten Pro-Satz
   [/^(\d+) Kontakte von dir sind dabei( ·)?$/,{en:'$1 of your contacts are going$2', fr:'$1 de tes contacts y vont$2', it:'$1 dei tuoi contatti ci vanno$2'}],
   [/^1 Kontakt von dir ist dabei( ·)?$/,{en:'1 of your contacts is going$1', fr:'1 de tes contacts y va$1', it:'1 dei tuoi contatti ci va$1'}],
@@ -19258,6 +19300,8 @@ const NT_ICON={
   // standen mit einer Uhr da.
   freund_dabei:{cls:'ein',svg:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
   folge_anfrage:{cls:'frage',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>'},
+  day_one:{cls:'ok',svg:'<path d="M3 18.5h18"/><path d="M6.5 18.5a5.5 5.5 0 0 1 11 0"/><path d="M12 4.5v3M5 8l2 2M19 8l-2 2"/>'},
+  foto_entfernt:{cls:'no',svg:'<path d="M3 8a2 2 0 0 1 2-2h2.5L9 4h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m9.5 10.5 5 5M14.5 10.5l-5 5"/>'},
   folge_zusage:{cls:'ok',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>'},
 };
 
@@ -21217,21 +21261,61 @@ async function proZurueck(){
 }
 
 /* ── Day One ───────────────────────────────────────────────────────
-   Ein Abzeichen für die ersten hundert Konten. Es kostet nichts, lässt
-   sich nicht kaufen und nicht nachholen – deshalb bedeutet es etwas.
-   Vergeben wird es in der Datenbank, der Browser zeigt es nur an. */
+   Ein Abzeichen fuer Leute, die von Anfang an dabei sind. Frueher bekamen
+   es automatisch die ersten hundert Konten – jetzt vergibt es der
+   Betreiber von Hand, wie Pro verschenken. Kaufen laesst es sich nicht.
+   Ob der Aufrufer Betreiber ist, prueft die Datenbank. */
+let d1Laeuft=false;
+
+async function dayOneVergeben(){
+  if(d1Laeuft)return;
+  const feld=document.getElementById('d1Name');
+  const name=(feld?.value||'').trim().replace(/^@/,'');
+  if(!name){toast('Welcher Benutzername?','warn');return;}
+  const btn=document.getElementById('d1Btn');
+  d1Laeuft=true;
+  if(btn){btn.disabled=true;btn.textContent='Moment…';}
+  try{
+    const{data,error}=await sb.rpc('day_one_vergeben_von_hand',{p_benutzername:name});
+    const r=Array.isArray(data)?data[0]:data;
+    if(error){toast(fehlerText(error),'error');return;}
+    dayOneStand(r);
+    if(r?.ok&&feld)feld.value='';
+  }finally{
+    d1Laeuft=false;
+    const b=document.getElementById('d1Btn');
+    if(b){b.disabled=false;b.textContent='Vergeben';}
+  }
+}
+
+async function dayOneEntfernen(){
+  const name=(document.getElementById('d1Name')?.value||'').trim().replace(/^@/,'');
+  if(!name){toast('Welcher Benutzername?','warn');return;}
+  const{data,error}=await sb.rpc('day_one_zurueck',{p_benutzername:name});
+  const r=Array.isArray(data)?data[0]:data;
+  if(error){toast(fehlerText(error),'error');return;}
+  dayOneStand(r);
+}
+
+function dayOneStand(r){
+  const text=r?.meldung||'Hat nicht geklappt';
+  toast(text,r?.ok?'success':'warn');
+  const stand=document.getElementById('d1Stand');
+  if(stand){stand.hidden=false;stand.textContent=text;}
+}
+
 function dayOneMarke(gross){
   /* Eigenes Zeichen – ein Sonnenaufgang, "von Anfang an". Vorher trug
      Day One denselben Stern wie Pro und sah aus wie eine kleinere
      Pro-Marke in Gold. Ein Tooltip erklaert auf dem Handy nichts, also
      sagt ein Tipp, was es bedeutet. */
   return '<span class="d1'+(gross?' d1-gross':'')+'" role="button" tabindex="0" '
-    +'aria-label="Day One – einer der ersten 100" onclick="event.stopPropagation();dayOneInfo()">'
+    +'aria-label="Day One – von Anfang an dabei" onclick="event.stopPropagation();dayOneInfo()">'
     +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
     +'<path d="M3 18.5h18"/><path d="M6.5 18.5a5.5 5.5 0 0 1 11 0"/><path d="M12 4.5v3M5 8l2 2M19 8l-2 2"/></svg>'
     +'Day One</span>';
 }
-function dayOneInfo(){ toast('Day One – einer der ersten 100 auf SPOTOUT','info'); }
+function dayOneInfo(){ toast('Day One – von Anfang an bei SPOTOUT dabei','info'); }
 
 /* ── Pro-Marke ─────────────────────────────────────────────────────
    Pro stand in drei Rosatoenen da, mal mit Textstern, mal mit SVG, und
