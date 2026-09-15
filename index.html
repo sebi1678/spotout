@@ -721,7 +721,7 @@
       position:absolute;inset:0;z-index:2;
       background:linear-gradient(to top,rgba(9,13,36,.85) 0%,rgba(9,13,36,.2) 50%,transparent 100%);
     }
-    .card-badges{position:absolute;top:12px;left:12px;right:12px;z-index:3;display:flex;justify-content:space-between;align-items:flex-start}
+    .card-badges{position:absolute;top:12px;left:12px;right:12px;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
     .world-pill{
       display:inline-flex;align-items:center;gap:4px;
       border-radius:980px;font-size:.68rem;font-weight:700;
@@ -1069,14 +1069,33 @@
       position:absolute;inset:0;
       background:linear-gradient(to top,rgba(9,13,36,.95) 0%,rgba(9,13,36,.3) 50%,rgba(9,13,36,.15) 100%);
     }
-    .d-hero-btns{position:absolute;top:calc(var(--safe-top) + 14px);left:14px;right:14px;display:flex;justify-content:space-between;z-index:3}
+    /* Die Knoepfe schwebten frei im Titelbild, jeder auf einer anderen Hoehe.
+       Jetzt eine Leiste: gleiche Knopfhoehe wie ueberall, gleicher Randabstand
+       wie auf den Party-Karten, sanfter Verlauf darunter fuer die Lesbarkeit. */
+    .d-hero-btns{
+      position:absolute;top:0;left:0;right:0;z-index:3;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:calc(var(--safe-top) + 12px) 12px 14px;
+      background:linear-gradient(to bottom,rgba(9,13,36,.55),rgba(9,13,36,0));
+      pointer-events:none;
+    }
+    .d-hero-btns>*{pointer-events:auto}
     .d-hero-rechts{display:flex;align-items:center;gap:8px}
+    .d-hero-btn.breit{
+      flex:none;width:auto;height:34px;padding:0 14px;border-radius:999px;
+      gap:7px;font-size:.76rem;font-weight:800;white-space:nowrap;
+    }
+    /* Kennzeichnungen sitzen jetzt in der freien Flaeche unten im Bild */
+    .d-hero-marken{
+      position:absolute;left:12px;right:12px;bottom:12px;z-index:3;
+      display:flex;flex-wrap:wrap;align-items:center;gap:6px;pointer-events:none;
+    }
     @media(hover:hover){.d-hero-btn:hover{background:rgba(9,13,36,.8)}}
-    .d-body{padding:18px 20px 0}
+    .d-body{padding:20px 20px 0}
     .d-pill-row{display:flex;align-items:center;gap:6px;margin-bottom:10px}
     .d-title{font-size:1.5rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em}
     .d-info-grid{
-      display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;
+      display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;
     }
     .d-info-cell{
       background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);
@@ -1092,7 +1111,7 @@
     .invite-row{display:flex;align-items:center;gap:10px}
     .invite-code{font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:.1em;flex:1}
     .copy-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:7px 14px;cursor:pointer;font-family:var(--font);font-size:.78rem;font-weight:700;color:#fff}
-    .d-pills{display:flex;gap:6px;padding:0 20px;margin-bottom:10px}
+    .d-pill-ort{font-size:.65rem}
     .d-emoji{display:none}
     .attend-btn{
       width:100%;border:none;border-radius:18px;cursor:pointer;
@@ -1960,7 +1979,7 @@
       background:linear-gradient(to top,rgba(6,9,26,.78) 0%,rgba(6,9,26,.18) 42%,rgba(6,9,26,.28) 100%);
     }
 
-    .fy-top{position:absolute;top:11px;left:11px;right:11px;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .fy-top{position:absolute;top:12px;left:12px;right:12px;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
     .fy-chip{
       display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
       border-radius:980px;font-size:.65rem;font-weight:800;letter-spacing:.03em;
@@ -1969,7 +1988,7 @@
     .fy-chip svg{width:11px;height:11px;flex-shrink:0}
     .fy-chip-dark{background:rgba(0,0,0,.58);color:#fff;border-color:rgba(255,255,255,.16)}
     .fy-reason{
-      position:absolute;left:11px;bottom:11px;z-index:3;
+      position:absolute;left:12px;bottom:12px;z-index:3;
       display:inline-flex;align-items:center;gap:5px;
       background:rgba(0,0,0,.6);
       border:1px solid rgba(255,255,255,.14);border-radius:980px;
@@ -2827,7 +2846,7 @@
     .cprev-ic svg{width:52px;height:52px;stroke-width:1.1}
     .cprev-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,9,26,.8),transparent 55%)}
     .cprev-chip{
-      position:absolute;top:10px;left:10px;z-index:3;
+      position:absolute;top:12px;left:12px;z-index:3;
       border-radius:980px;border:1px solid;padding:4px 10px;
       font-size:.6rem;font-weight:800;letter-spacing:.04em;background:rgba(0,0,0,.55);
     }
@@ -10925,7 +10944,7 @@ function cardHTML(e){
         ? '<span class="card-gebuehr">Gebühr offen</span>'
         : ''}
     </div>
-    ${distP?'<div style="position:absolute;bottom:10px;left:12px;z-index:3"><span class="pill pill-dark" style="font-size:.62rem">'+D_SYM.ort+' '+distP+'</span></div>':''}
+    ${distP?'<div style="position:absolute;bottom:12px;left:12px;z-index:3"><span class="pill pill-dark" style="font-size:.62rem">'+D_SYM.ort+' '+distP+'</span></div>':''}
   </div>
   <div class="card-body">
     <div style="font-size:.65rem;font-weight:700;color:${w.text};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">${esc(e.category||typeLabel)}</div>
@@ -11349,15 +11368,15 @@ async function openDetail(id){
         <div class="d-hero-rechts">
         ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\"<>&]/g,'')+'\')" aria-label="Party melden">'+pikto('melden',19)+'</button>':''}
         ${(!isPrivEv||isHost)?'<button class="d-hero-btn" onclick="openShare(\''+e.id+'\')" aria-label="Teilen">'+pikto('teilen',19)+'</button>':''}
-        ${isHost?'<button class="d-hero-btn" onclick="openManage(\''+e.id+'\')" style="font-size:.72rem;font-weight:800;padding:0 13px;width:auto;border-radius:999px;gap:6px">'+pikto('zahnrad',15)+'Verwalten</button>':''}
+        ${isHost?'<button class="d-hero-btn breit" onclick="openManage(\''+e.id+'\')">'+pikto('zahnrad',15)+'Verwalten</button>':''}
         </div>
       </div>
       ${!e.image_url?('<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.18;color:#fff">'+iconSvg(evIconKey(e),80)+'</div>'):''}
-    </div>
-    <div class="d-pills">
-      ${typePill}
-      ${verP}
-      ${distP?('<span class="pill pill-dark" style="font-size:.65rem">'+D_SYM.ort+' '+distP+'</span>'):''}
+      <div class="d-hero-marken">
+        ${typePill}
+        ${verP}
+        ${distP?('<span class="pill pill-dark d-pill-ort">'+D_SYM.ort+' '+distP+'</span>'):''}
+      </div>
     </div>
     <div class="d-body">
       ${pendH}
