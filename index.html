@@ -5446,6 +5446,25 @@
     .set-konto[hidden]{display:none}
     .set-konto .kz-text{min-width:0}
 
+    /* ══════════ VEREINE PRÜFEN (BETREIBER) ══════════ */
+    .vp-karte{
+      padding:14px;border-radius:16px;margin-bottom:10px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    }
+    .vp-name b{display:block;font-size:.95rem;font-weight:800;color:#fff;overflow-wrap:anywhere}
+    .vp-name span{display:block;font-size:.76rem;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+    .vp-name a{color:var(--text2)}
+    .vp-urteil{display:inline-block;margin-top:10px;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800}
+    .vp-urteil.ok{background:rgba(74,222,128,.14);color:#4ade80}
+    .vp-urteil.frage{background:rgba(255,176,32,.14);color:#FFB020}
+    .vp-urteil.no{background:rgba(255,69,86,.14);color:#FF6B7A}
+    .vp-text{font-size:.8rem;line-height:1.5;color:var(--text2);margin-top:8px}
+    .vp-quellen{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+    .vp-quelle{font-size:.75rem;color:#FF7FA5;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+    .vp-knoepfe{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .sec-btn.vp-nein{color:#FF6B7A;border-color:rgba(255,69,86,.3)}
+    .sec-btn.vp-nein.armed{background:#FF4556;border-color:#FF4556;color:#fff}
+
   </style>
 </head>
 <body>
@@ -6810,7 +6829,13 @@
 
       <!-- Nur der Betreiber sieht das – ganz unten, getrennt vom Rest -->
       <div class="set-gruppe" id="setSchenkenBox" hidden>
-        <div class="set-lbl">Betreiber: Pro verschenken</div>
+        <div class="set-lbl">Betreiber</div>
+        <button class="settings-btn" onclick="vereinePruefenOeffnen()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="set-frage">Pro verschenken</div>
         <div class="set-hilfe">Benutzername ohne @. Läuft schon ein Abo, wird die Zeit hinten angehängt.</div>
         <div class="schenk-reihe">
           <input type="text" id="schenkName" placeholder="benutzername" autocapitalize="off"
@@ -6879,6 +6904,18 @@
         etwas auffällt oder du mit einer Entscheidung nicht einverstanden bist.</div>
       <button class="sub-btn sub-public" style="margin-top:18px" onclick="closeOverlay('rulesOverlay')">Verstanden</button>
     </div>
+  </div>
+</div>
+
+<!-- ════ VEREINE PRÜFEN (nur Betreiber) ════ -->
+<div class="overlay" id="vereinePruefenOverlay" onclick="closeIfOutside(event,'vereinePruefenOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Vereine prüfen</div>
+      <button class="modal-x" onclick="closeOverlay('vereinePruefenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="vereinePruefenListe"></div></div>
   </div>
 </div>
 
@@ -14560,6 +14597,7 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Betreiber":"Operator",
   "Bestätige noch deine E-Mail.":"Please confirm your email.",
   "Danach kannst du Anlässe veröffentlichen.":"Then you can publish events.",
   "Wir prüfen deinen Verein.":"We’re checking your club.",
@@ -14581,7 +14619,6 @@ en:{
   "Wer darf dir schreiben?":"Who can message you?",
   "Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.":"People who want to follow you have to ask. Only connections see your details.",
   "Blockierte Personen":"Blocked people",
-  "Betreiber: Pro verschenken":"Operator: gift Pro",
   "Pro bleibt aktiv bis":"Pro stays active until",
   ". Es wird nichts abgebucht.":". Nothing will be charged.",
   "Gekündigt – es wird nichts abgebucht.":"Cancelled – nothing will be charged.",
@@ -15630,6 +15667,7 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Betreiber":"Exploitant",
   "Bestätige noch deine E-Mail.":"Confirme encore ton e-mail.",
   "Danach kannst du Anlässe veröffentlichen.":"Ensuite tu pourras publier des événements.",
   "Wir prüfen deinen Verein.":"Nous vérifions ton association.",
@@ -15651,7 +15689,6 @@ fr:{
   "Wer darf dir schreiben?":"Qui peut t’écrire ?",
   "Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.":"Qui veut te suivre doit demander. Seules tes connexions voient tes infos.",
   "Blockierte Personen":"Personnes bloquées",
-  "Betreiber: Pro verschenken":"Exploitant : offrir Pro",
   "Pro bleibt aktiv bis":"Pro reste actif jusqu’au",
   ". Es wird nichts abgebucht.":". Rien ne sera prélevé.",
   "Gekündigt – es wird nichts abgebucht.":"Résilié – rien ne sera prélevé.",
@@ -16700,6 +16737,7 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Betreiber":"Gestore",
   "Bestätige noch deine E-Mail.":"Conferma ancora la tua e-mail.",
   "Danach kannst du Anlässe veröffentlichen.":"Poi potrai pubblicare eventi.",
   "Wir prüfen deinen Verein.":"Stiamo verificando la tua associazione.",
@@ -16721,7 +16759,6 @@ it:{
   "Wer darf dir schreiben?":"Chi può scriverti?",
   "Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.":"Chi vuole seguirti deve chiedere. Solo i collegamenti vedono i tuoi dati.",
   "Blockierte Personen":"Persone bloccate",
-  "Betreiber: Pro verschenken":"Gestore: regala Pro",
   "Pro bleibt aktiv bis":"Pro resta attivo fino al",
   ". Es wird nichts abgebucht.":". Non verrà addebitato nulla.",
   "Gekündigt – es wird nichts abgebucht.":"Disdetto – non verrà addebitato nulla.",
@@ -19868,6 +19905,107 @@ let schenkLaeuft=false;
 function schenkenAnzeigen(){
   const box=document.getElementById('setSchenkenBox');
   if(box)box.hidden=!cProfile?.ist_admin;
+  if(cProfile?.ist_admin)vereinZahlLaden();
+}
+
+/* ── Vereine prüfen (nur Betreiber) ────────────────────────────────
+   Die KI hat recherchiert, hier entscheidet ein Mensch. Ob der Aufrufer
+   Betreiber ist, prueft die Datenbank selbst (verein_entscheiden) und die
+   Tabelle verein_pruefungen ist fuer alle anderen gar nicht lesbar. */
+const V_URTEIL={
+  echt:['ok','Wirkt echt'], unklar:['frage','Unklar'],
+  verdaechtig:['no','Verdächtig'], fehler:['frage','Prüfung fehlgeschlagen'],
+};
+// Quellen kommen aus dem Netz – nur echte Webadressen werden zu Links.
+function sichereUrl(u){ return /^https?:\/\//i.test(String(u||''))?String(u):''; }
+
+async function vereinZahlLaden(){
+  const el=document.getElementById('setVereinZahl');
+  if(!el)return;
+  const{count}=await sb.from('profiles').select('id',{count:'exact',head:true})
+    .eq('kontoart','verein').eq('verein_status','handpruefung');
+  el.textContent=count?String(count):'';
+}
+
+async function vereinePruefenOeffnen(){
+  if(!cProfile?.ist_admin)return;
+  const ov=document.getElementById('vereinePruefenOverlay');
+  const box=document.getElementById('vereinePruefenListe');
+  if(!ov||!box)return;
+  box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
+  ov.classList.add('open');
+  const{data,error}=await sb.from('profiles')
+    .select('id,full_name,username,verein_ort,website,created_at,verein_pruefungen(urteil,sicherheit,begruendung,quellen,fehler,created_at)')
+    .eq('kontoart','verein').eq('verein_status','handpruefung')
+    .order('created_at',{ascending:false}).limit(50);
+  if(error){box.innerHTML='<div class="up-empty">Das hat nicht geklappt. Versuch es nochmals.</div>';return;}
+  if(!data?.length){box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';return;}
+  box.innerHTML=data.map(v=>{
+    const pr=(v.verein_pruefungen||[]).slice()
+      .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+    const [kl,txt]=V_URTEIL[pr?.urteil]||['frage','Noch nicht geprüft'];
+    const web=sichereUrl(v.website);
+    const quellen=(pr?.quellen||[]).slice(0,4).map(q=>{
+      const u=sichereUrl(q.url);
+      return u?'<a class="vp-quelle" href="'+escAttr(u)+'" target="_blank" rel="noopener">'+esc(q.beleg||u)+'</a>':'';
+    }).join('');
+    return '<div class="vp-karte">'
+      +'<div class="vp-name"><b>'+esc(v.full_name||v.username||'Verein')+'</b>'
+        +'<span>'+esc(v.verein_ort||'')+(web?' · <a href="'+escAttr(web)+'" target="_blank" rel="noopener">'
+          +esc(web.replace(/^https?:\/\//,''))+'</a>':'')+'</span></div>'
+      +'<div class="vp-urteil '+kl+'">'+txt+(pr&&pr.urteil!=='fehler'?' · '+Number(pr.sicherheit||0)+' %':'')+'</div>'
+      +(pr?.begruendung?'<div class="vp-text">'+esc(pr.begruendung)+'</div>':'')
+      +(pr?.fehler?'<div class="vp-text">'+esc(pr.fehler)+'</div>':'')
+      +(quellen?'<div class="vp-quellen">'+quellen+'</div>':'')
+      +'<div class="vp-knoepfe">'
+        +'<button class="sec-btn" onclick="vereinEntscheiden(this,\''+v.id+'\',true)">Bestätigen</button>'
+        +'<button class="sec-btn vp-nein" onclick="vereinEntscheiden(this,\''+v.id+'\',false)">Ablehnen</button>'
+        +'<button class="sec-btn" onclick="vereinNochmalsPruefen(this,\''+v.id+'\')">Nochmals prüfen</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+async function vereinEntscheiden(btn,id,ja){
+  // Ablehnen braucht einen zweiten Tipp
+  if(!ja&&btn&&!btn.classList.contains('armed')){
+    btn.classList.add('armed');
+    btn.dataset.text=btn.textContent;
+    btn.textContent='Wirklich ablehnen?';
+    setTimeout(()=>{ btn.classList.remove('armed'); btn.textContent=btn.dataset.text; },4000);
+    return;
+  }
+  const karte=btn?.closest('.vp-karte');
+  karte?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  const{data,error}=await sb.rpc('verein_entscheiden',{p_profil:id,p_bestaetigen:!!ja});
+  if(error||!data?.ok){
+    toast(data?.meldung||'Das hat nicht geklappt. Versuch es nochmals.','error');
+    karte?.querySelectorAll('button').forEach(b=>b.disabled=false);
+    return;
+  }
+  toast(ja?'Verein bestätigt':'Verein abgelehnt','success');
+  karte?.remove();
+  const box=document.getElementById('vereinePruefenListe');
+  if(box&&!box.querySelector('.vp-karte'))box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';
+  vereinZahlLaden();
+}
+
+async function vereinNochmalsPruefen(btn,id){
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Prüft…';}
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const res=await fetch(SB_URL+'/functions/v1/verein-pruefen',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(session?.access_token||'')},
+      body:JSON.stringify({profil_id:id})
+    });
+    const j=await res.json().catch(()=>({}));
+    if(!res.ok)toast(j.error||'Das hat nicht geklappt. Versuch es nochmals.','error');
+    else toast(j.entscheidung==='bestaetigt'?'Verein bestätigt':'Prüfung aktualisiert','success');
+  }catch(e){
+    toast('Das hat nicht geklappt. Versuch es nochmals.','error');
+  }
+  vereinePruefenOeffnen();
+  vereinZahlLaden();
 }
 
 async function proVerschenken(){
