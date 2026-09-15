@@ -5465,6 +5465,104 @@
     .sec-btn.vp-nein{color:#FF6B7A;border-color:rgba(255,69,86,.3)}
     .sec-btn.vp-nein.armed{background:#FF4556;border-color:#FF4556;color:#fff}
 
+    /* ══════════ BENACHRICHTIGUNGEN: LEBENDIG ══════════
+       Vorher graue Zeilen mit Symbolen. Jetzt das Gesicht der Person, ein
+       farbiger Punkt dafuer, was passiert ist, und der naechste Schritt
+       gleich in der Zeile. */
+    .nt-gruppe{
+      font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+      color:var(--muted);margin:18px 2px 10px;
+    }
+    .nt-gruppe:first-child,.nt-sys + .nt-gruppe{margin-top:2px}
+    .nt-row{position:relative;gap:12px;padding:12px}
+    .nt-row.neu{
+      background:linear-gradient(135deg,rgba(255,45,118,.12),rgba(124,92,252,.08));
+      border-color:rgba(255,45,118,.3);
+    }
+    .nt-row.frisch{animation:ntRein var(--takt-lang) var(--kurve) both;animation-delay:calc(var(--i,0) * 40ms)}
+    @keyframes ntRein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .nt-punkt{
+      position:absolute;top:14px;right:12px;width:8px;height:8px;border-radius:50%;
+      background:#FF2D76;box-shadow:0 0 0 3px rgba(255,45,118,.2);
+    }
+    .nt-mitte{flex:1;min-width:0;padding-right:14px}
+    .nt-av{position:relative;flex:none;width:44px;height:44px}
+    .nt-av-bild{
+      width:44px;height:44px;border-radius:50%;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#5B5EA6,#7C5CFC);
+      font-size:1rem;font-weight:800;color:#fff;
+    }
+    .nt-av-bild img{width:100%;height:100%;object-fit:cover}
+    .nt-av:not(.ohne) .nt-ic{
+      position:absolute;right:-3px;bottom:-3px;width:22px;height:22px;flex:none;
+      border-radius:50%;border:2px solid #111633;color:#fff;background:#3a3f63;
+    }
+    .nt-av:not(.ohne) .nt-ic svg{width:11px;height:11px;stroke-width:2.6}
+    .nt-av:not(.ohne) .nt-ic.ok{background:#22a35a}
+    .nt-av:not(.ohne) .nt-ic.no{background:#e0445a}
+    .nt-av:not(.ohne) .nt-ic.frage{background:#e39a12}
+    .nt-av:not(.ohne) .nt-ic.ein{background:#7C5CFC}
+    .nt-av:not(.ohne) .nt-ic.msg{background:#FF2D76}
+    .nt-av.ohne .nt-ic{width:44px;height:44px;flex:none;border-radius:14px}
+    .nt-av.ohne .nt-ic svg{width:20px;height:20px}
+    .nt-ic.msg{background:rgba(255,45,118,.16);color:#FF7FA5}
+    .nt-blase{
+      margin-top:6px;padding:8px 12px;border-radius:14px 14px 14px 5px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+      font-size:.85rem;line-height:1.4;color:#fff;overflow-wrap:anywhere;
+      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+    }
+    .nt-akt{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:10px}
+    .nt-knopf{
+      border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;
+      border-radius:999px;padding:7px 14px;cursor:pointer;
+      font-family:var(--font);font-size:.76rem;font-weight:800;
+      transition:transform var(--takt-kurz) var(--kurve),opacity var(--takt-kurz) var(--kurve);
+    }
+    .nt-knopf.haupt{background:var(--grad-cta);border-color:transparent;box-shadow:0 4px 14px rgba(255,45,118,.22)}
+    .nt-knopf:active{transform:scale(var(--druck))}
+    .nt-antwort{margin-top:10px}
+    .nt-antwort[hidden]{display:none}
+    .nt-antwort.sendet{opacity:.55;pointer-events:none}
+    .nt-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -2px 8px;padding:0 2px}
+    .nt-chips::-webkit-scrollbar{display:none}
+    .nt-chip{
+      flex:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);
+      color:var(--text2);border-radius:999px;padding:6px 12px;cursor:pointer;
+      font-family:var(--font);font-size:.78rem;font-weight:700;
+      transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve);
+    }
+    .nt-chip:active{transform:scale(var(--druck));background:rgba(255,45,118,.18);color:#fff}
+    .nt-schreib{display:flex;align-items:center;gap:8px}
+    .nt-eingabe{
+      flex:1;min-width:0;padding:9px 14px;border-radius:999px;outline:none;
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+      color:#fff;font-family:var(--font);font-size:16px;
+    }
+    .nt-eingabe:focus{border-color:rgba(255,45,118,.5)}
+    .nt-eingabe::placeholder{color:rgba(255,255,255,.35)}
+    .nt-senden{
+      flex:none;width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--grad-cta);color:#fff;box-shadow:0 4px 14px rgba(255,45,118,.25);
+    }
+    .nt-senden svg{width:16px;height:16px}
+    .nt-senden:active{transform:scale(var(--druck-klein))}
+    .nt-gesendet{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:800;color:#4ade80}
+    .nt-gesendet svg{width:14px;height:14px}
+    .nt-leer{text-align:center;padding:24px 14px 8px}
+    .nt-leer-ic{
+      width:66px;height:66px;border-radius:50%;margin:0 auto 16px;
+      display:flex;align-items:center;justify-content:center;color:#fff;
+      background:linear-gradient(135deg,rgba(255,45,118,.28),rgba(124,92,252,.28));
+      box-shadow:0 0 0 8px rgba(255,45,118,.07);
+    }
+    .nt-leer-ic svg{width:28px;height:28px}
+    .nt-leer b{display:block;font-size:1.08rem;font-weight:800;color:#fff;margin-bottom:6px}
+    .nt-leer span{display:block;max-width:290px;margin:0 auto 16px;font-size:.85rem;line-height:1.5;color:var(--text2)}
+    @media (prefers-reduced-motion: reduce){ .nt-row.frisch{animation:none} }
+
   </style>
 </head>
 <body>
@@ -14597,6 +14695,20 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Früher":"Earlier",
+  "Antworten":"Reply",
+  "Antworten…":"Reply…",
+  "Zum Gespräch":"Open chat",
+  "Auch hingehen":"Go too",
+  "Einladung ansehen":"View invitation",
+  "Annehmen":"Accept",
+  "Ablehnen":"Decline",
+  "Schon erledigt":"Already done",
+  "Hier wird’s gleich lebendig":"Things are about to get lively",
+  "Nachrichten, Einladungen und wer von deinen Leuten wohin geht – alles landet hier.":"Messages, invitations and where your people are going – it all lands here.",
+  "Hoi! 👋":"Hi! 👋",
+  "Bin dabei 🎉":"I’m in 🎉",
+  "Klingt gut!":"Sounds good!",
   "Betreiber":"Operator",
   "Bestätige noch deine E-Mail.":"Please confirm your email.",
   "Danach kannst du Anlässe veröffentlichen.":"Then you can publish events.",
@@ -14656,7 +14768,6 @@ en:{
   "Jeder Link gilt für genau eine Person.":"Each link is valid for exactly one person.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"One tap on the button at the top and SPOTOUT is gone. To leave the calculator: long-press the number.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Private or club can’t be switched later. For both, create a second account.",
-  "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Nothing yet. Invitations, requests and changes to your parties show up here.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tap a suggestion so it shows up on the map. You can also find huts and club houses by name.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"You collect the entry fee yourself on site. The publishing fee applies regardless.",
   "Ein Link pro Name – er gilt genau einmal.":"One link per name – it works exactly once.",
@@ -15583,7 +15694,6 @@ en:{
   "Direkt in SPOTOUT senden":"Send directly in SPOTOUT",
   "Einladung fehlgeschlagen: ":"Invitation failed: ",
   "Alle als gelesen":"Mark all as read",
-  "Alles gelesen":"All read",
   "Auch als Systemmeldung, solange SPOTOUT offen ist.":"Also as a system alert while SPOTOUT is open.",
   "Erlauben":"Allow",
   "Systemmeldungen sind an":"System alerts are on",
@@ -15667,6 +15777,20 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Früher":"Plus tôt",
+  "Antworten":"Répondre",
+  "Antworten…":"Répondre…",
+  "Zum Gespräch":"Voir la conversation",
+  "Auch hingehen":"J’y vais aussi",
+  "Einladung ansehen":"Voir l’invitation",
+  "Annehmen":"Accepter",
+  "Ablehnen":"Refuser",
+  "Schon erledigt":"Déjà traité",
+  "Hier wird’s gleich lebendig":"Ça va bientôt s’animer ici",
+  "Nachrichten, Einladungen und wer von deinen Leuten wohin geht – alles landet hier.":"Messages, invitations et où vont tes amis – tout arrive ici.",
+  "Hoi! 👋":"Salut ! 👋",
+  "Bin dabei 🎉":"J’y serai 🎉",
+  "Klingt gut!":"Ça me va !",
   "Betreiber":"Exploitant",
   "Bestätige noch deine E-Mail.":"Confirme encore ton e-mail.",
   "Danach kannst du Anlässe veröffentlichen.":"Ensuite tu pourras publier des événements.",
@@ -15726,7 +15850,6 @@ fr:{
   "Jeder Link gilt für genau eine Person.":"Chaque lien vaut pour une seule personne.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un appui sur le bouton en haut et SPOTOUT disparaît. Pour quitter la calculatrice : appui long sur le nombre.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privé ou association ne peut pas être changé. Pour les deux, crée un second compte.",
-  "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Rien pour l’instant. Les invitations, demandes et changements de tes soirées apparaissent ici.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Choisis une suggestion pour qu’elle apparaisse sur la carte. Tu trouves aussi refuges et locaux de club par leur nom.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"Tu encaisses toi-même l’entrée sur place. La taxe de publication s’applique quand même.",
   "Ein Link pro Name – er gilt genau einmal.":"Un lien par nom – il ne fonctionne qu’une fois.",
@@ -16653,7 +16776,6 @@ fr:{
   "Direkt in SPOTOUT senden":"Envoyer directement dans SPOTOUT",
   "Einladung fehlgeschlagen: ":"Échec de l’invitation : ",
   "Alle als gelesen":"Tout marquer comme lu",
-  "Alles gelesen":"Tout est lu",
   "Auch als Systemmeldung, solange SPOTOUT offen ist.":"Aussi en notification système tant que SPOTOUT est ouvert.",
   "Erlauben":"Autoriser",
   "Systemmeldungen sind an":"Notifications système activées",
@@ -16737,6 +16859,20 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Früher":"Prima",
+  "Antworten":"Rispondi",
+  "Antworten…":"Rispondi…",
+  "Zum Gespräch":"Apri la chat",
+  "Auch hingehen":"Vado anch’io",
+  "Einladung ansehen":"Vedi invito",
+  "Annehmen":"Accetta",
+  "Ablehnen":"Rifiuta",
+  "Schon erledigt":"Già fatto",
+  "Hier wird’s gleich lebendig":"Tra poco qui si anima",
+  "Nachrichten, Einladungen und wer von deinen Leuten wohin geht – alles landet hier.":"Messaggi, inviti e dove vanno i tuoi amici – arriva tutto qui.",
+  "Hoi! 👋":"Ciao! 👋",
+  "Bin dabei 🎉":"Ci sono 🎉",
+  "Klingt gut!":"Mi piace!",
   "Betreiber":"Gestore",
   "Bestätige noch deine E-Mail.":"Conferma ancora la tua e-mail.",
   "Danach kannst du Anlässe veröffentlichen.":"Poi potrai pubblicare eventi.",
@@ -16796,7 +16932,6 @@ it:{
   "Jeder Link gilt für genau eine Person.":"Ogni link vale per una sola persona.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un tocco sul pulsante in alto e SPOTOUT sparisce. Per uscire dalla calcolatrice: tieni premuto il numero.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privato o associazione non si può cambiare. Per entrambi crea un secondo account.",
-  "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Ancora niente. Qui compaiono inviti, richieste e modifiche alle tue feste.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tocca un suggerimento perché compaia sulla mappa. Rifugi e sedi di associazioni li trovi anche per nome.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"L’ingresso lo incassi tu sul posto. La tariffa di pubblicazione vale comunque.",
   "Ein Link pro Name – er gilt genau einmal.":"Un link per nome – vale una sola volta.",
@@ -17724,7 +17859,6 @@ it:{
   "Direkt in SPOTOUT senden":"Invia direttamente su SPOTOUT",
   "Einladung fehlgeschlagen: ":"Invito non riuscito: ",
   "Alle als gelesen":"Segna tutto come letto",
-  "Alles gelesen":"Tutto letto",
   "Auch als Systemmeldung, solange SPOTOUT offen ist.":"Anche come avviso di sistema, finché SPOTOUT è aperto.",
   "Erlauben":"Consenti",
   "Systemmeldungen sind an":"Gli avvisi di sistema sono attivi",
@@ -18541,7 +18675,12 @@ const NT_ICON={
   verein_bestaetigt:{cls:'ok',svg:'<path d="M20 6 9 17l-5-5"/>'},
   verein_abgelehnt:{cls:'no',svg:'<path d="M18 6 6 18M6 6l12 12"/>'},
   verein_pruefen:{cls:'frage',svg:'<path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/>'},
-  nachricht:{cls:'ein',svg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+  nachricht:{cls:'msg',svg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+  // Diese drei gab es in der Datenbank schon, hier aber nicht – sie
+  // standen mit einer Uhr da.
+  freund_dabei:{cls:'ein',svg:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
+  folge_anfrage:{cls:'frage',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>'},
+  folge_zusage:{cls:'ok',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>'},
 };
 
 function ntIcon(art){
@@ -18564,6 +18703,12 @@ async function loadNotifs(){
     .eq('user_id',cUser.id).order('created_at',{ascending:false}).limit(50);
   if(error){console.error('[notif]',error);return;}
   const list=data||[];
+  // Gesichter zu den Meldungen – nur die, die noch nicht bekannt sind
+  const fehlen=[...new Set(list.map(n=>n.actor_id).filter(id=>id&&!ntLeute.has(id)))];
+  if(fehlen.length){
+    const{data:leute}=await sb.from('profiles').select('id,username,full_name,avatar_url').in('id',fehlen);
+    (leute||[]).forEach(p=>ntLeute.set(p.id,p));
+  }
   window.__notifs=list;
   notifRhythmus(list);
 
@@ -18632,16 +18777,83 @@ function closeNotifs(){
   notifWarNeu=new Set();
 }
 
+/* ── Die Liste ───────────────────────────────────────────────────────
+   Gesichter statt grauer Symbole, Gruppen nach Zeit, und bei jeder Meldung
+   gleich der naechste Schritt: eine Nachricht beantwortet man hier, eine
+   Anfrage nimmt man hier an. Wer erst in den Chat wechseln muss, schreibt
+   oft gar nicht mehr zurueck. */
+const NT_SCHNELL=['Hoi! 👋','Bin dabei 🎉','Wann geht’s los?','Klingt gut!'];
+const NT_SENDEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>';
+const NT_GLOCKE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg>';
+// Diese Saetze sagte der Server, als es noch keinen Knopf gab.
+const NT_ALT_HINWEIS=['Tipp an, um die Party anzusehen','Tipp an, um zu entscheiden'];
+let ntGezeigt=new Set(), ntGesendet=new Set(), ntErledigt=new Map(), ntLeute=new Map();
+
+function ntGruppe(n){
+  if(!n.gelesen||notifWarNeu.has(n.id))return 'Neu';
+  const d=new Date(n.created_at);
+  if(d.toDateString()===new Date().toDateString())return 'Heute';
+  if(Date.now()-d<7*864e5)return 'Diese Woche';
+  return 'Früher';
+}
+
+function ntAvatar(n){
+  const p=n.actor_id?ntLeute.get(n.actor_id):null;
+  if(!p)return '<div class="nt-av ohne">'+ntIcon(n.art)+'</div>';
+  const nm=p.full_name||p.username||'?';
+  const bild=p.avatar_url
+    ? '<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>'
+    : esc(nm.charAt(0).toUpperCase());
+  return '<div class="nt-av"><div class="nt-av-bild">'+bild+'</div>'+ntIcon(n.art)+'</div>';
+}
+
+function ntAktionen(n){
+  const id=n.id, halt='event.stopPropagation();';
+  if(n.art==='nachricht'&&n.conversation_id){
+    if(ntGesendet.has(id)){
+      return '<div class="nt-akt"><span class="nt-gesendet">'+HK+'<span>Gesendet</span></span>'
+        +'<button class="nt-knopf" onclick="'+halt+'oeffneNotif(\''+id+'\')">Zum Gespräch</button></div>';
+    }
+    return '<div class="nt-akt"><button class="nt-knopf haupt" onclick="'+halt+'ntAntworten(\''+id+'\')">Antworten</button></div>'
+      +'<div class="nt-antwort" id="nta-'+id+'" data-id="'+id+'" hidden onclick="event.stopPropagation()">'
+        +'<div class="nt-chips">'+NT_SCHNELL.map(t=>
+          '<button class="nt-chip" onclick="ntSenden(\''+id+'\',this.textContent)">'+esc(t)+'</button>').join('')+'</div>'
+        +'<div class="nt-schreib">'
+          +'<input class="nt-eingabe" type="text" maxlength="1000" placeholder="Antworten…" enterkeyhint="send" '
+            +'onkeydown="if(event.key===\'Enter\'){event.preventDefault();ntSenden(\''+id+'\')}"/>'
+          +'<button class="nt-senden" aria-label="Senden" onclick="ntSenden(\''+id+'\')">'+NT_SENDEN+'</button>'
+        +'</div>'
+      +'</div>';
+  }
+  if(n.art==='folge_anfrage'&&n.actor_id){
+    if(ntErledigt.has(n.actor_id))
+      return '<div class="nt-akt"><span class="nt-gesendet">'+HK+'<span>'+ntErledigt.get(n.actor_id)+'</span></span></div>';
+    return '<div class="nt-akt">'
+      +'<button class="nt-knopf haupt" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',true)">Annehmen</button>'
+      +'<button class="nt-knopf" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',false)">Ablehnen</button></div>';
+  }
+  const ziel={freund_dabei:'Auch hingehen',invite:'Einladung ansehen',guest_request:'Ansehen'}[n.art];
+  if(ziel&&n.event_id){
+    return '<div class="nt-akt"><button class="nt-knopf'+(n.art==='guest_request'?'':' haupt')+'" '
+      +'onclick="'+halt+'oeffneNotif(\''+id+'\')">'+ziel+'</button></div>';
+  }
+  return '';
+}
+
 function renderNotifs(){
   const box=document.getElementById('notifBody');
   if(!box)return;
   const list=window.__notifs||[];
-  const offen=list.filter(n=>!n.gelesen).length;
 
-  /* In der App geht es um echte Push-Nachrichten – die kommen auch
-     an, wenn SPOTOUT geschlossen ist. Im Browser gibt es nur den
-     Hinweis, solange die Seite offen ist. Zwei verschiedene Dinge,
-     also auch zwei verschiedene Sätze. */
+  /* Die Liste wird im Hintergrund neu gezeichnet. Ein halb geschriebenes
+     Antwortfeld darf dabei nicht verschwinden. */
+  const offenAntwort={}; let fokus=null;
+  box.querySelectorAll('.nt-antwort:not([hidden])').forEach(el=>{
+    const i=el.querySelector('input');
+    offenAntwort[el.dataset.id]=i?i.value:'';
+    if(i&&document.activeElement===i)fokus=el.dataset.id;
+  });
+
   let sys='';
   if(istApp()){
     sys = (pushZustand==='an')
@@ -18661,25 +18873,80 @@ function renderNotifs(){
       : '';
   }
 
-  const kopf='<div class="nt-head">'
-    +'<span style="font-size:.8rem;color:var(--muted)">'
-    +(offen?offen+' neu':'Alles gelesen')+'</span>'
-    /* Kein Knopf mehr: das Oeffnen der Liste zaehlt als gelesen. */
-    +'</div>';
-
   if(!list.length){
-    box.innerHTML=sys+'<div class="mg-empty">Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.</div>';
+    box.innerHTML=sys+'<div class="nt-leer"><div class="nt-leer-ic">'+NT_GLOCKE+'</div>'
+      +'<b>Hier wird’s gleich lebendig</b>'
+      +'<span>Nachrichten, Einladungen und wer von deinen Leuten wohin geht – alles landet hier.</span>'
+      +'<button class="nt-knopf haupt" onclick="closeNotifs();showPage(\'search\')">Leute finden</button></div>';
     return;
   }
 
-  box.innerHTML=sys+kopf+list.map(n=>
-    '<div class="nt-row'+((!n.gelesen||notifWarNeu.has(n.id))?' neu':'')+'" onclick="oeffneNotif(\''+n.id+'\')">'
-    +ntIcon(n.art)
-    +'<div style="flex:1;min-width:0">'
-    +'<div class="nt-t">'+esc(n.titel)+'</div>'
-    +(n.text?'<div class="nt-s">'+esc(n.text)+'</div>':'')
-    +'<div class="nt-time">'+ntZeit(n.created_at)+'</div>'
-    +'</div></div>').join('');
+  let html=sys, gruppe='', stufe=0;
+  list.forEach(n=>{
+    const g=ntGruppe(n);
+    if(g!==gruppe){ html+='<div class="nt-gruppe">'+g+'</div>'; gruppe=g; }
+    const neu=!n.gelesen||notifWarNeu.has(n.id);
+    const frisch=!ntGezeigt.has(n.id);
+    const zeigText=n.text&&!NT_ALT_HINWEIS.includes(n.text);
+    const text=zeigText
+      ? (n.art==='nachricht'?'<div class="nt-blase">'+esc(n.text)+'</div>':'<div class="nt-s">'+esc(n.text)+'</div>')
+      : '';
+    html+='<div class="nt-row'+(neu?' neu':'')+(frisch?' frisch':'')+'" style="--i:'+(frisch?stufe++:0)+'" '
+      +'onclick="oeffneNotif(\''+n.id+'\')">'
+      +ntAvatar(n)
+      +'<div class="nt-mitte"><div class="nt-t">'+esc(n.titel)+'</div>'+text
+      +'<div class="nt-time">'+ntZeit(n.created_at)+'</div>'+ntAktionen(n)+'</div>'
+      +(neu?'<span class="nt-punkt" aria-hidden="true"></span>':'')
+      +'</div>';
+  });
+  box.innerHTML=html;
+  list.forEach(n=>ntGezeigt.add(n.id));
+
+  Object.entries(offenAntwort).forEach(([id,wert])=>{
+    const el=document.getElementById('nta-'+id);
+    if(!el)return;
+    el.hidden=false;
+    const i=el.querySelector('input');
+    if(i){ i.value=wert; if(fokus===id)i.focus(); }
+  });
+}
+
+function ntAntworten(id){
+  const el=document.getElementById('nta-'+id);
+  if(!el)return;
+  el.hidden=!el.hidden;
+  if(!el.hidden)el.querySelector('input')?.focus();
+}
+
+async function ntSenden(id,vorlage){
+  const n=(window.__notifs||[]).find(x=>x.id===id);
+  const el=document.getElementById('nta-'+id);
+  const inp=el?.querySelector('input');
+  const txt=String(vorlage!=null?vorlage:(inp?.value||'')).trim();
+  if(!n?.conversation_id||!txt||!cUser)return;
+  el?.classList.add('sendet');
+  const{error}=await sb.from('messages')
+    .insert({conversation_id:n.conversation_id,sender_id:cUser.id,content:txt});
+  el?.classList.remove('sendet');
+  if(error){ toast(fehlerText(error),'error'); return; }
+  ntGesendet.add(id);
+  if(!n.gelesen){ n.gelesen=true; sb.from('notifications').update({gelesen:true}).eq('id',id); }
+  if(el)el.hidden=true;
+  renderNotifs();
+}
+
+async function ntAnfrage(btn,von,ja){
+  const akt=btn?.closest('.nt-akt');
+  akt?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  const{data,error}=await sb.rpc('anfrage_beantworten',{p_von:von,p_ja:!!ja});
+  if(error){
+    toast(fehlerText(error),'error');
+    akt?.querySelectorAll('button').forEach(b=>b.disabled=false);
+    return;
+  }
+  ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Angenommen':'Abgelehnt'));
+  renderNotifs();
+  try{ renderFolgeAnfragen(); }catch(e){}
 }
 
 async function oeffneNotif(id){
@@ -18694,6 +18961,10 @@ async function oeffneNotif(id){
     closeNotifs();
     await gespraechOeffnen(n.conversation_id);
     return;
+  }
+  // Folge-Meldungen fuehren zur Person
+  if(n.actor_id&&(n.art==='folge_anfrage'||n.art==='folge_zusage')){
+    closeNotifs(); openUserProf(n.actor_id); return;
   }
   // Vereinsmeldungen fuehren dorthin, wo man etwas damit anfangen kann
   if(n.art==='verein_pruefen'&&cProfile?.ist_admin){ closeNotifs(); vereinePruefenOeffnen(); return; }
