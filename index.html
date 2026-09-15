@@ -6897,7 +6897,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
       </div>
       <div class="ort-t">Damit wir wissen, was bei dir läuft</div>
-      <div class="ort-s">Dann siehst du zuerst, was in deiner Nähe läuft.</div>
+      <div class="ort-s">Dann stehen die nächsten Partys zuoberst.</div>
       <div class="ort-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Nur wenn die App offen ist</span></div>
       <div class="ort-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Niemand sieht, wo du bist</span></div>
       <div class="ort-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Lässt sich jederzeit wieder abstellen</span></div>
@@ -7941,7 +7941,7 @@ function showEmailConfirmScreen(email){
         <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:6px">Wir haben dir einen Link geschickt an</p>
         <p style="color:var(--text);font-size:.9rem;font-weight:600;margin-bottom:20px">${email}</p>
         <p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:32px">Tipp auf den Link darin – dann kannst du dich anmelden.</p>
-        <button class="auth-submit-btn" onclick="location.reload()" style="margin-bottom:12px">Zurück zur Anmeldung</button>
+        <button class="auth-submit-btn" onclick="location.reload()" style="width:100%;margin-bottom:12px">Zurück zur Anmeldung</button>
         <button class="auth-zweit" id="nochmalBtn" onclick="mailNochmal('${escAttr(email)}')">E-Mail nochmals schicken</button>
         <p style="color:var(--muted);font-size:.8rem;margin-top:14px">Nichts da? Schau im Spam-Ordner nach.</p>
       </div>
@@ -13843,7 +13843,7 @@ async function renderInviteCard(eventId){
   box.innerHTML='<div class="inv-card">'
     +'<div class="inv-hdr"><div class="inv-ic">'+EIN_SVG.schloss+'</div>'
     +'<div><div class="inv-t">Einladungen</div>'
-    +'<div class="inv-s">Jeder Link gilt für genau eine Person. Wird er weitergeleitet, läuft er ins Leere.</div></div></div>'
+    +'<div class="inv-s">Jeder Link gilt für genau eine Person.</div></div></div>'
     +'<div class="ein-neu">'
       +'<input id="einName" maxlength="40" placeholder="Für wen? z.B. Anna" '
         +'onkeydown="if(event.key===\'Enter\'){event.preventDefault();neueEinladung(\''+eventId+'\')}"/>'
@@ -14473,7 +14473,8 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
-  "Dann siehst du zuerst, was in deiner Nähe läuft.":"Then you’ll see what’s on near you first.",
+  "Dann stehen die nächsten Partys zuoberst.":"Then the nearest parties show up first.",
+  "Jeder Link gilt für genau eine Person.":"Each link is valid for exactly one person.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"One tap on the button at the top and SPOTOUT is gone. To leave the calculator: long-press the number.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Private or club can’t be switched later. For both, create a second account.",
   "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Nothing yet. Invitations, requests and changes to your parties show up here.",
@@ -14945,7 +14946,6 @@ en:{
   "Keine Namen angegeben":"No names given",
   "Wer kommt mit?":"Who’s coming with you?",
   "Einladungen":"Invitations",
-  "Jeder Link gilt für genau eine Person. Wird er weitergeleitet, läuft er ins Leere.":"Each link is valid for exactly one person. If it gets forwarded, it stops working.",
   "Noch keine Einladung. Schreib einen Namen hinein und tipp auf Einladung – du bekommst einen Link, den du dieser einen Person schickst.":"No invitations yet. Type a name and tap Invitation — you get a link to send to that one person.",
   "Noch nicht eingelöst":"Not redeemed yet",
   "Ohne Namen":"Without a name",
@@ -15498,7 +15498,8 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
-  "Dann siehst du zuerst, was in deiner Nähe läuft.":"Tu verras d’abord ce qui se passe près de chez toi.",
+  "Dann stehen die nächsten Partys zuoberst.":"Les soirées les plus proches apparaissent alors en premier.",
+  "Jeder Link gilt für genau eine Person.":"Chaque lien vaut pour une seule personne.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un appui sur le bouton en haut et SPOTOUT disparaît. Pour quitter la calculatrice : appui long sur le nombre.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privé ou association ne peut pas être changé. Pour les deux, crée un second compte.",
   "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Rien pour l’instant. Les invitations, demandes et changements de tes soirées apparaissent ici.",
@@ -15970,7 +15971,6 @@ fr:{
   "Keine Namen angegeben":"Aucun nom indiqué",
   "Wer kommt mit?":"Qui vient avec toi ?",
   "Einladungen":"Invitations",
-  "Jeder Link gilt für genau eine Person. Wird er weitergeleitet, läuft er ins Leere.":"Chaque lien vaut pour une seule personne. Transféré, il ne mène nulle part.",
   "Noch keine Einladung. Schreib einen Namen hinein und tipp auf Einladung – du bekommst einen Link, den du dieser einen Person schickst.":"Pas encore d’invitation. Écris un nom et touche Invitation – tu reçois un lien pour cette personne.",
   "Noch nicht eingelöst":"Pas encore utilisé",
   "Ohne Namen":"Sans nom",
@@ -16523,7 +16523,8 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
-  "Dann siehst du zuerst, was in deiner Nähe läuft.":"Così vedi prima cosa succede vicino a te.",
+  "Dann stehen die nächsten Partys zuoberst.":"Così le feste più vicine compaiono per prime.",
+  "Jeder Link gilt für genau eine Person.":"Ogni link vale per una sola persona.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un tocco sul pulsante in alto e SPOTOUT sparisce. Per uscire dalla calcolatrice: tieni premuto il numero.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privato o associazione non si può cambiare. Per entrambi crea un secondo account.",
   "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Ancora niente. Qui compaiono inviti, richieste e modifiche alle tue feste.",
@@ -16995,7 +16996,6 @@ it:{
   "Keine Namen angegeben":"Nessun nome indicato",
   "Wer kommt mit?":"Chi viene con te?",
   "Einladungen":"Inviti",
-  "Jeder Link gilt für genau eine Person. Wird er weitergeleitet, läuft er ins Leere.":"Ogni link vale per una sola persona. Se viene inoltrato, non porta da nessuna parte.",
   "Noch keine Einladung. Schreib einen Namen hinein und tipp auf Einladung – du bekommst einen Link, den du dieser einen Person schickst.":"Ancora nessun invito. Scrivi un nome e tocca Invito – ricevi un link da mandare a quella sola persona.",
   "Noch nicht eingelöst":"Non ancora usato",
   "Ohne Namen":"Senza nome",
