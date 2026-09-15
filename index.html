@@ -3782,11 +3782,12 @@
     /* Jeder Knopf gibt beim Druecken nach – ohne diese Rueckmeldung
        wirkt eine App traege, auch wenn sie schnell ist. */
     .segbtn:active,.fy-modus button:active,.cal-act:active,.cset:active,
-    .mpro-btn:active,.card-cta:active,.prof-action-btn:active,
-    .insta-tab:active,.sh-send:active,.sh-alle:active,.route-opt:active,
+    .mpro-btn:active,.sh-send:active,.sh-alle:active,
     .nav-bell:active,.nav-create-btn:active,.nav-icon-btn:active{
-      transform:scale(var(--druck-klein));
+      transform:scale(var(--druck));
     }
+    .card-cta:active,.prof-action-btn:active,.route-opt:active{transform:scale(var(--druck-gross))}
+    .insta-tab:active{transform:none;opacity:.7}
     .segbtn,.fy-modus button,.cal-act,.cset,.mpro-btn,.card-cta,
     .prof-action-btn,.insta-tab,.sh-send,.sh-alle,.route-opt,
     .nav-bell,.nav-create-btn,.nav-icon-btn{
@@ -5630,7 +5631,7 @@
        ueberall gleich blass und flach. Ein Knopf, der gerade arbeitet
        (Ladekreis), bleibt gut lesbar – er ist beschaeftigt, nicht aus. */
     button:disabled{cursor:default;box-shadow:none;filter:none}
-    button:disabled:not(.is-busy):not(.busy):not(.send-btn){opacity:.5}
+    button:disabled:not(.is-busy):not(.busy):not(.send-btn):not(.sw){opacity:.5}
     button.is-busy:disabled,button.busy:disabled{opacity:.8}
 
     /* ── Fokus ──
@@ -5910,6 +5911,67 @@
       .nav-raus svg,.nav-bell svg,.nav-suche svg,.nav-icon-btn svg{width:16px;height:16px}
     }
 
+
+    /* ══════════ POLITUR: eine Linie fuer die ganze App ══════════ */
+    /* Schalter: Farben und Zeiten aus den Tokens, 44px Tippflaeche */
+    .sw.an{background:var(--pink)}
+    .sw{transition:background-color var(--takt) ease}
+    .sw>i{transition:transform var(--takt) cubic-bezier(.3,1.3,.5,1),width var(--takt-kurz) ease}
+    .sw::after{content:'';position:absolute;inset:-7px -6px}
+    /* Der zweite Schalter (Erstellen) sieht jetzt gleich aus */
+    .tog{width:51px;height:31px;flex:0 0 51px;border-radius:999px;background:rgba(120,120,128,.36);
+      -webkit-appearance:none;appearance:none;padding:0}
+    .tog::after{top:2px;left:2px;width:27px;height:27px;border-radius:999px;
+      box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);
+      transition:transform var(--takt) cubic-bezier(.3,1.3,.5,1)}
+    .tog.on{background:var(--pink)}
+    .tog.on::after{transform:translateX(20px)}
+    .tog:active{transform:none}
+
+    /* Hinweisbalken auf der Partyseite */
+    .d-banner{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:16px;border-radius:14px;
+      font-size:.82rem;font-weight:600;line-height:1.4}
+    .d-banner svg{flex:none}
+    .d-banner.rot{background:rgba(255,59,48,.10);border:1px solid rgba(255,59,48,.28);color:#FF8A80}
+    .d-banner.info{background:rgba(124,92,252,.10);border:1px solid rgba(124,92,252,.26);color:#C9BCFF}
+
+    /* Ausgewaehlt sieht ueberall gleich aus */
+    .gender-opt.active,.msg-setting-opt.active{background:rgba(255,45,118,.12);border-color:rgba(255,45,118,.5);color:#fff}
+    .oe-zeile button.on,.map-filter button.on{background:var(--grad-cta);border-color:transparent;color:#fff}
+
+    /* Abschnittstitel: eine Schrift */
+    .set-lbl,.csec,.d-section-title,.invite-lbl,.d-info-cell-lbl,.up-sec-lbl,.cal-section-title,.rep-trenn{
+      font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+    /* Kleine Schliessen-Knoepfe: ein Kreis */
+    .mpro-x,.ez-weg,.plus-konto-x,.os-weg{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.09);color:rgba(255,255,255,.86)}
+    .mpro-x svg,.ez-weg svg,.plus-konto-x svg,.os-weg svg{width:12px;height:12px;stroke-width:2.4}
+    .mreq-no{display:inline-flex;align-items:center;justify-content:center}
+    .nav-raus{width:34px;height:34px;border-radius:50%}
+
+    /* Kompakte Knoepfe: eine Rundung */
+    .fl-knopf,#notifBody .nt-knopf,.push-karte .nt-knopf,.sh-alle,.ein-neu button,.mg-warn button{border-radius:var(--knopf-r-klein)}
+    .nt-fertig{display:inline-flex;align-items:center;gap:4px}
+
+    /* Karten in den Einstellungen */
+    .settings-btn,.msg-setting-opt,.lang-opt,.gender-opt,.push-karte,.push-zeile.haupt{border-radius:16px}
+    .msg-setting-opt,.lang-opt,.gender-opt{border-width:1px}
+    .msg-setting-opt{transition:transform var(--takt-kurz)}
+    .msg-setting-opt:active{transform:scale(var(--druck-gross))}
+
+    /* Lesbarkeit */
+    .rdatenschutz,.auth-divider span{color:rgba(255,255,255,.5)}
+    .cal-group-hdr b{color:rgba(255,255,255,.55)}
+
+    /* 320 px: nichts quetscht sich */
+    .segbtn{min-width:0;overflow:hidden}
+    @media(max-width:340px){.segbtn svg{display:none}}
+    .fl-knopf{min-width:0;max-width:46%;overflow:hidden;text-overflow:ellipsis}
+    .tcp-check svg{width:12px;height:12px;display:block}
+
+    /* Langes Druecken markiert keinen Text und zeigt keine Link-Vorschau */
+    a.settings-btn,.msg-setting-opt,.push-zeile,.fl-row,.abz-karte{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   </style>
 </head>
 <body>
@@ -6638,17 +6700,17 @@
         <div class="type-card-pro sel-public" data-type="public" onclick="selTypePro('public',this)">
           <div class="tcp-icon" style="background:rgba(255,45,118,.12);color:#FF2D76"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Öffentliche Party</div><div class="tcp-desc">Jeder kann teilnehmen</div></div>
-          <div class="tcp-check">✓</div>
+          <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
         <div class="type-card-pro" data-type="private" onclick="selTypePro('private',this)">
           <div class="tcp-icon" style="background:rgba(99,59,255,.12);color:#7C5CFC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Private Party</div><div class="tcp-desc">Nur mit Einladungscode</div></div>
-          <div class="tcp-check">✓</div>
+          <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
         <div class="type-card-pro" data-type="events" onclick="selTypePro('events',this)">
           <div class="tcp-icon" style="background:rgba(255,215,0,.08);color:#FFD700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Event</div><div class="tcp-desc">Als Veranstalter oder Club</div></div>
-          <div class="tcp-check">✓</div>
+          <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
       </div>
       <div id="verify-step" style="display:none">
@@ -10841,7 +10903,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
   if(isFull&&!isAtt){
     if(aufWarteliste)return attNote('Du stehst auf der Warteliste');
     if(cProfile?.is_pro){
-      return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">✦ Auf die Warteliste</button>';
+      return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">Auf die Warteliste</button>';
     }
     return attNote('Party ist voll – nur Pro kann auf die Warteliste','warn');
   }
@@ -10962,8 +11024,8 @@ async function openDetail(id){
   const deadlinePassed=deadline?now>deadline:false;
   const hoursUntilDeadline=deadline?(deadline-now)/(1000*60*60):null;
   let statusBanner='';
-  if(isOver&&bisLoeschen<3){statusBanner=`<div style="background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#c0392b">Diese Party wird bald automatisch gelöscht.</div>`;}
-  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div style="background:rgba(91,94,166,.08);border:1px solid rgba(91,94,166,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">${pikto('zeit',16)}<div style="font-size:.82rem;color:#9b9de0">${anmeldungRest(hoursUntilDeadline)}</div></div>`;}
+  if(isOver&&bisLoeschen<3){statusBanner=`<div class="d-banner rot">${pikto('zeit',16)}<span>Diese Party wird bald automatisch gelöscht.</span></div>`;}
+  else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div class="d-banner info">${pikto('zeit',16)}<span>${anmeldungRest(hoursUntilDeadline)}</span></div>`;}
   // Die Gästeliste ist ein Pro-Merkmal – auch im Rückblick. Ohne Pro
   // bleibt sie zu, sonst wäre Pro nach der Party wertlos.
   const showFullList=(deadlinePassed||isOver)&&!!cProfile?.is_pro;
@@ -13149,7 +13211,7 @@ async function loadMsgRequests(){
         +'<div style="flex:1;min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'Unbekannt')+'</div>'
         +'<div class="att-user">möchte dir schreiben</div></div>'
         +'<button class="mreq-yes" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',true,this)">Annehmen</button>'
-        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false,this)" aria-label="Ablehnen">✕</button>'
+        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false,this)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
         +'</div>';
     }).join('');
 }
@@ -20193,22 +20255,39 @@ function pushEinstZeichnen(){
   st.innerHTML=status;
   li.innerHTML=
     '<div class="push-zeile haupt"><div><b>Alle pausieren</b><span>Keine Push-Nachrichten, bis du es wieder einschaltest</span></div>'
-      +schalter(alle,"pushSetzen('alle')")+'</div>'
+      +schalter(alle,"pushSetzen('alle',this)")+'</div>'
     +'<div class="set-frage">Was du bekommst</div>'
     +'<div class="push-gruppe'+(alle?' ruhig':'')+'">'
     +PUSH_GRUPPEN.map(g=>'<div class="push-zeile"><div><b>'+g.t+'</b><span>'+g.s+'</span></div>'
-        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"')",alle)+'</div>').join('')
+        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"',this)",alle)+'</div>').join('')
     +'</div>'
     +'<div class="push-zeile fix"><div><b>Konto & Sicherheit</b><span>Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.</span></div>'
       +'<span class="push-immer">Immer an</span></div>';
   pushWertZeigen();
 }
-async function pushSetzen(k){
+/* Nur den getippten Schalter umstellen – neu zeichnen hiesse, der Knopf
+   springt statt zu gleiten. */
+function pushSchalterStellen(){
+  const aus=pushAus(), alle=aus.includes('alle');
+  const haupt=document.querySelector('#pushListe .push-zeile.haupt .sw');
+  if(haupt){haupt.classList.toggle('an',alle);haupt.setAttribute('aria-checked',alle?'true':'false');}
+  const gruppe=document.querySelector('#pushListe .push-gruppe');
+  if(gruppe){
+    gruppe.classList.toggle('ruhig',alle);
+    gruppe.querySelectorAll('.sw').forEach((b,i)=>{
+      const an=!alle&&!aus.includes(PUSH_GRUPPEN[i]?.k);
+      b.classList.toggle('an',an); b.setAttribute('aria-checked',an?'true':'false'); b.disabled=alle;
+    });
+  }
+  pushWertZeigen();
+}
+async function pushSetzen(k,btn){
   if(!cUser||!cProfile)return;
   const vorher=pushAus();
   const neu=vorher.includes(k)?vorher.filter(x=>x!==k):[...vorher,k];
   cProfile.push_aus=neu;
-  pushEinstZeichnen();
+  if(btn&&document.getElementById('pushListe')?.contains(btn))pushSchalterStellen();
+  else pushEinstZeichnen();
   nativeHaptik('leicht');
   const{error}=await sb.from('profiles').update({push_aus:neu}).eq('id',cUser.id);
   if(error){
@@ -20980,7 +21059,7 @@ function ntAktionen(n){
       const zurueck=(was==='Bestätigt'&&st)
         ? flKnopf(n.actor_id,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true) : '';
       return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'
-        +(was==='Bestätigt'?'✓ ':'')+esc(was)+'</span>'+zurueck+'</div>';
+        +(was==='Bestätigt'?'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>':'')+esc(was)+'</span>'+zurueck+'</div>';
     }
     return '<div class="nt-akt nt-akt-unten">'
       +'<button class="nt-knopf haupt" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',true)">Bestätigen</button>'
