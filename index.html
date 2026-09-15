@@ -6688,7 +6688,7 @@
       <!-- Schnell raus -->
       <div style="margin-bottom:20px">
         <div class="set-lbl">Schnell raus</div>
-        <div class="set-hilfe">Ein Knopf oben in der Leiste. Ein Tipp, und SPOTOUT ist weg – falls jemand über die Schulter schaut. Der Taschenrechner rechnet wirklich; zurück kommst du mit einem langen Druck auf die Anzeige.</div>
+        <div class="set-hilfe">Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.</div>
         <div class="chipset" id="setRausWahl">
           <button class="cset" data-raus="" onclick="setSchnellRaus('')">Aus</button>
           <button class="cset" data-raus="tarnung" onclick="setSchnellRaus('tarnung')">Taschenrechner</button>
@@ -6897,7 +6897,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
       </div>
       <div class="ort-t">Damit wir wissen, was bei dir läuft</div>
-      <div class="ort-s">SPOTOUT sortiert die Partys dann nach Entfernung – zuerst das Fest im Nachbardorf, nicht eines am anderen Ende der Schweiz.</div>
+      <div class="ort-s">Dann siehst du zuerst, was in deiner Nähe läuft.</div>
       <div class="ort-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Nur wenn die App offen ist</span></div>
       <div class="ort-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Niemand sieht, wo du bist</span></div>
       <div class="ort-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Lässt sich jederzeit wieder abstellen</span></div>
@@ -7760,9 +7760,7 @@ function kontenZeichnen(){
   kasten.innerHTML=zeilen
     +'<button class="konto-neu" onclick="kontoHinzufuegen()">'
       +'<span class="kz-av">+</span><span>Weiteres Konto hinzufügen</span></button>'
-    +'<div class="konten-hinweis">Ein Konto bleibt privat oder Verein – das lässt sich '
-      +'nachträglich nicht umstellen. Wer beides braucht, legt ein zweites Konto an '
-      +'und wechselt hier.</div>';
+    +'<div class="konten-hinweis">Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.</div>';
 }
 
 async function kontoWechseln(id){
@@ -14475,6 +14473,10 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Dann siehst du zuerst, was in deiner Nähe läuft.":"Then you’ll see what’s on near you first.",
+  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"One tap on the button at the top and SPOTOUT is gone. To leave the calculator: long-press the number.",
+  "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Private or club can’t be switched later. For both, create a second account.",
+  "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Nothing yet. Invitations, requests and changes to your parties show up here.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tap a suggestion so it shows up on the map. You can also find huts and club houses by name.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"You collect the entry fee yourself on site. The publishing fee applies regardless.",
   "Ein Link pro Name – er gilt genau einmal.":"One link per name – it works exactly once.",
@@ -14600,7 +14602,6 @@ en:{
   "Weiteres Konto hinzufügen":"Add another account",
   "Vereinskonto":"Club account",
   "Privat":"Personal",
-  "Ein Konto bleibt privat oder Verein – das lässt sich nachträglich nicht umstellen. Wer beides braucht, legt ein zweites Konto an und wechselt hier.":"An account stays personal or club – that can’t be changed later. If you need both, create a second account and switch here.",
   "Wird gewechselt…":"Switching…",
   "Bitte melde dich für dieses Konto neu an":"Please sign in again for this account",
   "Melde dich mit dem anderen Konto an oder erstelle eines":"Sign in with the other account or create one",
@@ -14646,7 +14647,6 @@ en:{
   "Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.":"Even on the lock screen – for new messages, invites and changes.",
   "Partys in deiner Nähe":"Parties near you",
   "Damit wir wissen, was bei dir läuft":"So we know what’s on where you are",
-  "SPOTOUT sortiert die Partys dann nach Entfernung – zuerst das Fest im Nachbardorf, nicht eines am anderen Ende der Schweiz.":"SPOTOUT then sorts parties by distance – the one in the next village first, not one at the other end of Switzerland.",
   "Nur wenn die App offen ist":"Only while the app is open",
   "Niemand sieht, wo du bist":"Nobody sees where you are",
   "Lässt sich jederzeit wieder abstellen":"You can turn it off again anytime",
@@ -15187,7 +15187,6 @@ en:{
   "Total":"Total",
   "Veranstalter":"Organiser",
   "Taschenrechner":"Calculator",
-  "Ein Knopf oben in der Leiste. Ein Tipp, und SPOTOUT ist weg – falls jemand über die Schulter schaut. Der Taschenrechner rechnet wirklich; zurück kommst du mit einem langen Druck auf die Anzeige.":"A button in the top bar. One tap and SPOTOUT is gone — in case someone is looking over your shoulder. The calculator really works; press and hold the display to come back.",
   "Fehler":"Error",
   "Bild ausrichten":"Position your picture",
   "Schieb das Bild mit dem Finger, zieh mit zwei Fingern zum Zoomen.":"Drag the picture with one finger, pinch with two to zoom.",
@@ -15421,7 +15420,6 @@ en:{
   "Systemmeldungen sind an":"System alerts are on",
   "Bleibt aus – du siehst alles im Glöckchen":"Staying off — you’ll see everything in the bell",
   "Dein Browser kann das nicht":"Your browser can’t do that",
-  "Noch nichts passiert. Hier landen Einladungen, Anfragen deiner Gäste und Änderungen an Partys, bei denen du dabei bist.":"Nothing yet. Invitations, guest requests and changes to parties you’re attending land here.",
   "Was bringst du mit?":"What are you bringing?",
   "Der Host hat eine Mitbringliste angelegt. Tipp an, was du übernimmst – jeder Eintrag geht nur einmal.":"The host set up a bring list. Tap what you’ll take on — each item only goes once.",
   "Noch frei":"Still available",
@@ -15500,6 +15498,10 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Dann siehst du zuerst, was in deiner Nähe läuft.":"Tu verras d’abord ce qui se passe près de chez toi.",
+  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un appui sur le bouton en haut et SPOTOUT disparaît. Pour quitter la calculatrice : appui long sur le nombre.",
+  "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privé ou association ne peut pas être changé. Pour les deux, crée un second compte.",
+  "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Rien pour l’instant. Les invitations, demandes et changements de tes soirées apparaissent ici.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Choisis une suggestion pour qu’elle apparaisse sur la carte. Tu trouves aussi refuges et locaux de club par leur nom.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"Tu encaisses toi-même l’entrée sur place. La taxe de publication s’applique quand même.",
   "Ein Link pro Name – er gilt genau einmal.":"Un lien par nom – il ne fonctionne qu’une fois.",
@@ -15625,7 +15627,6 @@ fr:{
   "Weiteres Konto hinzufügen":"Ajouter un autre compte",
   "Vereinskonto":"Compte d’association",
   "Privat":"Personnel",
-  "Ein Konto bleibt privat oder Verein – das lässt sich nachträglich nicht umstellen. Wer beides braucht, legt ein zweites Konto an und wechselt hier.":"Un compte reste personnel ou associatif – impossible de changer après coup. Si tu as besoin des deux, crée un second compte et change ici.",
   "Wird gewechselt…":"Changement…",
   "Bitte melde dich für dieses Konto neu an":"Reconnecte-toi pour ce compte",
   "Melde dich mit dem anderen Konto an oder erstelle eines":"Connecte-toi avec l’autre compte ou crée-en un",
@@ -15671,7 +15672,6 @@ fr:{
   "Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.":"Même sur l’écran verrouillé – nouveaux messages, invitations et changements.",
   "Partys in deiner Nähe":"Des fêtes près de chez toi",
   "Damit wir wissen, was bei dir läuft":"Pour savoir ce qui se passe près de toi",
-  "SPOTOUT sortiert die Partys dann nach Entfernung – zuerst das Fest im Nachbardorf, nicht eines am anderen Ende der Schweiz.":"SPOTOUT trie alors les fêtes par distance – celle du village voisin d’abord, pas une à l’autre bout de la Suisse.",
   "Nur wenn die App offen ist":"Uniquement quand l’app est ouverte",
   "Niemand sieht, wo du bist":"Personne ne voit où tu es",
   "Lässt sich jederzeit wieder abstellen":"Tu peux le désactiver à tout moment",
@@ -16212,7 +16212,6 @@ fr:{
   "Total":"Total",
   "Veranstalter":"Organisateur",
   "Taschenrechner":"Calculatrice",
-  "Ein Knopf oben in der Leiste. Ein Tipp, und SPOTOUT ist weg – falls jemand über die Schulter schaut. Der Taschenrechner rechnet wirklich; zurück kommst du mit einem langen Druck auf die Anzeige.":"Un bouton en haut. Une pression et SPOTOUT disparaît — au cas où quelqu’un regarde par-dessus ton épaule. La calculatrice fonctionne vraiment ; appuie longuement sur l’écran pour revenir.",
   "Fehler":"Erreur",
   "Bild ausrichten":"Cadrer ta photo",
   "Schieb das Bild mit dem Finger, zieh mit zwei Fingern zum Zoomen.":"Déplace la photo avec un doigt, pince à deux doigts pour zoomer.",
@@ -16446,7 +16445,6 @@ fr:{
   "Systemmeldungen sind an":"Notifications système activées",
   "Bleibt aus – du siehst alles im Glöckchen":"Désactivé — tout reste dans la cloche",
   "Dein Browser kann das nicht":"Ton navigateur ne gère pas ça",
-  "Noch nichts passiert. Hier landen Einladungen, Anfragen deiner Gäste und Änderungen an Partys, bei denen du dabei bist.":"Rien pour l’instant. Ici arrivent les invitations, les demandes de tes invités et les changements sur les soirées où tu vas.",
   "Was bringst du mit?":"Tu apportes quoi ?",
   "Der Host hat eine Mitbringliste angelegt. Tipp an, was du übernimmst – jeder Eintrag geht nur einmal.":"L’organisateur a créé une liste des choses à apporter. Touche ce que tu prends — chaque élément une seule fois.",
   "Noch frei":"Encore libre",
@@ -16525,6 +16523,10 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Dann siehst du zuerst, was in deiner Nähe läuft.":"Così vedi prima cosa succede vicino a te.",
+  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un tocco sul pulsante in alto e SPOTOUT sparisce. Per uscire dalla calcolatrice: tieni premuto il numero.",
+  "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privato o associazione non si può cambiare. Per entrambi crea un secondo account.",
+  "Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.":"Ancora niente. Qui compaiono inviti, richieste e modifiche alle tue feste.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tocca un suggerimento perché compaia sulla mappa. Rifugi e sedi di associazioni li trovi anche per nome.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"L’ingresso lo incassi tu sul posto. La tariffa di pubblicazione vale comunque.",
   "Ein Link pro Name – er gilt genau einmal.":"Un link per nome – vale una sola volta.",
@@ -16650,7 +16652,6 @@ it:{
   "Weiteres Konto hinzufügen":"Aggiungi un altro account",
   "Vereinskonto":"Account di associazione",
   "Privat":"Personale",
-  "Ein Konto bleibt privat oder Verein – das lässt sich nachträglich nicht umstellen. Wer beides braucht, legt ein zweites Konto an und wechselt hier.":"Un account resta personale o di associazione – non si può cambiare dopo. Se ti servono entrambi, crea un secondo account e cambia qui.",
   "Wird gewechselt…":"Cambio in corso…",
   "Bitte melde dich für dieses Konto neu an":"Accedi di nuovo per questo account",
   "Melde dich mit dem anderen Konto an oder erstelle eines":"Accedi con l’altro account o creane uno",
@@ -16696,7 +16697,6 @@ it:{
   "Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.":"Anche a schermo bloccato – nuovi messaggi, inviti e modifiche.",
   "Partys in deiner Nähe":"Feste vicino a te",
   "Damit wir wissen, was bei dir läuft":"Così sappiamo cosa succede da te",
-  "SPOTOUT sortiert die Partys dann nach Entfernung – zuerst das Fest im Nachbardorf, nicht eines am anderen Ende der Schweiz.":"SPOTOUT ordina le feste per distanza – prima quella del paese accanto, non una all’altro capo della Svizzera.",
   "Nur wenn die App offen ist":"Solo quando l’app è aperta",
   "Niemand sieht, wo du bist":"Nessuno vede dove sei",
   "Lässt sich jederzeit wieder abstellen":"Puoi disattivarlo quando vuoi",
@@ -17237,7 +17237,6 @@ it:{
   "Total":"Totale",
   "Veranstalter":"Organizzatore",
   "Taschenrechner":"Calcolatrice",
-  "Ein Knopf oben in der Leiste. Ein Tipp, und SPOTOUT ist weg – falls jemand über die Schulter schaut. Der Taschenrechner rechnet wirklich; zurück kommst du mit einem langen Druck auf die Anzeige.":"Un pulsante in alto. Un tocco e SPOTOUT sparisce — nel caso qualcuno stia guardando. La calcolatrice funziona davvero; tieni premuto il display per tornare.",
   "Fehler":"Errore",
   "Bild ausrichten":"Inquadra la tua foto",
   "Schieb das Bild mit dem Finger, zieh mit zwei Fingern zum Zoomen.":"Trascina la foto con un dito, pizzica con due per ingrandire.",
@@ -17472,7 +17471,6 @@ it:{
   "Systemmeldungen sind an":"Gli avvisi di sistema sono attivi",
   "Bleibt aus – du siehst alles im Glöckchen":"Restano spenti – vedi tutto nella campanella",
   "Dein Browser kann das nicht":"Il tuo browser non lo sa fare",
-  "Noch nichts passiert. Hier landen Einladungen, Anfragen deiner Gäste und Änderungen an Partys, bei denen du dabei bist.":"Ancora niente. Qui arrivano gli inviti, le richieste dei tuoi ospiti e le modifiche alle feste a cui partecipi.",
   "Was bringst du mit?":"Cosa porti?",
   "Der Host hat eine Mitbringliste angelegt. Tipp an, was du übernimmst – jeder Eintrag geht nur einmal.":"L’organizzatore ha creato una lista delle cose da portare. Tocca quello di cui ti occupi – ogni voce va una volta sola.",
   "Noch frei":"Ancora libero",
@@ -18273,8 +18271,7 @@ function renderNotifs(){
     +'</div>';
 
   if(!list.length){
-    box.innerHTML=sys+'<div class="mg-empty">Noch nichts passiert. '
-      +'Hier landen Einladungen, Anfragen deiner Gäste und Änderungen an Partys, bei denen du dabei bist.</div>';
+    box.innerHTML=sys+'<div class="mg-empty">Noch nichts da. Hier erscheinen Einladungen, Anfragen und Änderungen an deinen Partys.</div>';
     return;
   }
 
