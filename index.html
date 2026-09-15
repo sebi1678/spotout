@@ -4619,6 +4619,63 @@
     /* ══════════ PLAYLIST ══════════
        Die Party fängt beim Musikmachen an. Der Gastgeber legt in Spotify
        eine gemeinsame Playlist an, hier steht nur der Weg dorthin. */
+    /* ── Party-Fotos ── */
+    .foto-sec{margin:0 0 16px;padding:14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)}
+    .foto-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .foto-titel{display:flex;align-items:center;gap:8px;font-size:.95rem;font-weight:800;color:#fff}
+    .foto-titel svg{color:#FF7FA5;flex-shrink:0}
+    .foto-zahl{font-size:.7rem;font-weight:800;color:var(--text2);background:rgba(255,255,255,.08);border-radius:999px;padding:2px 8px}
+    .foto-uhr{display:flex;align-items:center;gap:5px;font-size:.74rem;font-weight:700;color:var(--text2);white-space:nowrap}
+    .foto-raster{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .foto-kachel,.foto-neu{position:relative;aspect-ratio:1/1;border-radius:12px;overflow:hidden;padding:0;cursor:pointer;background:rgba(255,255,255,.06);border:0}
+    .foto-kachel img{width:100%;height:100%;object-fit:cover;display:block}
+    .foto-kachel:active,.foto-neu:active{transform:scale(var(--druck))}
+    .foto-neu{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#fff;
+      background:linear-gradient(135deg,rgba(255,45,118,.22),rgba(255,120,60,.14));
+      border:1.5px dashed rgba(255,127,165,.5);font-family:var(--font);
+    }
+    .foto-neu span{font-size:.76rem;font-weight:800}
+    .foto-neu em{font-style:normal;font-size:.66rem;font-weight:700;color:var(--text2)}
+    .foto-neu:disabled{cursor:default;opacity:.8}
+    .foto-hinweis{margin-top:10px;font-size:.74rem;line-height:1.45;color:var(--muted)}
+    .foto-leer{font-size:.84rem;line-height:1.5;color:var(--text2)}
+    .foto-regel{display:flex;gap:12px;align-items:flex-start;padding:10px 0}
+    .foto-regel-ic{flex:0 0 32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#FF7FA5;background:rgba(255,45,118,.12)}
+    .foto-regel b{display:block;color:#fff;font-size:.9rem;margin-bottom:2px}
+    .foto-regel span{display:block;color:var(--text2);font-size:.82rem;line-height:1.45}
+    .foto-regeln-ok{width:100%;margin:14px 0 6px}
+    .foto-voll{
+      position:fixed;inset:0;z-index:260;background:rgba(3,5,16,.97);
+      display:flex;flex-direction:column;
+      padding:calc(var(--safe-top) + 8px) 0 calc(var(--safe-bottom) + 12px);
+    }
+    .foto-voll-kopf{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 14px 10px}
+    .foto-voll-wer{display:flex;align-items:center;gap:10px;min-width:0;color:#fff;font-size:.86rem;font-weight:700}
+    .foto-voll-wer .av-sm{flex-shrink:0}
+    .foto-voll-wer span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .foto-voll-buehne{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:pan-y}
+    .foto-voll-buehne img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-select:none}
+    .foto-voll-pfeil{
+      position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;
+      border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.4);color:#fff;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+    }
+    /* display:flex oben schlaegt sonst das hidden-Attribut – dann laege
+       das schwarze Vollbild dauernd ueber der ganzen App. */
+    .foto-voll[hidden],.foto-voll-pfeil[hidden]{display:none!important}
+    .foto-voll-pfeil.links{left:10px}
+    .foto-voll-pfeil.rechts{right:10px}
+    .foto-voll-leiste{display:flex;justify-content:center;gap:8px;padding:12px 14px 0;flex-wrap:wrap}
+    .foto-knopf{
+      display:flex;flex-direction:column;align-items:center;gap:5px;min-width:74px;min-height:56px;padding:9px 10px;
+      border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);
+      color:#fff;font-family:var(--font);font-size:.7rem;font-weight:700;cursor:pointer;
+    }
+    .foto-knopf:active{transform:scale(var(--druck))}
+    .foto-knopf.gefahr{color:#ff6b6b;border-color:rgba(255,80,80,.3);background:rgba(255,60,60,.07)}
+    .foto-knopf.scharf{color:#fff;border-color:rgba(255,80,80,.6);background:rgba(255,60,60,.22)}
+    .foto-knopf:disabled{opacity:.6}
     .pl-card{
       display:flex;align-items:center;gap:13px;width:100%;cursor:pointer;
       text-decoration:none;
@@ -7096,6 +7153,38 @@
 <div class="overlay" id="groupDetailOverlay" onclick="closeIfOutside(event,'groupDetailOverlay')">
   <div class="modal"><div class="modal-handle"></div><button class="modal-x modal-x-float" onclick="closeOverlay('groupDetailOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="modal-body" id="groupDetailContent"></div></div>
 </div>
+<!-- ════ PARTY-FOTOS ════ -->
+<div class="overlay" id="fotoRegelnOverlay" onclick="closeIfOutside(event,'fotoRegelnOverlay')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Bevor du Fotos teilst</div>
+      <button class="modal-x" onclick="closeOverlay('fotoRegelnOverlay')" aria-label="Schliessen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="foto-regel"><div class="foto-regel-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></div>
+        <div><b>Nur mit Einverständnis</b><span>Frag kurz, bevor du jemanden fotografierst und hochlädst.</span></div></div>
+      <div class="foto-regel"><div class="foto-regel-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></div>
+        <div><b>Nichts Nacktes, nichts Fieses</b><span>Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.</span></div></div>
+      <div class="foto-regel"><div class="foto-regel-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></div>
+        <div><b>Nur für Gäste, 27 Stunden lang</b><span>Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.</span></div></div>
+      <button class="auth-submit-btn foto-regeln-ok" onclick="fotoRegelnOk()">Verstanden</button>
+    </div>
+  </div>
+</div>
+<div class="foto-voll" id="fotoVoll" hidden>
+  <div class="foto-voll-kopf">
+    <div class="foto-voll-wer" id="fotoVollWer"></div>
+    <button class="modal-x" onclick="fotoZu()" aria-label="Schliessen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="foto-voll-buehne" id="fotoVollBuehne">
+    <button class="foto-voll-pfeil links" onclick="fotoBlaettern(-1)" aria-label="Vorheriges Foto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <img id="fotoVollBild" alt=""/>
+    <button class="foto-voll-pfeil rechts" onclick="fotoBlaettern(1)" aria-label="Nächstes Foto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg></button>
+  </div>
+  <div class="foto-voll-leiste" id="fotoVollLeiste"></div>
+</div>
+
 <!-- ════ MELDEN ════ -->
 <div class="overlay" id="reportOverlay" onclick="closeIfOutside(event,'reportOverlay')">
   <div class="modal no-swipe">
@@ -10494,6 +10583,7 @@ async function openDetail(id){
       <div id="frSec"></div>
       <div id="hostSec"></div>
       <div id="plSec"></div>
+      <div id="fotoSec"></div>
       <div id="bringSec"></div>
       ${attHTML}
       ${albumHTML}
@@ -10505,6 +10595,7 @@ async function openDetail(id){
   if(e.type==='private'&&(isHost||isAtt))renderBringList(e.id,isHost);
   if(e.type==='private'&&isHost)renderInviteCard(e.id);
   renderPlaylist(e, e.type!=='private' || isHost || isAtt);
+  renderFotos(e,isHost,isAtt);
   renderGastgeber(e);
   const frBox=document.getElementById('frSec');
   /* Sieht man die ganze Gästeliste, stehen die Freunde dort schon mit
@@ -15794,6 +15885,44 @@ en:{
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
   "Pro verschenken":"Gift Pro",
+  "Party-Fotos":"Party photos",
+  "Foto":"Photo",
+  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"From the start of the party you share photos here – guests only, for 27 hours.",
+  "Noch keine Fotos. Mach den Anfang!":"No photos yet. Be the first!",
+  "Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.":"Only guests see the photos. They're gone after 27 hours.",
+  "Die Fotos dieser Party sind gelöscht – so war's abgemacht.":"This party's photos have been deleted – as promised.",
+  "Bevor du Fotos teilst":"Before you share photos",
+  "Nur mit Einverständnis":"Only with consent",
+  "Frag kurz, bevor du jemanden fotografierst und hochlädst.":"Ask before you take and upload a photo of someone.",
+  "Nichts Nacktes, nichts Fieses":"Nothing nude, nothing nasty",
+  "Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.":"Photos like that get removed – and so does anyone who goes too far.",
+  "Nur für Gäste, 27 Stunden lang":"Guests only, for 27 hours",
+  "Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.":"Anyone in a photo can remove it right away. After that we delete everything.",
+  "Mehr als 10 Fotos gehen nicht – die ersten werden genommen":"No more than 10 photos – the first ones will be used",
+  "Du hast schon 10 Fotos hochgeladen.":"You've already uploaded 10 photos.",
+  "Dieses Bildformat geht leider nicht.":"Sorry, this image format doesn't work.",
+  "Das Foto ist zu gross.":"The photo is too large.",
+  "Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.":"Photos are for guests only, from the start of the party for 27 hours.",
+  "Hochladen hat nicht geklappt. Versuch es nochmal.":"Upload didn't work. Try again.",
+  "Das Foto konnte nicht gespeichert werden.":"The photo couldn't be saved.",
+  "Foto ist drin":"Photo added",
+  "Fotos sind drin":"Photos added",
+  "Sichern":"Save",
+  "Löschen":"Delete",
+  "Das bin ich":"That's me",
+  "Wirklich löschen?":"Really delete?",
+  "Wirklich entfernen?":"Really remove?",
+  "Foto ist weg":"Photo removed",
+  "Sichern hat nicht geklappt":"Saving didn't work",
+  "Das hat nicht geklappt. Versuch es nochmal.":"That didn't work. Try again.",
+  "Zeigt mich oder jemanden ohne Einverständnis":"Shows me or someone without consent",
+  "Nacktheit oder sexuelle Inhalte":"Nudity or sexual content",
+  "Gewalt oder Drogen":"Violence or drugs",
+  "Ein Foto von dir wurde entfernt":"A photo of yours was removed",
+  "Jemand darauf wollte nicht in der Galerie sein. Danke fürs Verständnis.":"Someone in it didn't want to be in the gallery. Thanks for understanding.",
+  "Es passte nicht in die Galerie dieser Party.":"It didn't fit this party's gallery.",
+  "Gast":"Guest",
+  "Du":"You",
   "Passwort vergessen?":"Forgot password?",
   "Kein Problem. Wir schicken dir einen Link, mit dem du ein neues setzt.":"No problem. We'll send you a link to set a new one.",
   "Link schicken":"Send link",
@@ -16897,6 +17026,44 @@ fr:{
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
   "Pro verschenken":"Offrir Pro",
+  "Party-Fotos":"Photos de la soirée",
+  "Foto":"Photo",
+  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"Dès le début de la soirée, vous partagez vos photos ici – réservé aux invités, pendant 27 heures.",
+  "Noch keine Fotos. Mach den Anfang!":"Pas encore de photos. Lance-toi !",
+  "Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.":"Seuls les invités voient les photos. Elles disparaissent après 27 heures.",
+  "Die Fotos dieser Party sind gelöscht – so war's abgemacht.":"Les photos de cette soirée ont été supprimées – comme promis.",
+  "Bevor du Fotos teilst":"Avant de partager des photos",
+  "Nur mit Einverständnis":"Seulement avec accord",
+  "Frag kurz, bevor du jemanden fotografierst und hochlädst.":"Demande avant de photographier quelqu'un et de publier la photo.",
+  "Nichts Nacktes, nichts Fieses":"Rien de dénudé, rien de méchant",
+  "Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.":"Ces photos sont supprimées – et ceux qui exagèrent aussi.",
+  "Nur für Gäste, 27 Stunden lang":"Réservé aux invités, pendant 27 heures",
+  "Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.":"Toute personne sur une photo peut la retirer immédiatement. Ensuite, on supprime tout.",
+  "Mehr als 10 Fotos gehen nicht – die ersten werden genommen":"Pas plus de 10 photos – les premières sont prises",
+  "Du hast schon 10 Fotos hochgeladen.":"Tu as déjà publié 10 photos.",
+  "Dieses Bildformat geht leider nicht.":"Désolé, ce format d'image ne marche pas.",
+  "Das Foto ist zu gross.":"La photo est trop grande.",
+  "Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.":"Les photos sont réservées aux invités, dès le début de la soirée et pendant 27 heures.",
+  "Hochladen hat nicht geklappt. Versuch es nochmal.":"L'envoi n'a pas marché. Réessaie.",
+  "Das Foto konnte nicht gespeichert werden.":"La photo n'a pas pu être enregistrée.",
+  "Foto ist drin":"Photo ajoutée",
+  "Fotos sind drin":"Photos ajoutées",
+  "Sichern":"Enregistrer",
+  "Löschen":"Supprimer",
+  "Das bin ich":"C'est moi",
+  "Wirklich löschen?":"Vraiment supprimer ?",
+  "Wirklich entfernen?":"Vraiment retirer ?",
+  "Foto ist weg":"Photo retirée",
+  "Sichern hat nicht geklappt":"L'enregistrement n'a pas marché",
+  "Das hat nicht geklappt. Versuch es nochmal.":"Ça n'a pas marché. Réessaie.",
+  "Zeigt mich oder jemanden ohne Einverständnis":"Me montre ou montre quelqu'un sans accord",
+  "Nacktheit oder sexuelle Inhalte":"Nudité ou contenu sexuel",
+  "Gewalt oder Drogen":"Violence ou drogues",
+  "Ein Foto von dir wurde entfernt":"Une de tes photos a été retirée",
+  "Jemand darauf wollte nicht in der Galerie sein. Danke fürs Verständnis.":"Quelqu'un dessus ne voulait pas être dans la galerie. Merci de ta compréhension.",
+  "Es passte nicht in die Galerie dieser Party.":"Elle n'avait pas sa place dans la galerie de cette soirée.",
+  "Gast":"Invité",
+  "Du":"Toi",
   "Passwort vergessen?":"Mot de passe oublié ?",
   "Kein Problem. Wir schicken dir einen Link, mit dem du ein neues setzt.":"Pas de souci. On t'envoie un lien pour en choisir un nouveau.",
   "Link schicken":"Envoyer le lien",
@@ -18000,6 +18167,44 @@ it:{
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
   "Pro verschenken":"Regala Pro",
+  "Party-Fotos":"Foto della festa",
+  "Foto":"Foto",
+  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"Dall'inizio della festa condividete qui le foto – solo per gli ospiti, per 27 ore.",
+  "Noch keine Fotos. Mach den Anfang!":"Ancora nessuna foto. Inizia tu!",
+  "Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.":"Solo gli ospiti vedono le foto. Dopo 27 ore spariscono.",
+  "Die Fotos dieser Party sind gelöscht – so war's abgemacht.":"Le foto di questa festa sono state cancellate – come promesso.",
+  "Bevor du Fotos teilst":"Prima di condividere foto",
+  "Nur mit Einverständnis":"Solo con il consenso",
+  "Frag kurz, bevor du jemanden fotografierst und hochlädst.":"Chiedi prima di fotografare qualcuno e caricare la foto.",
+  "Nichts Nacktes, nichts Fieses":"Niente nudo, niente cattiverie",
+  "Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.":"Foto così vengono rimosse – e chi esagera pure.",
+  "Nur für Gäste, 27 Stunden lang":"Solo per gli ospiti, per 27 ore",
+  "Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.":"Chi è nella foto può rimuoverla subito. Poi cancelliamo tutto.",
+  "Mehr als 10 Fotos gehen nicht – die ersten werden genommen":"Non più di 10 foto – vengono prese le prime",
+  "Du hast schon 10 Fotos hochgeladen.":"Hai già caricato 10 foto.",
+  "Dieses Bildformat geht leider nicht.":"Purtroppo questo formato non funziona.",
+  "Das Foto ist zu gross.":"La foto è troppo grande.",
+  "Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.":"Le foto sono solo per gli ospiti, dall'inizio della festa per 27 ore.",
+  "Hochladen hat nicht geklappt. Versuch es nochmal.":"Il caricamento non è riuscito. Riprova.",
+  "Das Foto konnte nicht gespeichert werden.":"Non è stato possibile salvare la foto.",
+  "Foto ist drin":"Foto aggiunta",
+  "Fotos sind drin":"Foto aggiunte",
+  "Sichern":"Salva",
+  "Löschen":"Elimina",
+  "Das bin ich":"Sono io",
+  "Wirklich löschen?":"Eliminare davvero?",
+  "Wirklich entfernen?":"Rimuovere davvero?",
+  "Foto ist weg":"Foto rimossa",
+  "Sichern hat nicht geklappt":"Salvataggio non riuscito",
+  "Das hat nicht geklappt. Versuch es nochmal.":"Non ha funzionato. Riprova.",
+  "Zeigt mich oder jemanden ohne Einverständnis":"Mostra me o qualcuno senza consenso",
+  "Nacktheit oder sexuelle Inhalte":"Nudità o contenuti sessuali",
+  "Gewalt oder Drogen":"Violenza o droghe",
+  "Ein Foto von dir wurde entfernt":"Una tua foto è stata rimossa",
+  "Jemand darauf wollte nicht in der Galerie sein. Danke fürs Verständnis.":"Qualcuno nella foto non voleva essere nella galleria. Grazie per la comprensione.",
+  "Es passte nicht in die Galerie dieser Party.":"Non era adatta alla galleria di questa festa.",
+  "Gast":"Ospite",
+  "Du":"Tu",
   "Passwort vergessen?":"Password dimenticata?",
   "Kein Problem. Wir schicken dir einen Link, mit dem du ein neues setzt.":"Nessun problema. Ti mandiamo un link per impostarne una nuova.",
   "Link schicken":"Invia link",
@@ -18800,7 +19005,14 @@ const REP_GRUENDE={
     ['anderes','anderes','Etwas anderes'],
   ],
 };
-REP_GRUENDE.photo=REP_GRUENDE.message;
+REP_GRUENDE.photo=[
+  ['belaestigung','ohne_einverstaendnis','Zeigt mich oder jemanden ohne Einverständnis'],
+  ['sexuell','sexuell','Nacktheit oder sexuelle Inhalte'],
+  ['gewalt','gewalt','Gewalt oder Drogen'],
+  ['hass','hass','Hass oder Beleidigung'],
+  ['spam','spam','Spam oder Werbung'],
+  ['anderes','anderes','Etwas anderes'],
+];
 const REP_TITEL={user:'Person melden',event:'Party melden',message:'Nachricht melden',photo:'Foto melden'};
 const REP_HAKEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-10"/></svg>';
 let repWahl=null;
@@ -19889,6 +20101,319 @@ function renderGastgeber(e){
     +(verein?vereinMarke():'')
     +'</div>';
 }
+
+/* ══════════ PARTY-FOTOS ══════════
+   Abgemacht ist: nur Gäste laden hoch (10 pro Person, ab Partybeginn),
+   nur Gäste sehen und sichern, und 27 Stunden nach Beginn ist alles weg.
+   Das alles entscheidet die Datenbank – diese Ansicht zeigt nur an.
+   Die Bilder liegen privat; hier gibt es sie nur als Adressen, die
+   nach einer halben Stunde ungültig werden. */
+const FOTO_MAX=10;
+const FOTO_SYM={
+  kamera:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2.5L9 4h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  plus:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  uhr:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 10 0V2M7 22v-4a5 5 0 0 1 10 0v4"/></svg>',
+  sichern:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
+  weg:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
+  binich:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg>',
+  melden:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>'
+};
+let fotoStand=null;
+
+async function renderFotos(e,isHost,isAtt){
+  const box=document.getElementById('fotoSec');
+  if(!box)return;
+  box.innerHTML='';
+  fotoStand=null;
+  if(!cUser||!(isHost||isAtt))return;
+  const eventId=e.id;
+  const{data:st,error}=await sb.rpc('foto_status',{p_event:eventId});
+  if(error||!st||!st.gast||window.__offenePartyId!==eventId)return;
+
+  const stand={e,isHost,isAtt,eventId,status:st,fotos:[],index:0,
+    versatz:new Date(st.jetzt).getTime()-Date.now()};
+  const jetzt=Date.now()+stand.versatz;
+  const beginn=new Date(st.beginn).getTime();
+  const schluss=new Date(st.schluss).getTime();
+  stand.phase=jetzt<beginn?'vorher':jetzt>=schluss?'vorbei':'offen';
+
+  if(stand.phase==='offen'){
+    const{data:zeilen}=await sb.from('party_fotos')
+      .select('id,pfad,uploader,created_at')
+      .eq('event_id',eventId).order('created_at',{ascending:false});
+    const liste=zeilen||[];
+    const adressen={};
+    if(liste.length){
+      const{data:signiert}=await sb.storage.from('party-fotos')
+        .createSignedUrls(liste.map(z=>z.pfad),1800);
+      (signiert||[]).forEach(x=>{ if(x&&x.signedUrl)adressen[x.path]=x.signedUrl; });
+    }
+    const leute=new Map();
+    const ids=[...new Set(liste.map(z=>z.uploader).filter(Boolean))];
+    if(ids.length){
+      const{data:pr}=await sb.from('profiles').select('id,username,full_name,avatar_url').in('id',ids);
+      (pr||[]).forEach(p=>leute.set(p.id,p));
+    }
+    stand.fotos=liste.filter(z=>adressen[z.pfad]).map(z=>({...z,url:adressen[z.pfad],wer:leute.get(z.uploader)||null}));
+  }
+  if(window.__offenePartyId!==eventId)return;
+  fotoStand=stand;
+  fotoZeichnen();
+}
+
+function fotoZeichnen(){
+  const st=fotoStand;
+  const box=document.getElementById('fotoSec');
+  if(!st||!box)return;
+  const kopf=(rechts)=>'<div class="foto-kopf"><div class="foto-titel">'+FOTO_SYM.kamera+'<span>Party-Fotos</span>'
+    +(st.fotos.length?'<span class="foto-zahl">'+st.fotos.length+'</span>':'')+'</div>'+(rechts||'')+'</div>';
+
+  if(st.phase==='vorher'){
+    box.innerHTML='<div class="foto-sec">'+kopf()
+      +'<div class="foto-leer">Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.</div></div>';
+    return;
+  }
+  if(st.phase==='vorbei'){
+    box.innerHTML='<div class="foto-sec">'+kopf()
+      +'<div class="foto-leer">Die Fotos dieser Party sind gelöscht – so war\'s abgemacht.</div></div>';
+    return;
+  }
+  const rest=Math.max(0,new Date(st.status.schluss).getTime()-(Date.now()+st.versatz));
+  const stunden=Math.floor(rest/3600000);
+  const uhr='<div class="foto-uhr">'+FOTO_SYM.uhr+(stunden>=1?stunden+' h':Math.max(1,Math.ceil(rest/60000))+' min')+'</div>';
+  const eigene=Number(st.status.eigene)||0;
+  const neu=eigene<FOTO_MAX
+    ?'<button class="foto-neu" id="fotoNeuBtn" onclick="fotoWaehlen()">'+FOTO_SYM.plus+'<span>Foto</span><em>'+eigene+'/'+FOTO_MAX+'</em></button>'
+    :'';
+  const kacheln=st.fotos.map((f,i)=>'<button class="foto-kachel" onclick="fotoOeffnen('+i+')" aria-label="Foto">'
+    +'<img loading="lazy" decoding="async" src="'+escAttr(f.url)+'" alt=""/></button>').join('');
+  box.innerHTML='<div class="foto-sec">'+kopf(uhr)
+    +(neu||kacheln?'<div class="foto-raster">'+neu+kacheln+'</div>':'')
+    +(!st.fotos.length?'<div class="foto-leer" style="margin-top:10px">Noch keine Fotos. Mach den Anfang!</div>':'')
+    +'<div class="foto-hinweis">Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.</div>'
+    +'<input type="file" id="fotoDatei" accept="image/*" multiple hidden onchange="fotoHochladen(this.files)"/>'
+    +'</div>';
+}
+
+function fotoWaehlen(){
+  let gesehen=false;
+  try{ gesehen=localStorage.getItem('spotout_foto_regeln')==='1'; }catch(e){}
+  if(!gesehen){ document.getElementById('fotoRegelnOverlay')?.classList.add('open'); return; }
+  document.getElementById('fotoDatei')?.click();
+}
+
+function fotoRegelnOk(){
+  try{ localStorage.setItem('spotout_foto_regeln','1'); }catch(e){}
+  closeOverlay('fotoRegelnOverlay');
+  document.getElementById('fotoDatei')?.click();
+}
+
+function fotoMasse(blob){
+  return new Promise(fertig=>{
+    try{
+      const u=URL.createObjectURL(blob);
+      const b=new Image();
+      b.onload=()=>{ URL.revokeObjectURL(u); fertig({b:b.naturalWidth,h:b.naturalHeight}); };
+      b.onerror=()=>{ URL.revokeObjectURL(u); fertig({b:null,h:null}); };
+      b.src=u;
+    }catch(e){ fertig({b:null,h:null}); }
+  });
+}
+
+function fotoFehlerText(err){
+  const m=String(err?.message||err?.error||'').toLowerCase();
+  if(m.includes('row-level')||m.includes('policy')||m.includes('unauthorized'))
+    return 'Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.';
+  if(m.includes('size')||m.includes('too large')||m.includes('exceeded'))return 'Das Foto ist zu gross.';
+  if(m.includes('mime')||m.includes('type'))return 'Dieses Bildformat geht leider nicht.';
+  return 'Hochladen hat nicht geklappt. Versuch es nochmal.';
+}
+
+async function fotoHochladen(auswahl){
+  const st=fotoStand;
+  const eingabe=document.getElementById('fotoDatei');
+  const liste=auswahl?[...auswahl]:[];
+  if(eingabe)eingabe.value='';
+  if(!st||!cUser||!liste.length)return;
+  const frei=Math.max(0,FOTO_MAX-(Number(st.status.eigene)||0));
+  if(!frei){ toast('Du hast schon 10 Fotos hochgeladen.','warn'); return; }
+  if(liste.length>frei)toast('Mehr als 10 Fotos gehen nicht – die ersten werden genommen','info');
+  const dateien=liste.slice(0,frei);
+
+  const knopf=document.getElementById('fotoNeuBtn');
+  if(knopf){ knopf.disabled=true; knopf.innerHTML='<div class="spinner"></div><em>0/'+dateien.length+'</em>'; }
+  let drin=0,fehler=null;
+  for(const datei of dateien){
+    const klein=await bildVerkleinern(datei,'party');
+    const typ=klein.type||'';
+    if(!/^image\/(jpeg|png|webp)$/.test(typ)){ fehler='Dieses Bildformat geht leider nicht.'; continue; }
+    if(klein.size>3*1024*1024){ fehler='Das Foto ist zu gross.'; continue; }
+    const endung=typ==='image/png'?'png':typ==='image/webp'?'webp':'jpg';
+    const zufall=(window.crypto&&crypto.randomUUID)?crypto.randomUUID()
+      :(Date.now().toString(36)+Math.random().toString(36).slice(2));
+    const pfad=st.eventId+'/'+cUser.id+'/'+zufall+'.'+endung;
+    const masse=await fotoMasse(klein);
+    const{error:hochFehler}=await sb.storage.from('party-fotos')
+      .upload(pfad,klein,{contentType:typ,upsert:false});
+    if(hochFehler){ fehler=fotoFehlerText(hochFehler); break; }
+    const{data:r,error:rFehler}=await sb.rpc('foto_eintragen',
+      {p_pfad:pfad,p_breite:masse.b,p_hoehe:masse.h});
+    if(rFehler||!r||!r.ok){ fehler=(r&&r.meldung)||'Das Foto konnte nicht gespeichert werden.'; break; }
+    drin++;
+    st.status.eigene=(Number(st.status.eigene)||0)+1;
+    const k=document.getElementById('fotoNeuBtn');
+    if(k)k.innerHTML='<div class="spinner"></div><em>'+drin+'/'+dateien.length+'</em>';
+  }
+  if(fehler)toast(fehler,'warn');
+  if(drin)toast(drin===1?'Foto ist drin':'Fotos sind drin','success');
+  if(window.__offenePartyId===st.eventId)renderFotos(st.e,st.isHost,st.isAtt);
+}
+
+/* ── Vollbild ── */
+let fotoScharf=null;
+
+function fotoOeffnen(i){
+  const st=fotoStand;
+  if(!st||!st.fotos[i])return;
+  st.index=i;
+  fotoScharf=null;
+  document.getElementById('fotoVoll').hidden=false;
+  fotoZeigen();
+}
+
+function fotoZu(){
+  const v=document.getElementById('fotoVoll');
+  if(v)v.hidden=true;
+  const b=document.getElementById('fotoVollBild');
+  if(b)b.removeAttribute('src');
+  fotoScharf=null;
+}
+
+function fotoBlaettern(schritt){
+  const st=fotoStand;
+  if(!st||st.fotos.length<2)return;
+  st.index=(st.index+schritt+st.fotos.length)%st.fotos.length;
+  fotoScharf=null;
+  fotoZeigen();
+}
+
+function fotoZeigen(){
+  const st=fotoStand;
+  const f=st?.fotos[st.index];
+  if(!f){ fotoZu(); return; }
+  document.getElementById('fotoVollBild').src=f.url;
+  const eigen=f.uploader===cUser?.id;
+  const wer=f.wer;
+  const name=eigen?'Du':(wer?.full_name||wer?.username||'Gast');
+  const av=wer?.avatar_url
+    ?'<img loading="lazy" decoding="async" src="'+escAttr(wer.avatar_url)+'" alt=""/>'
+    :esc(String(name).charAt(0).toUpperCase());
+  document.getElementById('fotoVollWer').innerHTML='<div class="av-sm">'+av+'</div><span>'+esc(name)+'</span>';
+  document.querySelectorAll('.foto-voll-pfeil').forEach(p=>{ p.hidden=st.fotos.length<2; });
+
+  const knopf=(fn,sym,text,klasse)=>'<button class="foto-knopf'+(klasse?' '+klasse:'')+'" onclick="'+fn+'">'+sym+'<span>'+text+'</span></button>';
+  const teile=[knopf('fotoSichern()',FOTO_SYM.sichern,'Sichern')];
+  if(eigen||st.status.gastgeber){
+    teile.push(fotoScharf==='weg'
+      ?knopf('fotoEntfernen()',FOTO_SYM.weg,'Wirklich löschen?','gefahr scharf')
+      :knopf("fotoScharfMachen('weg')",FOTO_SYM.weg,'Löschen','gefahr'));
+  }
+  if(!eigen){
+    teile.push(fotoScharf==='binich'
+      ?knopf('fotoEntfernen()',FOTO_SYM.binich,'Wirklich entfernen?','gefahr scharf')
+      :knopf("fotoScharfMachen('binich')",FOTO_SYM.binich,'Das bin ich'));
+    teile.push(knopf('fotoMelden()',FOTO_SYM.melden,'Melden'));
+  }
+  document.getElementById('fotoVollLeiste').innerHTML=teile.join('');
+}
+
+function fotoScharfMachen(was){
+  fotoScharf=was;
+  fotoZeigen();
+}
+
+async function fotoEntfernen(){
+  const st=fotoStand;
+  const f=st?.fotos[st.index];
+  if(!f)return;
+  document.querySelectorAll('#fotoVollLeiste .foto-knopf').forEach(k=>k.disabled=true);
+  const{data:r,error}=await sb.rpc('foto_entfernen',{p_foto:f.id});
+  if(error||!r||!r.ok){
+    toast((r&&r.meldung)||'Das hat nicht geklappt. Versuch es nochmal.','warn');
+    fotoScharf=null; fotoZeigen(); return;
+  }
+  st.fotos.splice(st.index,1);
+  fotoScharf=null;
+  toast('Foto ist weg','success');
+  fotoZeichnen();
+  if(!st.fotos.length){ fotoZu(); return; }
+  st.index=Math.min(st.index,st.fotos.length-1);
+  fotoZeigen();
+}
+
+function fotoMelden(){
+  const f=fotoStand?.fotos[fotoStand.index];
+  if(!f)return;
+  fotoZu();
+  openReport('photo',f.id,'Foto');
+}
+
+/* Sichern: in der App ueber das Teilen-Blatt von iOS ("Bild sichern"),
+   im Browser als Datei. Aeltere App-Versionen kennen bild_sichern noch
+   nicht – dann geht die Adresse ans normale Teilen. */
+async function fotoSichern(){
+  const f=fotoStand?.fotos[fotoStand.index];
+  if(!f)return;
+  const endung=(f.pfad.split('.').pop()||'jpg').toLowerCase();
+  const name='spotout-'+String(f.id).slice(0,8)+'.'+endung;
+  if(istApp()){
+    const a=await nativeCall('bild_sichern',{url:f.url,name},45000);
+    if(!a||!a.fehler||a.fehler==='abgebrochen')return;
+    await nativeCall('teilen',{text:'',url:f.url},30000);
+    return;
+  }
+  try{
+    const antwort=await fetch(f.url);
+    if(!antwort.ok)throw new Error('http '+antwort.status);
+    const blob=await antwort.blob();
+    const datei=new File([blob],name,{type:blob.type||'image/jpeg'});
+    if(/iPhone|iPad|Android/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[datei]})){
+      await navigator.share({files:[datei]});
+      return;
+    }
+    const u=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=u; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),4000);
+  }catch(err){
+    if(err&&err.name==='AbortError')return;
+    toast('Sichern hat nicht geklappt','warn');
+  }
+}
+
+(function fotoGesten(){
+  const buehne=document.getElementById('fotoVollBuehne');
+  let x0=null,y0=null;
+  if(buehne){
+    buehne.addEventListener('touchstart',e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; },{passive:true});
+    buehne.addEventListener('touchend',e=>{
+      if(x0==null)return;
+      const t=e.changedTouches[0];
+      const dx=t.clientX-x0, dy=t.clientY-y0;
+      x0=null;
+      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))fotoBlaettern(dx<0?1:-1);
+      else if(dy>90&&Math.abs(dy)>Math.abs(dx))fotoZu();
+    },{passive:true});
+  }
+  document.addEventListener('keydown',e=>{
+    const v=document.getElementById('fotoVoll');
+    if(!v||v.hidden)return;
+    if(e.key==='Escape')fotoZu();
+    else if(e.key==='ArrowRight')fotoBlaettern(1);
+    else if(e.key==='ArrowLeft')fotoBlaettern(-1);
+  });
+})();
 
 function renderPlaylist(e,darf){
   const box=document.getElementById('plSec');
