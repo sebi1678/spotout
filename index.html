@@ -5893,7 +5893,7 @@
         <div style="font-size:.75rem;color:var(--muted)" id="convSub"></div>
       </div>
       <button class="more-btn" id="convMelden" onclick="convMelden()" aria-label="Melden oder blockieren">
-        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11.5l-2.3 4 2.3 4H5"/></svg>
       </button>
     </div>
     <div class="conv-msgs" id="convMsgs"></div>
@@ -9918,7 +9918,7 @@ async function openDetail(id){
       <div class="d-hero-btns">
         <button class="d-hero-btn" onclick="closeDetail()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         <div class="d-hero-rechts">
-        ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\]/g,'')+'\')" aria-label="Party melden"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>':''}
+        ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\]/g,'')+'\')" aria-label="Party melden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11.5l-2.3 4 2.3 4H5"/></svg></button>':''}
         ${(!isPrivEv||isHost)?'<button class="d-hero-btn" onclick="openShare(\''+e.id+'\')" aria-label="Teilen"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg></button>':''}
         ${isHost?'<button class="d-hero-btn" onclick="openManage(\''+e.id+'\')" style="font-size:.72rem;font-weight:800;padding:0 13px;width:auto;border-radius:999px;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Verwalten</button>':''}
         </div>
