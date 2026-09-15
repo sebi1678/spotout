@@ -5632,7 +5632,7 @@
             <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
           </button>
           </div>
-          <div class="rhinweis">Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.</div>
+          <div class="rhinweis">Ändern kannst du das jederzeit in den Einstellungen.</div>
         </div>
 
         <!-- ── letzter Schritt · Zugang ── -->
@@ -7939,15 +7939,15 @@ function showEmailConfirmScreen(email){
     <div class="auth-page">
       <div class="auth-wrap" style="text-align:center">
         <div style="width:80px;height:80px;background:rgba(255,45,118,.1);border:2px solid rgba(255,45,118,.2);border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF2D76" stroke-width="1.6"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </div>
-        <h2 style="font-family:var(--font-serif);font-size:1.6rem;font-weight:500;color:var(--text);margin-bottom:10px">E-Mail bestätigen</h2>
-        <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:6px">Wir haben eine Bestätigungs-E-Mail an</p>
+        <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px">Schau in dein Postfach</h2>
+        <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:6px">Wir haben dir einen Link geschickt an</p>
         <p style="color:var(--text);font-size:.9rem;font-weight:600;margin-bottom:20px">${email}</p>
-        <p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:32px">Öffne die E-Mail und klicke auf den Link, um dein Konto zu aktivieren. Danach kannst du dich anmelden.</p>
+        <p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:32px">Tipp auf den Link darin – dann kannst du dich anmelden.</p>
         <button class="auth-submit-btn" onclick="location.reload()" style="margin-bottom:12px">Zurück zur Anmeldung</button>
         <button class="auth-zweit" id="nochmalBtn" onclick="mailNochmal('${escAttr(email)}')">E-Mail nochmals schicken</button>
-        <p style="color:var(--muted);font-size:.8rem;margin-top:14px">Keine E-Mail erhalten? Prüfe deinen Spam-Ordner.</p>
+        <p style="color:var(--muted);font-size:.8rem;margin-top:14px">Nichts da? Schau im Spam-Ordner nach.</p>
       </div>
     </div>`;
 }
@@ -14477,6 +14477,11 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Ändern kannst du das jederzeit in den Einstellungen.":"You can change this any time in Settings.",
+  "Schau in dein Postfach":"Check your inbox",
+  "Wir haben dir einen Link geschickt an":"We sent a link to",
+  "Tipp auf den Link darin – dann kannst du dich anmelden.":"Tap the link in it – then you can log in.",
+  "Nichts da? Schau im Spam-Ordner nach.":"Nothing there? Check your spam folder.",
   "Was in deiner Nähe läuft":"What’s on near you",
   "Partys, Feste und Openairs – die nächsten zuerst. Mit „Karte\" siehst du alle auf einen Blick.":"Parties, festivals and open-airs – the soonest first. Tap “Map” to see them all at a glance.",
   "„Ich bin dabei\" trägt dich ein. Danach steht die Party in deinem Kalender – mit Route und Erinnerung.":"“I’m in” signs you up. The party then shows up in your calendar – with directions and a reminder.",
@@ -14497,7 +14502,6 @@ en:{
   "Rechnet wirklich. Zurück mit langem Druck.":"Really calculates. Long-press to come back.",
   "Brauche ich nicht":"I don’t need it",
   "Kein Knopf in der Leiste":"No button in the bar",
-  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.":"One tap on the button at the top and SPOTOUT is gone. You can change this any time in Settings.",
   "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Pick where the button takes you – or “I don’t need it”.",
   "Kein Netz – du siehst den letzten Stand":"No connection – you’re seeing the last state",
   "Kein Netz.":"No connection.",
@@ -15495,6 +15499,11 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Ändern kannst du das jederzeit in den Einstellungen.":"Tu peux changer ça à tout moment dans les réglages.",
+  "Schau in dein Postfach":"Regarde ta boîte mail",
+  "Wir haben dir einen Link geschickt an":"Nous avons envoyé un lien à",
+  "Tipp auf den Link darin – dann kannst du dich anmelden.":"Appuie sur le lien – ensuite tu pourras te connecter.",
+  "Nichts da? Schau im Spam-Ordner nach.":"Rien reçu ? Regarde dans les spams.",
   "Was in deiner Nähe läuft":"Ce qui se passe près de chez toi",
   "Partys, Feste und Openairs – die nächsten zuerst. Mit „Karte\" siehst du alle auf einen Blick.":"Soirées, fêtes et open airs – les prochaines d’abord. Avec « Carte » tu les vois toutes d’un coup d’œil.",
   "„Ich bin dabei\" trägt dich ein. Danach steht die Party in deinem Kalender – mit Route und Erinnerung.":"« Je viens » t’inscrit. La soirée apparaît ensuite dans ton calendrier – avec itinéraire et rappel.",
@@ -15515,7 +15524,6 @@ fr:{
   "Rechnet wirklich. Zurück mit langem Druck.":"Calcule vraiment. Appui long pour revenir.",
   "Brauche ich nicht":"Pas besoin",
   "Kein Knopf in der Leiste":"Pas de bouton dans la barre",
-  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.":"Un appui sur le bouton en haut et SPOTOUT disparaît. Tu peux changer ça à tout moment dans les réglages.",
   "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Choisis où mène le bouton – ou « Pas besoin ».",
   "Kein Netz – du siehst den letzten Stand":"Pas de connexion – tu vois le dernier état",
   "Kein Netz.":"Pas de connexion.",
@@ -16513,6 +16521,11 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Ändern kannst du das jederzeit in den Einstellungen.":"Puoi cambiarlo quando vuoi nelle impostazioni.",
+  "Schau in dein Postfach":"Controlla la tua casella",
+  "Wir haben dir einen Link geschickt an":"Abbiamo inviato un link a",
+  "Tipp auf den Link darin – dann kannst du dich anmelden.":"Tocca il link – poi potrai accedere.",
+  "Nichts da? Schau im Spam-Ordner nach.":"Niente? Controlla nello spam.",
   "Was in deiner Nähe läuft":"Cosa succede vicino a te",
   "Partys, Feste und Openairs – die nächsten zuerst. Mit „Karte\" siehst du alle auf einen Blick.":"Feste, sagre e open air – prima le prossime. Con «Mappa» le vedi tutte a colpo d’occhio.",
   "„Ich bin dabei\" trägt dich ein. Danach steht die Party in deinem Kalender – mit Route und Erinnerung.":"«Ci sto» ti iscrive. Poi la festa compare nel tuo calendario – con percorso e promemoria.",
@@ -16533,7 +16546,6 @@ it:{
   "Rechnet wirklich. Zurück mit langem Druck.":"Calcola davvero. Tieni premuto per tornare.",
   "Brauche ich nicht":"Non mi serve",
   "Kein Knopf in der Leiste":"Nessun pulsante nella barra",
-  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.":"Un tocco sul pulsante in alto e SPOTOUT sparisce. Puoi cambiarlo quando vuoi nelle impostazioni.",
   "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Scegli dove porta il pulsante – oppure «Non mi serve».",
   "Kein Netz – du siehst den letzten Stand":"Nessuna connessione – vedi l’ultimo stato",
   "Kein Netz.":"Nessuna connessione.",
