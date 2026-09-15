@@ -7279,6 +7279,16 @@ async function loadProf(){
     if(Object.keys(updates).length)await sb.from('profiles').update(updates).eq('id',cUser.id);
   }
   const{data:updated}=await sb.from('profiles').select('*').eq('id',cUser.id).single();
+  /* Die Wahl "Schnell raus" aus der Registrierung gilt auch, wenn man
+     sich zum ersten Mal auf einem anderen Geraet anmeldet – etwa weil
+     der Bestaetigungslink im Browser statt in der App aufging. Aber nur
+     einmal pro Geraet: wer den Knopf spaeter ausschaltet, bekommt ihn
+     beim naechsten Anmelden nicht ungefragt zurueck. */
+  try{
+    const m=cUser.user_metadata?.schnell_raus;
+    if(typeof m==='string'&&localStorage.getItem('spotout_raus_gewaehlt')!=='1')
+      schnellRausSpeichern(m);
+  }catch(e){}
   cProfile=updated;updNavAv();
   navFuerKontoart();          // Verein sieht eine andere Leiste
   vereinHomeUmschalten();
@@ -8292,7 +8302,9 @@ async function doRegister(){
   const un=fullName.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20)+'_'+Math.floor(Math.random()*999);
   const{data,error}=await sb.auth.signUp({
     email:em,password:pw,
-    options:{data:{full_name:fullName,username:un,birthdate:bd||null,kontoart:'privat'}}
+    options:{data:{full_name:fullName,username:un,birthdate:bd||null,kontoart:'privat',
+      // reist im Konto mit – siehe loadProf
+      schnell_raus:regRaus===null?null:regRaus}}
   });
   if(btn){btn.textContent='Konto erstellen';btn.disabled=false;}
   if(error){
