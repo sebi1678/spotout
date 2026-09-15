@@ -4659,6 +4659,29 @@
     .foto-knopf.gefahr{color:#ff6b6b;border-color:rgba(255,80,80,.3);background:rgba(255,60,60,.07)}
     .foto-knopf.scharf{color:#fff;border-color:rgba(255,80,80,.6);background:rgba(255,60,60,.22)}
     .foto-knopf:disabled{opacity:.6}
+    /* ── PIKTOGRAMME ──
+       Linie in der Schriftfarbe, Flaeche im SPOTOUT-Verlauf. Beim Antippen
+       federn sie kurz, der aktive Reiter unten huepft. */
+    .pk{display:block;overflow:visible;flex-shrink:0;transition:transform 220ms var(--kurve-schwung)}
+    button:active>.pk,a:active>.pk,.bnav-btn:active .pk,.settings-btn:active .pk,.rep-opt:active .rep-ic .pk{transform:scale(.86)}
+    /* Unten: inaktiv nur eine helle Flaeche, aktiv in Farbe */
+    .bnav-btn:not(.bnav-create):not(.active) .pk [fill^="url(#pk"]{fill:rgba(255,255,255,.16)}
+    .bnav-btn.active:not(.bnav-create) .pk{animation:pkHuepf 460ms var(--kurve-schwung) both}
+    @keyframes pkHuepf{0%{transform:scale(.8)}60%{transform:scale(1.14)}100%{transform:scale(1.08)}}
+    .rep-opt.einzeln{padding:10px 14px}
+    .rep-opt.einzeln::before{display:none}
+    .rep-ic{
+      width:38px;height:38px;flex:0 0 38px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.07);color:#fff;transition:box-shadow var(--takt),background var(--takt);
+    }
+    .rep-opt.einzeln.on .rep-ic{box-shadow:0 0 0 2px var(--pink);background:rgba(255,45,118,.16)}
+    .nt-ic{color:#fff}
+    /* Symbole mitten im Text (Kacheln, Hinweise) stehen in der Zeile, nicht darueber */
+    .pk.d-sym{display:inline-block;vertical-align:-3px;margin-right:6px}
+    .d-hero-btn .pk{width:19px;height:19px}
+    .nt-ic .pk{width:20px;height:20px}
+    @media(prefers-reduced-motion:reduce){.bnav-btn.active .pk{animation:none}.pk{transition:none}}
     .pl-card{
       display:flex;align-items:center;gap:13px;width:100%;cursor:pointer;
       text-decoration:none;
@@ -5988,14 +6011,14 @@
     <img src="data:image/png;base64,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" style="height:28px;width:auto" alt="Spotout"/>
     <div class="nav-right-group">
       <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="nav-bell-dot js-notif-dot" id="notifDot" style="display:none"></span>
       </button>
       <button class="nav-suche" id="navSearchBtn" onclick="showPage('search')" aria-label="Nutzer suchen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="nav-av js-nav-av" id="navAv" onclick="showPage('profile')"></div>
     </div>
@@ -6157,12 +6180,12 @@
     </button>
     <div class="nav-right-group">
       <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
-      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
-      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
+      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
+      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="nav-icon-btn" onclick="showSettingsModal()" aria-label="Einstellungen">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="url(#pkViolett)" opacity=".5"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     </div>
   </div>
@@ -6175,10 +6198,10 @@
     <div class="nav-titel">Nachrichten</div>
     <div class="nav-right-group">
       <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
-      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
-      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
+      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
+      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="nav-av js-nav-av" onclick="showPage('profile')"></div>
     </div>
   </div>
@@ -6223,10 +6246,10 @@
     <div class="nav-titel">Meine Partys</div>
     <div class="nav-right-group">
       <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
-      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
-      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
+      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
+      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="nav-av js-nav-av" onclick="showPage('profile')"></div>
     </div>
   </div>
@@ -6261,10 +6284,10 @@
     <div class="nav-titel">SPOTOUT Pro</div>
     <div class="nav-right-group">
       <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
-      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
-      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
+      <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
+      <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="nav-x" onclick="zurueck()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
   </div>
@@ -6274,26 +6297,26 @@
 <!-- ════ FLOATING BOTTOM NAV ════ -->
 <div class="bnav hidden" id="bnav">
   <button class="bnav-btn active" id="bnav-main" onclick="showPage('main')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <svg class="pk" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 10.6 12 4.8l6.8 5.8V19a1.6 1.6 0 0 1-1.6 1.6H6.8A1.6 1.6 0 0 1 5.2 19z" fill="url(#pkPink)"/><path d="M3.4 11.3 12 4l8.6 7.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.2 10v9a1.6 1.6 0 0 0 1.6 1.6h10.4a1.6 1.6 0 0 0 1.6-1.6v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20.6v-3.8a2 2 0 0 1 4 0v3.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
     Home
   </button>
   <button class="bnav-btn" id="bnav-calendar" onclick="showPage('calendar')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <svg class="pk" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/><path d="M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z" fill="url(#pkViolett)"/><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3v3.5M16 3v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/><circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/></svg>
     Kalender
   </button>
   <button class="bnav-btn bnav-create" id="bnav-create" onclick="plusMenue()" aria-label="Party erstellen oder Freunde einladen">
     <span class="bnav-plus">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      <svg class="pk" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path transform="translate(18.6 5.2) scale(1.1)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
     </span>
     Erstellen
   </button>
   <button class="bnav-btn" id="bnav-chat" onclick="openChatOrUpgrade()" style="position:relative">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <svg class="pk" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="url(#pkViolett)"/><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/></svg>
     Chats
     <div class="unread-badge" id="unreadBadge" style="display:none"></div>
   </button>
   <button class="bnav-btn" id="bnav-profile" onclick="showPage('profile')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <svg class="pk" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 20.2a7.5 7.5 0 0 1 15 0z" fill="url(#pkViolett)" opacity=".55"/><circle cx="12" cy="8.2" r="3.9" fill="url(#pkPink)"/><circle cx="12" cy="8.2" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 20.2a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     Profil
   </button>
 </div>
@@ -6937,7 +6960,7 @@
           </div>
         </div>
         <button class="settings-btn set-abstand" onclick="blockiertOeffnen()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/></svg>
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="url(#pkPink)"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.3 6.3l11.4 11.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
           <span class="s-label">Blockierte Personen</span><span class="s-wert" id="setBlockZahl"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -6973,22 +6996,22 @@
       <div class="set-gruppe">
         <div class="set-lbl">Hilfe</div>
       <button class="settings-btn" onclick="tourNochmal('start')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.4 2.5c-.6.2-.9.8-.9 1.4v.3"/><path d="M12 17v.01"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.2 14.4 9.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M16.8 2.6l1 2.6 2.8.3-2.1 1.9.6 2.7-2.3-1.4-2.4 1.4.6-2.7-2.1-1.9 2.8-.3z" fill="url(#pkSonne)"/><path d="M16.8 2.6l1 2.6 2.8.3-2.1 1.9.6 2.7-2.3-1.4-2.4 1.4.6-2.7-2.1-1.9 2.8-.3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(7 5.2) scale(1)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/><path transform="translate(20 14.2) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
         <span class="s-label">So funktioniert SPOTOUT</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn" id="setProTour" onclick="tourNochmal('pro')" hidden>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.4l-5.25 2.75 1-5.85L3.5 9.15l5.9-.85z"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.6l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="url(#pkPink)"/><path d="M12 2.8l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.6l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.6 9.8l1.2-.2" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(20.2 3.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
         <span class="s-label">Was Pro alles kann</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn" onclick="openRules()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="M12 8.5v4M12 15.5v.01"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.6" fill="url(#pkMint)"/><rect x="5" y="4" width="14" height="17" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 2.8h6a1 1 0 0 1 1 1v1.6a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V3.8a1 1 0 0 1 1-1z" fill="#fff"/><path transform="translate(12 13.4) scale(1.35)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
         <span class="s-label">Community-Regeln</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <a class="settings-btn" href="mailto:support@spotoutapp.ch">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="url(#pkPink)"/><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(12 9.8) scale(1.15)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
         <span class="s-label">Support</span><span class="s-wert">support@spotoutapp.ch</span>
       </a>
       </div>
@@ -6996,17 +7019,17 @@
       <div class="set-gruppe">
         <div class="set-lbl">Rechtliches</div>
       <a class="settings-btn" href="/nutzungsbedingungen" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4.5 4.5V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="url(#pkEis)"/><path d="M7 3h7l4.5 4.5V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 3v4.5h4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 12.5h7M8.5 16h4.6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="s-label">Nutzungsbedingungen</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
       <a class="settings-btn" href="/datenschutz" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="url(#pkMint)"/><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="9.2" y="11" width="5.6" height="4.6" rx="1.1" fill="#fff"/><path d="M10.3 11V9.7a1.7 1.7 0 0 1 3.4 0V11" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
         <span class="s-label">Datenschutzerklärung</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
       <a class="settings-btn" href="/impressum" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8v.01"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="url(#pkEis)"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 11v5.2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.25" fill="#fff"/></svg>
         <span class="s-label">Impressum</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
@@ -7015,17 +7038,17 @@
       <div class="set-gruppe">
         <div class="set-lbl">Konto</div>
       <button class="settings-btn" id="pwAendernBtn" onclick="pwAendernMail()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.4" fill="url(#pkSonne)"/><circle cx="8" cy="12" r="4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.4 12h8.2M17.4 12v3M20.4 12v2.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="12" r="1.5" fill="#fff"/></svg>
         <span class="s-label">Passwort ändern</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn" onclick="doLogout()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H5z" fill="url(#pkViolett)"/><path d="M5 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="12" r="1.1" fill="#fff"/><path d="M16.5 12h5M19 9.5l2.5 2.5-2.5 2.5" fill="none" stroke="#FF8FB3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="s-label">Abmelden</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn danger" id="kontoWegBtn" onclick="kontoWeg()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7.5h12l-1 11.7a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z" fill="url(#pkRot)"/><path d="M6 7.5h12l-1 11.7a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 7.5h15M9.5 7.5V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="s-label" id="kontoWegLabel">Konto löschen</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
@@ -7039,7 +7062,7 @@
       <div class="set-gruppe" id="setSchenkenBox" hidden>
         <div class="set-lbl">Betreiber</div>
         <button class="settings-btn" onclick="vereinePruefenOeffnen()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="url(#pkMint)"/><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m8.8 12.2 2.3 2.3 4.2-4.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -7381,6 +7404,224 @@ let addrTimer=null,bizVerified=false,bizName='';
 let convId=null,convUser=null,convSub_=null,evts=[];
 
 // ══ CUSTOM ICON LIBRARY (replaces emojis everywhere) ══
+/* ══════════ PIKTOGRAMME ══════════ */
+/* ══════════ PIKTOGRAMME ══════════
+   Ein Set fuer die ganze App, gemacht fuer eine Party-App: eine feine
+   Linie in der Schriftfarbe, darunter eine Flaeche in den SPOTOUT-
+   Verlaeufen, dazu kleine Details (Glanz, Konfetti, Funkeln).
+   Verlaeufe nur auf Flaechen – auf geraden Linien verschwinden sie im
+   Browser, weil deren Umriss keine Breite hat. */
+const PIKTO_DEFS='<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>'
+  +'<linearGradient id="pkPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4D8D"/><stop offset="1" stop-color="#FF8A3D"/></linearGradient>'
+  +'<linearGradient id="pkViolett" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#FF4D8D"/></linearGradient>'
+  +'<linearGradient id="pkSonne" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD166"/><stop offset="1" stop-color="#FF7A45"/></linearGradient>'
+  +'<linearGradient id="pkMint" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34E3A4"/><stop offset="1" stop-color="#1FB6FF"/></linearGradient>'
+  +'<linearGradient id="pkEis" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5AC8FA"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>'
+  +'<linearGradient id="pkRot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF6B6B"/><stop offset="1" stop-color="#E5344E"/></linearGradient>'
+  +'</defs></svg>';
+
+const PK_L='fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+const PK_W='fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
+const PK_F=(v,d,extra)=>'<path d="'+d+'" fill="url(#pk'+v+')"'+(extra||'')+'/>';
+const PK_P=(d)=>'<path d="'+d+'" '+PK_L+'/>';
+const PK_FUNKEN=(x,y,s)=>'<path transform="translate('+x+' '+y+') scale('+(s||1)+')" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/>';
+const PK_BLASE='M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z';
+const PK_PIN='M12 21.2s-6.6-6-6.6-11.2a6.6 6.6 0 0 1 13.2 0c0 5.2-6.6 11.2-6.6 11.2z';
+const PK_ZAHNRAD='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z';
+const PK_SCHILD='M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z';
+const PK_KAMERA='M3.5 8.5a2 2 0 0 1 2-2h2.3L9.3 4.5h5.4l1.5 2h2.3a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z';
+const PK_PERSON=(v)=>'<path d="M3 20.2a6.5 6.5 0 0 1 13 0z" fill="url(#pk'+v+')" opacity=".55"/>'
+  +'<circle cx="9.5" cy="8.3" r="3.6" fill="url(#pk'+v+')"/>'
+  +'<circle cx="9.5" cy="8.3" r="3.6" '+'fill="none" stroke="currentColor" stroke-width="1.8"'+'/>'
+  +'<path d="M3 20.2a6.5 6.5 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>';
+const PK_HERZ=(x,y,s,farbe)=>'<path transform="translate('+x+' '+y+') scale('+s+')" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="'+(farbe||'#fff')+'"/>';
+const PK_TEXT=(t,farbe,groesse)=>'<text x="12" y="'+(12+(groesse||8)*0.36)+'" text-anchor="middle" font-size="'+(groesse||8)+'" font-weight="800" fill="'+(farbe||'#fff')+'" font-family="Inter,system-ui,sans-serif">'+t+'</text>';
+
+const PIKTO={
+  /* ── Navigation ── */
+  home: PK_F('Pink','M5.2 10.6 12 4.8l6.8 5.8V19a1.6 1.6 0 0 1-1.6 1.6H6.8A1.6 1.6 0 0 1 5.2 19z')
+      +PK_P('M3.4 11.3 12 4l8.6 7.3')+PK_P('M5.2 10v9a1.6 1.6 0 0 0 1.6 1.6h10.4a1.6 1.6 0 0 0 1.6-1.6v-9')
+      +'<path d="M10 20.6v-3.8a2 2 0 0 1 4 0v3.8" '+PK_W+'/>',
+  kalender: '<rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/>'
+      +PK_F('Violett','M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z')
+      +'<rect x="3.5" y="5" width="17" height="15.5" rx="3" '+PK_L+'/>'+PK_P('M8 3v3.5M16 3v3.5')
+      +'<circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/>'+'<circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/>',
+  chat: PK_F('Violett',PK_BLASE)+PK_P(PK_BLASE)
+      +'<circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/>',
+  profil: '<path d="M4.5 20.2a7.5 7.5 0 0 1 15 0z" fill="url(#pkViolett)" opacity=".55"/>'
+      +'<circle cx="12" cy="8.2" r="3.9" fill="url(#pkPink)"/>'
+      +'<circle cx="12" cy="8.2" r="3.9" '+PK_L+'/>'+PK_P('M4.5 20.2a7.5 7.5 0 0 1 15 0'),
+  plus: '<path d="M12 5.5v13M5.5 12h13" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/>'
+      +PK_FUNKEN(18.6,5.2,1.1),
+  glocke: PK_F('Sonne','M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z')
+      +PK_P('M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z')
+      +PK_P('M10.3 19.1a1.9 1.9 0 0 0 3.4 0')+PK_P('M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5'),
+  suche: '<circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/>'
+      +'<circle cx="10.5" cy="10.5" r="6.2" '+PK_L+'/>'
+      +'<path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>'
+      +'<path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" '+PK_W+'/>',
+  zahnrad: PK_F('Violett',PK_ZAHNRAD,' opacity=".5"')+PK_P(PK_ZAHNRAD)
+      +'<circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" '+PK_L+'/>',
+  doomscroll: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/>'
+      +'<rect x="6.5" y="2.5" width="11" height="19" rx="2.8" '+PK_L+'/>'
+      +'<path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" '+PK_W+'/>'+PK_FUNKEN(19.8,4.6,.9),
+
+  /* ── Partyseite ── */
+  melden: PK_F('Pink','M6.6 4.2h10.7c.6 0 1 .7.6 1.2L16 8.6l1.9 3.2c.4.5 0 1.2-.6 1.2H6.6z')
+      +PK_P('M6.6 4.2h10.7c.6 0 1 .7.6 1.2L16 8.6l1.9 3.2c.4.5 0 1.2-.6 1.2H6.6z')
+      +'<path d="M6 21V3.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>'
+      +'<path d="M9.2 6.9h3.6" '+PK_W+' opacity=".8"/>',
+  teilen: '<rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="url(#pkMint)" opacity=".35"/>'
+      +PK_P('M7.5 10H7a2.5 2.5 0 0 0-2.5 2.5V18A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-5.5A2.5 2.5 0 0 0 17 10h-.5')
+      +'<path d="M12 14.5V3.8M8 7.6l4-3.8 4 3.8" fill="none" stroke="#34E3A4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>',
+  schliessen: '<path d="M6.8 6.8l10.4 10.4M17.2 6.8 6.8 17.2" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>',
+  datum: '<rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/>'
+      +PK_F('Violett','M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z')
+      +'<rect x="3.5" y="5" width="17" height="15.5" rx="3" '+PK_L+'/>'+PK_P('M8 3v3.5M16 3v3.5')
+      +'<circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/>',
+  zeit: '<circle cx="12" cy="12" r="8.6" fill="url(#pkSonne)"/>'
+      +'<circle cx="12" cy="12" r="8.6" '+PK_L+'/>'
+      +'<path d="M12 7.4V12l3.1 2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  ort: '<ellipse cx="12" cy="21.3" rx="4" ry="1.1" fill="#fff" opacity=".18"/>'
+      +PK_F('Pink',PK_PIN)+PK_P(PK_PIN)+'<circle cx="12" cy="10" r="2.4" fill="#fff"/>',
+  gaeste: '<circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/>'
+      +'<path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/>'
+      +PK_P('M13.6 14.2a5 5 0 0 1 7.9 4.8')+'<circle cx="16" cy="8.4" r="2.8" '+PK_L+'/>'
+      +'<path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/>'
+      +'<circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/>'
+      +'<circle cx="8.8" cy="8.9" r="3.4" '+PK_L+'/>'+PK_P('M2.5 20.2a6.3 6.3 0 0 1 12.6 0'),
+  ticket: PK_F('Sonne','M3.5 7.5A1.5 1.5 0 0 1 5 6h14a1.5 1.5 0 0 1 1.5 1.5V10a2 2 0 0 0 0 4v2.5A1.5 1.5 0 0 1 19 18H5a1.5 1.5 0 0 1-1.5-1.5V14a2 2 0 0 0 0-4z')
+      +PK_P('M3.5 7.5A1.5 1.5 0 0 1 5 6h14a1.5 1.5 0 0 1 1.5 1.5V10a2 2 0 0 0 0 4v2.5A1.5 1.5 0 0 1 19 18H5a1.5 1.5 0 0 1-1.5-1.5V14a2 2 0 0 0 0-4z')
+      +'<path d="M14.5 7.6v1.3M14.5 11.35v1.3M14.5 15.1v1.3" '+PK_W+'/>'+PK_FUNKEN(8.4,12,1),
+  drink: PK_F('Mint','M4.5 5h15L12 13.2z')+PK_P('M4.5 5h15L12 13.2zM12 13.2V20M8.4 20.2h7.2')
+      +'<circle cx="9.6" cy="7.3" r="1.5" fill="url(#pkPink)"/>'
+      +'<path d="M16.6 2.6 13.6 8.4" '+PK_W+'/>',
+  muenzen: '<ellipse cx="12" cy="15.5" rx="6.8" ry="2.9" fill="url(#pkSonne)"/>'
+      +PK_P('M5.2 15.5c0 1.6 3 2.9 6.8 2.9s6.8-1.3 6.8-2.9')
+      +PK_F('Sonne','M5.2 8.5v4c0 1.6 3 2.9 6.8 2.9s6.8-1.3 6.8-2.9v-4z')
+      +PK_P('M5.2 8.5v4c0 1.6 3 2.9 6.8 2.9s6.8-1.3 6.8-2.9v-4')
+      +'<ellipse cx="12" cy="8.5" rx="6.8" ry="2.9" fill="#FFE39A"/><ellipse cx="12" cy="8.5" rx="6.8" ry="2.9" '+PK_L+'/>',
+
+  /* ── Melden: Gruende ── */
+  belaestigung: PK_F('Sonne','M4 10v4a1 1 0 0 0 1 1h2.2l6.3 4.2V4.8L7.2 9H5a1 1 0 0 0-1 1z')
+      +PK_P('M4 10v4a1 1 0 0 0 1 1h2.2l6.3 4.2V4.8L7.2 9H5a1 1 0 0 0-1 1z')
+      +PK_P('M16.8 9.2a4 4 0 0 1 0 5.6M19.3 6.6a7.6 7.6 0 0 1 0 10.8'),
+  hass: PK_F('Rot',PK_BLASE)+PK_P(PK_BLASE)
+      +'<path d="m8.2 11.2 2.3-2.6 1.9 2.4 2.3-2.6 1.1 1.2" '+PK_W+' stroke-width="1.9"/>',
+  sexuell: '<circle cx="12" cy="12" r="9" fill="url(#pkPink)"/><circle cx="12" cy="12" r="9" '+PK_L+'/>'+PK_TEXT('18+','#fff',7.6),
+  fake: PK_F('Violett','M4 6.4c2.6-1 5.3-1.5 8-1.5s5.4.5 8 1.5c0 6.9-3.6 11.8-8 11.8S4 13.3 4 6.4z')
+      +PK_P('M4 6.4c2.6-1 5.3-1.5 8-1.5s5.4.5 8 1.5c0 6.9-3.6 11.8-8 11.8S4 13.3 4 6.4z')
+      +'<path d="M7.6 10.4c.9-.8 2.2-.8 3 0M13.4 10.4c.9-.8 2.2-.8 3 0M9.4 14.1c1.6 1 3.6 1 5.2 0" '+PK_W+'/>',
+  unter16: '<circle cx="12" cy="12" r="9" fill="url(#pkSonne)"/><circle cx="12" cy="12" r="9" '+PK_L+'/>'+PK_TEXT('16','#3A1600',9),
+  spam: '<rect x="3" y="6" width="18" height="13" rx="2.6" fill="url(#pkEis)"/>'
+      +'<rect x="3" y="6" width="18" height="13" rx="2.6" '+PK_L+'/>'
+      +'<path d="m3.8 7.6 8.2 5.8 8.2-5.8" '+PK_W+'/>'
+      +'<path d="M18.6 1.6 16.5 5h2.1l-1.4 3.3 3.8-4.4h-2.2l1.3-2.3z" fill="#FFD166"/>',
+  erfunden: PK_F('Violett','M6 11a6 6 0 0 1 12 0v8.4c0 .6-.7.9-1.1.5l-1.4-1.3-1.7 1.5a.9.9 0 0 1-1.2 0l-1.6-1.5-1.6 1.5a.9.9 0 0 1-1.2 0l-1.7-1.5-1.4 1.3c-.4.4-1.1.1-1.1-.5z')
+      +PK_P('M6 11a6 6 0 0 1 12 0v8.4c0 .6-.7.9-1.1.5l-1.4-1.3-1.7 1.5a.9.9 0 0 1-1.2 0l-1.6-1.5-1.6 1.5a.9.9 0 0 1-1.2 0l-1.7-1.5-1.4 1.3c-.4.4-1.1.1-1.1-.5z')
+      +'<circle cx="10" cy="11" r="1.2" fill="#fff"/><circle cx="14" cy="11" r="1.2" fill="#fff"/>',
+  falsch: PK_F('Eis',PK_PIN)+PK_P(PK_PIN)+PK_TEXT('?','#fff',9.5).replace('y="15.42"','y="13.4"'),
+  gefahr: PK_F('Sonne','M10.3 4.2 2.8 17.3A2 2 0 0 0 4.5 20.3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z')
+      +PK_P('M10.3 4.2 2.8 17.3A2 2 0 0 0 4.5 20.3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z')
+      +'<path d="M12 9.4v4.4" fill="none" stroke="#3A1600" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.2" fill="#3A1600"/>',
+  ohne_ok: PK_F('Pink','M3.5 8.5a2 2 0 0 1 2-2h2.3L9.3 4.5h5.4l1.5 2h2.3a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z')
+      +PK_P('M3.5 8.5a2 2 0 0 1 2-2h2.3L9.3 4.5h5.4l1.5 2h2.3a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z')
+      +'<circle cx="12" cy="12.6" r="3.1" '+PK_W+'/>'
+      +'<path d="M3.5 3.5l17 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+  gewalt: PK_F('Sonne','M12 2.6l2.1 4.5 4.7-1.5-1.5 4.7 4.5 2.1-4.5 2.1 1.5 4.7-4.7-1.5L12 22.2l-2.1-4.5-4.7 1.5 1.5-4.7-4.5-2.1 4.5-2.1-1.5-4.7 4.7 1.5z')
+      +PK_P('M12 2.6l2.1 4.5 4.7-1.5-1.5 4.7 4.5 2.1-4.5 2.1 1.5 4.7-4.7-1.5L12 22.2l-2.1-4.5-4.7 1.5 1.5-4.7-4.5-2.1 4.5-2.1-1.5-4.7 4.7 1.5z')
+      +'<path d="M12 8.8v4.2" fill="none" stroke="#3A1600" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="15.8" r="1.1" fill="#3A1600"/>',
+  anderes: PK_F('Eis',PK_BLASE)+PK_P(PK_BLASE)
+      +'<circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/>',
+};
+
+function pikto(name,groesse,klasse){
+  const inhalt=PIKTO[name];
+  if(!inhalt)return '';
+  const g=groesse||22;
+  return '<svg class="pk'+(klasse?' '+klasse:'')+'" width="'+g+'" height="'+g+'" viewBox="0 0 24 24" aria-hidden="true">'+inhalt+'</svg>';
+}
+
+/* Zweiter Teil des Sets: Einstellungen, Benachrichtigungen, Fotos.
+   Wird hinter pikto.js geladen und ergaenzt PIKTO. */
+Object.assign(PIKTO,{
+  /* ── Einstellungen ── */
+  blockiert: '<circle cx="12" cy="12" r="8.6" fill="url(#pkPink)"/><circle cx="12" cy="12" r="8.6" '+PK_L+'/>'
+      +'<path d="M6.3 6.3l11.4 11.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
+  tour: '<path d="M4 20.2 14.4 9.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>'
+      +PK_F('Sonne','M16.8 2.6l1 2.6 2.8.3-2.1 1.9.6 2.7-2.3-1.4-2.4 1.4.6-2.7-2.1-1.9 2.8-.3z')
+      +PK_P('M16.8 2.6l1 2.6 2.8.3-2.1 1.9.6 2.7-2.3-1.4-2.4 1.4.6-2.7-2.1-1.9 2.8-.3z')
+      +PK_FUNKEN(7,5.2,1)+PK_FUNKEN(20,14.2,.9),
+  stern: PK_F('Pink','M12 2.8l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.6l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z')
+      +PK_P('M12 2.8l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.6l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z')
+      +'<path d="M9.6 9.8l1.2-.2" '+PK_W+'/>'+PK_FUNKEN(20.2,3.6,.9),
+  regeln: '<rect x="5" y="4" width="14" height="17" rx="2.6" fill="url(#pkMint)"/>'
+      +'<rect x="5" y="4" width="14" height="17" rx="2.6" '+PK_L+'/>'
+      +'<path d="M9 2.8h6a1 1 0 0 1 1 1v1.6a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V3.8a1 1 0 0 1 1-1z" fill="#fff"/>'
+      +PK_HERZ(12,13.4,1.35),
+  support: PK_F('Pink',PK_BLASE)+PK_P(PK_BLASE)+PK_HERZ(12,9.8,1.15),
+  dokument: PK_F('Eis','M7 3h7l4.5 4.5V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z')
+      +PK_P('M7 3h7l4.5 4.5V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z')+PK_P('M14 3v4.5h4.5')
+      +'<path d="M8.5 12.5h7M8.5 16h4.6" '+PK_W+'/>',
+  datenschutz: PK_F('Mint',PK_SCHILD)+PK_P(PK_SCHILD)
+      +'<rect x="9.2" y="11" width="5.6" height="4.6" rx="1.1" fill="#fff"/>'
+      +'<path d="M10.3 11V9.7a1.7 1.7 0 0 1 3.4 0V11" fill="none" stroke="#fff" stroke-width="1.5"/>',
+  impressum: '<circle cx="12" cy="12" r="8.6" fill="url(#pkEis)"/><circle cx="12" cy="12" r="8.6" '+PK_L+'/>'
+      +'<path d="M12 11v5.2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.25" fill="#fff"/>',
+  passwort: '<circle cx="8" cy="12" r="4.4" fill="url(#pkSonne)"/><circle cx="8" cy="12" r="4.4" '+PK_L+'/>'
+      +PK_P('M12.4 12h8.2M17.4 12v3M20.4 12v2.3')+'<circle cx="8" cy="12" r="1.5" fill="#fff"/>',
+  abmelden: PK_F('Violett','M5 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H5z')
+      +PK_P('M5 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H5z')
+      +'<circle cx="11" cy="12" r="1.1" fill="#fff"/>'
+      +'<path d="M16.5 12h5M19 9.5l2.5 2.5-2.5 2.5" fill="none" stroke="#FF8FB3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  loeschen: PK_F('Rot','M6 7.5h12l-1 11.7a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z')
+      +PK_P('M6 7.5h12l-1 11.7a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z')
+      +PK_P('M4.5 7.5h15M9.5 7.5V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2.5')
+      +'<path d="M10 11v6M14 11v6" '+PK_W+'/>',
+  verein: PK_F('Mint',PK_SCHILD)+PK_P(PK_SCHILD)
+      +'<path d="m8.8 12.2 2.3 2.3 4.2-4.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+
+  /* ── Benachrichtigungen ── */
+  gast_anfrage: PK_PERSON('Violett')
+      +'<circle cx="18.2" cy="8.8" r="3.6" fill="url(#pkPink)"/>'
+      +'<path d="M18.2 7v3.6M16.4 8.8H20" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>',
+  folge_ok: PK_PERSON('Violett')
+      +'<circle cx="18.2" cy="8.8" r="3.6" fill="url(#pkMint)"/>'
+      +'<path d="m16.6 8.9 1.2 1.2 2.1-2.3" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>',
+  ok: '<circle cx="12" cy="12" r="8.6" fill="url(#pkMint)"/><circle cx="12" cy="12" r="8.6" '+PK_L+'/>'
+      +'<path d="m7.8 12.4 2.8 2.8 5.6-5.8" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+  nein: '<circle cx="12" cy="12" r="8.6" fill="url(#pkRot)"/><circle cx="12" cy="12" r="8.6" '+PK_L+'/>'
+      +'<path d="M8.8 8.8l6.4 6.4M15.2 8.8l-6.4 6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
+  einladung: '<rect x="3" y="6" width="18" height="13" rx="2.6" fill="url(#pkPink)"/>'
+      +'<rect x="3" y="6" width="18" height="13" rx="2.6" '+PK_L+'/>'
+      +'<path d="m3.8 7.6 8.2 5.8 8.2-5.8" '+PK_W+'/>'+PK_HERZ(12,15.6,1)+PK_FUNKEN(20.6,4.4,.9),
+  freund_dabei: PK_F('Sonne','M3.8 20.2 8.2 8.6l7.2 7.2z')+PK_P('M3.8 20.2 8.2 8.6l7.2 7.2z')
+      +'<path d="M6.6 13.2l4.2 4.2" '+PK_W+' opacity=".8"/>'
+      +'<circle cx="15.8" cy="4.6" r="1.4" fill="url(#pkPink)"/><circle cx="19.6" cy="9.4" r="1.2" fill="url(#pkViolett)"/>'
+      +'<path d="M12.4 6.6c.2-1.6 1-2.6 2.2-3M17.4 11.6c1.6-.2 2.6-1 3-2.2" fill="none" stroke="#FF8FB3" stroke-width="1.7" stroke-linecap="round"/>'
+      +PK_FUNKEN(20,3.8,.95),
+  day_one: PK_F('Sonne','M6.5 17.5a5.5 5.5 0 0 1 11 0z')+PK_P('M6.5 17.5a5.5 5.5 0 0 1 11 0')
+      +PK_P('M3 17.5h18M12 5v2.6M5.3 8.3l1.8 1.8M18.7 8.3l-1.8 1.8M7 20.5h10'),
+  event_weg: '<rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/>'
+      +PK_F('Violett','M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z')
+      +'<rect x="3.5" y="5" width="17" height="15.5" rx="3" '+PK_L+'/>'+PK_P('M8 3v3.5M16 3v3.5')
+      +'<path d="M9.8 12.8l4.4 4.4M14.2 12.8l-4.4 4.4" fill="none" stroke="#FF6B7A" stroke-width="2.1" stroke-linecap="round"/>',
+
+  /* ── Fotos ── */
+  kamera: PK_F('Pink',PK_KAMERA)+PK_P(PK_KAMERA)+'<circle cx="12" cy="12.6" r="3.1" '+PK_W+'/>'+PK_FUNKEN(19.8,3.4,.9),
+  sichern: '<rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="url(#pkMint)" opacity=".35"/>'
+      +PK_P('M7.5 10H7a2.5 2.5 0 0 0-2.5 2.5V18A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-5.5A2.5 2.5 0 0 0 17 10h-.5')
+      +'<path d="M12 3.8v10.7M8 10.7l4 3.8 4-3.8" fill="none" stroke="#34E3A4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>',
+  binich: PK_PERSON('Pink')
+      +'<circle cx="18" cy="15.4" r="3.6" fill="url(#pkRot)"/>'
+      +'<path d="m16.6 14 2.8 2.8M19.4 14l-2.8 2.8" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>',
+});
+PIKTO.foto_weg=PIKTO.ohne_ok;
+PIKTO.nachricht=PIKTO.chat;
+
+// Die Verlaeufe einmal ins Dokument – alle Symbole greifen darauf zu.
+document.body.insertAdjacentHTML('afterbegin',PIKTO_DEFS);
+
 const ICONS={
   home:{label:'Hausparty',svg:'<path d="M12 2.8 2.6 10.4v.9h2.6V21h5.5v-5.4h2.6V21h5.5v-9.7h2.6v-.9z"/>'},
   garden:{label:'Gartenparty',svg:'<circle cx="8.3" cy="9.3" r="4.3"/><circle cx="15.7" cy="9.3" r="4.3"/><circle cx="12" cy="6.4" r="4.7"/><path d="M10.9 11.6h2.2v7.8h-2.2z"/><rect x="4.8" y="19.4" width="14.4" height="1.9" rx=".95"/>'},
@@ -7843,7 +8084,7 @@ const TOUREN={
         const chip=(k,n)=>'<span class="cset'+(w===k?' on':'')+'">'+n+'</span>';
         return '<div class="tb">'
           +'<div class="tb-leiste"><span class="tb-logo">SPOTOUT</span>'
-          +'<span class="tb-ic raus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg></span>'
+          +'<span class="tb-ic raus"><svg class="pk" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg></span>'
           +'<span class="tb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>'
           +'</div>'
           +'<div class="tb-kopf"><span>Wohin der Knopf führt</span></div>'
@@ -10120,21 +10361,12 @@ function freundeZeile(eventId, gross, ohneProSatz){
    auf jedem Geraet anders aus – ein 📅 ist auf Android ein anderes Bild
    als auf dem iPhone. Ueberall sonst zeichnet die App ihre Symbole
    selbst; hier jetzt auch. */
-const D_SYM=(()=>{
-  const w=(inhalt)=>'<svg class="d-sym" viewBox="0 0 24 24" fill="none" '
-    +'stroke="currentColor" stroke-width="1.9" stroke-linecap="round" '
-    +'stroke-linejoin="round">'+inhalt+'</svg>';
-  return {
-    datum: w('<rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/>'),
-    zeit:  w('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
-    ort:   w('<path d="M12 2.5c-3.9 0-7 3.1-7 7 0 5.2 7 12 7 12s7-6.8 7-12c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9.5" r="2.5"/>'),
-    gaeste:w('<path d="M17 20v-1.8a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7" r="3.6"/><path d="M22 20v-1.8a4 4 0 0 0-3-3.9"/><path d="M16 3.4a4 4 0 0 1 0 7.2"/>'),
-    preis: w('<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M2.5 10.5h19"/><path d="M6.5 14.5h3"/>'),
-    glas:  w('<path d="M5 4h14l-6 8v6h3v2H8v-2h3v-6z"/>'),
-    summe: w('<circle cx="12" cy="12" r="9"/><path d="M12 7.2v9.6M14.6 9.4a2.8 2.8 0 0 0-2.6-1.4c-1.5 0-2.6.9-2.6 2.1 0 2.8 5.2 1.6 5.2 4.3 0 1.3-1.2 2.2-2.7 2.2a3 3 0 0 1-2.7-1.5"/>'),
-    haus:  w('<path d="M4 21V9.5L12 3l8 6.5V21"/><path d="M9.5 21v-6h5v6"/>'),
-  };
-})();
+/* Symbole in den Kacheln der Partyseite – aus dem Party-Set */
+const D_SYM={
+  datum:pikto('datum',15,'d-sym'), zeit:pikto('zeit',15,'d-sym'), ort:pikto('ort',15,'d-sym'),
+  gaeste:pikto('gaeste',15,'d-sym'), preis:pikto('ticket',15,'d-sym'), glas:pikto('drink',15,'d-sym'),
+  summe:pikto('muenzen',15,'d-sym'), haus:pikto('home',15,'d-sym'),
+};
 
 function cardHTML(e){
   const w=worldVars(e.type);
@@ -10578,11 +10810,11 @@ async function openDetail(id){
       <div class="glow-spot glow-2" style="background:radial-gradient(circle,${w.glow2},transparent 70%)"></div>
       ${e.image_url?('<img loading="lazy" decoding="async" src="'+e.image_url+'"/><div class="d-hero-overlay"></div>'):('<div class="d-hero-overlay" style="opacity:.6"></div>')}
       <div class="d-hero-btns">
-        <button class="d-hero-btn" onclick="closeDetail()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <button class="d-hero-btn" onclick="closeDetail()" aria-label="Schliessen">${pikto('schliessen',18)}</button>
         <div class="d-hero-rechts">
-        ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\]/g,'')+'\')" aria-label="Party melden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11.5l-2.3 4 2.3 4H5"/></svg></button>':''}
-        ${(!isPrivEv||isHost)?'<button class="d-hero-btn" onclick="openShare(\''+e.id+'\')" aria-label="Teilen"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg></button>':''}
-        ${isHost?'<button class="d-hero-btn" onclick="openManage(\''+e.id+'\')" style="font-size:.72rem;font-weight:800;padding:0 13px;width:auto;border-radius:999px;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Verwalten</button>':''}
+        ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\]/g,'')+'\')" aria-label="Party melden">'+pikto('melden',19)+'</button>':''}
+        ${(!isPrivEv||isHost)?'<button class="d-hero-btn" onclick="openShare(\''+e.id+'\')" aria-label="Teilen">'+pikto('teilen',19)+'</button>':''}
+        ${isHost?'<button class="d-hero-btn" onclick="openManage(\''+e.id+'\')" style="font-size:.72rem;font-weight:800;padding:0 13px;width:auto;border-radius:999px;gap:6px">'+pikto('zahnrad',15)+'Verwalten</button>':''}
         </div>
       </div>
       ${!e.image_url?('<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.18;color:#fff">'+iconSvg(evIconKey(e),80)+'</div>'):''}
@@ -19237,6 +19469,9 @@ REP_GRUENDE.photo=[
   ['spam','spam','Spam oder Werbung'],
   ['anderes','anderes','Etwas anderes'],
 ];
+const REP_PK={belaestigung:'belaestigung',hass:'hass',sexuell:'sexuell',fake_profil:'fake',unter16:'unter16',
+  spam:'spam',anderes:'anderes',erfunden:'erfunden',falsche_angaben:'falsch',gefaehrlich:'gefahr',
+  ohne_einverstaendnis:'ohne_ok',gewalt:'gewalt'};
 const REP_TITEL={user:'Person melden',event:'Party melden',message:'Nachricht melden',photo:'Foto melden'};
 const REP_HAKEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-10"/></svg>';
 let repWahl=null;
@@ -19282,7 +19517,7 @@ async function openReport(art,id,name){
     +'<div class="rep-frage">Was stimmt nicht?</div>'
     +repGruendeFuer(art).map((g,i)=>
       '<button class="rep-opt einzeln" data-i="'+i+'" onclick="repWaehlen('+i+')">'
-      +'<span>'+g[2]+'</span></button>').join('')
+      +'<span class="rep-ic">'+pikto(REP_PK[g[1]]||'anderes',22)+'</span><span>'+g[2]+'</span></button>').join('')
     +'<textarea class="rep-note" id="repNote" rows="3" maxlength="600" style="display:none" '
       +'placeholder="Was ist passiert? (freiwillig)"></textarea>'
     +'<button class="rep-opt rep-kontakt" id="repKontakt" onclick="repKontaktUm(this)">'
@@ -19496,10 +19731,13 @@ const NT_ICON={
   folge_zusage:{cls:'ok',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>'},
 };
 
+const NT_PK={guest_request:'gast_anfrage',guest_ok:'ok',guest_no:'nein',invite:'einladung',
+  event_changed:'zeit',event_gone:'event_weg',verein_bestaetigt:'verein',verein_abgelehnt:'nein',
+  verein_pruefen:'verein',nachricht:'chat',freund_dabei:'freund_dabei',folge_anfrage:'gast_anfrage',
+  folge_zusage:'folge_ok',day_one:'day_one',foto_entfernt:'foto_weg'};
 function ntIcon(art){
   const d=NT_ICON[art]||NT_ICON.event_changed;
-  return '<div class="nt-ic '+d.cls+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-    +'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+d.svg+'</svg></div>';
+  return '<div class="nt-ic '+d.cls+'">'+pikto(NT_PK[art]||'glocke',20)+'</div>';
 }
 
 function ntZeit(iso){
@@ -20349,13 +20587,13 @@ function renderGastgeber(e){
    nach einer halben Stunde ungültig werden. */
 const FOTO_MAX=10;
 const FOTO_SYM={
-  kamera:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2.5L9 4h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  kamera:pikto('kamera',18),
   plus:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   uhr:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12M6 22h12M7 2v4a5 5 0 0 0 10 0V2M7 22v-4a5 5 0 0 1 10 0v4"/></svg>',
-  sichern:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
-  weg:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
-  binich:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></svg>',
-  melden:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>'
+  sichern:pikto('sichern',20),
+  weg:pikto('loeschen',20),
+  binich:pikto('binich',20),
+  melden:pikto('melden',20)
 };
 let fotoStand=null;
 
