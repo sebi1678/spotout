@@ -6096,6 +6096,9 @@
     .modal-body{padding-bottom:calc(28px + var(--safe-bottom, env(safe-area-inset-bottom)))}
     .mg-sec,.sec-lbl,.vh-sec{font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5)}
     @media(max-width:360px){ .prof-actions .prof-action-btn>svg{display:none} }
+
+    .c.yes svg,.c.no svg{width:15px;height:15px;display:block;margin:0 auto}
+    .c.no svg{opacity:.5}
   </style>
 </head>
 <body>
@@ -6727,7 +6730,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Profil bearbeiten</div>
-      <button class="modal-x" onclick="document.getElementById('editProfOverlay').classList.remove('open')">
+      <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('editProfOverlay').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7143,7 +7146,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Filter</div>
-      <button class="modal-x" onclick="document.getElementById('oeFilterOverlay').classList.remove('open')">
+      <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('oeFilterOverlay').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7217,7 +7220,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Womit navigieren?</div>
-      <button class="modal-x" onclick="document.getElementById('routeOverlay').classList.remove('open')">
+      <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('routeOverlay').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7246,7 +7249,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Einladung</div>
-      <button class="modal-x" onclick="closeJoin()">
+      <button class="modal-x" aria-label="Schliessen" onclick="closeJoin()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7274,7 +7277,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title" id="flTitle">Follower</div>
-      <button class="modal-x" onclick="document.getElementById('followListOverlay').classList.remove('open')">
+      <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('followListOverlay').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7288,7 +7291,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Einstellungen</div>
-      <button class="modal-x" onclick="document.getElementById('settingsOverlay').classList.remove('open')">
+      <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('settingsOverlay').classList.remove('open')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7528,6 +7531,7 @@
 <!-- ════ VERWARNUNG & SPERRE ════ -->
 <div class="overlay" id="sanktionOverlay">
   <div class="modal no-swipe">
+    <div class="modal-handle"></div>
     <div class="modal-hdr"><div class="modal-title">Verwarnung</div></div>
     <div class="modal-body" id="sanktionBody"></div>
   </div>
@@ -7759,7 +7763,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Was bringst du mit?</div>
-      <button class="modal-x" onclick="closeBringSheet()">
+      <button class="modal-x" aria-label="Schliessen" onclick="closeBringSheet()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7773,7 +7777,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Was möchtest du machen?</div>
-      <button class="modal-x" onclick="closeOverlay('plusOverlay')">
+      <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('plusOverlay')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7786,7 +7790,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title" id="shareTitle">Teilen</div>
-      <button class="modal-x" onclick="closeShare()">
+      <button class="modal-x" aria-label="Schliessen" onclick="closeShare()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -7800,7 +7804,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Party verwalten</div>
-      <button class="modal-x" onclick="closeManage()">
+      <button class="modal-x" aria-label="Schliessen" onclick="closeManage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -8805,7 +8809,7 @@ function tourWeiter(){
   tourZeichnen();
 }
 
-/* Wer eine Karte zu schnell weggetippt hat, will sie nochmal sehen.
+/* Wer eine Karte zu schnell weggetippt hat, will sie nochmals sehen.
    Ohne diesen Knopf blieb nur Überspringen – und dann war die ganze
    Einführung weg. Auf der ersten Karte ist er ausgeblendet statt
    ausgegraut: ein Knopf, der nichts tut, ist schlimmer als keiner. */
@@ -9301,7 +9305,7 @@ function showEmailConfirmScreen(email){
         <p style="color:var(--text);font-size:.9rem;font-weight:600;margin-bottom:20px">${esc(email)}</p>
         <p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:32px">Tipp auf den Link darin – dann kannst du dich anmelden.</p>
         <button class="auth-submit-btn" onclick="location.reload()" style="width:100%;margin-bottom:12px">Zurück zur Anmeldung</button>
-        <button class="auth-zweit" id="nochmalBtn" onclick="mailNochmal('${escAttr(email)}')">E-Mail nochmals schicken</button>
+        <button class="auth-zweit" id="nochmalsBtn" onclick="mailNochmal('${escAttr(email)}')">E-Mail nochmals schicken</button>
         <p style="color:var(--muted);font-size:.8rem;margin-top:14px">Nichts da? Schau im Spam-Ordner nach.</p>
       </div>
     </div>`;
@@ -9311,7 +9315,7 @@ function showEmailConfirmScreen(email){
    billiger als eine Supportanfrage – aber mit Sperre, sonst wird er
    zum Weg, das Mail-Limit erneut zu reissen. */
 async function mailNochmal(email){
-  const btn=document.getElementById('nochmalBtn');
+  const btn=document.getElementById('nochmalsBtn');
   if(!btn||btn.disabled)return;
   btn.disabled=true; btn.textContent='Wird geschickt…';
   const{error}=await sb.auth.resend({type:'signup',email:email,options:{emailRedirectTo:'https://spotoutapp.ch/?bestaetigt=1'}});
@@ -11708,7 +11712,7 @@ async function runUserSearch(q){
     .or('username.ilike.%'+safe+'%,full_name.ilike.%'+safe+'%')
     .limit(30);
   if(seq!==searchSeq)return;
-  if(error){box.innerHTML=searchHint('Die Suche hat nicht geklappt. Versuch es nochmal.');return;}
+  if(error){box.innerHTML=searchHint('Die Suche hat nicht geklappt. Versuch es nochmals.');return;}
   const list=(data||[]).filter(u=>u.id!==cUser?.id&&!istBlockiert(u.id));
   if(!list.length){
     box.innerHTML=searchHint('Niemand gefunden, der zu „'+esc(q)+'“ passt.');
@@ -12931,15 +12935,15 @@ const PRO_VERGLEICH=[
   ['Sehen, <b>wer</b> von ihnen dabei ist',0,1],
   ['Meldung, wenn jemand mitgeht',0,1],
   ['Bio & Social-Links im Profil',0,1],
-  ['Chats selbst starten',0,1],
+  ['Gespräche selbst beginnen',0,1],
   ['Gästeliste sehen',0,1],
   ['Sehen, wer dein Profil besucht hat',0,1],
   ['Gebühr fürs Veröffentlichen','5 / 15 / 30','3 / 8 / 15'],
 ];
 
 function proZelle(v,hi){
-  if(v===1)return'<div class="c yes'+(hi?' hi':'')+'">✓</div>';
-  if(v===0)return'<div class="c no">—</div>';
+  if(v===1)return'<div class="c yes'+(hi?' hi':'')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-label="ja"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>';
+  if(v===0)return'<div class="c no" aria-label="nein"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 12h12"/></svg></div>';
   return'<div class="c" style="font-size:.72rem;'+(hi?'color:#FF2D76':'color:var(--muted)')+'">'+v+'</div>';
 }
 
@@ -14349,17 +14353,17 @@ function anmeldeFehler(error){
     return {text:'Diese E-Mail-Adresse sieht nicht richtig aus.', art:'warn'};
   }
   if(m.includes('failed to fetch')||m.includes('networkerror')||m.includes('load failed')){
-    return {text:'Keine Verbindung. Prüf dein Internet und versuch es nochmal.', art:'error'};
+    return {text:'Keine Verbindung. Prüf dein Internet und versuch es nochmals.', art:'error'};
   }
   if(m.includes('database error saving new user')){
     return {text:'Mit diesen Angaben ist keine Registrierung möglich. SPOTOUT ist ab 16 Jahren. Fragen: support@spotoutapp.ch', art:'error'};
   }
   if(m.includes('error sending confirmation')||m.includes('error sending')){
     return {text:'Die E-Mail liess sich nicht verschicken. '
-                +'Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.',
+                +'Versuch es in ein paar Minuten nochmals oder schreib an support@spotoutapp.ch.',
             art:'error', sperre:60};
   }
-  return {text:'Das hat nicht geklappt. Versuch es nochmal – bleibt es dabei, '
+  return {text:'Das hat nicht geklappt. Versuch es nochmals – bleibt es dabei, '
               +'schreib an support@spotoutapp.ch.', art:'error'};
 }
 
@@ -15194,7 +15198,7 @@ async function openUserProf(userId,zurueck){
           +'<div class="insta-tile-overlay"><div class="up-kachel-n">'+esc(e.name||'Party')+'</div>'
           +'<div class="up-kachel-d">'+fmtD(e.date)+'</div></div></div>';
       }).join('')+'</div>'
-    : '<div class="insta-empty up-leer">'+pikto('kalender',30)+'<span>Gerade keine kommenden Partys</span></div>';
+    : '<div class="insta-empty up-leer">'+pikto('kalender',30)+'<span>Gerade keine kommenden '+(p.kontoart==='verein'?'Anlässe':'Partys')+'</span></div>';
 
   body.innerHTML=
     '<div class="prof-wrap-insta up-seite">'
@@ -15235,7 +15239,7 @@ async function openUserProf(userId,zurueck){
         +' zustimmt, siehst du Angaben und Partys – und ihr könnt euch gegenseitig einladen.</span></div>'
       : '<div class="insta-tabs"><button class="insta-tab active" style="cursor:default">'
         +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>'
-        +'Kommende Partys</button></div>'+kacheln)
+        +(istV?'Kommende Anlässe':'Kommende Partys')+'</button></div>'+kacheln)
     +'<div style="height:calc(40px + env(safe-area-inset-bottom))"></div>'
     +'</div>';
 }
@@ -15916,7 +15920,7 @@ async function openJoinOverlay(code){
     action=(e.type==='private'
         ?'<div class="join-note">'+'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>'+'<span>Der Host bestätigt dich kurz, dann bist du dabei.</span></div>':'')
       +'<button class="attend-btn" id="joinBtn" style="background:'+w.btnBg+';color:'+w.btnColor+'" onclick="doJoin()">'
-      +(e.type==='private'?'Beitritt anfragen':'Ich bin dabei!')+'</button>';
+      +(e.type==='private'?'Beitritt anfragen':'Dabei sein')+'</button>';
   }
 
   body.innerHTML=
@@ -15946,7 +15950,7 @@ async function doJoin(){
   if(btn){btn.dataset.text=btn.dataset.text||btn.textContent;btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Einen Moment…';}
   const{data,error}=await sb.rpc('join_by_invite',{p_code:window.__joinCode});
   const r=Array.isArray(data)?data[0]:data;
-  if(error||!r){toast('Beitritt fehlgeschlagen','error');if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Ich bin dabei!';}return;}
+  if(error||!r){toast('Das hat nicht geklappt. Versuch es nochmals.','error');if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Dabei sein';}return;}
   if(r.ergebnis==='angefragt'){
     closeJoin();
     toast('Anfrage gesendet – der Host bestätigt dich','success');
@@ -15970,7 +15974,7 @@ async function doJoin(){
     closeJoin();
     await loadEvts();
     if(r.ev_id)openDetail(r.ev_id);
-  }else if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Ich bin dabei!';}
+  }else if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Dabei sein';}
 }
 
 /* ══════════ MITBRINGEN DIREKT NACH DEM ANMELDEN ══════════ */
@@ -16521,7 +16525,7 @@ en:{
   "Einladen und teilen":"Invite and share",
   "Bei privaten Partys bekommt jede Person ihren eigenen Link – der funktioniert genau einmal.":"For private parties everyone gets their own link – it works exactly once.",
   "Danach fragt dein iPhone, in welchen Kalender":"Your iPhone then asks which calendar",
-  "Erklärungen nochmal einblenden":"Show the explanations again",
+  "Erklärungen nochmals einblenden":"Show the explanations again",
   "Die Erklärungen kommen wieder, sobald du eine Party öffnest oder etwas erstellst":"The explanations come back as soon as you open a party or create something",
   "Entwurf":"Draft",
   "Entwurf gesichert":"Draft saved",
@@ -16592,8 +16596,8 @@ en:{
   "Deine Partys stehen im Kalender – sobald du ein Konto hast.":"Your parties live in the calendar – as soon as you have an account.",
   "Dieses Gespräch gibt es nicht mehr":"This conversation no longer exists",
   "Gespräch konnte nicht geöffnet werden":"Couldn’t open the conversation",
-  "Meldungen sind an":"Notifications are on",
-  "Meldungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.":"Notifications are blocked for SPOTOUT. Turn them back on in iPhone Settings under Notifications.",
+  "Benachrichtigungen sind an":"Notifications are on",
+  "Benachrichtigungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.":"Notifications are blocked for SPOTOUT. Turn them back on in iPhone Settings under Notifications.",
   "Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.":"Even on the lock screen – for new messages, invites and changes.",
   "Partys in deiner Nähe":"Parties near you",
   "Damit wir wissen, was bei dir läuft":"So we know what’s on where you are",
@@ -16967,7 +16971,7 @@ en:{
   "Sicher über deine Apple-ID · jederzeit kündbar":"Secure via your Apple ID · cancel anytime",
   "Dieser Betrag ist in der App nicht hinterlegt":"That amount isn’t set up in the app",
   "Zahlung konnte nicht vorbereitet werden":"Couldn’t prepare the payment",
-  "Die Freischaltung dauert noch einen Moment. Schau gleich nochmal.":"Unlocking takes a moment. Check again shortly.",
+  "Die Freischaltung dauert noch einen Moment. Schau gleich nochmals.":"Unlocking takes a moment. Check again shortly.",
   "Kauf wiederherstellen":"Restore purchase",
   "Apple wird geöffnet…":"Opening Apple…",
   "Kein früherer Kauf gefunden":"No earlier purchase found",
@@ -16977,7 +16981,7 @@ en:{
   "Kauf nicht möglich: ":"Purchase failed: ",
   "Antwort":"Reply",
   "Ich möchte eine Antwort":"I would like a reply",
-  "Was ist passiert? (freiwillig)":"What happened? (optional)",
+  "Was ist passiert? (optional)":"What happened? (optional)",
   "deine@mailadresse.ch":"your@email.com",
   "Bitte eine gültige E-Mail-Adresse eintragen":"Please enter a valid email address",
   "Wie lädst du ein?":"How do you invite?",
@@ -17155,7 +17159,7 @@ en:{
   "Im iPhone ausgeschaltet":"Turned off on your iPhone",
   "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT can’t send you notifications right now. Turn them back on in iPhone Settings.",
   "iPhone-Einstellungen öffnen":"Open iPhone Settings",
-  "Mitteilungen einschalten":"Turn on notifications",
+  "Benachrichtigungen einschalten":"Turn on notifications",
   "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"So you see messages and invitations even on your lock screen.",
   "Push gibt es in der App":"Push is available in the app",
   "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"In the browser you see updates under the bell. Your choice here also applies to the iPhone app.",
@@ -17234,7 +17238,7 @@ en:{
   "Sehen, wer bei dir war":"See who visited you",
   "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Like on TikTok: see who viewed your profile in the last 30 days. You can turn it off anytime – but then you won’t see it either.",
   "Sehen, wer dein Profil besucht hat":"See who visited your profile",
-  "Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Notifications are on but couldn’t be saved. Please try again.",
+  "Benachrichtigungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Notifications are on but couldn’t be saved. Please try again.",
   "Die Art der Party lässt sich nachträglich nicht ändern.":"The type of party can’t be changed afterwards.",
   "Mehr Gäste kosten eine höhere Gebühr. Erstell dafür eine neue Party oder schreib an support@spotoutapp.ch.":"More guests cost a higher fee. Create a new party for that or write to support@spotoutapp.ch.",
   "Events können nur geprüfte Veranstalter veröffentlichen.":"Only verified organisers can publish events.",
@@ -17343,7 +17347,7 @@ en:{
   "Dieses Bildformat geht leider nicht.":"Sorry, this image format doesn't work.",
   "Das Foto ist zu gross.":"The photo is too large.",
   "Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.":"Photos are for guests only, from the start of the party for 24 hours.",
-  "Hochladen hat nicht geklappt. Versuch es nochmal.":"Upload didn't work. Try again.",
+  "Hochladen hat nicht geklappt. Versuch es nochmals.":"Upload didn't work. Try again.",
   "Das Foto konnte nicht gespeichert werden.":"The photo couldn't be saved.",
   "Foto ist drin":"Photo added",
   "Fotos sind drin":"Photos added",
@@ -17354,7 +17358,7 @@ en:{
   "Wirklich entfernen?":"Really remove?",
   "Foto ist weg":"Photo removed",
   "Sichern hat nicht geklappt":"Saving didn't work",
-  "Das hat nicht geklappt. Versuch es nochmal.":"That didn't work. Try again.",
+  "Das hat nicht geklappt. Versuch es nochmals.":"That didn't work. Try again.",
   "Zeigt mich oder jemanden ohne Einverständnis":"Shows me or someone without consent",
   "Nacktheit oder sexuelle Inhalte":"Nudity or sexual content",
   "Gewalt oder Drogen":"Violence or drugs",
@@ -17394,14 +17398,14 @@ en:{
   "Namen suchen…":"Search names…",
   "E-Mail nochmals schicken":"Send the email again",
   "Ist unterwegs – schau auch im Spam-Ordner nach":"On its way — check your spam folder too",
-  "Gerade melden sich sehr viele an. Warte eine Minute und tipp nochmal auf Konto erstellen – dein Konto ist noch nicht angelegt.":"A lot of people are signing up right now. Wait a minute and tap Create account again — your account has not been created yet.",
+  "Gerade melden sich sehr viele an. Warte eine Minute und tipp nochmals auf Konto erstellen – dein Konto ist noch nicht angelegt.":"A lot of people are signing up right now. Wait a minute and tap Create account again — your account has not been created yet.",
   "Zu viele Versuche kurz nacheinander. Warte eine Minute.":"Too many attempts in a row. Wait a minute.",
   "E-Mail oder Passwort stimmt nicht.":"That email or password is wrong.",
   "Bestätige zuerst die E-Mail, die wir dir geschickt haben.":"Confirm the email we sent you first.",
   "Diese E-Mail-Adresse sieht nicht richtig aus.":"That email address does not look right.",
-  "Keine Verbindung. Prüf dein Internet und versuch es nochmal.":"No connection. Check your internet and try again.",
-  "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.":"The confirmation email could not be sent. Try again in a few minutes or write to support@spotoutapp.ch.",
-  "Das hat nicht geklappt. Versuch es nochmal – bleibt es dabei, schreib an support@spotoutapp.ch.":"That did not work. Try again — if it keeps failing, write to support@spotoutapp.ch.",
+  "Keine Verbindung. Prüf dein Internet und versuch es nochmals.":"No connection. Check your internet and try again.",
+  "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmals oder schreib an support@spotoutapp.ch.":"The confirmation email could not be sent. Try again in a few minutes or write to support@spotoutapp.ch.",
+  "Das hat nicht geklappt. Versuch es nochmals – bleibt es dabei, schreib an support@spotoutapp.ch.":"That did not work. Try again — if it keeps failing, write to support@spotoutapp.ch.",
   "Strasse, Waldhütte oder Vereinshaus":"Street, forest hut or clubhouse",
   "Keine Treffer – probier den Namen der Hütte plus den Ort":"No matches — try the name of the hut plus the town",
   "Steht so nicht in der Karte – antippen, um es trotzdem zu nehmen":"Not on the map — tap to use it anyway",
@@ -17843,7 +17847,7 @@ fr:{
   "Einladen und teilen":"Inviter et partager",
   "Bei privaten Partys bekommt jede Person ihren eigenen Link – der funktioniert genau einmal.":"Pour les soirées privées, chacun reçoit son lien – valable une seule fois.",
   "Danach fragt dein iPhone, in welchen Kalender":"Ton iPhone demande ensuite dans quel calendrier",
-  "Erklärungen nochmal einblenden":"Réafficher les explications",
+  "Erklärungen nochmals einblenden":"Réafficher les explications",
   "Die Erklärungen kommen wieder, sobald du eine Party öffnest oder etwas erstellst":"Les explications reviennent dès que tu ouvres une soirée ou crées quelque chose",
   "Entwurf":"Brouillon",
   "Entwurf gesichert":"Brouillon enregistré",
@@ -17914,8 +17918,8 @@ fr:{
   "Deine Partys stehen im Kalender – sobald du ein Konto hast.":"Tes soirées sont dans le calendrier – dès que tu as un compte.",
   "Dieses Gespräch gibt es nicht mehr":"Cette conversation n’existe plus",
   "Gespräch konnte nicht geöffnet werden":"Impossible d’ouvrir la conversation",
-  "Meldungen sind an":"Les notifications sont activées",
-  "Meldungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.":"Les notifications sont bloquées pour SPOTOUT. Réactive-les dans Réglages > Notifications.",
+  "Benachrichtigungen sind an":"Les notifications sont activées",
+  "Benachrichtigungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.":"Les notifications sont bloquées pour SPOTOUT. Réactive-les dans Réglages > Notifications.",
   "Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.":"Même sur l’écran verrouillé – nouveaux messages, invitations et changements.",
   "Partys in deiner Nähe":"Des fêtes près de chez toi",
   "Damit wir wissen, was bei dir läuft":"Pour savoir ce qui se passe près de toi",
@@ -18289,7 +18293,7 @@ fr:{
   "Sicher über deine Apple-ID · jederzeit kündbar":"Sécurisé via ton identifiant Apple · résiliable à tout moment",
   "Dieser Betrag ist in der App nicht hinterlegt":"Ce montant n’est pas configuré dans l’app",
   "Zahlung konnte nicht vorbereitet werden":"Impossible de préparer le paiement",
-  "Die Freischaltung dauert noch einen Moment. Schau gleich nochmal.":"L’activation prend un instant. Reviens dans un moment.",
+  "Die Freischaltung dauert noch einen Moment. Schau gleich nochmals.":"L’activation prend un instant. Reviens dans un moment.",
   "Kauf wiederherstellen":"Restaurer l’achat",
   "Apple wird geöffnet…":"Ouverture d’Apple…",
   "Kein früherer Kauf gefunden":"Aucun achat précédent trouvé",
@@ -18299,7 +18303,7 @@ fr:{
   "Kauf nicht möglich: ":"Achat impossible : ",
   "Antwort":"Réponse",
   "Ich möchte eine Antwort":"Je veux une réponse",
-  "Was ist passiert? (freiwillig)":"Que s’est-il passé ? (facultatif)",
+  "Was ist passiert? (optional)":"Que s’est-il passé ? (facultatif)",
   "deine@mailadresse.ch":"ton@adresse.ch",
   "Bitte eine gültige E-Mail-Adresse eintragen":"Entre une adresse e-mail valide",
   "Wie lädst du ein?":"Comment invites-tu ?",
@@ -18477,7 +18481,7 @@ fr:{
   "Im iPhone ausgeschaltet":"Désactivé sur ton iPhone",
   "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT ne peut pas t’envoyer de notifications. Réactive-les dans les Réglages de l’iPhone.",
   "iPhone-Einstellungen öffnen":"Ouvrir les Réglages",
-  "Mitteilungen einschalten":"Activer les notifications",
+  "Benachrichtigungen einschalten":"Activer les notifications",
   "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"Pour voir messages et invitations même écran verrouillé.",
   "Push gibt es in der App":"Les notifications push sont dans l’app",
   "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"Dans le navigateur, tout apparaît sous la cloche. Ton choix s’applique aussi à l’app iPhone.",
@@ -18495,7 +18499,7 @@ fr:{
   "Sehen, wer bei dir war":"Voir qui est passé",
   "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Comme sur TikTok : vois qui a consulté ton profil ces 30 derniers jours. Tu peux désactiver à tout moment – mais tu ne le verras plus.",
   "Sehen, wer dein Profil besucht hat":"Voir qui a visité ton profil",
-  "Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Les notifications sont activées mais n’ont pas pu être enregistrées. Réessaie.",
+  "Benachrichtigungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Les notifications sont activées mais n’ont pas pu être enregistrées. Réessaie.",
 "Pro verschenken":"Offrir Pro",
   "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
@@ -18579,7 +18583,7 @@ fr:{
   "Dieses Bildformat geht leider nicht.":"Désolé, ce format d'image ne marche pas.",
   "Das Foto ist zu gross.":"La photo est trop grande.",
   "Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.":"Les photos sont réservées aux invités, dès le début de la soirée et pendant 24 heures.",
-  "Hochladen hat nicht geklappt. Versuch es nochmal.":"L'envoi n'a pas marché. Réessaie.",
+  "Hochladen hat nicht geklappt. Versuch es nochmals.":"L'envoi n'a pas marché. Réessaie.",
   "Das Foto konnte nicht gespeichert werden.":"La photo n'a pas pu être enregistrée.",
   "Foto ist drin":"Photo ajoutée",
   "Fotos sind drin":"Photos ajoutées",
@@ -18590,7 +18594,7 @@ fr:{
   "Wirklich entfernen?":"Vraiment retirer ?",
   "Foto ist weg":"Photo retirée",
   "Sichern hat nicht geklappt":"L'enregistrement n'a pas marché",
-  "Das hat nicht geklappt. Versuch es nochmal.":"Ça n'a pas marché. Réessaie.",
+  "Das hat nicht geklappt. Versuch es nochmals.":"Ça n'a pas marché. Réessaie.",
   "Zeigt mich oder jemanden ohne Einverständnis":"Me montre ou montre quelqu'un sans accord",
   "Nacktheit oder sexuelle Inhalte":"Nudité ou contenu sexuel",
   "Gewalt oder Drogen":"Violence ou drogues",
@@ -18630,14 +18634,14 @@ fr:{
   "Namen suchen…":"Chercher un nom…",
   "E-Mail nochmals schicken":"Renvoyer l’e-mail",
   "Ist unterwegs – schau auch im Spam-Ordner nach":"C’est parti — regarde aussi dans les spams",
-  "Gerade melden sich sehr viele an. Warte eine Minute und tipp nochmal auf Konto erstellen – dein Konto ist noch nicht angelegt.":"Beaucoup de personnes s’inscrivent en ce moment. Attends une minute et appuie de nouveau sur Créer un compte — ton compte n’existe pas encore.",
+  "Gerade melden sich sehr viele an. Warte eine Minute und tipp nochmals auf Konto erstellen – dein Konto ist noch nicht angelegt.":"Beaucoup de personnes s’inscrivent en ce moment. Attends une minute et appuie de nouveau sur Créer un compte — ton compte n’existe pas encore.",
   "Zu viele Versuche kurz nacheinander. Warte eine Minute.":"Trop de tentatives d’affilée. Attends une minute.",
   "E-Mail oder Passwort stimmt nicht.":"Cet e-mail ou ce mot de passe est incorrect.",
   "Bestätige zuerst die E-Mail, die wir dir geschickt haben.":"Confirme d’abord l’e-mail que nous t’avons envoyé.",
   "Diese E-Mail-Adresse sieht nicht richtig aus.":"Cette adresse e-mail ne semble pas correcte.",
-  "Keine Verbindung. Prüf dein Internet und versuch es nochmal.":"Pas de connexion. Vérifie ton internet et réessaie.",
-  "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.":"L’e-mail de confirmation n’a pas pu être envoyé. Réessaie dans quelques minutes ou écris à support@spotoutapp.ch.",
-  "Das hat nicht geklappt. Versuch es nochmal – bleibt es dabei, schreib an support@spotoutapp.ch.":"Ça n’a pas marché. Réessaie — si ça persiste, écris à support@spotoutapp.ch.",
+  "Keine Verbindung. Prüf dein Internet und versuch es nochmals.":"Pas de connexion. Vérifie ton internet et réessaie.",
+  "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmals oder schreib an support@spotoutapp.ch.":"L’e-mail de confirmation n’a pas pu être envoyé. Réessaie dans quelques minutes ou écris à support@spotoutapp.ch.",
+  "Das hat nicht geklappt. Versuch es nochmals – bleibt es dabei, schreib an support@spotoutapp.ch.":"Ça n’a pas marché. Réessaie — si ça persiste, écris à support@spotoutapp.ch.",
   "Strasse, Waldhütte oder Vereinshaus":"Rue, cabane forestière ou maison de société",
   "Keine Treffer – probier den Namen der Hütte plus den Ort":"Aucun résultat — essaie le nom de la cabane plus la localité",
   "Steht so nicht in der Karte – antippen, um es trotzdem zu nehmen":"Absent de la carte — appuie pour l’utiliser quand même",
@@ -19079,7 +19083,7 @@ it:{
   "Einladen und teilen":"Invita e condividi",
   "Bei privaten Partys bekommt jede Person ihren eigenen Link – der funktioniert genau einmal.":"Per le feste private ognuno riceve il suo link – funziona una volta sola.",
   "Danach fragt dein iPhone, in welchen Kalender":"Poi il tuo iPhone chiede in quale calendario",
-  "Erklärungen nochmal einblenden":"Mostra di nuovo le spiegazioni",
+  "Erklärungen nochmals einblenden":"Mostra di nuovo le spiegazioni",
   "Die Erklärungen kommen wieder, sobald du eine Party öffnest oder etwas erstellst":"Le spiegazioni tornano appena apri una festa o crei qualcosa",
   "Entwurf":"Bozza",
   "Entwurf gesichert":"Bozza salvata",
@@ -19150,8 +19154,8 @@ it:{
   "Deine Partys stehen im Kalender – sobald du ein Konto hast.":"Le tue feste stanno nel calendario – appena avrai un account.",
   "Dieses Gespräch gibt es nicht mehr":"Questa conversazione non esiste più",
   "Gespräch konnte nicht geöffnet werden":"Impossibile aprire la conversazione",
-  "Meldungen sind an":"Le notifiche sono attive",
-  "Meldungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.":"Le notifiche sono bloccate per SPOTOUT. Riattivale in Impostazioni > Notifiche.",
+  "Benachrichtigungen sind an":"Le notifiche sono attive",
+  "Benachrichtigungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.":"Le notifiche sono bloccate per SPOTOUT. Riattivale in Impostazioni > Notifiche.",
   "Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.":"Anche a schermo bloccato – nuovi messaggi, inviti e modifiche.",
   "Partys in deiner Nähe":"Feste vicino a te",
   "Damit wir wissen, was bei dir läuft":"Così sappiamo cosa succede da te",
@@ -19525,7 +19529,7 @@ it:{
   "Sicher über deine Apple-ID · jederzeit kündbar":"Sicuro tramite il tuo ID Apple · disdetta in qualsiasi momento",
   "Dieser Betrag ist in der App nicht hinterlegt":"Questo importo non è previsto nell’app",
   "Zahlung konnte nicht vorbereitet werden":"Non è stato possibile preparare il pagamento",
-  "Die Freischaltung dauert noch einen Moment. Schau gleich nochmal.":"Lo sblocco richiede ancora un momento. Ricontrolla tra poco.",
+  "Die Freischaltung dauert noch einen Moment. Schau gleich nochmals.":"Lo sblocco richiede ancora un momento. Ricontrolla tra poco.",
   "Kauf wiederherstellen":"Ripristina l’acquisto",
   "Apple wird geöffnet…":"Apertura di Apple…",
   "Kein früherer Kauf gefunden":"Nessun acquisto precedente trovato",
@@ -19535,7 +19539,7 @@ it:{
   "Kauf nicht möglich: ":"Acquisto non riuscito: ",
   "Antwort":"Risposta",
   "Ich möchte eine Antwort":"Vorrei una risposta",
-  "Was ist passiert? (freiwillig)":"Cosa è successo? (facoltativo)",
+  "Was ist passiert? (optional)":"Cosa è successo? (facoltativo)",
   "deine@mailadresse.ch":"tuo@indirizzo.ch",
   "Bitte eine gültige E-Mail-Adresse eintragen":"Inserisci un indirizzo e-mail valido",
   "Wie lädst du ein?":"Come inviti?",
@@ -19713,7 +19717,7 @@ it:{
   "Im iPhone ausgeschaltet":"Disattivate sull’iPhone",
   "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT non può inviarti notifiche. Riattivale nelle Impostazioni dell’iPhone.",
   "iPhone-Einstellungen öffnen":"Apri Impostazioni",
-  "Mitteilungen einschalten":"Attiva le notifiche",
+  "Benachrichtigungen einschalten":"Attiva le notifiche",
   "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"Per vedere messaggi e inviti anche a schermo bloccato.",
   "Push gibt es in der App":"Le notifiche push sono nell’app",
   "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"Nel browser vedi tutto nella campanella. La tua scelta vale anche per l’app iPhone.",
@@ -19731,7 +19735,7 @@ it:{
   "Sehen, wer bei dir war":"Vedi chi è passato",
   "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Come su TikTok: vedi chi ha visto il tuo profilo negli ultimi 30 giorni. Puoi disattivarlo in qualsiasi momento – ma poi non lo vedrai più.",
   "Sehen, wer dein Profil besucht hat":"Vedere chi ha visitato il tuo profilo",
-  "Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Le notifiche sono attive ma non è stato possibile salvarle. Riprova.",
+  "Benachrichtigungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Le notifiche sono attive ma non è stato possibile salvarle. Riprova.",
 "Pro verschenken":"Regala Pro",
   "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
@@ -19815,7 +19819,7 @@ it:{
   "Dieses Bildformat geht leider nicht.":"Purtroppo questo formato non funziona.",
   "Das Foto ist zu gross.":"La foto è troppo grande.",
   "Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.":"Le foto sono solo per gli ospiti, dall'inizio della festa per 24 ore.",
-  "Hochladen hat nicht geklappt. Versuch es nochmal.":"Il caricamento non è riuscito. Riprova.",
+  "Hochladen hat nicht geklappt. Versuch es nochmals.":"Il caricamento non è riuscito. Riprova.",
   "Das Foto konnte nicht gespeichert werden.":"Non è stato possibile salvare la foto.",
   "Foto ist drin":"Foto aggiunta",
   "Fotos sind drin":"Foto aggiunte",
@@ -19826,7 +19830,7 @@ it:{
   "Wirklich entfernen?":"Rimuovere davvero?",
   "Foto ist weg":"Foto rimossa",
   "Sichern hat nicht geklappt":"Salvataggio non riuscito",
-  "Das hat nicht geklappt. Versuch es nochmal.":"Non ha funzionato. Riprova.",
+  "Das hat nicht geklappt. Versuch es nochmals.":"Non ha funzionato. Riprova.",
   "Zeigt mich oder jemanden ohne Einverständnis":"Mostra me o qualcuno senza consenso",
   "Nacktheit oder sexuelle Inhalte":"Nudità o contenuti sessuali",
   "Gewalt oder Drogen":"Violenza o droghe",
@@ -19867,14 +19871,14 @@ it:{
   "Niemand mit diesem Namen.":"Nessuno con questo nome.",
   "E-Mail nochmals schicken":"Invia di nuovo l’e-mail",
   "Ist unterwegs – schau auch im Spam-Ordner nach":"In arrivo — controlla anche lo spam",
-  "Gerade melden sich sehr viele an. Warte eine Minute und tipp nochmal auf Konto erstellen – dein Konto ist noch nicht angelegt.":"In questo momento si stanno registrando in molti. Aspetta un minuto e tocca di nuovo Crea account — il tuo account non è ancora stato creato.",
+  "Gerade melden sich sehr viele an. Warte eine Minute und tipp nochmals auf Konto erstellen – dein Konto ist noch nicht angelegt.":"In questo momento si stanno registrando in molti. Aspetta un minuto e tocca di nuovo Crea account — il tuo account non è ancora stato creato.",
   "Zu viele Versuche kurz nacheinander. Warte eine Minute.":"Troppi tentativi di seguito. Aspetta un minuto.",
   "E-Mail oder Passwort stimmt nicht.":"E-mail o password non corretti.",
   "Bestätige zuerst die E-Mail, die wir dir geschickt haben.":"Conferma prima l’e-mail che ti abbiamo inviato.",
   "Diese E-Mail-Adresse sieht nicht richtig aus.":"Questo indirizzo e-mail non sembra corretto.",
-  "Keine Verbindung. Prüf dein Internet und versuch es nochmal.":"Nessuna connessione. Controlla la rete e riprova.",
-  "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.":"Non è stato possibile inviare l’e-mail di conferma. Riprova tra qualche minuto o scrivi a support@spotoutapp.ch.",
-  "Das hat nicht geklappt. Versuch es nochmal – bleibt es dabei, schreib an support@spotoutapp.ch.":"Non ha funzionato. Riprova — se continua, scrivi a support@spotoutapp.ch.",
+  "Keine Verbindung. Prüf dein Internet und versuch es nochmals.":"Nessuna connessione. Controlla la rete e riprova.",
+  "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmals oder schreib an support@spotoutapp.ch.":"Non è stato possibile inviare l’e-mail di conferma. Riprova tra qualche minuto o scrivi a support@spotoutapp.ch.",
+  "Das hat nicht geklappt. Versuch es nochmals – bleibt es dabei, schreib an support@spotoutapp.ch.":"Non ha funzionato. Riprova — se continua, scrivi a support@spotoutapp.ch.",
   "Strasse, Waldhütte oder Vereinshaus":"Via, capanna nel bosco o casa sociale",
   "Keine Treffer – probier den Namen der Hütte plus den Ort":"Nessun risultato — prova il nome della capanna più il paese",
   "Steht so nicht in der Karte – antippen, um es trotzdem zu nehmen":"Non è sulla mappa — tocca per usarlo comunque",
@@ -20415,20 +20419,20 @@ async function pushErlauben(){
   if(a&&a.token){
     pushZustand='an';
     const{error}=await sb.rpc('push_token_setzen',{p_token:a.token});
-    if(error){console.error('[push]',error);toast('Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.','warn');}
-    else{ if(cProfile)cProfile.push_token=a.token; toast('Meldungen sind an','success'); }
+    if(error){console.error('[push]',error);toast('Benachrichtigungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.','warn');}
+    else{ if(cProfile)cProfile.push_token=a.token; toast('Benachrichtigungen sind an','success'); }
   }else{
     // Kein stilles Scheitern mehr: sagen, woran es lag.
     const grund=(a&&a.fehler)||'unbekannt';
     if(grund==='nicht_erlaubt'){
       pushZustand='aus';
-      toast('Du hast Meldungen abgelehnt. Wieder einschalten: iPhone-Einstellungen › Mitteilungen › Spotout','warn');
+      toast('Du hast Benachrichtigungen abgelehnt. Wieder einschalten: iPhone-Einstellungen › Mitteilungen › Spotout','warn');
     }else if(grund==='zeitueberschreitung'){
       toast('Die App hat nicht geantwortet. Schliess sie ganz und öffne sie neu.','error');
     }else if(grund==='kein_native'||grund==='unbekannt: push_token'){
-      toast('Diese Version der App kennt noch keine Meldungen. Es braucht den neuesten Build.','warn');
+      toast('Diese Version der App kennt noch keine Benachrichtigungen. Aktualisiere SPOTOUT im App Store.','warn');
     }else{
-      toast('Meldungen konnten nicht eingeschaltet werden: '+grund,'error');
+      toast('Benachrichtigungen konnten nicht eingeschaltet werden: '+grund,'error');
     }
   }
   renderNotifs();
@@ -20609,7 +20613,7 @@ async function besucherOeffnen(){
       const stand=b.ich_folge?'folge':b.angefragt?'angefragt':(b.folgt_mir?'auch':'folgen');
       return '<div class="fl-row bes-zeile" onclick="closeOverlay(\'besucherOverlay\');openUserProf(\''+b.id+'\')">'
         +'<div class="av-sm">'+av+'</div>'
-        +'<div style="min-width:0;flex:1"><div class="att-name">'+esc(nm)+(b.is_pro?' '+proMarke(true):'')+(b.neu?'<span class="bes-neu" aria-label="neu"></span>':'')+'</div>'
+        +'<div style="min-width:0;flex:1"><div class="att-name">'+esc(nm)+(b.is_pro?' '+proMarke(true):'')+(b.neu?'<span class="bes-neu" role="img" aria-label="neu"></span>':'')+'</div>'
         +'<div class="att-user">'+ntZeit(b.zuletzt)+'</div></div>'
         +flKnopf(b.id,stand,b.folgt_mir)+'</div>';
     }).join('');
@@ -20756,7 +20760,7 @@ function pushEinstZeichnen(){
         +'<span>SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.</span>'
         +'<button class="nt-knopf haupt" onclick="pushSystemEinst()">iPhone-Einstellungen öffnen</button></div>';
     }else if(pushZustand!=='an'){
-      status='<div class="push-karte"><b>Mitteilungen einschalten</b>'
+      status='<div class="push-karte"><b>Benachrichtigungen einschalten</b>'
         +'<span>Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.</span>'
         +'<button class="nt-knopf haupt" onclick="pushErlaubenHier(this)">Erlauben</button></div>';
     }
@@ -20872,7 +20876,7 @@ async function warteAufFreischaltung(eventId){
   }
   await loadEvts();
   openDetail(eventId);
-  toast('Die Freischaltung dauert noch einen Moment. Schau gleich nochmal.','warn');
+  toast('Die Freischaltung dauert noch einen Moment. Schau gleich nochmals.','warn');
 }
 
 /* ── Pro: in der App über Apple, im Browser über Stripe ────────────── */
@@ -21058,7 +21062,7 @@ async function openReport(art,id,name){
       '<button class="rep-opt einzeln" data-i="'+i+'" onclick="repWaehlen('+i+')">'
       +'<span class="rep-ic">'+pikto(REP_PK[g[1]]||'anderes',22)+'</span><span>'+g[2]+'</span></button>').join('')
     +'<textarea class="rep-note" id="repNote" rows="3" maxlength="600" style="display:none" '
-      +'placeholder="Was ist passiert? (freiwillig)"></textarea>'
+      +'placeholder="Was ist passiert? (optional)"></textarea>'
     +'<button class="rep-opt rep-kontakt" id="repKontakt" onclick="repKontaktUm(this)">'
       +'<span>Ich möchte eine Antwort<small>Per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.</small></span></button>'
     +'<input class="rep-note" id="repMail" type="email" inputmode="email" autocomplete="email" '
@@ -21672,7 +21676,7 @@ function ntAnfragenZeile(){
   return '<button class="nt-anfr" onclick="anfragenOeffnen()">'
     +'<span class="nt-anfr-avs'+(a.length>1?' zwei':'')+'">'+avs+'</span>'
     +'<span class="nt-anfr-txt"><b>Follow-Anfragen</b><span>'+esc(nm)
-      +(rest>0?(rest===1?' und 1 weitere Person':' und '+rest+' weitere'):'')+'</span></span>'
+      +(rest>0?(rest===1?' und 1 weitere Person':' und '+rest+' weitere Personen'):'')+'</span></span>'
     +'<span class="nt-anfr-zahl">'+a.length+'</span>'+'<svg class="nt-anfr-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>'
     +'</button>';
 }
@@ -21698,7 +21702,7 @@ function renderNotifs(){
       ? ''
       : '<div class="nt-sys"><span>'
         +(pushZustand==='aus'
-           ? 'Meldungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.'
+           ? 'Benachrichtigungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.'
            : 'Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.')
         +'</span>'
         +(pushZustand==='aus'?'<button onclick="pushSystemEinst()">Öffnen</button>':'<button onclick="pushErlauben()">Erlauben</button>')
@@ -22553,7 +22557,7 @@ function fotoFehlerText(err){
     return 'Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.';
   if(m.includes('size')||m.includes('too large')||m.includes('exceeded'))return 'Das Foto ist zu gross.';
   if(m.includes('mime')||m.includes('type'))return 'Dieses Bildformat geht leider nicht.';
-  return 'Hochladen hat nicht geklappt. Versuch es nochmal.';
+  return 'Hochladen hat nicht geklappt. Versuch es nochmals.';
 }
 
 async function fotoHochladen(auswahl){
@@ -22666,7 +22670,7 @@ async function fotoEntfernen(){
   document.querySelectorAll('#fotoVollLeiste .foto-knopf').forEach(k=>k.disabled=true);
   const{data:r,error}=await sb.rpc('foto_entfernen',{p_foto:f.id});
   if(error||!r||!r.ok){
-    toast((r&&r.meldung)||'Das hat nicht geklappt. Versuch es nochmal.','warn');
+    toast((r&&r.meldung)||'Das hat nicht geklappt. Versuch es nochmals.','warn');
     fotoScharf=null; fotoZeigen(); return;
   }
   if(f.uploader===cUser?.id)st.status.eigene=Math.max(0,(Number(st.status.eigene)||0)-1);
@@ -22802,7 +22806,7 @@ async function renderBringList(eventId,isHost){
       +'</div>';
   }).join('');
 
-  // Was schon auf der Liste steht, muss der Host nicht nochmal vorgeschlagen bekommen
+  // Was schon auf der Liste steht, muss der Host nicht nochmals vorgeschlagen bekommen
   const vorhanden=items.map(i=>i.title.toLowerCase());
   const quick=BRING_QUICK.filter(t=>!vorhanden.includes(t.toLowerCase())).slice(0,6);
   const quickHTML=isHost&&quick.length
