@@ -505,6 +505,14 @@
       padding:9px 10px 9px 13px;border-radius:14px;
       background:#090d24;border:1px solid rgba(255,255,255,.08);
     }
+    /* Tour-Karte Party-Fotos */
+    .tb-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+    .tb-foto{aspect-ratio:1/1;border-radius:10px}
+    .tb-foto-neu{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;
+      font-size:.62rem;font-weight:800;background:linear-gradient(135deg,rgba(255,45,118,.22),rgba(255,120,60,.14));
+      border:1.5px dashed rgba(255,127,165,.5)}
+    .tb-uhr{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font-size:.7rem;color:var(--text2)}
+    .tb-hinweis-klein{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.72rem;color:var(--text2)}
     .tb-logo{margin-right:auto;font-size:.92rem;font-weight:900;letter-spacing:-.02em;color:#fff}
     .tb-ic{
       width:30px;height:30px;border-radius:10px;flex:none;
@@ -803,6 +811,7 @@
       -webkit-overflow-scrolling:touch;
     }
     .overlay.open .modal{transform:translateY(0)}
+    .modal{overscroll-behavior:contain}
     .modal-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:12px auto 0}
     /* Der Kopf bleibt oben kleben, auch wenn der Rest scrollt. Sonst
        ist das Kreuz genau dann weg, wenn man es braucht. */
@@ -4074,6 +4083,44 @@
     }
     .prof-konto span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .prof-konto svg{width:14px;height:14px;flex:none;color:rgba(255,255,255,.5)}
+    /* Ein langer Benutzername wird gekuerzt, statt in die Knoepfe zu laufen */
+    #page-profile .top-nav{gap:12px}
+    .prof-konto{flex:1 1 auto;min-width:0;max-width:none}
+    #page-profile .top-nav .nav-right-group{flex-shrink:0}
+
+    /* ── Benachrichtigungen: ruhige Liste wie auf Instagram ── */
+    #notifBody .nt-row{align-items:center;flex-wrap:wrap;gap:8px 12px;padding:10px 8px 10px 16px;margin:0 0 2px;border:0;border-radius:14px;background:none}
+    #notifBody .nt-row.neu{background:rgba(255,45,118,.07);border:0}
+    #notifBody .nt-row:active{background:rgba(255,255,255,.05)}
+    /* Der Text bekommt immer mindestens 120 px – reicht es daneben nicht,
+       rutscht der Knopf in die naechste Zeile (rechtsbuendig), statt den
+       Namen auf vier kurze Zeilen zu zerdruecken */
+    #notifBody .nt-mitte{flex:1 1 0;min-width:120px}
+    #notifBody .nt-t{font-size:.88rem;line-height:1.35;font-weight:600;color:#fff;overflow-wrap:break-word}
+    #notifBody .nt-t .nt-time{display:inline;margin:0;font-size:.76rem;font-weight:500;color:var(--muted);white-space:nowrap}
+    #notifBody .nt-s{font-size:.8rem;line-height:1.35;color:var(--text2);margin-top:2px;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #notifBody .nt-akt{margin:0 0 0 auto;flex-shrink:0;display:flex;gap:6px}
+    #notifBody .nt-akt-unten{flex-basis:100%;margin:0 0 0 56px}
+    #notifBody .nt-knopf{padding:7px 12px;border-radius:10px;font-size:.76rem}
+    #notifBody .nt-fertig{font-size:.76rem;font-weight:700;color:var(--muted);white-space:nowrap}
+    #notifBody .nt-punkt{position:absolute;left:4px;top:50%;margin-top:-3px;width:6px;height:6px;box-shadow:none}
+
+    /* ── Folgen ── */
+    .fl-row{display:flex;align-items:center;gap:12px}
+    .fl-row>div:nth-child(2){flex:1;min-width:0}
+    .fl-knopf{
+      flex-shrink:0;margin-left:auto;min-width:92px;padding:8px 12px;border-radius:10px;cursor:pointer;
+      border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;
+      font-family:var(--font);font-size:.78rem;font-weight:800;white-space:nowrap;
+    }
+    .fl-knopf.haupt{background:var(--grad-cta);border-color:transparent}
+    .fl-knopf:disabled{opacity:.6;cursor:default}
+    .fl-knopf:active{transform:scale(var(--druck))}
+    .folgt-dir{
+      display:inline-flex;align-items:center;height:22px;padding:0 9px;margin-right:8px;border-radius:999px;
+      font-size:.7rem;font-weight:700;color:var(--text2);background:rgba(255,255,255,.08);white-space:nowrap;
+    }
     .konto-zeile{
       display:flex;align-items:center;gap:12px;width:100%;
       border:1px solid rgba(255,255,255,.09);border-radius:16px;
@@ -4685,6 +4732,10 @@
     .segbtn.active .pk [fill^="url(#pk"]{fill:rgba(255,255,255,.3)}
     .fy-row .pk.d-sym,.fy-chip .pk.d-sym,.fy-reason .pk.d-sym{margin-right:0}
     .nt-ic .pk{width:20px;height:20px}
+    /* Einstellungen bleiben ruhig: gleiche Formen, aber einfarbig */
+    .settings-btn .pk [fill^="url(#pk"]{fill:currentColor;fill-opacity:.14}
+    .settings-btn .pk [fill="#FFE08A"],.settings-btn .pk [fill="#fff"]{fill:currentColor}
+    .settings-btn .pk [stroke="#FF8FB3"],.settings-btn .pk [stroke="#fff"],.settings-btn .pk [stroke="#34E3A4"]{stroke:currentColor}
     @media(prefers-reduced-motion:reduce){.bnav-btn.active .pk{animation:none}.pk{transition:none}}
     .pl-card{
       display:flex;align-items:center;gap:13px;width:100%;cursor:pointer;
@@ -7807,9 +7858,13 @@ function initSwipeToClose(){
         if(Math.abs(x)>Math.abs(y)){zieht=false;modal.style.transition='';return;}
       }
       if(y<=0){dy=0;modal.style.transform='';return;}
+      /* Solange das Fenster mitgeht, darf der Inhalt nicht zusaetzlich
+         nachfedern (iOS-Gummiband beim Ziehen oben am Rand). Sonst ging
+         erst das Fenster ein Stueck runter und der Rest einen Moment spaeter. */
+      if(e.cancelable)e.preventDefault();
       dy=y;
       modal.style.transform='translateY('+Math.min(dy,460)+'px)';
-    },{passive:true});
+    },{passive:false});
 
     const loslassen=()=>{
       if(!zieht)return;
@@ -8082,6 +8137,22 @@ const TOUREN={
         +'<div><div class="tb-t">Jan Brunner</div><div class="tb-s">gestern angemeldet</div></div>'
         +'<div class="tb-wer">geht hin</div></div>'
         +'<div class="tb-knopf">Ich bin dabei!</div></div>',
+    },
+    {
+      t:'Fotos von der Party',
+      s:'Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.',
+      b:()=>'<div class="tb">'
+        +'<div class="tb-kopf"><span>Party-Fotos</span><span class="tb-uhr">'+pikto('zeit',14)+'27 h</span></div>'
+        +'<div class="tb-fotos">'
+          +'<div class="tb-foto tb-foto-neu">'+pikto('plus',18)+'<span>Foto</span></div>'
+          +'<div class="tb-foto" style="background:linear-gradient(135deg,#ff2d76,#7b2cff)"></div>'
+          +'<div class="tb-foto" style="background:linear-gradient(135deg,#ff9f1c,#ff2d76)"></div>'
+          +'<div class="tb-foto" style="background:linear-gradient(135deg,#00c2ff,#7b2cff)"></div>'
+          +'<div class="tb-foto" style="background:linear-gradient(135deg,#1dd3b0,#086375)"></div>'
+          +'<div class="tb-foto" style="background:linear-gradient(135deg,#f72585,#3a0ca3)"></div>'
+        +'</div>'
+        +'<div class="tb-hinweis-klein">'+pikto('binich',14)+'<span>Wer drauf ist, kann ein Foto sofort entfernen.</span></div>'
+        +'</div>',
     },
     {
       t:'Deine eigene Party',
@@ -14593,9 +14664,10 @@ async function openUserProf(userId){
     +webLink
     +(socials||socialLockHint(p))
     +'<div class="up2-akt">'
+      +(st?.folgt_dir&&p.id!==cUser?.id?'<span class="folgt-dir">Folgt dir</span>':'')
       +(p.privat&&!iFollow
-        ? buildAnfrageBtn(p.id,!!p.anfrage_laeuft)
-        : buildFollowBtn(p.id,iFollow))
+        ? buildAnfrageBtn(p.id,!!p.anfrage_laeuft,!!st?.folgt_dir)
+        : buildFollowBtn(p.id,iFollow,!!st?.folgt_dir))
       +(canChat?'<button class="up-msg-btn" onclick="closeUserProf();startChat(\''+p.id+'\',\''+esc(p.full_name||p.username||'')+'\',\''+esc(p.username||'')+'\')">'
         +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Schreiben</button>':'')
     +'</div>'
@@ -14698,27 +14770,27 @@ async function folgenOderAnfragen(userId, btn){
    beide Beschriftungen liegen übereinander und blenden ineinander über,
    der Wartekreisel liegt darunter. "Angefragt" ist der Ruhezustand –
    dafür dient dieselbe Klasse ".following". */
-function buildAnfrageBtn(userId,laeuft){
+function buildAnfrageBtn(userId,laeuft,folgtDir){
   if(!cUser||userId===cUser.id)return'';
   const plus='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>';
   const uhr='<svg class="fb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   return '<button class="follow-btn fb-anfrage'+(laeuft?' following':'')+'" id="followBtn" data-uid="'+userId+'" '
     +(laeuft?'disabled ':'')+'onclick="folgenOderAnfragen(\''+userId+'\',this)">'
-    +'<span class="fb-face fb-off">'+plus+'Folgen anfragen</span>'
+    +'<span class="fb-face fb-off">'+plus+(folgtDir?'Auch folgen':'Folgen anfragen')+'</span>'
     +'<span class="fb-face fb-on">'+uhr+'Angefragt</span>'
     +'<span class="fb-spin"><span class="btn-spin"></span></span>'
     +'</button>';
 }
 
-function buildFollowBtn(userId,iFollow){
+function buildFollowBtn(userId,iFollow,folgtDir){
   if(!cUser||userId===cUser.id)return'';
   const plus='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>';
   const check='<svg class="fb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
   // Beide Zustände sind immer im DOM – gewechselt wird nur die Klasse
   return '<button class="follow-btn'+(iFollow?' following':'')+'" id="followBtn" data-uid="'+userId+'" '
     +'onclick="toggleFollow(this)">'
-    +'<span class="fb-face fb-off">'+plus+'Folgen</span>'
-    +'<span class="fb-face fb-on">'+check+'Du folgst</span>'
+    +'<span class="fb-face fb-off">'+plus+(folgtDir?'Auch folgen':'Folgen')+'</span>'
+    +'<span class="fb-face fb-on">'+check+'Gefolgt</span>'
     +'<span class="fb-spin"><span class="btn-spin"></span></span>'
     +'</button>';
 }
@@ -14796,14 +14868,64 @@ async function openFollowList(userId,mode){
   }
   const{data:people}=await sb.from('profiles')
     .select('id,username,full_name,avatar_url,is_pro').in('id',ids);
+  // Wie auf Instagram: neben jeder Person der Stand zu mir
+  const stand=new Map();
+  if(cUser){
+    const{data:fs}=await sb.rpc('folge_status',{p_ids:ids});
+    (fs||[]).forEach(r=>stand.set(r.id,r));
+  }
   body.innerHTML=(people||[]).map(u=>{
+    const st=stand.get(u.id);
+    const knopf=(cUser&&u.id!==cUser.id&&st)
+      ? flKnopf(u.id, st.ich_folge?'folge':st.angefragt?'angefragt':(st.folgt_mir?'auch':'folgen'), st.folgt_mir)
+      : '';
     const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):esc((u.full_name||u.username||'?').charAt(0).toUpperCase());
     return '<div class="fl-row" onclick="document.getElementById(\'followListOverlay\').classList.remove(\'open\');openUserProf(\''+u.id+'\')">'
       +'<div class="av-sm">'+av+'</div>'
       +'<div style="min-width:0"><div class="att-name">'+esc(u.full_name||u.username||'Unbekannt')
         +(u.is_pro?' '+proMarke(true):'')+'</div>'
-      +'<div class="att-user">@'+esc(u.username||'')+'</div></div></div>';
+      +'<div class="att-user">@'+esc(u.username||'')+(st?.folgt_mir&&u.id!==cUser?.id?' · Folgt dir':'')+'</div></div>'
+      +knopf+'</div>';
   }).join('');
+}
+
+/* Ein Knopf fuer Listen und Benachrichtigungen: Folgen, Auch folgen,
+   Gefolgt, Angefragt. Tipp auf "Gefolgt" entfolgt wieder. */
+function flKnopf(uid,stand,folgtMir){
+  const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Auch folgen',folgen:'Folgen'}[stand]||'Folgen';
+  const haupt=(stand==='auch'||stand==='folgen');
+  return '<button class="fl-knopf'+(haupt?' haupt':'')+'" data-stand="'+stand+'" data-folgt-mir="'+(folgtMir?'1':'')+'"'
+    +(stand==='angefragt'?' disabled':'')
+    +' onclick="event.stopPropagation();flFolgen(this,\''+uid+'\')">'+text+'</button>';
+}
+function flKnopfSetzen(btn,stand){
+  const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Auch folgen',folgen:'Folgen'}[stand];
+  btn.dataset.stand=stand;
+  btn.textContent=text;
+  btn.classList.toggle('haupt',stand==='auch'||stand==='folgen');
+}
+async function flFolgen(btn,uid){
+  if(!cUser){kontoNoetig();return;}
+  if(!btn||btn.disabled)return;
+  btn.disabled=true;
+  try{
+    if(btn.dataset.stand==='folge'){
+      const{error}=await sb.from('follows').delete().eq('follower_id',cUser.id).eq('following_id',uid);
+      if(error)throw error;
+      flKnopfSetzen(btn,btn.dataset.folgtMir?'auch':'folgen');
+    }else{
+      const{data,error}=await sb.rpc('folgen_anfragen',{p_an:uid});
+      if(error)throw error;
+      flKnopfSetzen(btn,data==='angefragt'?'angefragt':'folge');
+    }
+    const alt=ntFolge.get(uid);
+    if(alt)ntFolge.set(uid,{...alt,ich_folge:btn.dataset.stand==='folge',angefragt:btn.dataset.stand==='angefragt'});
+    if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
+  }catch(err){
+    toast(fehlerText(err),'error');
+  }finally{
+    btn.disabled=btn.dataset.stand==='angefragt';
+  }
 }
 
 // Zähler im eigenen Profil
@@ -16336,6 +16458,13 @@ en:{
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
   "Pro verschenken":"Gift Pro",
+  "Fotos von der Party":"Photos from the party",
+  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.":"From the start of the party you share photos here. Only guests see them – and after 27 hours they're gone.",
+  "Wer drauf ist, kann ein Foto sofort entfernen.":"Anyone in a photo can remove it right away.",
+  "Bestätigen":"Confirm",
+  "Folgt dir":"Follows you",
+  "Auch folgen":"Follow back",
+  "Gefolgt":"Following",
   "Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.":"One tap on the button at the top and you're straight into TikTok, Reels or Shorts.",
   "Das Gespräch konnte nicht geöffnet werden":"Couldn't open the conversation",
   "Diese Party ist nicht mehr verfügbar":"This party is no longer available",
@@ -17488,6 +17617,13 @@ fr:{
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
   "Pro verschenken":"Offrir Pro",
+  "Fotos von der Party":"Photos de la soirée",
+  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.":"Dès le début de la soirée, vous partagez vos photos ici. Seuls les invités les voient – et après 27 heures, elles disparaissent.",
+  "Wer drauf ist, kann ein Foto sofort entfernen.":"Toute personne sur une photo peut la retirer immédiatement.",
+  "Bestätigen":"Confirmer",
+  "Folgt dir":"Te suit",
+  "Auch folgen":"Suivre en retour",
+  "Gefolgt":"Abonné",
   "Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.":"Un appui sur le bouton en haut et tu scrolles direct dans TikTok, Reels ou Shorts.",
   "Das Gespräch konnte nicht geöffnet werden":"Impossible d'ouvrir la conversation",
   "Diese Party ist nicht mehr verfügbar":"Cette soirée n'est plus disponible",
@@ -18640,6 +18776,13 @@ it:{
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
   "Pro verschenken":"Regala Pro",
+  "Fotos von der Party":"Foto della festa",
+  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.":"Dall'inizio della festa condividete qui le foto. Solo gli ospiti le vedono – e dopo 27 ore spariscono.",
+  "Wer drauf ist, kann ein Foto sofort entfernen.":"Chi è nella foto può rimuoverla subito.",
+  "Bestätigen":"Conferma",
+  "Folgt dir":"Ti segue",
+  "Auch folgen":"Segui anche tu",
+  "Gefolgt":"Segui già",
   "Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.":"Un tocco sul pulsante in alto e scrolli subito su TikTok, Reels o Shorts.",
   "Das Gespräch konnte nicht geöffnet werden":"Impossibile aprire la conversazione",
   "Diese Party ist nicht mehr verfügbar":"Questa festa non è più disponibile",
@@ -19763,10 +19906,11 @@ const NT_ICON={
   folge_anfrage:{cls:'frage',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>'},
   day_one:{cls:'ok',svg:'<path d="M3 18.5h18"/><path d="M6.5 18.5a5.5 5.5 0 0 1 11 0"/><path d="M12 4.5v3M5 8l2 2M19 8l-2 2"/>'},
   foto_entfernt:{cls:'no',svg:'<path d="M3 8a2 2 0 0 1 2-2h2.5L9 4h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m9.5 10.5 5 5M14.5 10.5l-5 5"/>'},
+  neuer_follower:{cls:'ein',svg:''},
   folge_zusage:{cls:'ok',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>'},
 };
 
-const NT_PK={guest_request:'gast_anfrage',guest_ok:'ok',guest_no:'nein',invite:'einladung',
+const NT_PK={neuer_follower:'gast_anfrage',guest_request:'gast_anfrage',guest_ok:'ok',guest_no:'nein',invite:'einladung',
   event_changed:'zeit',event_gone:'event_weg',verein_bestaetigt:'verein',verein_abgelehnt:'nein',
   verein_pruefen:'verein',nachricht:'chat',freund_dabei:'freund_dabei',folge_anfrage:'gast_anfrage',
   folge_zusage:'folge_ok',day_one:'day_one',foto_entfernt:'foto_weg'};
@@ -19902,37 +20046,38 @@ function ntAvatar(n){
   return '<div class="nt-av"><div class="nt-av-bild">'+bild+'</div>'+ntIcon(n.art)+'</div>';
 }
 
+/* Nur noch zwei Faelle mit Knopf – wie auf Instagram. Alles andere
+   oeffnet sich mit einem Tipp auf die Zeile. */
+let ntFolge=new Map(), ntFolgeLaeuft=false;
 function ntAktionen(n){
-  const id=n.id, halt='event.stopPropagation();';
-  if(n.art==='nachricht'&&n.conversation_id){
-    if(ntGesendet.has(id)){
-      return '<div class="nt-akt"><span class="nt-gesendet">'+HK+'<span>Gesendet</span></span>'
-        +'<button class="nt-knopf" onclick="'+halt+'oeffneNotif(\''+id+'\')">Zum Gespräch</button></div>';
-    }
-    return '<div class="nt-akt"><button class="nt-knopf haupt" onclick="'+halt+'ntAntworten(\''+id+'\')">Antworten</button></div>'
-      +'<div class="nt-antwort" id="nta-'+id+'" data-id="'+id+'" hidden onclick="event.stopPropagation()">'
-        +'<div class="nt-chips">'+NT_SCHNELL.map(t=>
-          '<button class="nt-chip" onclick="ntSenden(\''+id+'\',this.textContent)">'+esc(t)+'</button>').join('')+'</div>'
-        +'<div class="nt-schreib">'
-          +'<input class="nt-eingabe" type="text" maxlength="1000" placeholder="Antworten…" enterkeyhint="send" '
-            +'onkeydown="if(event.key===\'Enter\'){event.preventDefault();ntSenden(\''+id+'\')}"/>'
-          +'<button class="nt-senden" aria-label="Senden" onclick="ntSenden(\''+id+'\')">'+NT_SENDEN+'</button>'
-        +'</div>'
-      +'</div>';
-  }
+  const halt='event.stopPropagation();';
   if(n.art==='folge_anfrage'&&n.actor_id){
     if(ntErledigt.has(n.actor_id))
-      return '<div class="nt-akt"><span class="nt-gesendet">'+HK+'<span>'+ntErledigt.get(n.actor_id)+'</span></span></div>';
-    return '<div class="nt-akt">'
-      +'<button class="nt-knopf haupt" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',true)">Annehmen</button>'
-      +'<button class="nt-knopf" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',false)">Ablehnen</button></div>';
+      return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'+esc(ntErledigt.get(n.actor_id))+'</span></div>';
+    return '<div class="nt-akt nt-akt-unten">'
+      +'<button class="nt-knopf haupt" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',true)">Bestätigen</button>'
+      +'<button class="nt-knopf" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',false)">Löschen</button></div>';
   }
-  const ziel={freund_dabei:'Auch hingehen',invite:'Einladung ansehen',guest_request:'Ansehen'}[n.art];
-  if(ziel&&n.event_id){
-    return '<div class="nt-akt"><button class="nt-knopf'+(n.art==='guest_request'?'':' haupt')+'" '
-      +'onclick="'+halt+'oeffneNotif(\''+id+'\')">'+ziel+'</button></div>';
+  if(n.art==='neuer_follower'&&n.actor_id){
+    const st=ntFolge.get(n.actor_id);
+    if(!st)return '';
+    const stand=st.ich_folge?'folge':st.angefragt?'angefragt':'auch';
+    return '<div class="nt-akt">'+flKnopf(n.actor_id,stand,st.folgt_mir)+'</div>';
   }
   return '';
+}
+async function ntFolgeLaden(){
+  if(ntFolgeLaeuft||!cUser)return;
+  const ids=[...new Set((window.__notifs||[]).filter(n=>n.art==='neuer_follower'&&n.actor_id&&!ntFolge.has(n.actor_id)).map(n=>n.actor_id))];
+  if(!ids.length)return;
+  ntFolgeLaeuft=true;
+  try{
+    const{data}=await sb.rpc('folge_status',{p_ids:ids});
+    (data||[]).forEach(r=>ntFolge.set(r.id,r));
+    ids.forEach(id=>{ if(!ntFolge.has(id))ntFolge.set(id,{ich_folge:false,folgt_mir:true,angefragt:false}); });
+  }catch(e){}
+  ntFolgeLaeuft=false;
+  renderNotifs();
 }
 
 function renderNotifs(){
@@ -19984,18 +20129,20 @@ function renderNotifs(){
     const frisch=!ntGezeigt.has(n.id);
     const zeigText=n.text&&!NT_ALT_HINWEIS.includes(n.text);
     const text=zeigText
-      ? (n.art==='nachricht'?'<div class="nt-blase">'+esc(n.text)+'</div>':'<div class="nt-s">'+esc(n.text)+'</div>')
+      ? '<div class="nt-s">'+(n.art==='nachricht'?'„'+esc(n.text)+'“':esc(n.text))+'</div>'
       : '';
     html+='<div class="nt-row'+(neu?' neu':'')+(frisch?' frisch':'')+'" style="--i:'+(frisch?stufe++:0)+'" '
       +'onclick="oeffneNotif(\''+n.id+'\')">'
-      +ntAvatar(n)
-      +'<div class="nt-mitte"><div class="nt-t">'+esc(n.titel)+'</div>'+text
-      +'<div class="nt-time">'+ntZeit(n.created_at)+'</div>'+ntAktionen(n)+'</div>'
       +(neu?'<span class="nt-punkt" aria-hidden="true"></span>':'')
+      +ntAvatar(n)
+      +'<div class="nt-mitte"><div class="nt-t">'+esc(n.titel)
+        +' <span class="nt-time">'+ntZeit(n.created_at)+'</span></div>'+text+'</div>'
+      +ntAktionen(n)
       +'</div>';
   });
   box.innerHTML=html;
   list.forEach(n=>ntGezeigt.add(n.id));
+  ntFolgeLaden();
 
   Object.entries(offenAntwort).forEach(([id,wert])=>{
     const el=document.getElementById('nta-'+id);
@@ -20061,7 +20208,7 @@ async function oeffneNotif(id){
     return;
   }
   // Folge-Meldungen fuehren zur Person
-  if(n.actor_id&&(n.art==='folge_anfrage'||n.art==='folge_zusage')){
+  if(n.actor_id&&(n.art==='folge_anfrage'||n.art==='folge_zusage'||n.art==='neuer_follower')){
     closeNotifs(); openUserProf(n.actor_id); return;
   }
   // Vereinsmeldungen fuehren dorthin, wo man etwas damit anfangen kann
