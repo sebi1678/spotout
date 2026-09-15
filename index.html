@@ -919,6 +919,7 @@
     .auth-wrap[data-pw] > .auth-oder,
     .auth-wrap[data-pw] > .auth-gast{display:none!important}
     .auth-wrap[data-pw="vergessen"] > #auth-vergessen,
+    .auth-wrap[data-pw="bestaetigen"] > #auth-bestaetigen,
     .auth-wrap[data-pw="neu"] > #auth-neu{display:flex!important}
     .pw-teil{display:flex;flex-direction:column;gap:7px}
     .pw-teil[hidden]{display:none}
@@ -6333,6 +6334,16 @@
           und der <a href="/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> zu.
         </p>
       </div>
+      <!-- E-MAIL BESTÄTIGEN – nach der Registrierung -->
+      <div id="auth-bestaetigen" class="auth-section pw-sektion">
+        <div class="pw-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <h2 class="pw-titel">Schau in dein Postfach</h2>
+        <p class="pw-text">Wir haben dir einen Link geschickt an</p>
+        <p class="pw-mail" id="bestaetigenMail"></p>
+        <p class="pw-text">Tipp auf den Link darin – dann kannst du dich anmelden. Nichts da? Schau im Spam-Ordner nach.</p>
+        <button class="auth-zweit" id="nochmalsBtn" onclick="mailNochmal()">E-Mail nochmals schicken</button>
+        <button type="button" class="pw-zurueck" onclick="pwAnsicht(null)">Zurück zur Anmeldung</button>
+      </div>
       <!-- PASSWORT VERGESSEN -->
       <div id="auth-vergessen" class="auth-section pw-sektion">
         <div class="pw-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8"/><path d="m16 7 3 3"/><path d="m18.5 4.5 2 2"/></svg></div>
@@ -9292,29 +9303,24 @@ async function doLogin(){
   }
 }
 
+let bestaetigenMail='';
+/* Vorher ersetzte dieser Bildschirm die ganze Anmeldeseite. Wer danach
+   zurueckwollte, kam nur mit Neuladen raus – und nach dem Abmelden stand
+   er wieder da. Jetzt ist es ein Abschnitt wie "Passwort vergessen". */
 function showEmailConfirmScreen(email){
-  // Replace auth page with a clean email confirmation screen
-  document.getElementById('page-auth').innerHTML=`
-    <div class="auth-page">
-      <div class="auth-wrap" style="text-align:center">
-        <div style="width:80px;height:80px;background:rgba(255,45,118,.1);border:2px solid rgba(255,45,118,.2);border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF2D76" stroke-width="1.6"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        </div>
-        <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px">Schau in dein Postfach</h2>
-        <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:6px">Wir haben dir einen Link geschickt an</p>
-        <p style="color:var(--text);font-size:.9rem;font-weight:600;margin-bottom:20px">${esc(email)}</p>
-        <p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:32px">Tipp auf den Link darin – dann kannst du dich anmelden.</p>
-        <button class="auth-submit-btn" onclick="location.reload()" style="width:100%;margin-bottom:12px">Zurück zur Anmeldung</button>
-        <button class="auth-zweit" id="nochmalsBtn" onclick="mailNochmal('${escAttr(email)}')">E-Mail nochmals schicken</button>
-        <p style="color:var(--muted);font-size:.8rem;margin-top:14px">Nichts da? Schau im Spam-Ordner nach.</p>
-      </div>
-    </div>`;
+  bestaetigenMail=String(email||'');
+  const feld=document.getElementById('bestaetigenMail');
+  if(feld)feld.textContent=bestaetigenMail;
+  const knopf=document.getElementById('nochmalsBtn');
+  if(knopf){ knopf.disabled=false; knopf.textContent='E-Mail nochmals schicken'; }
+  pwAnsicht('bestaetigen');
 }
 
 /* Manchmal geht eine Mail schlicht verloren. Ein Knopf dafür ist
    billiger als eine Supportanfrage – aber mit Sperre, sonst wird er
    zum Weg, das Mail-Limit erneut zu reissen. */
 async function mailNochmal(email){
+  email=email||bestaetigenMail;
   const btn=document.getElementById('nochmalsBtn');
   if(!btn||btn.disabled)return;
   btn.disabled=true; btn.textContent='Wird geschickt…';
@@ -17264,6 +17270,8 @@ en:{
   "E-Mail bestätigt – willkommen bei SPOTOUT!":"Email confirmed – welcome to SPOTOUT!",
   "E-Mail bestätigt – melde dich jetzt an":"Email confirmed – log in now",
   "Datenschutz":"Privacy",
+  "Eine Zahlung ist noch unterwegs. Warte einen Moment und versuch es dann nochmals.":"A payment is still going through. Wait a moment and try again.",
+  "Kauf gerade nicht möglich. Versuch es gleich nochmals.":"Purchase isn’t possible right now. Try again in a moment.",
   "Pro verschenken":"Gift Pro",
   "Deine Anfrage ist beim Host.":"Your request is with the host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
@@ -18500,6 +18508,8 @@ fr:{
   "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Comme sur TikTok : vois qui a consulté ton profil ces 30 derniers jours. Tu peux désactiver à tout moment – mais tu ne le verras plus.",
   "Sehen, wer dein Profil besucht hat":"Voir qui a visité ton profil",
   "Benachrichtigungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Les notifications sont activées mais n’ont pas pu être enregistrées. Réessaie.",
+  "Eine Zahlung ist noch unterwegs. Warte einen Moment und versuch es dann nochmals.":"Un paiement est encore en cours. Attends un instant et réessaie.",
+  "Kauf gerade nicht möglich. Versuch es gleich nochmals.":"Achat impossible pour le moment. Réessaie dans un instant.",
 "Pro verschenken":"Offrir Pro",
   "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
@@ -19736,6 +19746,8 @@ it:{
   "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Come su TikTok: vedi chi ha visto il tuo profilo negli ultimi 30 giorni. Puoi disattivarlo in qualsiasi momento – ma poi non lo vedrai più.",
   "Sehen, wer dein Profil besucht hat":"Vedere chi ha visitato il tuo profilo",
   "Benachrichtigungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Le notifiche sono attive ma non è stato possibile salvarle. Riprova.",
+  "Eine Zahlung ist noch unterwegs. Warte einen Moment und versuch es dann nochmals.":"Un pagamento è ancora in corso. Aspetta un attimo e riprova.",
+  "Kauf gerade nicht möglich. Versuch es gleich nochmals.":"Acquisto al momento non possibile. Riprova tra poco.",
 "Pro verschenken":"Regala Pro",
   "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
@@ -20839,9 +20851,18 @@ async function gebuehrKaufenApple(eventId,betrag){
   const btn=document.getElementById('feePayBtn');
   if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Apple wird geöffnet…';}
 
-  // Der Beleg von Apple weiss nicht, welche Party gemeint ist — darum
-  // vorher am Profil hinterlegen. Der Server prüft danach, dass die Party
-  // wirklich dem Käufer gehört.
+  /* Der Beleg von Apple weiss nicht, welche Party gemeint ist — darum
+     vorher am Profil hinterlegen. Der Server prüft danach, dass die Party
+     wirklich dem Käufer gehört. Wichtig: eine Zahlung, die noch unterwegs
+     ist, darf nicht überschrieben werden – sonst schaltet Apples Rückmeldung
+     die falsche Party frei (und die bezahlte bliebe versteckt). */
+  const offen=cProfile?.pending_fee_event_id;
+  const offenSeit=cProfile?.pending_fee_at?Date.now()-new Date(cProfile.pending_fee_at).getTime():Infinity;
+  if(offen&&offen!==eventId&&offenSeit<15*60000){
+    toast('Eine Zahlung ist noch unterwegs. Warte einen Moment und versuch es dann nochmals.','warn');
+    if(btn){btn.disabled=false;btn.textContent='Jetzt bezahlen';}
+    return;
+  }
   const{error:merkFehler}=await sb.from('profiles')
     .update({pending_fee_event_id:eventId,pending_fee_at:new Date().toISOString()})
     .eq('id',cUser.id);
@@ -20856,10 +20877,11 @@ async function gebuehrKaufenApple(eventId,betrag){
 
   if(a.fehler){
     if(/abgebrochen|cancel/i.test(a.fehler))return;
-    toast('Kauf nicht möglich: '+a.fehler,'error');
+    toast('Kauf gerade nicht möglich. Versuch es gleich nochmals.','error');
     return;
   }
   toast('Zahlung erhalten – Party wird freigeschaltet…','info');
+  if(cProfile){cProfile.pending_fee_event_id=eventId;cProfile.pending_fee_at=new Date().toISOString();}
   await warteAufFreischaltung(eventId);
 }
 
@@ -20889,7 +20911,7 @@ async function proKaufenApple(){
   if(btn){btn.disabled=false;btn.textContent=beschriftung;}
   if(a.fehler){
     if(a.fehler==='abgebrochen'||/cancel/i.test(a.fehler))return;
-    toast('Kauf nicht möglich: '+a.fehler,'error');
+    toast('Kauf gerade nicht möglich. Versuch es gleich nochmals.','error');
     return;
   }
   if(a.pro){
