@@ -1045,12 +1045,6 @@
     .d-info-cell.full{grid-column:1/-1}
     .d-desc{font-size:.9rem;color:rgba(255,255,255,.65);line-height:1.7;margin:0 0 16px;padding:0 0 16px;border-bottom:1px solid rgba(255,255,255,.06)}
     .d-section-title{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
-    .price-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-    .price-cards.two{grid-template-columns:1fr 1fr}
-    .pc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;text-align:center}
-    .pc-lbl{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-    .pc-val{font-size:.95rem;font-weight:800;color:#fff}
-    .pc-val.free{color:#4ade80}
     .invite-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:14px}
     .invite-lbl{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
     .invite-row{display:flex;align-items:center;gap:10px}
@@ -9457,7 +9451,7 @@ function freundeAvatare(namen){
     +'</span>').join('')+'</div>';
 }
 
-function freundeZeile(eventId, gross){
+function freundeZeile(eventId, gross, ohneProSatz){
   const r=freundeMap.get(eventId);
   if(!r||!r.anzahl)return'';
   const pro=!!cProfile?.is_pro;
@@ -9472,7 +9466,7 @@ function freundeZeile(eventId, gross){
      Kurzform. Gesagt wird dasselbe. */
   const txt = gross
     ? (r.anzahl+(r.anzahl===1?' Kontakt von dir ist dabei':' Kontakte von dir sind dabei')
-       +' · <b>mit Pro siehst du, wer</b>')
+       +(ohneProSatz?'':' · <b>mit Pro siehst du, wer</b>'))
     /* Auf der Kachel eine Zeile, mehr nicht. Das Schloss daneben sagt,
        dass da noch etwas ist; wer es antippt, landet auf der Pro-Seite,
        und die Partyseite schreibt den ganzen Satz aus. */
@@ -9678,7 +9672,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
     if(cProfile?.is_pro){
       return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">✦ Auf die Warteliste</button>';
     }
-    return attNote('Party ist voll ('+(attCount||0)+'/'+(e.capacity||'–')+') – nur Pro kann auf die Warteliste','warn');
+    return attNote('Party ist voll – nur Pro kann auf die Warteliste','warn');
   }
 
   // Wer die Party macht, ist dabei – ohne Knopf und ohne Austragen.
@@ -9692,10 +9686,10 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px;height:16px"><path d="M20 6 9 17l-5-5"/></svg>'
       +'Du bist dabei<span class="attend-sub">Tippen zum Austragen</span></button>';
   }
+  /* Preis und Zahlart ("bar vor Ort") stehen in der Kachel direkt
+     darueber. Unter dem Knopf standen sie ein zweites und drittes Mal. */
   return '<button class="attend-btn" id="attendBtn" style="background:'+w.btnBg+';color:'+w.btnColor+'" onclick="toggleAtt(\''+e.id+'\',false)">'
-    +'Ich bin dabei!'+(tot>0?'<span class="attend-sub">CHF '+tot+'</span>':'')+'</button>'
-    // Zahlungen laufen nicht über SPOTOUT – das muss vorher klar sein
-    +(tot>0?attNote('Der Eintritt wird vor Ort bezahlt. SPOTOUT wickelt keine Eintrittsgelder ab.'):'');
+    +'Ich bin dabei!</button>';
 }
 
 async function openDetail(id){
@@ -9741,9 +9735,6 @@ async function openDetail(id){
   const typeLabel=e.type==='events'?'Event':e.type==='public'?'Öffentlich':'Privat';
   const typePill=`<span class="world-pill" style="color:${w.accent};border-color:${w.border};font-size:.72rem;padding:5px 12px">${typeLabel}</span>`;
   const verP=e.verified?'<span class="pill pill-verified">Verifiziert</span>':'';
-  const costHTML=hasDrink
-    ?`<div class="price-cards"><div class="pc"><div class="pc-lbl">Eintritt</div><div class="pc-val ${free?'free':''}">${free?'Gratis':'CHF '+e.price}</div></div><div class="pc"><div class="pc-lbl">Getränke</div><div class="pc-val">CHF ${e.drink_price}</div></div><div class="pc"><div class="pc-lbl">Total</div><div class="pc-val" style="color:${w.accent}">CHF ${tot}</div></div></div><p style="font-size:.77rem;color:var(--muted);margin-bottom:14px">${e.drink_desc||'Getränke inklusive'}</p>`
-    :`<div class="price-cards"><div class="pc"><div class="pc-lbl">Eintritt</div><div class="pc-val ${free?'free':''}">${free?'Gratis':'CHF '+e.price}</div></div><div class="pc"><div class="pc-lbl">Max. Gäste</div><div class="pc-val">${e.capacity}</div></div></div>`;
   const isPrivEv=e.type==='private';
   // Einladen darf nur der Host. Gäste fragen über die Begleitungs-Karte an,
   // statt den Link weiterzureichen – sonst wäre "privat" nur ein Wort.
@@ -9894,7 +9885,7 @@ async function openDetail(id){
       +'<div class="att-none">Noch niemand angemeldet – sei der/die Erste!</div></div>';
   }else if(canSeeAtts){
     attHTML='<div class="attendees-sec"><div class="sec-lbl">'
-      +'<span>'+attLabel+' <span style="opacity:.5">('+attMitBegleitung.length+')</span></span>'
+      +'<span>'+attLabel+'</span>'
       +(isHost&&!viewerIsPro?'<span class="att-badge-host">Als Host</span>':'')
       +'</div>'
       +(nachspiel&&viewerIsPro
@@ -9904,13 +9895,14 @@ async function openDetail(id){
       +'<div id="attListe">'+attRows+'</div>'+moreLabel
       +'<div class="att-nix" id="attNix" hidden>Niemand mit diesem Namen.</div></div>';
   }else{
-    attHTML='<div class="attendees-sec"><div class="sec-lbl">'+attLabel
-      +' <span style="opacity:.5">('+attCount+')</span></div>'
+    attHTML='<div class="attendees-sec"><div class="sec-lbl">'+attLabel+'</div>'
       +'<div class="att-lock">'
       +'<div class="att-lock-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>'
+      /* Wie viele es sind, steht oben in der Kachel "Gäste" – dort mit
+         Begleitungen gezaehlt. Hier stand eine zweite Zahl ohne sie. */
       +'<div class="att-lock-txt">'+(nachspiel
-          ?'<b>'+attCount+' '+(attCount===1?'Person war':'Personen waren')+' da</b><br>Mit Pro siehst du nach der Party noch 24 Stunden, wer dabei war – und kannst sie anschreiben.'
-          :'<b>'+attCount+' '+(attCount===1?'Person ist':'Personen sind')+' dabei</b><br>Mit Pro siehst du, wer kommt.')+'</div>'
+          ?'Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.'
+          :'Mit Pro siehst du, wer kommt.')+'</div>'
       +'<button class="pro-cta" style="padding:9px 18px;font-size:.8rem;width:auto" onclick="showPage(\'pro\')">Pro werden ✦</button>'
       +'</div></div>';
   }
@@ -9964,7 +9956,6 @@ async function openDetail(id){
           ${free?'':'<div class="d-info-sub">'+zahlartenText(e.zahlarten)+'</div>'}
         </div>`}
         ${hasDrink&&!isPrivEv?('<div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.glas+' Getränke</div><div class="d-info-cell-val">CHF '+e.drink_price+'</div></div><div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.summe+' Total</div><div class="d-info-cell-val" style="color:'+w.accent+'">CHF '+tot+'</div></div>'):''}
-        ${e.host_name?('<div class="d-info-cell full"><div class="d-info-cell-lbl">'+D_SYM.haus+' Veranstalter</div><div class="d-info-cell-val">'+e.host_name+'</div></div>'):''}
       </div>
       ${e.description?('<div class="d-desc">'+e.description+'</div>'):''}
       ${dressZeile(e.dresscode)}
@@ -9992,7 +9983,13 @@ async function openDetail(id){
   renderPlaylist(e, e.type!=='private' || isHost || isAtt);
   renderGastgeber(e);
   const frBox=document.getElementById('frSec');
-  if(frBox)frBox.innerHTML=istVorbei(e)?'':freundeZeile(e.id,true);
+  /* Sieht man die ganze Gästeliste, stehen die Freunde dort schon mit
+     Namen – die Zeile darüber wäre dieselbe Auskunft ein zweites Mal.
+     Ohne Pro bleibt sie, aber ohne den Pro-Satz, den die gesperrte
+     Liste darunter schon sagt. */
+  const listeOffen=canSeeAtts&&attCount>0;
+  const sperreDa=!canSeeAtts&&attCount>0&&!(isOver&&isExpired&&!isHost);
+  if(frBox)frBox.innerHTML=(istVorbei(e)||listeOffen)?'':freundeZeile(e.id,true,sperreDa);
   if(e.type==='private'&&isAtt&&!isHost)renderPlusCard(e.id);
 }
 
@@ -14473,6 +14470,11 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Party ist voll – nur Pro kann auf die Warteliste":"Party is full – only Pro can join the waitlist",
+  "Mit Pro siehst du, wer kommt.":"With Pro you see who’s coming.",
+  "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"With Pro you can still see who was there for 24 hours after the party.",
+  "Wer war dabei":"Who was there",
+  "Angemeldete Gäste":"Registered guests",
   "Dann stehen die nächsten Partys zuoberst.":"Then the nearest parties show up first.",
   "Jeder Link gilt für genau eine Person.":"Each link is valid for exactly one person.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"One tap on the button at the top and SPOTOUT is gone. To leave the calculator: long-press the number.",
@@ -15360,7 +15362,6 @@ en:{
   "Gäste":"Guests",
   "Adresse":"Address",
   "bar vor Ort":"cash on site",
-  "Der Eintritt wird vor Ort bezahlt. SPOTOUT wickelt keine Eintrittsgelder ab.":"Entry is paid on site. SPOTOUT doesn’t handle entry fees.",
   "Album öffnet nach der Party.":"The album opens after the party.",
   "Album öffnet nach der Anmeldefrist.":"The album opens after the sign-up deadline.",
   "Noch keine Fotos – sei der/die Erste!":"No photos yet — be the first",
@@ -15498,6 +15499,11 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Party ist voll – nur Pro kann auf die Warteliste":"La soirée est complète – seul Pro peut rejoindre la liste d’attente",
+  "Mit Pro siehst du, wer kommt.":"Avec Pro, tu vois qui vient.",
+  "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"Avec Pro, tu vois encore pendant 24 heures après la soirée qui était là.",
+  "Wer war dabei":"Qui était là",
+  "Angemeldete Gäste":"Invités inscrits",
   "Dann stehen die nächsten Partys zuoberst.":"Les soirées les plus proches apparaissent alors en premier.",
   "Jeder Link gilt für genau eine Person.":"Chaque lien vaut pour une seule personne.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un appui sur le bouton en haut et SPOTOUT disparaît. Pour quitter la calculatrice : appui long sur le nombre.",
@@ -16385,7 +16391,6 @@ fr:{
   "Gäste":"Invités",
   "Adresse":"Adresse",
   "bar vor Ort":"en espèces sur place",
-  "Der Eintritt wird vor Ort bezahlt. SPOTOUT wickelt keine Eintrittsgelder ab.":"L’entrée se paie sur place. SPOTOUT ne gère pas l’argent des entrées.",
   "Album öffnet nach der Party.":"L’album s’ouvre après la soirée.",
   "Album öffnet nach der Anmeldefrist.":"L’album s’ouvre après le délai d’inscription.",
   "Noch keine Fotos – sei der/die Erste!":"Pas encore de photos — sois le premier",
@@ -16523,6 +16528,11 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Party ist voll – nur Pro kann auf die Warteliste":"La festa è al completo – solo Pro può entrare in lista d’attesa",
+  "Mit Pro siehst du, wer kommt.":"Con Pro vedi chi viene.",
+  "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"Con Pro vedi ancora per 24 ore dopo la festa chi c’era.",
+  "Wer war dabei":"Chi c’era",
+  "Angemeldete Gäste":"Ospiti iscritti",
   "Dann stehen die nächsten Partys zuoberst.":"Così le feste più vicine compaiono per prime.",
   "Jeder Link gilt für genau eine Person.":"Ogni link vale per una sola persona.",
   "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un tocco sul pulsante in alto e SPOTOUT sparisce. Per uscire dalla calcolatrice: tieni premuto il numero.",
@@ -17411,7 +17421,6 @@ it:{
   "Gäste":"Ospiti",
   "Adresse":"Indirizzo",
   "bar vor Ort":"in contanti sul posto",
-  "Der Eintritt wird vor Ort bezahlt. SPOTOUT wickelt keine Eintrittsgelder ab.":"L’entrata si paga sul posto. SPOTOUT non gestisce i soldi dell’entrata.",
   "Album öffnet nach der Party.":"L’album si apre dopo la festa.",
   "Album öffnet nach der Anmeldefrist.":"L’album si apre dopo il termine d’iscrizione.",
   "Noch keine Fotos – sei der/die Erste!":"Ancora nessuna foto – carica la prima!",
@@ -17557,6 +17566,9 @@ function locale(){ return LOCALE[LANG]||'de-CH'; }
 
 // Texte mit Zahlen darin – Muster statt fester Einträge
 const I18N_PAT=[
+  // Kontakte auf der Partyseite – mit oder ohne angehaengten Pro-Satz
+  [/^(\d+) Kontakte von dir sind dabei( ·)?$/,{en:'$1 of your contacts are going$2', fr:'$1 de tes contacts y vont$2', it:'$1 dei tuoi contatti ci vanno$2'}],
+  [/^1 Kontakt von dir ist dabei( ·)?$/,{en:'1 of your contacts is going$1', fr:'1 de tes contacts y va$1', it:'1 dei tuoi contatti ci va$1'}],
   [/^Kommt mit (.+)$/,
     {en:'Coming with $1', fr:'Vient avec $1', it:'Viene con $1'}],
   [/^\+1 von (.+)$/,
@@ -18806,20 +18818,28 @@ function renderGastgeber(e){
   const box=document.getElementById('hostSec');
   if(!box)return;
   const pr=e.profiles;
-  if(!pr||e.type==='private'){box.innerHTML='';return;}
+  /* Der Veranstalter (bei Events als Text eingetragen) stand frueher in
+     einer eigenen Kachel – und das Konto hier nochmals. Jetzt steht beides
+     an einer Stelle: gross der Veranstalter, klein wer eingetragen hat.
+     Nebenbei: die Kachel setzte den Text ungeschuetzt ins Markup. */
+  const veranst=String(e.host_name||'').trim();
+  if(e.type==='private'||(!pr&&!veranst)){box.innerHTML='';return;}
 
-  const verein=pr.kontoart==='verein';
-  const nm=pr.full_name||pr.username||'Unbekannt';
-  const av=pr.avatar_url
+  const verein=pr?.kontoart==='verein';
+  const konto=pr?(pr.full_name||pr.username||''):'';
+  const nm=veranst||konto||'Unbekannt';
+  const av=pr?.avatar_url
     ? '<img loading="lazy" decoding="async" src="'+escAttr(pr.avatar_url)+'" alt=""/>'
     : esc(nm.charAt(0).toUpperCase());
+  const unter=veranst
+    ? '<span>Veranstalter'+(konto&&konto!==veranst?'<em style="font-style:normal"> · '+esc(konto)+'</em>':'')+'</span>'
+    : '<span>'+(verein
+        ? 'Verein'+(pr.verein_ort?' · '+esc(pr.verein_ort):'')
+        : 'Privatperson')+'</span>';
 
   box.innerHTML='<div class="d-gastgeber">'
     +'<div class="av-sm">'+av+'</div>'
-    +'<div class="d-gast-txt"><b>'+esc(nm)+'</b>'
-    +'<span>'+(verein
-        ? 'Verein'+(pr.verein_ort?' · '+esc(pr.verein_ort):'')
-        : 'Privatperson')+'</span></div>'
+    +'<div class="d-gast-txt"><b>'+esc(nm)+'</b>'+unter+'</div>'
     +(verein?vereinMarke():'')
     +'</div>';
 }
