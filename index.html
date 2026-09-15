@@ -6260,7 +6260,7 @@
     <!-- 5 · WO -->
     <div class="create-panel" id="cpanel-5" style="display:none">
       <div class="cq">Wo findet sie statt?</div>
-      <div class="cq-sub">Tippe einen Vorschlag an, damit die Party auf der Karte erscheint. Waldhütten, Schützenhäuser und Vereinshäuser findest du über ihren Namen.</div>
+      <div class="cq-sub">Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.</div>
       <div class="fg" id="fgAddr">
         <div class="addr-wrap">
           <input type="text" id="fAddr" class="big-input" placeholder="Strasse, Waldhütte oder Vereinshaus" autocomplete="off" oninput="addrSearch(this.value);cPrevUpdate()"/>
@@ -6285,7 +6285,7 @@
           <button class="cset" onclick="setPrice(null,this)">Anderes</button>
         </div>
         <div class="fg" id="fgPrice" style="display:none"><input type="number" id="fPrice" placeholder="Betrag in CHF" min="0" oninput="cPrevUpdate();updateFeeBox()"/></div>
-        <div class="ep-help">Den Eintritt kassierst du vor Ort. SPOTOUT wickelt keine Eintrittsgelder ab. Die Veröffentlichungsgebühr fällt unabhängig davon an.</div>
+        <div class="ep-help">Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.</div>
         <!-- Erscheint erst, wenn wirklich etwas zu zahlen ist. -->
         <div id="c6-zahlen" style="display:none">
           <div class="csec">Wie kann bezahlt werden?</div>
@@ -6355,12 +6355,12 @@
           <button class="einw-opt on" data-lm="pers" onclick="setLinkModus('pers',this)">
             <div class="einw-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-1.6a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4V21"/><circle cx="12" cy="7" r="4"/></svg></div>
             <div><div class="einw-t">Für jede Person eine eigene Einladung</div>
-            <div class="einw-s">Du tippst einen Namen ein und bekommst einen Link, der genau einmal gilt. Wird er weitergeschickt, läuft er ins Leere.</div></div>
+            <div class="einw-s">Ein Link pro Name – er gilt genau einmal.</div></div>
           </button>
           <button class="einw-opt" data-lm="offen" onclick="setLinkModus('offen',this)">
             <div class="einw-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></div>
             <div><div class="einw-t">Ein Link, den alle weitergeben dürfen</div>
-            <div class="einw-s">Einmal verschickt, und deine Gäste bringen mit, wen sie wollen. Gut für eine Runde, die noch wachsen darf.</div></div>
+            <div class="einw-s">Deine Gäste dürfen ihn weiterschicken.</div></div>
           </button>
         </div>
         <div class="einw-hinweis" id="einwHinweis"></div>
@@ -6377,9 +6377,7 @@
            freiwillig ist – wie Dresscode und Beschreibung daneben. -->
       <div id="c8-playlist" style="display:none">
         <div class="csec">Gemeinsame Playlist <span class="csec-frei">freiwillig</span></div>
-        <div class="pl-hint">Leg in Spotify eine Playlist an, stell sie auf
-          <b>gemeinsam bearbeitbar</b> und füg den Link hier ein. Deine Gäste
-          können dann schon vorher Lieder dazutun.</div>
+        <div class="pl-hint">Stell die Spotify-Playlist auf <b>gemeinsam bearbeitbar</b> und füg den Link hier ein.</div>
         <div class="fg"><input type="text" id="fSpotify" inputmode="url"
           autocapitalize="off" spellcheck="false"
           placeholder="https://open.spotify.com/playlist/…"/></div>
@@ -14477,6 +14475,14 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tap a suggestion so it shows up on the map. You can also find huts and club houses by name.",
+  "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"You collect the entry fee yourself on site. The publishing fee applies regardless.",
+  "Ein Link pro Name – er gilt genau einmal.":"One link per name – it works exactly once.",
+  "Deine Gäste dürfen ihn weiterschicken.":"Your guests may pass it on.",
+  "Stell die Spotify-Playlist auf":"Set the Spotify playlist to",
+  "und füg den Link hier ein.":"and paste the link here.",
+  "Trag ein, was die Gäste mitbringen sollen. Jeder Eintrag geht an genau einen Gast.":"Add what guests should bring. Each item goes to exactly one guest.",
+  "gemeinsam bearbeitbar":"collaborative",
   "Ändern kannst du das jederzeit in den Einstellungen.":"You can change this any time in Settings.",
   "Schau in dein Postfach":"Check your inbox",
   "Wir haben dir einen Link geschickt an":"We sent a link to",
@@ -14680,7 +14686,6 @@ en:{
   "von 9":"of 9",
   "Gebühr fürs Veröffentlichen":"Fee for publishing",
   "Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.":"Publishing a public party costs you CHF 3, 8 or 15 instead of 5, 15 or 30. Two parties and Pro has paid for itself.",
-  "Den Eintritt kassierst du vor Ort. SPOTOUT wickelt keine Eintrittsgelder ab. Die Veröffentlichungsgebühr fällt unabhängig davon an.":"You collect the entry fee on site. SPOTOUT does not handle entry money. The publishing fee applies either way.",
   "Antworten darf jeder. Wer als Erster schreiben will, braucht Pro. Öffnest du die Glocke, gelten alle Meldungen als gelesen – du musst nichts einzeln wegtippen.":"Anyone can reply. Writing first needs Pro. Open the bell and everything counts as read – no tapping each one away.",
   "Umkreis 10 km":"10 km radius",
   "3 Partys in der Nähe":"3 parties nearby",
@@ -15035,9 +15040,7 @@ en:{
   "Wie lädst du ein?":"How do you invite?",
   "Du kannst das später jederzeit umstellen.":"You can change this any time later.",
   "Für jede Person eine eigene Einladung":"A separate invitation for each person",
-  "Du tippst einen Namen ein und bekommst einen Link, der genau einmal gilt. Wird er weitergeschickt, läuft er ins Leere.":"You type in a name and get a link that works exactly once. Passed on, it leads nowhere.",
   "Ein Link, den alle weitergeben dürfen":"One link that everyone may pass on",
-  "Einmal verschickt, und deine Gäste bringen mit, wen sie wollen. Gut für eine Runde, die noch wachsen darf.":"Send it once and your guests bring whoever they like. Good for a group that may still grow.",
   "Dein Einladungslink":"Your invitation link",
   "Wer ihn bekommt, ist dabei – auch weitergereicht.":"Whoever gets it is in – even second hand.",
   "Kopieren":"Copy",
@@ -15218,7 +15221,6 @@ en:{
   "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.":"The confirmation email could not be sent. Try again in a few minutes or write to support@spotoutapp.ch.",
   "Das hat nicht geklappt. Versuch es nochmal – bleibt es dabei, schreib an support@spotoutapp.ch.":"That did not work. Try again — if it keeps failing, write to support@spotoutapp.ch.",
   "Strasse, Waldhütte oder Vereinshaus":"Street, forest hut or clubhouse",
-  "Tippe einen Vorschlag an, damit die Party auf der Karte erscheint. Waldhütten, Schützenhäuser und Vereinshäuser findest du über ihren Namen.":"Tap a suggestion so the party shows on the map. Forest huts, shooting clubs and clubhouses are found by their name.",
   "Keine Treffer – probier den Namen der Hütte plus den Ort":"No matches — try the name of the hut plus the town",
   "Steht so nicht in der Karte – antippen, um es trotzdem zu nehmen":"Not on the map — tap to use it anyway",
   "Jemanden suchen, der schon SPOTOUT hat":"Find someone who already has SPOTOUT",
@@ -15428,7 +15430,6 @@ en:{
   "Wieder freigegeben":"Available again",
   "Alles verteilt – perfekt":"All covered — perfect",
   "Noch nichts eingetragen":"Nothing added yet",
-  "Trag ein, was die Gäste mitbringen sollen. Jeder Eintrag lässt sich von genau einem Gast übernehmen – so bringt niemand dasselbe doppelt.":"Add what guests should bring. Each item can be claimed by exactly one guest, so nobody doubles up.",
   "Nachricht…":"Message…",
   "Noch keine Nachrichten.":"No messages yet.",
   "Schreib die erste.":"Write the first one.",
@@ -15499,6 +15500,14 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Choisis une suggestion pour qu’elle apparaisse sur la carte. Tu trouves aussi refuges et locaux de club par leur nom.",
+  "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"Tu encaisses toi-même l’entrée sur place. La taxe de publication s’applique quand même.",
+  "Ein Link pro Name – er gilt genau einmal.":"Un lien par nom – il ne fonctionne qu’une fois.",
+  "Deine Gäste dürfen ihn weiterschicken.":"Tes invités peuvent le transférer.",
+  "Stell die Spotify-Playlist auf":"Mets la playlist Spotify en mode",
+  "und füg den Link hier ein.":"et colle le lien ici.",
+  "Trag ein, was die Gäste mitbringen sollen. Jeder Eintrag geht an genau einen Gast.":"Ajoute ce que les invités doivent apporter. Chaque élément revient à un seul invité.",
+  "gemeinsam bearbeitbar":"collaborative",
   "Ändern kannst du das jederzeit in den Einstellungen.":"Tu peux changer ça à tout moment dans les réglages.",
   "Schau in dein Postfach":"Regarde ta boîte mail",
   "Wir haben dir einen Link geschickt an":"Nous avons envoyé un lien à",
@@ -15702,7 +15711,6 @@ fr:{
   "von 9":"sur 9",
   "Gebühr fürs Veröffentlichen":"Frais de publication",
   "Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.":"Publier une soirée publique te coûte CHF 3, 8 ou 15 au lieu de 5, 15 ou 30. Dès deux soirées, Pro est rentable.",
-  "Den Eintritt kassierst du vor Ort. SPOTOUT wickelt keine Eintrittsgelder ab. Die Veröffentlichungsgebühr fällt unabhängig davon an.":"Tu encaisses l’entrée sur place. SPOTOUT ne gère pas les entrées. Les frais de publication s’appliquent dans tous les cas.",
   "Antworten darf jeder. Wer als Erster schreiben will, braucht Pro. Öffnest du die Glocke, gelten alle Meldungen als gelesen – du musst nichts einzeln wegtippen.":"Répondre est ouvert à tous. Écrire en premier demande Pro. Ouvre la cloche et tout est marqué comme lu – rien à effacer un par un.",
   "Umkreis 10 km":"Rayon 10 km",
   "3 Partys in der Nähe":"3 soirées à proximité",
@@ -16057,9 +16065,7 @@ fr:{
   "Wie lädst du ein?":"Comment invites-tu ?",
   "Du kannst das später jederzeit umstellen.":"Tu peux changer cela à tout moment.",
   "Für jede Person eine eigene Einladung":"Une invitation propre à chaque personne",
-  "Du tippst einen Namen ein und bekommst einen Link, der genau einmal gilt. Wird er weitergeschickt, läuft er ins Leere.":"Tu saisis un nom et reçois un lien valable une seule fois. Transféré, il ne mène nulle part.",
   "Ein Link, den alle weitergeben dürfen":"Un lien que tout le monde peut transmettre",
-  "Einmal verschickt, und deine Gäste bringen mit, wen sie wollen. Gut für eine Runde, die noch wachsen darf.":"Envoie-le une fois et tes invités amènent qui ils veulent. Idéal pour un groupe qui peut encore grandir.",
   "Dein Einladungslink":"Ton lien d’invitation",
   "Wer ihn bekommt, ist dabei – auch weitergereicht.":"Qui le reçoit est de la partie – même transmis.",
   "Kopieren":"Copier",
@@ -16240,7 +16246,6 @@ fr:{
   "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.":"L’e-mail de confirmation n’a pas pu être envoyé. Réessaie dans quelques minutes ou écris à support@spotoutapp.ch.",
   "Das hat nicht geklappt. Versuch es nochmal – bleibt es dabei, schreib an support@spotoutapp.ch.":"Ça n’a pas marché. Réessaie — si ça persiste, écris à support@spotoutapp.ch.",
   "Strasse, Waldhütte oder Vereinshaus":"Rue, cabane forestière ou maison de société",
-  "Tippe einen Vorschlag an, damit die Party auf der Karte erscheint. Waldhütten, Schützenhäuser und Vereinshäuser findest du über ihren Namen.":"Appuie sur une suggestion pour que la soirée apparaisse sur la carte. Les cabanes forestières, stands de tir et maisons de société se trouvent par leur nom.",
   "Keine Treffer – probier den Namen der Hütte plus den Ort":"Aucun résultat — essaie le nom de la cabane plus la localité",
   "Steht so nicht in der Karte – antippen, um es trotzdem zu nehmen":"Absent de la carte — appuie pour l’utiliser quand même",
   "Jemanden suchen, der schon SPOTOUT hat":"Chercher quelqu’un qui a déjà SPOTOUT",
@@ -16450,7 +16455,6 @@ fr:{
   "Wieder freigegeben":"De nouveau libre",
   "Alles verteilt – perfekt":"Tout est couvert — parfait",
   "Noch nichts eingetragen":"Rien d’ajouté",
-  "Trag ein, was die Gäste mitbringen sollen. Jeder Eintrag lässt sich von genau einem Gast übernehmen – so bringt niemand dasselbe doppelt.":"Ajoute ce que les invités doivent apporter. Chaque élément revient à un seul invité — comme ça, personne n’apporte deux fois la même chose.",
   "Nachricht…":"Message…",
   "Noch keine Nachrichten.":"Pas encore de messages.",
   "Schreib die erste.":"Écris le premier.",
@@ -16521,6 +16525,14 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tocca un suggerimento perché compaia sulla mappa. Rifugi e sedi di associazioni li trovi anche per nome.",
+  "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"L’ingresso lo incassi tu sul posto. La tariffa di pubblicazione vale comunque.",
+  "Ein Link pro Name – er gilt genau einmal.":"Un link per nome – vale una sola volta.",
+  "Deine Gäste dürfen ihn weiterschicken.":"I tuoi ospiti possono inoltrarlo.",
+  "Stell die Spotify-Playlist auf":"Imposta la playlist Spotify su",
+  "und füg den Link hier ein.":"e incolla qui il link.",
+  "Trag ein, was die Gäste mitbringen sollen. Jeder Eintrag geht an genau einen Gast.":"Aggiungi cosa devono portare gli ospiti. Ogni voce va a un solo ospite.",
+  "gemeinsam bearbeitbar":"collaborativa",
   "Ändern kannst du das jederzeit in den Einstellungen.":"Puoi cambiarlo quando vuoi nelle impostazioni.",
   "Schau in dein Postfach":"Controlla la tua casella",
   "Wir haben dir einen Link geschickt an":"Abbiamo inviato un link a",
@@ -16724,7 +16736,6 @@ it:{
   "von 9":"di 9",
   "Gebühr fürs Veröffentlichen":"Tariffa di pubblicazione",
   "Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.":"Pubblicare una festa pubblica ti costa CHF 3, 8 o 15 invece di 5, 15 o 30. Con due feste Pro si è ripagato.",
-  "Den Eintritt kassierst du vor Ort. SPOTOUT wickelt keine Eintrittsgelder ab. Die Veröffentlichungsgebühr fällt unabhängig davon an.":"L’ingresso lo incassi sul posto. SPOTOUT non gestisce i soldi dell’ingresso. La tariffa di pubblicazione vale comunque.",
   "Antworten darf jeder. Wer als Erster schreiben will, braucht Pro. Öffnest du die Glocke, gelten alle Meldungen als gelesen – du musst nichts einzeln wegtippen.":"Rispondere può chiunque. Scrivere per primo richiede Pro. Apri la campana e tutto risulta letto – non devi toccarle una a una.",
   "Umkreis 10 km":"Raggio 10 km",
   "3 Partys in der Nähe":"3 feste vicine",
@@ -17079,9 +17090,7 @@ it:{
   "Wie lädst du ein?":"Come inviti?",
   "Du kannst das später jederzeit umstellen.":"Puoi cambiarlo in qualsiasi momento.",
   "Für jede Person eine eigene Einladung":"Un invito personale per ogni persona",
-  "Du tippst einen Namen ein und bekommst einen Link, der genau einmal gilt. Wird er weitergeschickt, läuft er ins Leere.":"Scrivi un nome e ricevi un link valido una sola volta. Se viene inoltrato, non porta a nulla.",
   "Ein Link, den alle weitergeben dürfen":"Un link che tutti possono inoltrare",
-  "Einmal verschickt, und deine Gäste bringen mit, wen sie wollen. Gut für eine Runde, die noch wachsen darf.":"Mandalo una volta e i tuoi ospiti portano chi vogliono. Ideale per un gruppo che può ancora crescere.",
   "Dein Einladungslink":"Il tuo link d’invito",
   "Wer ihn bekommt, ist dabei – auch weitergereicht.":"Chi lo riceve partecipa – anche di seconda mano.",
   "Kopieren":"Copia",
@@ -17263,7 +17272,6 @@ it:{
   "Die Bestätigungsmail liess sich nicht verschicken. Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.":"Non è stato possibile inviare l’e-mail di conferma. Riprova tra qualche minuto o scrivi a support@spotoutapp.ch.",
   "Das hat nicht geklappt. Versuch es nochmal – bleibt es dabei, schreib an support@spotoutapp.ch.":"Non ha funzionato. Riprova — se continua, scrivi a support@spotoutapp.ch.",
   "Strasse, Waldhütte oder Vereinshaus":"Via, capanna nel bosco o casa sociale",
-  "Tippe einen Vorschlag an, damit die Party auf der Karte erscheint. Waldhütten, Schützenhäuser und Vereinshäuser findest du über ihren Namen.":"Tocca un suggerimento perché la festa appaia sulla mappa. Capanne nel bosco, poligoni e case sociali si trovano col loro nome.",
   "Keine Treffer – probier den Namen der Hütte plus den Ort":"Nessun risultato — prova il nome della capanna più il paese",
   "Steht so nicht in der Karte – antippen, um es trotzdem zu nehmen":"Non è sulla mappa — tocca per usarlo comunque",
   "Jemanden suchen, der schon SPOTOUT hat":"Cerca qualcuno che ha già SPOTOUT",
@@ -17473,7 +17481,6 @@ it:{
   "Wieder freigegeben":"Di nuovo libero",
   "Alles verteilt – perfekt":"Tutto coperto – perfetto",
   "Noch nichts eingetragen":"Ancora niente inserito",
-  "Trag ein, was die Gäste mitbringen sollen. Jeder Eintrag lässt sich von genau einem Gast übernehmen – so bringt niemand dasselbe doppelt.":"Scrivi cosa devono portare gli ospiti. Ogni voce può essere presa da un solo ospite – così nessuno porta la stessa cosa due volte.",
   "Nachricht…":"Messaggio…",
   "Noch keine Nachrichten.":"Ancora nessun messaggio.",
   "Schreib die erste.":"Scrivi il primo.",
@@ -18903,8 +18910,7 @@ async function renderBringList(eventId,isHost){
     :'';
 
   const leer=!items.length
-    ?'<div class="bring-empty">Trag ein, was die Gäste mitbringen sollen. '
-      +'Jeder Eintrag lässt sich von genau einem Gast übernehmen – so bringt niemand dasselbe doppelt.</div>'
+    ?'<div class="bring-empty">Trag ein, was die Gäste mitbringen sollen. Jeder Eintrag geht an genau einen Gast.</div>'
     :'';
 
   box.innerHTML='<div class="bring-sec">'
