@@ -764,6 +764,17 @@
       opacity:0;pointer-events:none;transition:opacity var(--takt);
     }
     .overlay.open{opacity:1;pointer-events:all}
+    /* Tippen in einem Fenster: das Fenster endet genau ueber der Tastatur.
+       Vorher schob iOS die ganze Seite hoch – der Kopf verschwand unter
+       der Uhr, die Knoepfe unter der Tastatur. */
+    body.fenster-tippt.tastatur-offen .overlay.open{bottom:auto;height:var(--tastatur,100%)}
+    body.fenster-tippt.tastatur-offen .overlay.open .modal{
+      max-height:calc(var(--tastatur,100vh) - var(--safe-top) - 10px);
+    }
+    /* Ein Eingabefeld im Fenster zeigt den Fokus in Pink statt mit dem
+       blauen Rahmen des Systems. */
+    .modal input:not([type=range]):not([type=checkbox]):not([type=radio]):focus,
+    .modal textarea:focus,.modal select:focus{outline:none;border-color:rgba(255,45,118,.45)}
     .modal{
       width:100%;max-width:520px;
       background:linear-gradient(180deg,rgba(15,20,50,.98),rgba(9,13,36,.99));
@@ -21127,6 +21138,42 @@ function tastaturBeobachten(){
       setTimeout(()=>{setzen();feldInsBild(el);},140);
       setTimeout(()=>{setzen();feldInsBild(el);},420);
     });
+  });
+
+  /* ── Fenster (Einstellungen, Melden, Erstellen …) ──
+     Dasselbe wie bei der Anmeldung, nur fuer jedes Fenster: die Seite
+     bleibt stehen, das Fenster wird so hoch wie der sichtbare Rest, und
+     das Feld rutscht innerhalb des Fensters ins Bild. */
+  const istTippfeld=z=>!!(z&&z.matches&&z.matches(
+    'input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=button]):not([type=submit]),textarea,select,[contenteditable="true"]'));
+  const imFenster=z=>!!(z&&z.closest&&z.closest('.overlay .modal'));
+  function fensterFeldInsBild(el){
+    const fenster=el.closest('.modal');
+    if(!fenster)return;
+    const kasten=el.getBoundingClientRect();
+    const rahmen=fenster.getBoundingClientRect();
+    const kopf=fenster.querySelector('.modal-hdr');
+    const oben=rahmen.top+(kopf?kopf.offsetHeight:0)+12;
+    const unten=Math.min(rahmen.bottom,vv.height)-16;
+    if(kasten.bottom>unten)fenster.scrollTop+=kasten.bottom-unten;
+    else if(kasten.top<oben)fenster.scrollTop-=oben-kasten.top;
+  }
+  document.addEventListener('focusin',e=>{
+    const el=e.target;
+    if(!istTippfeld(el)||!imFenster(el))return;
+    document.body.classList.add('fenster-tippt');
+    setzen();fensterFeldInsBild(el);
+    setTimeout(()=>{setzen();fensterFeldInsBild(el);},140);
+    setTimeout(()=>{setzen();fensterFeldInsBild(el);},420);
+  });
+  document.addEventListener('focusout',e=>{
+    if(!imFenster(e.target))return;
+    setTimeout(()=>{
+      const jetzt=document.activeElement;
+      if(istTippfeld(jetzt)&&imFenster(jetzt))return;
+      document.body.classList.remove('fenster-tippt');
+      window.scrollTo(0,0);setzen();
+    },80);
   });
 
   /* Rechtsklick und Ziehen fangen wir hier ab. Das CSS oben nimmt den
