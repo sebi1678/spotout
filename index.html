@@ -489,6 +489,24 @@
       font-size:.76rem;line-height:1.45;color:#FFE1AE;
     }
     .tb-hinweis svg{width:13px;height:13px;flex:none;margin-top:2px;color:#FFC24B}
+    /* Schnell raus in der Tour: die obere Leiste in klein, der Knopf
+       darin leuchtet. Darunter dieselben Chips wie in den Einstellungen. */
+    .tb-leiste{
+      display:flex;align-items:center;gap:7px;margin-bottom:14px;
+      padding:9px 10px 9px 13px;border-radius:14px;
+      background:#090d24;border:1px solid rgba(255,255,255,.08);
+    }
+    .tb-logo{margin-right:auto;font-size:.92rem;font-weight:900;letter-spacing:-.02em;color:#fff}
+    .tb-ic{
+      width:30px;height:30px;border-radius:10px;flex:none;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.6);
+    }
+    .tb-ic svg{width:15px;height:15px}
+    .tb-ic.raus{color:#fff;border-color:rgba(255,45,118,.6);box-shadow:0 0 0 4px rgba(255,45,118,.18)}
+    .tb-chips{margin:0}
+    .tb-chips .cset{cursor:default}
 
     /* Die Skizzen: gemeinsame Bausteine */
     .tz-linie{stroke:rgba(255,255,255,.13);stroke-width:2;fill:none;stroke-linecap:round}
@@ -7474,6 +7492,26 @@ const TOUREN={
         +'<div class="tb-zeile"><div class="tb-offen">'+PLUS+'</div>'
         +'<div><div class="tb-t">Privates Profil</div><div class="tb-s">Folgen nur nach deiner Bestätigung</div></div></div>'
         +'</div>',
+    },
+    {
+      t:'Ein Tipp, und SPOTOUT ist weg',
+      s:'Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.',
+      /* Die eigene Wahl aus der Registrierung ist markiert – so sieht man
+         gleich, was der Knopf bei einem selbst tut. */
+      b:()=>{
+        const w=schnellRausWahl();
+        const chip=(k,n)=>'<span class="cset'+(w===k?' on':'')+'">'+n+'</span>';
+        return '<div class="tb">'
+          +'<div class="tb-leiste"><span class="tb-logo">SPOTOUT</span>'
+          +'<span class="tb-ic raus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/><polyline points="9 16 13 12 9 8"/><line x1="13" y1="12" x2="3" y2="12"/></svg></span>'
+          +'<span class="tb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>'
+          +'</div>'
+          +'<div class="tb-kopf"><span>Wohin der Knopf führt</span></div>'
+          +'<div class="chipset tb-chips">'
+          +chip('tarnung','Taschenrechner')+chip('instagram','Instagram Reels')
+          +chip('tiktok','TikTok')+chip('wetter','Wetter')
+          +'</div></div>';
+      },
     },
     {
       t:'Und das ist Pro',
@@ -14538,6 +14576,9 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Ein Tipp, und SPOTOUT ist weg":"One tap and SPOTOUT is gone",
+  "Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus\" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.":"Someone looking over your shoulder? One tap on “Quick exit” at the top takes you to the calculator, Reels, TikTok or the weather. You choose where in Settings.",
+  "Wohin der Knopf führt":"Where the button takes you",
   "Wohin, wenn jemand über die Schulter schaut?":"Where to, if someone looks over your shoulder?",
   "Rechnet wirklich. Zurück mit langem Druck.":"Really calculates. Long-press to come back.",
   "Brauche ich nicht":"I don’t need it",
@@ -15552,6 +15593,9 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Ein Tipp, und SPOTOUT ist weg":"Un appui et SPOTOUT disparaît",
+  "Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus\" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.":"Quelqu’un regarde par-dessus ton épaule ? Un appui sur « Sortie rapide » en haut et tu es sur la calculatrice, les Reels, TikTok ou la météo. Tu choisis où dans les réglages.",
+  "Wohin der Knopf führt":"Où mène le bouton",
   "Wohin, wenn jemand über die Schulter schaut?":"Où aller si quelqu’un regarde par-dessus ton épaule ?",
   "Rechnet wirklich. Zurück mit langem Druck.":"Calcule vraiment. Appui long pour revenir.",
   "Brauche ich nicht":"Pas besoin",
@@ -16566,6 +16610,9 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Ein Tipp, und SPOTOUT ist weg":"Un tocco e SPOTOUT sparisce",
+  "Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus\" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.":"Qualcuno ti guarda alle spalle? Un tocco su «Uscita rapida» in alto e sei sulla calcolatrice, sui Reels, su TikTok o sul meteo. Scegli dove nelle impostazioni.",
+  "Wohin der Knopf führt":"Dove porta il pulsante",
   "Wohin, wenn jemand über die Schulter schaut?":"Dove vai se qualcuno ti guarda alle spalle?",
   "Rechnet wirklich. Zurück mit langem Druck.":"Calcola davvero. Tieni premuto per tornare.",
   "Brauche ich nicht":"Non mi serve",
