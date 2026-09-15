@@ -5034,7 +5034,7 @@
     }
     .rprog-bar{
       height:100%;width:100%;border-radius:2px;background:var(--grad-cta);
-      transform:scaleX(.25);transform-origin:left center;
+      transform:scaleX(.2);transform-origin:left center;
       transition:transform var(--takt-lang) var(--kurve);
     }
     .rprog-txt{
@@ -5102,6 +5102,14 @@
     }
     .rwahl.on .rwahl-haken{opacity:1}
     .rwahl-haken svg{width:12px;height:12px}
+    /* Schnell raus bei der Registrierung: fuenf Moeglichkeiten sollen
+       auf einem kleinen Handy ohne Scrollen Platz haben – darum eine
+       Spur flacher als die Wahl der Kontoart. */
+    .rwahl.rwahl-klein{padding:10px 13px;margin-bottom:8px;gap:12px}
+    .rwahl-klein .rwahl-ic{width:32px;height:32px;border-radius:10px}
+    .rwahl-klein .rwahl-ic svg{width:17px;height:17px}
+    .rwahl-klein .rwahl-txt{gap:1px}
+    .rwahl-klein .rwahl-txt b{font-size:.9rem}
 
     /* Fehler direkt über dem Knopf, nicht als Zuruf, der wegfliegt. */
     .rfehler{
@@ -5489,9 +5497,9 @@
       <div id="auth-register" class="auth-section" style="display:none">
 
         <!-- Ein Balken statt einer Zahl: man sieht auf einen Blick, wie
-             viel noch kommt. Vier Schritte, nie mehr als zwei Fragen. -->
+             viel noch kommt. Fünf Schritte (Verein: vier), nie mehr als zwei Fragen. -->
         <div class="rprog"><div class="rprog-bar" id="rprogBar"></div></div>
-        <div class="rprog-txt" id="rprogTxt">Schritt 1 von 4</div>
+        <div class="rprog-txt" id="rprogTxt">Schritt 1 von 5</div>
 
         <!-- ── 1 · Wofür ── -->
         <div class="rstep on" data-rs="1">
@@ -5561,8 +5569,56 @@
           <div class="rhinweis">Mit einer E-Mail auf dieser Website ist der Verein sofort bestätigt.</div>
         </div>
 
-        <!-- ── 4 · Zugang ── -->
-        <div class="rstep" data-rs="4">
+        <!-- ── 4 · privat: Schnell raus ──
+             Nur fuer private Konten: ein Verein geht nicht selbst auf Partys
+             und braucht keinen Fluchtweg. Gewaehlt werden muss – "Brauche
+             ich nicht" zaehlt als Wahl. -->
+        <div class="rstep" data-rs="4" data-art="privat">
+          <div class="rfrage">Wohin, wenn jemand über die Schulter schaut?</div>
+          <div id="regRausWahl">
+          <button type="button" class="rwahl rwahl-klein" data-raus="tarnung" onclick="regRausWaehlen('tarnung')">
+            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01" stroke-width="2.6"/></svg></span>
+            <span class="rwahl-txt">
+              <b>Taschenrechner</b>
+              <span>Rechnet wirklich. Zurück mit langem Druck.</span>
+            </span>
+            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
+          </button>
+          <button type="button" class="rwahl rwahl-klein" data-raus="instagram" onclick="regRausWaehlen('instagram')">
+            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01" stroke-width="2.6"/></svg></span>
+            <span class="rwahl-txt">
+              <b>Instagram Reels</b>
+            </span>
+            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
+          </button>
+          <button type="button" class="rwahl rwahl-klein" data-raus="tiktok" onclick="regRausWaehlen('tiktok')">
+            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.3 4.4 5 4.6"/></svg></span>
+            <span class="rwahl-txt">
+              <b>TikTok</b>
+            </span>
+            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
+          </button>
+          <button type="button" class="rwahl rwahl-klein" data-raus="wetter" onclick="regRausWaehlen('wetter')">
+            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 20H8a4.5 4.5 0 1 1 1.2-8.84A5.5 5.5 0 0 1 19.8 13a3.5 3.5 0 0 1-2.3 7z"/></svg></span>
+            <span class="rwahl-txt">
+              <b>Wetter</b>
+            </span>
+            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
+          </button>
+          <button type="button" class="rwahl rwahl-klein" data-raus="" onclick="regRausWaehlen('')">
+            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/></svg></span>
+            <span class="rwahl-txt">
+              <b>Brauche ich nicht</b>
+              <span>Kein Knopf in der Leiste</span>
+            </span>
+            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
+          </button>
+          </div>
+          <div class="rhinweis">Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.</div>
+        </div>
+
+        <!-- ── letzter Schritt · Zugang ── -->
+        <div class="rstep" data-rs="zugang">
           <div class="rfrage">Noch dein Zugang</div>
           <div class="auth-field">
             <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -7996,7 +8052,7 @@ function setKontoart(art){
   vereinDomainPruefen();
 }
 
-/* ══════════ REGISTRIERUNG IN VIER SCHRITTEN ══════════
+/* ══════════ REGISTRIERUNG IN SCHRITTEN ══════════
    Vorher stand alles auf einem Bildschirm. Fuenf Felder und zwei
    Hinweiskaesten auf einmal lesen sich wie Arbeit – und genau hier
    springen die meisten ab. Jetzt eine Frage pro Schritt, in normaler
@@ -8005,7 +8061,13 @@ function setKontoart(art){
    Die Feld-IDs sind dieselben geblieben: doRegister() und
    registriereVerein() merken davon nichts. */
 let rSchritt=1;
-const R_MAX=4;
+/* Ein privates Konto hat fuenf Schritte, ein Verein vier: den Knopf
+   "Schnell raus" braucht nur, wer selbst auf Partys geht. E-Mail und
+   Passwort stehen darum auf keiner festen Nummer, sondern immer am
+   Schluss (data-rs="zugang"). */
+function rMax(){ return regArt==='verein' ? 4 : 5; }
+/* null heisst: noch nicht gewaehlt. '' ist eine Wahl – "Brauche ich nicht". */
+let regRaus=null;
 
 function rWert(id){ return (document.getElementById(id)?.value||'').trim(); }
 
@@ -8019,20 +8081,20 @@ function regFehler(text){
 
 function regZeigen(richtung){
   document.querySelectorAll('#auth-register .rstep').forEach(el=>{
-    const nr=Number(el.dataset.rs);
+    const nr = el.dataset.rs==='zugang' ? rMax() : Number(el.dataset.rs);
     const art=el.dataset.art;
     const dran = nr===rSchritt && (!art || art===regArt);
     el.classList.toggle('zurueck', richtung==='zurueck');
     el.classList.toggle('on', dran);
   });
   const bar=document.getElementById('rprogBar');
-  if(bar)bar.style.transform='scaleX('+(rSchritt/R_MAX).toFixed(4)+')';
+  if(bar)bar.style.transform='scaleX('+(rSchritt/rMax()).toFixed(4)+')';
   const txt=document.getElementById('rprogTxt');
-  if(txt)txt.textContent='Schritt '+rSchritt+' von '+R_MAX;
+  if(txt)txt.textContent='Schritt '+rSchritt+' von '+rMax();
   const zur=document.getElementById('rZurueck');
   if(zur)zur.hidden = rSchritt===1;
   const wei=document.getElementById('rWeiter');
-  if(wei&&!wei.disabled)wei.textContent = rSchritt===R_MAX ? 'Konto erstellen' : 'Weiter';
+  if(wei&&!wei.disabled)wei.textContent = rSchritt===rMax() ? 'Konto erstellen' : 'Weiter';
   regFehler('');
 }
 
@@ -8074,7 +8136,7 @@ function regPruefen(){
     return '';
   }
 
-  if(rSchritt===4){
+  if(rSchritt===rMax()){
     const em=rWert('reg-em');
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))
       return 'Bitte gib eine gültige E-Mail-Adresse ein.';
@@ -8082,13 +8144,19 @@ function regPruefen(){
       return 'Das Passwort braucht mindestens 6 Zeichen.';
     return '';
   }
+
+  if(rSchritt===4&&regArt==='privat'){
+    return regRaus===null
+      ? 'Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht".'
+      : '';
+  }
   return '';
 }
 
 function regWeiter(){
   const fehler=regPruefen();
   if(fehler){ regFehler(fehler); return; }
-  if(rSchritt>=R_MAX){ doRegister(); return; }
+  if(rSchritt>=rMax()){ doRegister(); return; }
   rSchritt++;
   regZeigen('vor');
 }
@@ -8104,7 +8172,16 @@ function regZurueck(){
 function regZuruecksetzen(){
   rSchritt=1;
   nameBestaetigt=false;
+  regRaus=null;
+  document.querySelectorAll('#regRausWahl .rwahl').forEach(b=>b.classList.remove('on'));
   regZeigen();
+}
+
+function regRausWaehlen(k){
+  regRaus=k||'';
+  document.querySelectorAll('#regRausWahl .rwahl').forEach(b=>
+    b.classList.toggle('on',(b.dataset.raus||'')===regRaus));
+  regFehler('');
 }
 
 // Freimail-Adressen sind kein Nachweis für einen Verein.
@@ -8228,6 +8305,8 @@ async function doRegister(){
     toast('Diese E-Mail-Adresse ist schon registriert','error');
     switchAuthTab('login',document.getElementById('tog-login'));return;
   }
+  // Die Wahl gilt sofort auf diesem Geraet – wie in den Einstellungen.
+  if(regRaus!==null)schnellRausSpeichern(regRaus);
   showEmailConfirmScreen(em);
 }
 
@@ -14447,6 +14526,12 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Wohin, wenn jemand über die Schulter schaut?":"Where to, if someone looks over your shoulder?",
+  "Rechnet wirklich. Zurück mit langem Druck.":"Really calculates. Long-press to come back.",
+  "Brauche ich nicht":"I don’t need it",
+  "Kein Knopf in der Leiste":"No button in the bar",
+  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.":"One tap on the button at the top and SPOTOUT is gone. You can change this any time in Settings.",
+  "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Pick where the button takes you – or “I don’t need it”.",
   "Kein Netz – du siehst den letzten Stand":"No connection – you’re seeing the last state",
   "Kein Netz.":"No connection.",
   "Das hat nicht geklappt.":"That didn’t work.",
@@ -15455,6 +15540,12 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Wohin, wenn jemand über die Schulter schaut?":"Où aller si quelqu’un regarde par-dessus ton épaule ?",
+  "Rechnet wirklich. Zurück mit langem Druck.":"Calcule vraiment. Appui long pour revenir.",
+  "Brauche ich nicht":"Pas besoin",
+  "Kein Knopf in der Leiste":"Pas de bouton dans la barre",
+  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.":"Un appui sur le bouton en haut et SPOTOUT disparaît. Tu peux changer ça à tout moment dans les réglages.",
+  "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Choisis où mène le bouton – ou « Pas besoin ».",
   "Kein Netz – du siehst den letzten Stand":"Pas de connexion – tu vois le dernier état",
   "Kein Netz.":"Pas de connexion.",
   "Das hat nicht geklappt.":"Ça n’a pas marché.",
@@ -16463,6 +16554,12 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Wohin, wenn jemand über die Schulter schaut?":"Dove vai se qualcuno ti guarda alle spalle?",
+  "Rechnet wirklich. Zurück mit langem Druck.":"Calcola davvero. Tieni premuto per tornare.",
+  "Brauche ich nicht":"Non mi serve",
+  "Kein Knopf in der Leiste":"Nessun pulsante nella barra",
+  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Ändern kannst du das jederzeit in den Einstellungen.":"Un tocco sul pulsante in alto e SPOTOUT sparisce. Puoi cambiarlo quando vuoi nelle impostazioni.",
+  "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Scegli dove porta il pulsante – oppure «Non mi serve».",
   "Kein Netz – du siehst den letzten Stand":"Nessuna connessione – vedi l’ultimo stato",
   "Kein Netz.":"Nessuna connessione.",
   "Das hat nicht geklappt.":"Non ha funzionato.",
@@ -19585,11 +19682,20 @@ function schnellRausWahl(){
   try{ return localStorage.getItem('spotout_raus')||''; }catch(e){ return ''; }
 }
 
-function setSchnellRaus(k){
+/* Nur speichern, ohne Rueckmeldung – die Registrierung ruft das auf,
+   waehrend noch gar keine Leiste zu sehen ist. Der zweite Schluessel
+   merkt sich, dass auf diesem Geraet schon gewaehlt wurde (siehe
+   loadProf). */
+function schnellRausSpeichern(k){
   try{
     if(k)localStorage.setItem('spotout_raus',k);
     else localStorage.removeItem('spotout_raus');
+    localStorage.setItem('spotout_raus_gewaehlt','1');
   }catch(e){}
+}
+
+function setSchnellRaus(k){
+  schnellRausSpeichern(k);
   document.querySelectorAll('#setRausWahl .cset').forEach(b=>
     b.classList.toggle('on',(b.dataset.raus||'')===(k||'')));
   rausKnopfZeigen();
