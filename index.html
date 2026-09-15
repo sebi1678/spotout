@@ -2308,11 +2308,6 @@
       background:radial-gradient(circle,rgba(255,45,118,.35),transparent 68%);filter:blur(26px);
     }
     .pro2-hero>*{position:relative}
-    .pro2-badge{
-      display:inline-block;margin-bottom:16px;padding:6px 13px;border-radius:980px;
-      background:rgba(255,45,118,.16);border:1px solid rgba(255,45,118,.34);
-      font-size:.66rem;font-weight:900;letter-spacing:.14em;color:#FF6B95;
-    }
     .pro2-hero h1{
       font-size:1.72rem;font-weight:900;color:#fff;letter-spacing:-.03em;
       line-height:1.15;margin-bottom:9px;
@@ -2395,11 +2390,6 @@
       position:relative;overflow:hidden;border-radius:26px;padding:28px 22px;text-align:center;
       background:linear-gradient(165deg,#1c0d2e,#0d0f26);
       border:1px solid rgba(255,45,118,.3);
-    }
-    .pro2-live-ring{
-      width:66px;height:66px;border-radius:50%;margin:0 auto 14px;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(255,45,118,.14);border:1.5px solid rgba(255,45,118,.4);color:#FF2D76;
     }
     .pro2-live h2{font-size:1.4rem;font-weight:900;color:#fff;letter-spacing:-.025em;margin-bottom:6px}
     .pro2-live p{font-size:.85rem;color:var(--text2);line-height:1.5}
@@ -5392,6 +5382,38 @@
       background:linear-gradient(135deg,rgba(255,45,118,.22),rgba(124,92,252,.18));
     }
     .prof-action-btn.pro-action svg{width:13px;height:13px;fill:currentColor;stroke:none}
+
+    /* ══════════ PRO-SEITE: EDLER ══════════
+       Oben stand zweimal "SPOTOUT Pro" – im Kopf und als Pille darunter.
+       Die Pille ist einem Emblem gewichen. Der Kasten bekommt einen feinen
+       Verlaufsrand statt einer flachen Linie, und der Knopf einen Schimmer,
+       der alle paar Sekunden einmal darueberlaeuft. */
+    .pro2-hero,.pro2-live{
+      border:1px solid transparent;
+      background:
+        linear-gradient(165deg,#2a0a24 0%,#1a0a2e 55%,#0d0f26 100%) padding-box,
+        linear-gradient(140deg,rgba(255,45,118,.75),rgba(124,92,252,.45) 45%,rgba(255,255,255,.06) 72%,rgba(246,215,139,.35)) border-box;
+      box-shadow:0 24px 60px rgba(255,45,118,.08);
+    }
+    .pro2-krone{
+      width:60px;height:60px;border-radius:50%;margin:0 auto 16px;
+      display:flex;align-items:center;justify-content:center;color:#fff;
+      background:linear-gradient(135deg,#FF2D76,#C23BD4 55%,#7C5CFC);
+      box-shadow:0 0 0 6px rgba(255,45,118,.12),0 12px 34px rgba(255,45,118,.35),inset 0 1px 0 rgba(255,255,255,.4);
+    }
+    .pro2-krone svg{width:27px;height:27px;fill:currentColor;stroke:none}
+    .pro2-cta{position:relative;overflow:hidden;isolation:isolate}
+    .pro2-cta::after{
+      content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+      background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.30) 50%,transparent 70%);
+      transform:translateX(-130%);
+      animation:proGlanz 4.2s var(--kurve) 1.4s infinite;
+    }
+    @keyframes proGlanz{0%,62%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+    .pro2-cta:disabled::after{animation:none;opacity:0}
+    @media (prefers-reduced-motion: reduce){ .pro2-cta::after{animation:none;opacity:0} }
+    /* Die Abo-Bedingungen stehen jetzt unter dem Knopf */
+    .pro2-note{margin:12px auto 0;max-width:330px;line-height:1.5}
 
   </style>
 </head>
@@ -11459,7 +11481,7 @@ function renderProPage(){
     const bis=cProfile.subscription_current_period_end
       ? new Date(cProfile.subscription_current_period_end).toLocaleDateString(locale(),{day:'numeric',month:'long',year:'numeric'})
       : null;
-    const status={active:'Aktiv',trialing:'Testwoche',past_due:'Zahlung offen',cancelled:'Gekündigt',expired:'Abgelaufen'}[cProfile.subscription_status]||'Aktiv';
+    const status={active:'Aktiv',trialing:'Testwoche',past_due:'Zahlung offen',cancelled:'Gekündigt',canceled:'Gekündigt',expired:'Abgelaufen'}[cProfile.subscription_status]||'Aktiv';
     const probe=probeLaeuft();
     // In der App führt der Weg zum Kündigen über Apple, nicht über uns.
     const verwalten = istApp()
@@ -11473,7 +11495,7 @@ function renderProPage(){
     el.innerHTML=`
       <div class="pro2">
         <div class="pro2-live">
-          <div class="pro2-live-ring">${proIcon('stern',1.6)}</div>
+          <div class="pro2-krone">${PRO_STERN}</div>
           <h2>Du bist Pro</h2>
           <p>Dein Profil ist für alle vollständig sichtbar, und du kannst jeden anschreiben.</p>
           ${probe?`<div class="pro2-probe">
@@ -11499,7 +11521,7 @@ function renderProPage(){
   el.innerHTML=`
     <div class="pro2">
       <div class="pro2-hero">
-        <div class="pro2-badge">SPOTOUT PRO</div>
+        <div class="pro2-krone">${PRO_STERN}</div>
         <h1>Sieh, wer hingeht.</h1>
         <p>Nicht „3 Leute". Namen.</p>
 
@@ -11525,11 +11547,11 @@ function renderProPage(){
         <div class="pro2-price">
           ${probeFrei()?'<span class="p-per" style="margin-right:6px">danach</span>':''}<span class="p-cur">CHF</span><span class="p-num">3.00</span><span class="p-per">/ Monat</span>
         </div>
+        <button class="pro2-cta" onclick="startProUpgrade()">${probeFrei()?'Gratis testen':'Pro holen'}</button>
+        ${istApp()?'<button class="pro2-restore" onclick="proWiederherstellen()">Kauf wiederherstellen</button>':''}
         <div class="pro2-note">${probeFrei()
           ?'7 Tage gratis testen, danach Laufzeit 1 Monat für CHF 3.00 · verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst · in der Testwoche jederzeit kostenlos kündbar'
           :'Die Testwoche gibt es einmal pro Konto, und die hattest du schon. Laufzeit 1 Monat für CHF 3.00 · verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst'}</div>
-        <button class="pro2-cta" onclick="startProUpgrade()">${probeFrei()?'Gratis testen':'Pro holen'}</button>
-        ${istApp()?'<button class="pro2-restore" onclick="proWiederherstellen()">Kauf wiederherstellen</button>':''}
         <div class="pro2-pay">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="10" width="18" height="11" rx="2"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>
           ${istApp()?'Sicher über deine Apple-ID · Verwaltung und Kündigung in den iPhone-Einstellungen'
@@ -17975,9 +17997,10 @@ async function warteAufFreischaltung(eventId){
 
 async function proKaufenApple(){
   const btn=document.querySelector('.pro2-cta');
+  const beschriftung=btn?.textContent||'Pro holen';
   if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Apple wird geöffnet…';}
   const a=await nativeCall('pro_kaufen',{userId:cUser?.id},180000);
-  if(btn){btn.disabled=false;btn.textContent='Pro werden';}
+  if(btn){btn.disabled=false;btn.textContent=beschriftung;}
   if(a.fehler){
     if(a.fehler==='abgebrochen'||/cancel/i.test(a.fehler))return;
     toast('Kauf nicht möglich: '+a.fehler,'error');
@@ -20184,7 +20207,7 @@ window.__laeuftGerade = new Set();
     'sendReport','blockUser','unblockUser','deleteAccount',
     'alleGelesen','castVote','confirmSuggest',
     'createGroup','toggleGroupStatus','confirmJoinGroup',
-    'kaufePro','proKaufenApple','gebuehrKaufenApple','gebuehrBezahlen',
+    'proKaufenApple','gebuehrKaufenApple','gebuehrBezahlen',
   ];
   SCHREIBEND.forEach(name=>{
     const echt = window[name];
