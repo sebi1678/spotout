@@ -4641,19 +4641,9 @@
       border:1px solid rgba(255,176,32,.32);
       font-size:.82rem;font-weight:800;color:#FFC65C;
     }
-    .fy-chip-voll{
-      color:#2a1a00!important;background:rgba(255,176,32,.94)!important;
-      border-color:transparent!important;font-weight:900;
-    }
     .fy-go-voll{
       background:rgba(255,176,32,.14)!important;color:#FFC65C!important;
       cursor:default;
-    }
-    .card-voll-tag{
-      position:absolute;top:10px;left:12px;z-index:3;
-      background:rgba(255,176,32,.92);color:#2a1a00;
-      font-size:.62rem;font-weight:900;letter-spacing:.06em;
-      border-radius:999px;padding:4px 9px;text-transform:uppercase;
     }
 
     /* ══════════ FILTER FÜR ÖFFENTLICHE PARTYS ══════════
@@ -9185,8 +9175,8 @@ function renderFeed(){
         <div class="fy-scrim"></div>
         <div class="fy-top">
           <span class="fy-chip" style="color:${w.accent};border-color:${w.border};background:rgba(0,0,0,.68)">${typeLabel}</span>
-          ${istVoll(e)?'<span class="fy-chip fy-chip-voll">Ausgebucht</span>'
-                      :(att>0?`<span class="fy-chip fy-chip-dark">${users}${att} dabei</span>`:'')}
+          ${/* "Ausgebucht" steht unten auf dem Knopf – oben nicht nochmals */''}
+          ${(!istVoll(e)&&att>0)?`<span class="fy-chip fy-chip-dark">${users}${att} dabei</span>`:''}
         </div>
         <div class="fy-reason${r.roh?' fy-reason-zahl':''}" style="color:${w.accent}">${r.ic}${r.txt}</div>
       </div>
@@ -9503,7 +9493,7 @@ function cardHTML(e){
   const w=worldVars(e.type);
   const free=!e.price||e.price==0;
   const tot=(e.price||0)+(e.drink_price||0);
-  const typeLabel=e.type==='events'?'Club':e.type==='public'?'Öffentlich':'Privat';
+  const typeLabel=e.type==='events'?'Event':e.type==='public'?'Öffentlich':'Privat';
   const attCount=e.attending||e._attCount||0;
   const dist=(e._dist!=null?e._dist:(e._d!=null&&e._d<9999?e._d:null));
   const distP=entfernungText(dist)||null;
@@ -9525,7 +9515,6 @@ function cardHTML(e){
         ? '<span class="card-gebuehr">Gebühr offen</span>'
         : ''}
     </div>
-    ${(!istVorbei(e)&&istVoll(e))?'<div class="card-voll-tag">Ausgebucht</div>':''}
     ${distP?'<div style="position:absolute;bottom:10px;left:12px;z-index:3"><span class="pill pill-dark" style="font-size:.62rem">'+D_SYM.ort+' '+distP+'</span></div>':''}
   </div>
   <div class="card-body">
