@@ -3939,7 +3939,6 @@
     .prof-stats-row{gap:0!important}
     .insta-stat-num{font-size:1.14rem!important}
     /* Bearbeiten sitzt jetzt bündig zum Rest */
-    .prof-actions{margin-top:14px!important}
 
     /* ══════════ REGISTRIERUNG ══════════
        Ein leeres Datumsfeld sieht auf dem Handy fast leer aus – ohne
@@ -5967,7 +5966,7 @@
     /* 320 px: nichts quetscht sich */
     .segbtn{min-width:0;overflow:hidden}
     @media(max-width:340px){.segbtn svg{display:none}}
-    .fl-knopf{min-width:0;max-width:46%;overflow:hidden;text-overflow:ellipsis}
+    .fl-row>.fl-knopf{min-width:0;max-width:46%;overflow:hidden;text-overflow:ellipsis}
     .tcp-check svg{width:12px;height:12px;display:block}
 
     /* Langes Druecken markiert keinen Text und zeigt keine Link-Vorschau */
@@ -6042,7 +6041,7 @@
 
     /* ══════════ LUFT: Profile duerfen nie gequetscht aussehen ══════════ */
     .prof-header{padding:22px 20px 18px;gap:18px}
-    .insta-av{width:86px!important;height:86px!important;flex:0 0 86px}
+    .prof-header .insta-av{width:86px!important;height:86px!important;flex:0 0 86px}
     .prof-stats-row{min-width:0}
     .insta-stat{min-width:0;padding:4px 2px}
     .insta-stat-num{font-size:1.18rem;font-weight:800;letter-spacing:-.01em}
@@ -6068,13 +6067,35 @@
     .att-name{min-width:0}
     @media(max-width:360px){
       .prof-header{gap:14px;padding:18px 16px 16px}
-      .insta-av{width:76px!important;height:76px!important;flex:0 0 76px}
+      .prof-header .insta-av{width:76px!important;height:76px!important;flex:0 0 76px}
       .insta-stat-num{font-size:1.06rem}
       .insta-stat-lbl{font-size:.72rem}
       .prof-bio{padding:0 16px 6px}
       .prof-actions{padding:14px 16px 16px}
       .sr-name .d1{width:20px;padding:0;font-size:0;gap:0;justify-content:center}
     }
+
+    .bub[data-mid]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+    .bub.bub-markiert{transform:scale(.97);transition:transform .15s ease;filter:brightness(1.15)}
+
+    /* ══════════ FINALCHECK ══════════ */
+    body:not(.veranstalter) .type-card-pro[data-type="events"]{display:none}
+    .up-blockiert{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:48px 24px}
+    .up-blockiert b{font-size:1rem;color:#fff}
+    .up-blockiert span{font-size:.82rem;line-height:1.5;color:var(--muted);max-width:300px}
+    .mg-raus{flex:none;margin-left:auto;padding:6px 11px;border-radius:var(--knopf-r-klein);border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);color:var(--text2);font-family:var(--font);font-size:.74rem;font-weight:700;cursor:pointer}
+    .mg-raus.armed{border-color:rgba(255,69,86,.55);background:rgba(255,69,86,.14);color:#FF8A92}
+    .mg-guest{transition:opacity .25s ease}
+    .mg-guest.weg{opacity:.35}
+    .wl-stand{display:flex;flex-direction:column;gap:8px}
+    .wl-raus{align-self:center;background:none;border:none;color:var(--muted);font-family:var(--font);font-size:.8rem;font-weight:700;
+      text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px}
+    .recht-modal{height:88vh;height:88dvh;display:flex;flex-direction:column}
+    .recht-frame{flex:1;width:100%;border:none;background:#090D24;border-radius:0 0 18px 18px}
+    .modal-body{padding-bottom:calc(28px + var(--safe-bottom, env(safe-area-inset-bottom)))}
+    .mg-sec,.sec-lbl,.vh-sec{font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+    @media(max-width:360px){ .prof-actions .prof-action-btn>svg{display:none} }
   </style>
 </head>
 <body>
@@ -6869,7 +6890,7 @@
     <!-- 4 · WANN -->
     <div class="create-panel" id="cpanel-4" style="display:none">
       <div class="cq">Wann geht’s los?</div>
-      <div class="cq-sub">Sechs Stunden nach Beginn verschwindet die Party automatisch.</div>
+      <div class="cq-sub">Nach sechs Stunden gilt die Party als vorbei, 24 Stunden nach Beginn wird sie gelöscht.</div>
 
       <div class="when-box">
         <div class="when-day" id="whenDay">—</div>
@@ -7413,8 +7434,9 @@
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <div class="konto-weg-hinweis" id="kontoWegHinweis" hidden>
-        Alles wird gelöscht: dein Profil, deine Partys, deine Anmeldungen und
-        deine Nachrichten. Rückgängig geht das nicht.
+        Alles wird gelöscht: dein Profil, deine Partys, deine Anmeldungen, deine Fotos
+        und deine Nachrichten. Rückgängig geht das nicht. Ein Pro-Abo über Apple
+        kündigst du vorher in den iPhone-Einstellungen unter „Abonnements“.
       </div>
       </div>
 
@@ -7639,6 +7661,17 @@
       <button class="modal-x" onclick="closeOverlay('besucherOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body"><div id="besucherListe"></div></div>
+  </div>
+</div>
+
+<div class="overlay" id="rechtOverlay" onclick="closeIfOutside(event,'rechtOverlay')">
+  <div class="modal no-swipe recht-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title" id="rechtTitel">Rechtliches</div>
+      <button class="modal-x" onclick="closeOverlay('rechtOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <iframe class="recht-frame" id="rechtFrame" title="Rechtliches"></iframe>
   </div>
 </div>
 
@@ -8317,8 +8350,9 @@ async function kontoWegLoeschen(){
        und geht in einem Zug mit. Vorher blieb der Zugang bestehen: wer
        sich danach nochmals anmeldete, landete in einem leeren Konto. */
     await pushTokenLoesen();
-    const{error:serverFehler}=await sb.rpc('konto_endgueltig_loeschen');
-    if(!serverFehler){
+    // Ueber die Serverfunktion: sie kuendigt ein Stripe-Abo, bevor geloescht wird
+    const{data:weg,error:serverFehler}=await sb.functions.invoke('konto-loeschen',{body:{}});
+    if(!serverFehler&&weg?.ok){
       try{ kontenSchreiben(kontenLesen().filter(k=>k.id!==uid)); }catch(e){}
       zurueckZurAnmeldung();
       try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
@@ -8326,31 +8360,14 @@ async function kontoWegLoeschen(){
       setTimeout(()=>location.reload(),800);
       return;
     }
-    // Fallback, falls die Funktion (noch) nicht da ist: Schritt fuer Schritt
-    if(!/konto_endgueltig_loeschen|function|PGRST202/i.test((serverFehler.message||'')+(serverFehler.code||'')))throw serverFehler;
-    // Jeder Schritt wird geprueft – vorher kam trotz Fehler die naechste Loeschung
-    const schritte=[
-      ()=>sb.from('event_attendees').delete().eq('user_id',uid),
-      ()=>sb.from('search_history').delete().eq('user_id',uid),
-      ()=>sb.from('event_waitlist').delete().eq('user_id',uid),
-      ()=>sb.from('messages').delete().eq('sender_id',uid),
-      ()=>sb.from('follows').delete().eq('follower_id',uid),
-      ()=>sb.from('follows').delete().eq('following_id',uid),
-      ()=>sb.from('events').delete().eq('created_by',uid),
-      ()=>sb.from('profiles').delete().eq('id',uid),
-    ];
-    for(const schritt of schritte){
-      const{error}=await schritt();
-      if(error)throw error;
+    if(weg?.fehler==='abo'){
+      throw new Error('Dein Pro-Abo liess sich nicht kündigen. Schreib uns an support@spotoutapp.ch – wir löschen das Konto dann für dich.');
     }
-    try{ kontenSchreiben(kontenLesen().filter(k=>k.id!==uid)); }catch(e){}
-    zurueckZurAnmeldung();
-    try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
-    toast('Konto gelöscht','success');
-    setTimeout(()=>location.reload(),800);
+    throw serverFehler||new Error('Das Konto liess sich nicht löschen. Versuch es nochmals oder schreib an support@spotoutapp.ch.');
   }catch(err){
     kontoWegLaeuft=false;
     kontoWegAbbrechen();
+    try{ nativePushAnmelden(false); }catch(e){}
     toast(fehlerText(err),'error');
   }
 }
@@ -8400,6 +8417,8 @@ async function init(){
   }else if(session){cUser=session.user;await loadProf();kontoMerken();enterApp();}
   sb.auth.onAuthStateChange(async(ev,s)=>{
     if(ev==='PASSWORD_RECOVERY'&&s){cUser=s.user;pwAnsicht('neu');return;}
+    // Supabase erneuert den Zugang stuendlich – die Kontoliste muss den neuen kennen
+    if(ev==='TOKEN_REFRESHED'&&s){ try{ kontoMerken(); }catch(e){} return; }
     // Solange das neue Passwort noch nicht gesetzt ist, bleibt man hier.
     if(pwNeuOffen&&ev!=='SIGNED_OUT')return;
     if(ev==='SIGNED_IN'&&s){
@@ -8422,7 +8441,10 @@ async function init(){
 }
 
 async function loadProf(){
-  const{data}=await sb.from('profiles').select('*').eq('id',cUser.id).single();
+  // Die Tabelle gibt fremde Profile nur noch in den oeffentlichen Spalten heraus.
+  // Das eigene kommt vollstaendig ueber mein_profil.
+  const{data:eigen}=await sb.rpc('mein_profil');
+  const data=Array.isArray(eigen)?eigen[0]:eigen;
   // If gender/birthdate missing but in user metadata, update profile
   if(data&&data.kontoart!=='verein'&&(!data.gender||!data.birthdate)){
     const meta=cUser.user_metadata||{};
@@ -8431,7 +8453,8 @@ async function loadProf(){
     if(!data.birthdate&&meta.birthdate)updates.birthdate=meta.birthdate;
     if(Object.keys(updates).length)await sb.from('profiles').update(updates).eq('id',cUser.id);
   }
-  const{data:updated}=await sb.from('profiles').select('*').eq('id',cUser.id).single();
+  const{data:eigen2}=await sb.rpc('mein_profil');
+  const updated=Array.isArray(eigen2)?eigen2[0]:eigen2;
   /* Die Wahl des Doomscroll-Knopfs aus der Registrierung gilt auch, wenn man
      sich zum ersten Mal auf einem anderen Geraet anmeldet – etwa weil
      der Bestaetigungslink im Browser statt in der App aufging. Aber nur
@@ -8978,14 +9001,18 @@ async function kontoHinzufuegen(){
   // Die anderen Konten bleiben gespeichert – nur die laufende Sitzung
   // endet. Sonst kaeme man mit dem neuen Konto in einer halb alten
   // Ansicht heraus. scope 'local': nur dieses Geraet, nicht alle.
+  /* Nicht abmelden: das wuerde die gespeicherte Sitzung dieses Kontos auf dem
+     Server ungueltig machen, und der Wechsel zurueck ginge nicht mehr. Nur die
+     Sitzung aus diesem Browser nehmen – gespeichert bleibt sie in der Kontoliste. */
   kontoNeuLaeuft=true;
+  try{ kontoMerken(); }catch(e){}
   await pushTokenLoesen();
-  try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
-  kontoNeuLaeuft=false;
-  spurenLoeschen();
-  cUser=null;
-  zurAnmeldung('register');
-  toast('Melde dich mit dem anderen Konto an oder erstelle eines','info');
+  try{ sb.auth.stopAutoRefresh(); }catch(e){}
+  try{
+    Object.keys(localStorage).filter(k=>/^sb-.*-auth-token$/.test(k)).forEach(k=>localStorage.removeItem(k));
+    sessionStorage.setItem('spotout_neu_registrieren','1');
+  }catch(e){}
+  location.reload();
 }
 
 /* ══════════ OHNE KONTO UMSCHAUEN ══════════
@@ -9034,6 +9061,8 @@ function zurAnmeldung(welche){
 
 function enterApp(){
   gastModus=false;
+  // Die Art "Event" gibt es nur fuer gepruefte Veranstalter
+  document.body.classList.toggle('veranstalter',!!cProfile?.verified);
   document.body.classList.remove('gast');
   const gl=document.getElementById('gastLeiste');
   if(gl)gl.hidden=true;
@@ -9132,7 +9161,7 @@ function pwAnsicht(welche){
 }
 
 function pwRueckweg(){
-  return location.protocol==='https:'?location.origin+'/?pw=neu':undefined;
+  return 'https://spotoutapp.ch/?pw=neu';
 }
 
 async function pwMailSchicken(em){
@@ -9247,7 +9276,7 @@ async function doLogin(){
   if(btn&&error){btn.textContent='Anmelden';btn.disabled=false;}
   if(btn&&!error)setTimeout(()=>{btn.textContent='Anmelden';btn.disabled=false;},6000);
   if(error){
-    if(error.message==='Email not confirmed'){
+    if(error.message==='Email not confirmed'||error.code==='email_not_confirmed'){
       showEmailConfirmScreen(em);
       return;
     }
@@ -9269,7 +9298,7 @@ function showEmailConfirmScreen(email){
         </div>
         <h2 style="font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin-bottom:10px">Schau in dein Postfach</h2>
         <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:6px">Wir haben dir einen Link geschickt an</p>
-        <p style="color:var(--text);font-size:.9rem;font-weight:600;margin-bottom:20px">${email}</p>
+        <p style="color:var(--text);font-size:.9rem;font-weight:600;margin-bottom:20px">${esc(email)}</p>
         <p style="color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:32px">Tipp auf den Link darin – dann kannst du dich anmelden.</p>
         <button class="auth-submit-btn" onclick="location.reload()" style="width:100%;margin-bottom:12px">Zurück zur Anmeldung</button>
         <button class="auth-zweit" id="nochmalBtn" onclick="mailNochmal('${escAttr(email)}')">E-Mail nochmals schicken</button>
@@ -9285,7 +9314,7 @@ async function mailNochmal(email){
   const btn=document.getElementById('nochmalBtn');
   if(!btn||btn.disabled)return;
   btn.disabled=true; btn.textContent='Wird geschickt…';
-  const{error}=await sb.auth.resend({type:'signup',email:email});
+  const{error}=await sb.auth.resend({type:'signup',email:email,options:{emailRedirectTo:'https://spotoutapp.ch/?bestaetigt=1'}});
   if(error){
     const f=anmeldeFehler(error);
     toast(f.text,f.art);
@@ -9567,7 +9596,7 @@ async function doRegister(){
   const un=fullName.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20)+'_'+Math.floor(Math.random()*999);
   const{data,error}=await sb.auth.signUp({
     email:em,password:pw,
-    options:{data:{full_name:fullName,username:un,birthdate:bd||null,kontoart:'privat',
+    options:{emailRedirectTo:'https://spotoutapp.ch/?bestaetigt=1',data:{full_name:fullName,username:un,birthdate:bd||null,kontoart:'privat',
       // reist im Konto mit – siehe loadProf
       schnell_raus:regRaus===null?null:regRaus}}
   });
@@ -9611,7 +9640,7 @@ async function registriereVerein(em,pw){
 
   const{data,error}=await sb.auth.signUp({
     email:em,password:pw,
-    options:{data:{full_name:name,username:un,kontoart:'verein',
+    options:{emailRedirectTo:'https://spotoutapp.ch/?bestaetigt=1',data:{full_name:name,username:un,kontoart:'verein',
                    website:'https://'+domainAusUrl(web),verein_ort:ort}}
   });
 
@@ -9692,6 +9721,8 @@ function spurenLoeschen(){
   }catch(e){}
   window.__blocked=new Set();
   try{ evts=[]; }catch(e){}
+  try{ ntFolge.clear(); window.__anfragen=[]; abzCache={eigene:[],stand:{}}; upStapel=[]; upUser=null; }catch(e){}
+  ['reg-pw','reg-em','pwMail','login-pw'].forEach(id=>{ const f=document.getElementById(id); if(f)f.value=''; });
   ['convMsgs','chatList','profContent','calContent'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.innerHTML='';
@@ -10127,7 +10158,7 @@ function filterAll(zuruecksetzen){
     if(t==='public')list=list.filter(oePasst);
     if(q)list=list.filter(e=>passtZurSuche(e,q));
     // Ein Umkreis fuer Events, Öffentliche und Private gleichermassen
-    list=list.filter(imUmkreis);
+    list=list.filter(e=>e.type==='private'||imUmkreis(e));   // Einladungen gelten ueberall
     const mitte=umkreisOrt();
     if(mitte)list=list.map(e=>({...e,_d:e.lat?distKm(mitte.lat,mitte.lng,e.lat,e.lng):9999})).sort((a,b)=>a._d-b._d);
     treffer[t]=list.length;
@@ -10872,7 +10903,7 @@ function cardHTML(e){
   const isTomorrow=d.toDateString()===new Date(Date.now()+864e5).toDateString();
   const dayLabel=isToday?'HEUTE':isTomorrow?'MORGEN':d.toLocaleDateString(locale(),{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
   const imgHTML=e.image_url
-    ?('<img src="'+e.image_url+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform var(--takt-lang) var(--kurve)" loading="lazy"/>')
+    ?('<img src="'+escAttr(e.image_url)+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform var(--takt-lang) var(--kurve)" loading="lazy"/>')
     :('<div style="position:absolute;inset:0;background:'+gradBg(e.type,e.category)+';display:flex;align-items:center;justify-content:center"><div style="opacity:.2;color:#fff">'+iconSvg(ev,52)+'</div></div>');
   const priceTag=free?'Gratis':'CHF '+tot;
   return`<div class="card" onclick="openDetail('${e.id}')">
@@ -10887,7 +10918,7 @@ function cardHTML(e){
     ${distP?'<div style="position:absolute;bottom:10px;left:12px;z-index:3"><span class="pill pill-dark" style="font-size:.62rem">'+D_SYM.ort+' '+distP+'</span></div>':''}
   </div>
   <div class="card-body">
-    <div style="font-size:.65rem;font-weight:700;color:${w.text};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">${e.category||typeLabel}</div>
+    <div style="font-size:.65rem;font-weight:700;color:${w.text};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">${esc(e.category||typeLabel)}</div>
     <div class="card-name">${esc(e.name)}</div>
     ${(e.profiles?.kontoart==='verein' && e.created_by!==cUser?.id)
       ? '<div class="card-host">'+vereinMarke()+'<span class="card-host-n">'+esc(e.profiles.full_name||e.profiles.username||'')+'</span></div>'
@@ -10903,8 +10934,9 @@ function cardHTML(e){
          als zweite, kleinere Zeile darunter – wie beim grossen Knopf
          auf der Partyseite auch. */
       : `<button class="card-cta" style="background:${w.btnBg};color:${w.btnColor};box-shadow:0 2px 12px rgba(0,0,0,.2)">${
-          (istVerein()||e.created_by===cUser?.id)
+          e.created_by===cUser?.id
             ? 'Verwalten'
+            : istVerein() ? 'Ansehen'
             : 'Dabei sein<span class="card-cta-preis">'+priceTag+'</span>'}</button>`}
   </div>
 </div>`;
@@ -11027,7 +11059,8 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
     return attNote('Anmeldefrist war am '+fmtD(deadline.getFullYear()+'-'+String(deadline.getMonth()+1).padStart(2,'0')+'-'+String(deadline.getDate()).padStart(2,'0'))+' um '+fmtT(deadline),'warn');
   }
   if(isFull&&!isAtt){
-    if(aufWarteliste)return attNote('Du stehst auf der Warteliste');
+    if(aufWarteliste)return '<div class="wl-stand">'+attNote('Du stehst auf der Warteliste')
+      +'<button class="wl-raus" onclick="wartelisteVerlassen(\''+e.id+'\',this)">Warteliste verlassen</button></div>';
     if(cProfile?.is_pro){
       return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">Auf die Warteliste</button>';
     }
@@ -11157,11 +11190,11 @@ async function openDetail(id){
   const showFullList=(deadlinePassed||isOver)&&!!cProfile?.is_pro;
   const attLabel=isOver?'Wer war dabei':deadlinePassed?'Angemeldete Gäste':'Wer ist dabei';
   function buildAttRow(a){
-    const av=a.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+a.profiles.avatar_url+'"/>'):((a.profiles?.full_name||a.profiles?.username||'?').charAt(0).toUpperCase());
+    const av=a.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.profiles.avatar_url)+'"/>'):esc((a.profiles?.full_name||a.profiles?.username||'?').charAt(0).toUpperCase());
     const nm=esc(a.profiles?.full_name||a.profiles?.username||'Unbekannt');
-    const un=(a.profiles?.username||'').replace(/'/g,'');
+    const un=(a.profiles?.username||'').replace(/['"\\<>&]/g,'');
     const pid=a.profiles?.id||'';
-    const pnm=(a.profiles?.full_name||a.profiles?.username||'').replace(/'/g,'');
+    const pnm=(a.profiles?.full_name||a.profiles?.username||'').replace(/['"\\<>&]/g,'');
     const isMe=a.user_id===cUser?.id;
     const isTheHost=a.user_id===e.created_by;
     const tag=isTheHost?'<span class="att-tag att-tag-host">Host</span>'
@@ -11287,7 +11320,7 @@ async function openDetail(id){
       /* Wie viele es sind, steht oben in der Kachel "Gäste" – dort mit
          Begleitungen gezaehlt. Hier stand eine zweite Zahl ohne sie. */
       +'<div class="att-lock-txt">'+(nachspiel
-          ?'Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.'
+          ?'Mit Pro siehst du bis 24 Stunden nach Partybeginn, wer dabei war.'
           :'Mit Pro siehst du, wer kommt.')+'</div>'
       +'<button class="mpro-btn" onclick="showPage(\'pro\')">Pro werden</button>'
       +'</div></div>';
@@ -11300,11 +11333,11 @@ async function openDetail(id){
     <div class="d-hero" style="background:${bg}">
       <div class="glow-spot glow-1" style="background:radial-gradient(circle,${w.glow1},transparent 70%)"></div>
       <div class="glow-spot glow-2" style="background:radial-gradient(circle,${w.glow2},transparent 70%)"></div>
-      ${e.image_url?('<img loading="lazy" decoding="async" src="'+e.image_url+'"/><div class="d-hero-overlay"></div>'):('<div class="d-hero-overlay" style="opacity:.6"></div>')}
+      ${e.image_url?('<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'"/><div class="d-hero-overlay"></div>'):('<div class="d-hero-overlay" style="opacity:.6"></div>')}
       <div class="d-hero-btns">
         <button class="d-hero-btn" onclick="closeDetail()" aria-label="Schliessen">${pikto('schliessen',18)}</button>
         <div class="d-hero-rechts">
-        ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\]/g,'')+'\')" aria-label="Party melden">'+pikto('melden',19)+'</button>':''}
+        ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\"<>&]/g,'')+'\')" aria-label="Party melden">'+pikto('melden',19)+'</button>':''}
         ${(!isPrivEv||isHost)?'<button class="d-hero-btn" onclick="openShare(\''+e.id+'\')" aria-label="Teilen">'+pikto('teilen',19)+'</button>':''}
         ${isHost?'<button class="d-hero-btn" onclick="openManage(\''+e.id+'\')" style="font-size:.72rem;font-weight:800;padding:0 13px;width:auto;border-radius:999px;gap:6px">'+pikto('zahnrad',15)+'Verwalten</button>':''}
         </div>
@@ -11343,7 +11376,7 @@ async function openDetail(id){
         </div>`}
         ${hasDrink&&!isPrivEv?('<div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.glas+' Getränke</div><div class="d-info-cell-val">CHF '+e.drink_price+'</div></div><div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.summe+' Total</div><div class="d-info-cell-val" style="color:'+w.accent+'">CHF '+tot+'</div></div>'):''}
       </div>
-      ${e.description?('<div class="d-desc">'+e.description+'</div>'):''}
+      ${e.description?('<div class="d-desc">'+esc(e.description)+'</div>'):''}
       ${dressZeile(e.dresscode)}
       ${statusBanner}
       ${invH}
@@ -11592,7 +11625,7 @@ function ausSucheOeffnen(id){
   openUserProf(id);
 }
 
-const SEARCH_COLS='id,username,full_name,avatar_url,is_pro,day_one,instagram_handle,snapchat_handle,facebook_handle,bio';
+const SEARCH_COLS='id,username,full_name,avatar_url,is_pro,day_one,kontoart,privat';
 
 // Leere Suche: zeigen, wen es überhaupt gibt. Pro-Profile zuerst, weil dort
 // am meisten zu sehen ist.
@@ -11717,7 +11750,7 @@ async function renderCalendar(){
   const now=new Date();
   const all=[...byId.values()].map(e=>{
     const st=evStart(e)||new Date(e.date+'T20:00:00');
-    return{...e,_start:st,_end:evEnde(e)||new Date(st.getTime()+5*36e5)};
+    return{...e,_start:st,_end:evEnde(e)||new Date(st.getTime()+6*36e5)};
   }).filter(e=>!isNaN(e._start));
 
   const upcoming=all.filter(e=>e._end>=now).sort((a,b)=>a._start-b._start);
@@ -11941,7 +11974,7 @@ function kalZeiten(e){
   const st=evStart(e)||new Date(e.date+'T20:00:00');
   // Vorher stand hier fest "Beginn plus sechs Stunden". Der Schluss,
   // den der Gastgeber eintraegt, landete damit nie im Kalender.
-  return {st, en:evEnde(e)||new Date(st.getTime()+5*36e5)};
+  return {st, en:evEnde(e)||new Date(st.getTime()+6*36e5)};
 }
 
 function kalText(e){
@@ -12202,7 +12235,7 @@ async function renderProf(){
      Archiv – als Kachel ohne Link, weil es die Party selbst nicht mehr gibt. */
   const [{data:archiv},{data:abz},{data:abzStand}]=await Promise.all([
     sb.from('besucht_archiv').select('*').eq('user_id',cUser.id).order('datum',{ascending:false}).limit(300),
-    sb.from('abzeichen').select('schluessel,created_at').eq('user_id',cUser.id),
+    sb.from('abzeichen').select('schluessel,erhalten_am').eq('user_id',cUser.id),
     sb.from('abzeichen_stand').select('*').eq('user_id',cUser.id).maybeSingle(),
   ]);
   abzCache={eigene:(abz||[]).map(a=>a.schluessel),stand:abzStand||{}};
@@ -12233,7 +12266,7 @@ async function renderProf(){
       <div class="prof-header">
         <div class="insta-av-wrap" onclick="chgAv()" style="position:relative">
           <div class="insta-av ${cProfile.is_pro?'pro-glow':''}">
-            ${cProfile.avatar_url?'<img loading="lazy" decoding="async" src="'+cProfile.avatar_url+'"/>':'<span>'+init+'</span>'}
+            ${cProfile.avatar_url?'<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'"/>':'<span>'+init+'</span>'}
           </div>
 
           <div class="insta-av-edit">${cameraIconSvg(13)}</div>
@@ -12277,7 +12310,7 @@ async function renderProf(){
         <button class="prof-action-btn prof-action-quadrat" onclick="showPage('search')" aria-label="Leute finden">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7.5" r="3.5"/><path d="M19 8v6M22 11h-6"/></svg>
         </button>
-        ${!cProfile.is_pro?'<button class="prof-action-btn pro-action" onclick="showPage(\'pro\')">'+PRO_STERN+'Pro werden</button>':''}
+        ${!cProfile.is_pro&&!istVerein()?'<button class="prof-action-btn pro-action" onclick="showPage(\'pro\')">'+PRO_STERN+'Pro werden</button>':''}
       </div>
 
       <!-- TABS -->
@@ -12295,13 +12328,13 @@ async function renderProf(){
       <!-- GRIDS -->
       <div id="prof-panel-mine" class="insta-grid">
         ${(myEvts||[]).length?myEvts.map(e=>{
-          const img=e.image_url?('<img loading="lazy" decoding="async" src="'+e.image_url+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>');
+          const img=e.image_url?('<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>');
           return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(e.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(e.date)+'</div></div></div>';
         }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Noch keine Events erstellt</div>'}
       </div>
       <div id="prof-panel-visited" class="insta-grid" style="display:none">
         ${visitedEvts.length?visitedEvts.map(a=>{
-          const img=a.events.image_url?('<img loading="lazy" decoding="async" src="'+a.events.image_url+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(a.events.type,a.events.category)+'">'+iconSvg(evIconKey(a.events),26)+'</div>');
+          const img=a.events.image_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.events.image_url)+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(a.events.type,a.events.category)+'">'+iconSvg(evIconKey(a.events),26)+'</div>');
           return '<div class="insta-tile'+(a.archiv?' archiv':'')+'"'+(a.archiv?'':' onclick="openDetail(\''+a.events.id+'\')"')+'>'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(a.events.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(a.events.date)+'</div></div></div>';
         }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Noch keine Events besucht</div>'}
       </div>
@@ -12810,8 +12843,14 @@ async function saveProfileEdit(){
    Gut zweihundertfuenfzig Zeilen, die nichts taten, aber bei jeder
    Aenderung mitgelesen werden mussten. */
 
+let chatStartLaeuft=false;
 async function startChat(uid,name,un){
-  if(!cUser){toast('Bitte anmelden','warn');return;}
+  if(chatStartLaeuft)return;
+  chatStartLaeuft=true;
+  try{ return await startChatInnen(uid,name,un); }finally{ chatStartLaeuft=false; }
+}
+async function startChatInnen(uid,name,un){
+  if(!cUser){kontoNoetig();return;}
   if(uid===cUser.id)return;
   if(!cProfile?.is_pro){showPage('pro');toast('Nur Pro-Nutzer können ein Gespräch beginnen','info');return;}
   closeDetail();
@@ -12876,9 +12915,9 @@ const PRO_VORTEILE=[
   {k:'chat',t:'Schreib, wen du willst',
    d:'Starte Unterhaltungen mit allen, die du auf SPOTOUT triffst. Ohne Pro kannst du nur antworten.'},
   {k:'profil',t:'Dein Profil sehen alle',
-   d:'Bio, Instagram und Snapchat stehen offen auf deinem Profil – auch <b>Gratis-Nutzer</b> sehen sie und können dir folgen.'},
+   d:'Bio, Instagram und Snapchat stehen auf deinem Profil – auch <b>Gratis-Nutzer</b> sehen sie. Bei einem privaten Profil nur deine Follower.'},
   {k:'auge',t:'Sehen, wer bei dir war',
-   d:'Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.'},
+   d:'Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.'},
   {k:'geld',t:'Günstiger veröffentlichen',
    d:'Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.'},
 ];
@@ -12961,7 +13000,7 @@ function renderProPage(){
         <div class="pro2-live">
           <div class="pro2-krone">${PRO_STERN}</div>
           <h2>Du bist Pro</h2>
-          <p>Dein Profil ist für alle vollständig sichtbar, und du kannst jeden anschreiben.</p>
+          <p>Bio und Kanäle stehen auf deinem Profil (bei privatem Profil für deine Follower), und du kannst jeden anschreiben.</p>
           ${probe?`<div class="pro2-probe">
             <b>${probeText()}</b>
             <span>${gekuendigt
@@ -13086,7 +13125,7 @@ async function checkProSuccess(){
 
   for(let i=0;i<10;i++){
     await new Promise(r=>setTimeout(r,1500));
-    const{data}=await sb.from('profiles').select('is_pro,pro_probe,probe_verbraucht,subscription_current_period_end,subscription_status').eq('id',cUser.id).maybeSingle();
+    const{data:eigenPro}=await sb.rpc('mein_profil');const data=Array.isArray(eigenPro)?eigenPro[0]:eigenPro;
     if(data?.is_pro){
       cProfile={...cProfile,...data};
       await loadProf();
@@ -13282,7 +13321,7 @@ async function loadChats(){
   chatSperreZeigen();
   renderChatPro();
   await loadMsgRequests();
-  const{data}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id}`).order('created_at',{ascending:false});
+  const{data}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id}`).order('created_at',{ascending:false});
   /* Sortiert war bisher nach dem Tag, an dem das Gespräch angelegt
      wurde. Wer heute Morgen geschrieben hat, stand deshalb ganz unten,
      und ein Gespräch ohne einzige Nachricht ganz oben. Jetzt zählt die
@@ -13401,6 +13440,17 @@ function convZurueck(){
   if(seitenVorher[seitenVorher.length-1]==='conv')seitenVorher.pop();
 }
 
+/* Meldungen zu einem Gespraech gelten als gelesen, sobald man es offen hat –
+   sonst bleiben Glocke und App-Symbol auf einer Zahl stehen. */
+function ntGespraechGelesen(cid){
+  if(!cUser||!cid)return;
+  const offen=(window.__notifs||[]).filter(n=>n.conversation_id===cid&&!n.gelesen);
+  if(!offen.length)return;
+  offen.forEach(n=>n.gelesen=true);
+  sb.from('notifications').update({gelesen:true}).eq('user_id',cUser.id).eq('conversation_id',cid).eq('gelesen',false)
+    .then(()=>loadNotifs(),()=>{});
+}
+
 async function openConv(cid,other){
   // Angefangener Text gehoert zu diesem Gespraech, nicht zum naechsten
   const eingabe=document.getElementById('convInput');
@@ -13420,8 +13470,14 @@ async function openConv(cid,other){
   showOnly('conv');await loadMsgs();
   await sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser.id);
   loadUnread();
-  try{convSub_?.unsubscribe?.();}catch(e){console.warn('[chat] unsubscribe',e);}
-  convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},()=>loadMsgs()).subscribe();
+  try{ if(convSub_)await sb.removeChannel(convSub_); }catch(e){console.warn('[chat] unsubscribe',e);}
+  ntGespraechGelesen(cid);
+  convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},()=>{
+    loadMsgs();
+    // Wer im Gespraech sitzt, hat die neue Nachricht gesehen
+    sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
+    ntGespraechGelesen(cid);
+  }).subscribe();
 }
 
 async function loadMsgs(){
@@ -13476,7 +13532,7 @@ async function loadMsgs(){
        nicht mehr, aber die Blase soll nicht leer dastehen. */
     const bild=m.image_url?'<span class="msg-weg">Bild entfernt</span>':'';
     const text=m.content?esc(m.content).replace(/\n/g,'<br>'):'';
-    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')
+    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+'"'+(mine?'':' data-mid="'+m.id+'"')+' data-x="'
       +(grouped?'':' bub-grp')+'">'
       +bild+text
       +(showMeta?'<div class="bub-meta">'+fmtT(m.created_at)+(mine?tick(m.read):'')+'</div>':'')
@@ -14270,8 +14326,7 @@ function anmeldeFehler(error){
   const code=String(error?.code||error?.error_code||'').toLowerCase();
 
   if(code.includes('over_email_send_rate_limit')||m.includes('rate limit')){
-    return {text:'Gerade melden sich sehr viele an. Warte eine Minute und '
-                +'tipp nochmal auf Konto erstellen – dein Konto ist noch nicht angelegt.',
+    return {text:'Gerade werden sehr viele E-Mails verschickt. Warte eine Minute und versuch es nochmals.',
             art:'warn', sperre:60};
   }
   if(code.includes('over_request_rate_limit')||m.includes('too many requests')){
@@ -14296,8 +14351,11 @@ function anmeldeFehler(error){
   if(m.includes('failed to fetch')||m.includes('networkerror')||m.includes('load failed')){
     return {text:'Keine Verbindung. Prüf dein Internet und versuch es nochmal.', art:'error'};
   }
+  if(m.includes('database error saving new user')){
+    return {text:'Mit diesen Angaben ist keine Registrierung möglich. SPOTOUT ist ab 16 Jahren. Fragen: support@spotoutapp.ch', art:'error'};
+  }
   if(m.includes('error sending confirmation')||m.includes('error sending')){
-    return {text:'Die Bestätigungsmail liess sich nicht verschicken. '
+    return {text:'Die E-Mail liess sich nicht verschicken. '
                 +'Versuch es in ein paar Minuten nochmal oder schreib an support@spotoutapp.ch.',
             art:'error', sperre:60};
   }
@@ -14310,21 +14368,21 @@ function anmeldeFehler(error){
 let regUhr=null;
 function knopfSperren(btn, sekunden, urText){
   if(!btn)return;
-  clearInterval(regUhr);
+  clearInterval(btn._sperrUhr);            // pro Knopf – zwei Sperren blockieren sich nicht mehr
   let rest=sekunden;
   btn.disabled=true;
   const ticken=()=>{
     if(rest<=0){
-      clearInterval(regUhr);
+      clearInterval(btn._sperrUhr);
       btn.disabled=false;
       btn.textContent=urText;
       return;
     }
-    btn.textContent='Nochmal in '+rest+' s';
+    btn.textContent='Nochmals in '+rest+' s';
     rest--;
   };
   ticken();
-  regUhr=setInterval(ticken,1000);
+  btn._sperrUhr=setInterval(ticken,1000);
 }
 
 function fehlerText(error){
@@ -14349,6 +14407,13 @@ function fehlerText(error){
   if(m.includes('duplicate key'))
     return 'Das gibt es schon';
   if(m.includes('SPOTOUT_PARTY_VOLL'))return 'Die Party ist leider voll.';
+  if(m.includes('SPOTOUT_PARTYART_FEST'))return 'Die Art der Party lässt sich nachträglich nicht ändern.';
+  if(m.includes('SPOTOUT_GEBUEHR_STUFE'))return 'Mehr Gäste kosten eine höhere Gebühr. Erstell dafür eine neue Party oder schreib an support@spotoutapp.ch.';
+  if(m.includes('SPOTOUT_EVENT_NUR_VERANSTALTER'))return 'Events können nur geprüfte Veranstalter veröffentlichen.';
+  if(m.includes('SPOTOUT_BILD_UNGUELTIG'))return 'Dieses Bild geht nicht. Lade es bitte nochmals hoch.';
+  if(m.includes('SPOTOUT_TEXT_UNGUELTIG'))return 'Die Kategorie enthält Zeichen, die nicht gehen.';
+  if(m.includes('SPOTOUT_DATUM_VERGANGEN'))return 'Das Datum liegt in der Vergangenheit.';
+  if(m.includes('SPOTOUT_MINDESTALTER'))return 'SPOTOUT ist ab 16 Jahren.';
   if(m.includes('SPOTOUT_ANFRAGE_NOETIG'))return 'Dieses Profil ist privat – stell eine Anfrage.';
   if(m.includes('SPOTOUT_BLOCKIERT')||/blockiert/i.test(m))return 'Das geht nicht – ihr habt euch blockiert.';
   if(m.includes('SPOTOUT_KEINE_NACHRICHTEN'))return 'Diese Person nimmt keine Nachrichten an.';
@@ -14777,13 +14842,13 @@ async function submitEventInner(){
     end_time:endeWahl||null,
     address:addr,lat:selLat,lng:selLng,
     // Private Partys haben keinen Eintritt. Der Trigger erzwingt das nochmals.
-    price:priv?0:(parseFloat(document.getElementById('fPrice').value)||0),
+    price:priv?0:Math.max(0,parseFloat(document.getElementById('fPrice').value)||0),
     zahlarten:(!priv&&(parseFloat(document.getElementById('fPrice').value)||0)>0)
       ? zahlartenLesen() : [],
-    drink_price:(!priv&&drinkOn)?(parseFloat(document.getElementById('fDrink').value)||0):0,
+    drink_price:(!priv&&drinkOn)?Math.max(0,parseFloat(document.getElementById('fDrink').value)||0):0,
     drink_desc:(!priv&&drinkOn)?document.getElementById('fDrinkDesc').value.trim():null,
     // Private Partys kennen keine Obergrenze: es kommt, wer eingeladen ist
-    capacity:priv?null:(parseInt(document.getElementById('fCap').value)||50),
+    capacity:priv?null:Math.max(1,parseInt(document.getElementById('fCap').value)||50),
     description:document.getElementById('fDesc').value.trim(),
     emoji:document.getElementById('fEmoji').value,
     image_url:imgUrl,invite_code:code,
@@ -15063,6 +15128,14 @@ async function openUserProf(userId,zurueck){
   if(error||!p){body.innerHTML='<div class="up-empty" style="margin:20px">Profil nicht gefunden</div>';return;}
   upUser=p;
   { const t=document.getElementById('upTitel'); if(t)t.textContent=p.username?'@'+p.username:''; }
+  if(istBlockiert(p.id)){
+    const kopfB=document.getElementById('upMehr'); if(kopfB)kopfB.innerHTML='';
+    body.innerHTML='<div class="up-blockiert"><div class="bes-ic">'+pikto('blockiert',26)+'</div>'
+      +'<b>Du hast diese Person blockiert</b>'
+      +'<span>Ihr seht euch gegenseitig nicht. Hebst du die Blockierung auf, könnt ihr euch wieder folgen und schreiben.</span>'
+      +'<button class="nt-knopf" onclick="unblockUser(\''+p.id+'\').then(ok=>{if(ok)openUserProf(\''+p.id+'\',true);})">Blockierung aufheben</button></div>';
+    return;
+  }
 
   const{data:stats}=await sb.rpc('get_follow_stats',{p_user_id:userId,p_viewer_id:cUser?.id||null});
   if(openUserProf.t!==marke)return;
@@ -15142,7 +15215,7 @@ async function openUserProf(userId,zurueck){
       +'<div class="insta-handle">@'+esc(p.username||'')
         +(istV&&p.verein_ort?' · '+esc(p.verein_ort):'')
         +(st?.folgt_dir&&p.id!==cUser?.id?'<span class="folgt-dir up-folgt-dir">Folgt dir</span>':'')+'</div>'
-      +(istV?'':abzeichenPlatz(p.id))
+      +(istV||p.offen===false?'':abzeichenPlatz(p.id))
       +((p.is_pro||istV)&&p.bio?'<div class="insta-bio">'+esc(p.bio)+'</div>':'')
       +webLink
       +(socials||socialLockHint(p))
@@ -15314,7 +15387,7 @@ async function folgenOderAnfragen(userId, btn){
     }
     toast('Anfrage ist unterwegs','success');
   }else if(data==='folgt'||data==='folgst_schon'){
-    await openUserProf(userId);
+    await openUserProf(userId,true);
   }else{
     toast('Hat nicht geklappt','warn');
     if(btn)btn.disabled=false;
@@ -15378,14 +15451,14 @@ async function toggleFollow(btnOrId,legacyFlag){
         .eq('follower_id',cUser.id).eq('following_id',userId);
       if(error)throw error;
       // Privates Profil: nach dem Entfolgen ist es wieder zu
-      if(upUser?.id===userId&&upUser?.privat){ followBusy=false; await openUserProf(userId); return; }
+      if(upUser?.id===userId&&upUser?.privat){ followBusy=false; await openUserProf(userId,true); return; }
     }else{
       const{data:ergebnis,error}=await sb.rpc('folgen_anfragen',{p_an:userId});
       if(error)throw error;
       if(ergebnis==='blockiert')throw new Error('SPOTOUT_BLOCKIERT');
       if(ergebnis==='gesperrt')throw new Error('SPOTOUT_GESPERRT');
       // Inzwischen privat: dann ist es eine Anfrage – Profil neu, damit der Knopf stimmt
-      if(ergebnis==='angefragt'){ followBusy=false; await openUserProf(userId); return; }
+      if(ergebnis==='angefragt'){ followBusy=false; await openUserProf(userId,true); return; }
     }
     // Wahrheit aus der Datenbank nachziehen, falls sich etwas unterscheidet
     const{data:stats}=await sb.rpc('get_follow_stats',{p_user_id:userId,p_viewer_id:cUser.id});
@@ -15504,6 +15577,10 @@ async function flFolgen(btn,uid){
     // Das Profil darunter an Ort und Stelle nachfuehren statt neu aufbauen
     const fb=document.getElementById('followBtn');
     if(fb&&upUser?.id===uid)fb.classList.toggle('following',btn.dataset.stand==='folge');
+    if(upUser?.id===uid)sb.rpc('get_follow_stats',{p_user_id:uid}).then(({data})=>{
+      const st=Array.isArray(data)?data[0]:data; const f=document.getElementById('upFollowers');
+      if(f&&st&&upUser?.offen!==false)f.textContent=st.followers;
+    },()=>{});
     if(document.getElementById('page-profile')?.classList.contains('active'))
       loadMyFollowStats().then(st=>{ const a=document.getElementById('myFollowing'); if(a)a.textContent=st.following; });
   }catch(err){
@@ -15619,7 +15696,7 @@ async function renderInviteCard(eventId){
          Jetzt gibt es einen Knopf mit einem Wort – und daneben klein
          das Wegwerfen. */
       +(weg?'':'<div class="ein-akt">'
-        +'<button class="ein-send" onclick="einladungTeilen(\''+l.code+'\',\''+eventId+'\',\''+String(l.label||'').replace(/'/g,'')+'\')">'
+        +'<button class="ein-send" onclick="einladungTeilen(\''+l.code+'\',\''+eventId+'\',\''+String(l.label||'').replace(/['"\\<>&]/g,'')+'\')">'
           +EIN_SVG.teilen+'Senden</button>'
         +'<button class="ein-mini weg" onclick="einladungLoeschen(\''+l.id+'\',\''+eventId+'\')" aria-label="Löschen">'+EIN_SVG.muell+'</button>'
       +'</div>')
@@ -15883,6 +15960,7 @@ async function doJoin(){
     link_verbraucht:'Diese Einladung ist schon eingelöst',
     code_ungueltig:'Dieser Code stimmt nicht',
     abgelehnt:'Der Host hat deine Anfrage abgelehnt',
+    vorbei:'Diese Party ist schon vorbei',
     gesperrt:'Dein Konto ist gesperrt',
     nicht_angemeldet:'Bitte zuerst anmelden'
   }[r.ergebnis]||'Unbekannte Antwort';
@@ -16344,7 +16422,7 @@ en:{
   "Wirklich blockieren? Nochmals tippen":"Really block? Tap again",
   "Party ist voll – nur Pro kann auf die Warteliste":"Party is full – only Pro can join the waitlist",
   "Mit Pro siehst du, wer kommt.":"With Pro you see who’s coming.",
-  "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"With Pro you can still see who was there for 24 hours after the party.",
+  "Mit Pro siehst du bis 24 Stunden nach Partybeginn, wer dabei war.":"With Pro you can see who was there until 24 hours after the start.",
   "Wer war dabei":"Who was there",
   "Angemeldete Gäste":"Registered guests",
   "Dann stehen die nächsten Partys zuoberst.":"Then the nearest parties show up first.",
@@ -16821,7 +16899,6 @@ en:{
   "Für wen? z.B. Anna":"Who for? e.g. Anna",
   "Einladung":"Invitation",
   "Einladung gelöscht":"Invitation deleted",
-  "Über WhatsApp einladen":"Invite via WhatsApp",
   "Zu den Einladungen":"Go to invitations",
   "Kontakte in SPOTOUT einladen":"Invite SPOTOUT contacts",
   "Nur wer von dir eingeladen wird, sieht diese Party.":"Only people you invite can see this party.",
@@ -16966,7 +17043,7 @@ en:{
   "Ansehen":"View",
   "Dabei sein":"Join",
   "Noch keine Events.":"No events yet.",
-  "Dein Profil ist für alle vollständig sichtbar, und du kannst jeden anschreiben.":"Your profile is fully visible to everyone and you can message anyone.",
+  "Bio und Kanäle stehen auf deinem Profil (bei privatem Profil für deine Follower), und du kannst jeden anschreiben.":"Your profile is fully visible to everyone and you can message anyone.",
   "Kündigen oder Zahlungsmittel ändern":"Cancel or change payment method",
   "Schau in einer anderen Kategorie vorbei – oder starte selbst etwas über den":"Try another category — or start something yourself with the",
   "Button unten.":"button below.",
@@ -17155,8 +17232,34 @@ en:{
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"You have no contacts yet. Follow someone via search – or share the party below with “Share”.",
   "Einladung kopiert – jetzt einfügen und senden":"Invitation copied – now paste and send",
   "Sehen, wer bei dir war":"See who visited you",
-  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Like on TikTok: see who viewed your profile in the last 30 days. You can turn it off anytime – but then you won’t see it either.",
+  "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Like on TikTok: see who viewed your profile in the last 30 days. You can turn it off anytime – but then you won’t see it either.",
   "Sehen, wer dein Profil besucht hat":"See who visited your profile",
+  "Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Notifications are on but couldn’t be saved. Please try again.",
+  "Die Art der Party lässt sich nachträglich nicht ändern.":"The type of party can’t be changed afterwards.",
+  "Mehr Gäste kosten eine höhere Gebühr. Erstell dafür eine neue Party oder schreib an support@spotoutapp.ch.":"More guests cost a higher fee. Create a new party for that or write to support@spotoutapp.ch.",
+  "Events können nur geprüfte Veranstalter veröffentlichen.":"Only verified organisers can publish events.",
+  "Dieses Bild geht nicht. Lade es bitte nochmals hoch.":"This image doesn’t work. Please upload it again.",
+  "Die Kategorie enthält Zeichen, die nicht gehen.":"The category contains characters that aren’t allowed.",
+  "Das Datum liegt in der Vergangenheit.":"That date is in the past.",
+  "Du hast diese Person blockiert":"You blocked this person",
+  "Ihr seht euch gegenseitig nicht. Hebst du die Blockierung auf, könnt ihr euch wieder folgen und schreiben.":"You can’t see each other. If you unblock, you can follow and message each other again.",
+  "Blockierung aufheben":"Unblock",
+  "Wenn deine Leute zu einer Party gehen (mit Pro)":"When your people go to a party (with Pro)",
+  "Diese Party ist schon vorbei":"This party is already over",
+  "Bitte eine Gästezahl eintragen":"Please enter a guest limit",
+  "Es sind schon mehr Gäste angemeldet":"More guests have already signed up",
+  "Sicher?":"Sure?",
+  "Entfernt – der Link bringt die Person nicht mehr hinein":"Removed – the link won’t get this person back in",
+  "Warteliste verlassen":"Leave waitlist",
+  "Du bist nicht mehr auf der Warteliste":"You’re no longer on the waitlist",
+  "Das Foto liess sich nicht sichern. Öffne die Galerie nochmals und versuch es erneut.":"The photo couldn’t be saved. Open the gallery again and retry.",
+  "Dein Pro-Abo liess sich nicht kündigen. Schreib uns an support@spotoutapp.ch – wir löschen das Konto dann für dich.":"Your Pro subscription couldn’t be cancelled. Write to support@spotoutapp.ch – we’ll delete the account for you.",
+  "Das Konto liess sich nicht löschen. Versuch es nochmals oder schreib an support@spotoutapp.ch.":"The account couldn’t be deleted. Try again or write to support@spotoutapp.ch.",
+  "Gerade werden sehr viele E-Mails verschickt. Warte eine Minute und versuch es nochmals.":"Lots of emails are being sent right now. Wait a minute and try again.",
+  "Mit diesen Angaben ist keine Registrierung möglich. SPOTOUT ist ab 16 Jahren. Fragen: support@spotoutapp.ch":"Registration isn’t possible with these details. SPOTOUT is for ages 16 and up. Questions: support@spotoutapp.ch",
+  "E-Mail bestätigt – willkommen bei SPOTOUT!":"Email confirmed – welcome to SPOTOUT!",
+  "E-Mail bestätigt – melde dich jetzt an":"Email confirmed – log in now",
+  "Datenschutz":"Privacy",
   "Pro verschenken":"Gift Pro",
   "Deine Anfrage ist beim Host.":"Your request is with the host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
@@ -17309,7 +17412,6 @@ en:{
   "So lange kannst du die Leute von gestern noch anschreiben.":"That is how long you can still message the people from last night.",
   "Diese Party ist länger als einen Tag vorbei – die Gästeliste ist geschlossen.":"This party ended more than a day ago – the guest list is closed.",
   "Dein Pro-Abo ist beendet. Die Pro-Funktionen sind wieder gesperrt.":"Your Pro subscription has ended. The Pro features are locked again.",
-  "Einladung kopiert – jetzt in WhatsApp einfügen":"Invitation copied – now paste it into WhatsApp",
   "Namen hineinschreiben, auf Einladen tippen – das Teilen-Fenster geht sofort auf.":"Type a name, tap Invite – the share sheet opens right away.",
   "Noch keine Einladung. Namen hineinschreiben, auf Einladen tippen – das Teilen-Fenster geht sofort auf.":"No invitation yet. Type a name, tap Invite – the share sheet opens right away.",
   "Ändern":"Edit",
@@ -17360,7 +17462,7 @@ en:{
   "Was ist es denn?":"So what is it?",
   "Steht später als Kategorie auf der Karte.":"Shows up as the category on the card.",
   "Wann geht’s los?":"When does it start?",
-  "Sechs Stunden nach Beginn verschwindet die Party automatisch.":"The party disappears automatically six hours after it starts.",
+  "Nach sechs Stunden gilt die Party als vorbei, 24 Stunden nach Beginn wird sie gelöscht.":"After six hours the party counts as over; it is deleted 24 hours after it starts.",
   "Tag":"Day",
   "Heute":"Today",
   "Morgen":"Tomorrow",
@@ -17489,7 +17591,6 @@ en:{
   "Code kopiert!":"Code copied",
   "Kopieren nicht möglich":"Copying didn’t work",
   "Nur wer den Link oder Code hat, kommt rein":"Only people with the link or code get in",
-  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über WhatsApp.":"You have no contacts yet. Follow someone via search — or share the party below via WhatsApp.",
   "Direkt in SPOTOUT senden":"Send directly in SPOTOUT",
   "Einladung fehlgeschlagen: ":"Invitation failed: ",
   "Alle als gelesen":"Mark all as read",
@@ -17643,7 +17744,7 @@ fr:{
   "Wirklich blockieren? Nochmals tippen":"Vraiment bloquer ? Appuie encore",
   "Party ist voll – nur Pro kann auf die Warteliste":"La soirée est complète – seul Pro peut rejoindre la liste d’attente",
   "Mit Pro siehst du, wer kommt.":"Avec Pro, tu vois qui vient.",
-  "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"Avec Pro, tu vois encore pendant 24 heures après la soirée qui était là.",
+  "Mit Pro siehst du bis 24 Stunden nach Partybeginn, wer dabei war.":"Avec Pro, tu vois encore pendant 24 heures après la soirée qui était là.",
   "Wer war dabei":"Qui était là",
   "Angemeldete Gäste":"Invités inscrits",
   "Dann stehen die nächsten Partys zuoberst.":"Les soirées les plus proches apparaissent alors en premier.",
@@ -18120,7 +18221,6 @@ fr:{
   "Für wen? z.B. Anna":"Pour qui ? p. ex. Anna",
   "Einladung":"Invitation",
   "Einladung gelöscht":"Invitation supprimée",
-  "Über WhatsApp einladen":"Inviter via WhatsApp",
   "Zu den Einladungen":"Vers les invitations",
   "Kontakte in SPOTOUT einladen":"Inviter des contacts SPOTOUT",
   "Nur wer von dir eingeladen wird, sieht diese Party.":"Seules les personnes que tu invites voient cette soirée.",
@@ -18265,7 +18365,7 @@ fr:{
   "Ansehen":"Voir",
   "Dabei sein":"Participer",
   "Noch keine Events.":"Pas encore d’événements.",
-  "Dein Profil ist für alle vollständig sichtbar, und du kannst jeden anschreiben.":"Ton profil est entièrement visible et tu peux écrire à tout le monde.",
+  "Bio und Kanäle stehen auf deinem Profil (bei privatem Profil für deine Follower), und du kannst jeden anschreiben.":"Ton profil est entièrement visible et tu peux écrire à tout le monde.",
   "Kündigen oder Zahlungsmittel ändern":"Résilier ou changer de moyen de paiement",
   "Schau in einer anderen Kategorie vorbei – oder starte selbst etwas über den":"Essaie une autre catégorie — ou lance quelque chose avec le",
   "Button unten.":"bouton ci-dessous.",
@@ -18393,8 +18493,9 @@ fr:{
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"Tu n’as pas encore de contacts. Suis quelqu’un via la recherche – ou partage la fête avec « Partager ».",
   "Einladung kopiert – jetzt einfügen und senden":"Invitation copiée – colle-la et envoie",
   "Sehen, wer bei dir war":"Voir qui est passé",
-  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Comme sur TikTok : vois qui a consulté ton profil ces 30 derniers jours. Tu peux désactiver à tout moment – mais tu ne le verras plus.",
+  "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Comme sur TikTok : vois qui a consulté ton profil ces 30 derniers jours. Tu peux désactiver à tout moment – mais tu ne le verras plus.",
   "Sehen, wer dein Profil besucht hat":"Voir qui a visité ton profil",
+  "Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Les notifications sont activées mais n’ont pas pu être enregistrées. Réessaie.",
 "Pro verschenken":"Offrir Pro",
   "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
@@ -18547,7 +18648,6 @@ fr:{
   "So lange kannst du die Leute von gestern noch anschreiben.":"C’est le temps qu’il te reste pour écrire aux gens d’hier soir.",
   "Diese Party ist länger als einen Tag vorbei – die Gästeliste ist geschlossen.":"Cette soirée est finie depuis plus d’un jour – la liste des invités est fermée.",
   "Dein Pro-Abo ist beendet. Die Pro-Funktionen sind wieder gesperrt.":"Ton abonnement Pro est terminé. Les fonctions Pro sont de nouveau verrouillées.",
-  "Einladung kopiert – jetzt in WhatsApp einfügen":"Invitation copiée – colle-la maintenant dans WhatsApp",
   "Namen hineinschreiben, auf Einladen tippen – das Teilen-Fenster geht sofort auf.":"Saisis un prénom, appuie sur Inviter – le menu de partage s’ouvre aussitôt.",
   "Noch keine Einladung. Namen hineinschreiben, auf Einladen tippen – das Teilen-Fenster geht sofort auf.":"Pas encore d’invitation. Saisis un prénom, appuie sur Inviter – le menu de partage s’ouvre aussitôt.",
   "Ändern":"Modifier",
@@ -18598,7 +18698,7 @@ fr:{
   "Was ist es denn?":"Alors, c’est quoi ?",
   "Steht später als Kategorie auf der Karte.":"S’affichera comme catégorie sur la carte.",
   "Wann geht’s los?":"Ça commence quand ?",
-  "Sechs Stunden nach Beginn verschwindet die Party automatisch.":"La soirée disparaît automatiquement six heures après le début.",
+  "Nach sechs Stunden gilt die Party als vorbei, 24 Stunden nach Beginn wird sie gelöscht.":"Après six heures, la soirée est terminée ; elle est supprimée 24 heures après le début.",
   "Tag":"Jour",
   "Heute":"Aujourd’hui",
   "Morgen":"Demain",
@@ -18727,7 +18827,6 @@ fr:{
   "Code kopiert!":"Code copié",
   "Kopieren nicht möglich":"Copie impossible",
   "Nur wer den Link oder Code hat, kommt rein":"Seuls ceux qui ont le lien ou le code peuvent entrer",
-  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über WhatsApp.":"Tu n’as pas encore de contacts. Suis quelqu’un via la recherche — ou partage la soirée via WhatsApp.",
   "Direkt in SPOTOUT senden":"Envoyer directement dans SPOTOUT",
   "Einladung fehlgeschlagen: ":"Échec de l’invitation : ",
   "Alle als gelesen":"Tout marquer comme lu",
@@ -18881,7 +18980,7 @@ it:{
   "Wirklich blockieren? Nochmals tippen":"Bloccare davvero? Tocca di nuovo",
   "Party ist voll – nur Pro kann auf die Warteliste":"La festa è al completo – solo Pro può entrare in lista d’attesa",
   "Mit Pro siehst du, wer kommt.":"Con Pro vedi chi viene.",
-  "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"Con Pro vedi ancora per 24 ore dopo la festa chi c’era.",
+  "Mit Pro siehst du bis 24 Stunden nach Partybeginn, wer dabei war.":"Con Pro vedi ancora per 24 ore dopo la festa chi c’era.",
   "Wer war dabei":"Chi c’era",
   "Angemeldete Gäste":"Ospiti iscritti",
   "Dann stehen die nächsten Partys zuoberst.":"Così le feste più vicine compaiono per prime.",
@@ -19358,7 +19457,6 @@ it:{
   "Für wen? z.B. Anna":"Per chi? p.es. Anna",
   "Einladung":"Invito",
   "Einladung gelöscht":"Invito eliminato",
-  "Über WhatsApp einladen":"Invita su WhatsApp",
   "Zu den Einladungen":"Vai agli inviti",
   "Kontakte in SPOTOUT einladen":"Invita i contatti su SPOTOUT",
   "Nur wer von dir eingeladen wird, sieht diese Party.":"Questa festa la vede solo chi inviti tu.",
@@ -19503,7 +19601,7 @@ it:{
   "Ansehen":"Guarda",
   "Dabei sein":"Partecipa",
   "Noch keine Events.":"Ancora nessun evento.",
-  "Dein Profil ist für alle vollständig sichtbar, und du kannst jeden anschreiben.":"Il tuo profilo è visibile per intero a tutti e puoi scrivere a chiunque.",
+  "Bio und Kanäle stehen auf deinem Profil (bei privatem Profil für deine Follower), und du kannst jeden anschreiben.":"Il tuo profilo è visibile per intero a tutti e puoi scrivere a chiunque.",
   "Kündigen oder Zahlungsmittel ändern":"Disdire o cambiare metodo di pagamento",
   "Schau in einer anderen Kategorie vorbei – oder starte selbst etwas über den":"Dai un’occhiata a un’altra categoria — oppure organizza tu qualcosa con il",
   "Button unten.":"pulsante qui sotto.",
@@ -19631,8 +19729,9 @@ it:{
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"Non hai ancora contatti. Segui qualcuno dalla ricerca – oppure condividi la festa con “Condividi”.",
   "Einladung kopiert – jetzt einfügen und senden":"Invito copiato – ora incollalo e invia",
   "Sehen, wer bei dir war":"Vedi chi è passato",
-  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Come su TikTok: vedi chi ha visto il tuo profilo negli ultimi 30 giorni. Puoi disattivarlo in qualsiasi momento – ma poi non lo vedrai più.",
+  "Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Come su TikTok: vedi chi ha visto il tuo profilo negli ultimi 30 giorni. Puoi disattivarlo in qualsiasi momento – ma poi non lo vedrai più.",
   "Sehen, wer dein Profil besucht hat":"Vedere chi ha visitato il tuo profilo",
+  "Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.":"Le notifiche sono attive ma non è stato possibile salvarle. Riprova.",
 "Pro verschenken":"Regala Pro",
   "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
@@ -19786,7 +19885,6 @@ it:{
   "So lange kannst du die Leute von gestern noch anschreiben.":"È il tempo che ti resta per scrivere alle persone di ieri sera.",
   "Diese Party ist länger als einen Tag vorbei – die Gästeliste ist geschlossen.":"Questa festa è finita da più di un giorno – la lista degli invitati è chiusa.",
   "Dein Pro-Abo ist beendet. Die Pro-Funktionen sind wieder gesperrt.":"Il tuo abbonamento Pro è terminato. Le funzioni Pro sono di nuovo bloccate.",
-  "Einladung kopiert – jetzt in WhatsApp einfügen":"Invito copiato – ora incollalo in WhatsApp",
   "Namen hineinschreiben, auf Einladen tippen – das Teilen-Fenster geht sofort auf.":"Scrivi un nome, tocca Invita – il menu di condivisione si apre subito.",
   "Noch keine Einladung. Namen hineinschreiben, auf Einladen tippen – das Teilen-Fenster geht sofort auf.":"Ancora nessun invito. Scrivi un nome, tocca Invita – il menu di condivisione si apre subito.",
   "Ändern":"Modifica",
@@ -19837,7 +19935,7 @@ it:{
   "Was ist es denn?":"Di cosa si tratta?",
   "Steht später als Kategorie auf der Karte.":"Comparirà poi come categoria sulla scheda.",
   "Wann geht’s los?":"Quando si comincia?",
-  "Sechs Stunden nach Beginn verschwindet die Party automatisch.":"Sei ore dopo l’inizio la festa sparisce automaticamente.",
+  "Nach sechs Stunden gilt die Party als vorbei, 24 Stunden nach Beginn wird sie gelöscht.":"Dopo sei ore la festa è finita; viene eliminata 24 ore dopo l’inizio.",
   "Tag":"Giorno",
   "Heute":"Oggi",
   "Morgen":"Domani",
@@ -19966,7 +20064,6 @@ it:{
   "Code kopiert!":"Codice copiato",
   "Kopieren nicht möglich":"Copia non riuscita",
   "Nur wer den Link oder Code hat, kommt rein":"Entra solo chi ha il link o il codice",
-  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über WhatsApp.":"Non hai ancora contatti. Segui qualcuno dalla ricerca – oppure condividi la festa qui sotto su WhatsApp.",
   "Direkt in SPOTOUT senden":"Invia direttamente su SPOTOUT",
   "Einladung fehlgeschlagen: ":"Invito non riuscito: ",
   "Alle als gelesen":"Segna tutto come letto",
@@ -20291,6 +20388,11 @@ window.__nativeOpenPush=async function(daten){
   try{
     const d=daten||{};
     if(!cUser){ window.__pushOffen=d; return; }
+    // Genau die Meldung oeffnen, die angetippt wurde – samt "gelesen"
+    if(d.notif_id){
+      await loadNotifs();
+      if((window.__notifs||[]).some(n=>n.id===d.notif_id)){ await oeffneNotif(d.notif_id); return; }
+    }
     if(d.conversation_id){ await gespraechOeffnen(d.conversation_id); }
     else if(d.event_id){ await loadEvts(); openDetail(d.event_id); }
     else { openNotifs(); }
@@ -20312,10 +20414,8 @@ async function pushErlauben(){
   if(knopf){knopf.disabled=false;knopf.textContent='Erlauben';}
   if(a&&a.token){
     pushZustand='an';
-    const{error}=await sb.from('profiles')
-      .update({push_token:a.token,push_updated_at:new Date().toISOString()})
-      .eq('id',cUser.id);
-    if(error){toast('Meldungen an, aber nicht gespeichert: '+error.message,'warn');}
+    const{error}=await sb.rpc('push_token_setzen',{p_token:a.token});
+    if(error){console.error('[push]',error);toast('Meldungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.','warn');}
     else{ if(cProfile)cProfile.push_token=a.token; toast('Meldungen sind an','success'); }
   }else{
     // Kein stilles Scheitern mehr: sagen, woran es lag.
@@ -20348,9 +20448,7 @@ async function nativePushAnmelden(erzwingen){
   }
   pushZustand='an';
   if(cProfile&&cProfile.push_token===a.token)return true;
-  const{error}=await sb.from('profiles')
-    .update({push_token:a.token,push_updated_at:new Date().toISOString()})
-    .eq('id',cUser.id);
+  const{error}=await sb.rpc('push_token_setzen',{p_token:a.token});
   if(error)console.error('[push]',error);
   else if(cProfile)cProfile.push_token=a.token;
   return true;
@@ -20358,9 +20456,71 @@ async function nativePushAnmelden(erzwingen){
 
 function nativeHaptik(art){ if(istApp())nativeCall('haptik',{art},3000); }
 
+/* In der iPhone-App ersetzte ein Tipp auf "Datenschutz" die ganze App –
+   mitten in der Registrierung war der Fortschritt weg. Jetzt ein Fenster. */
+function rechtOeffnen(pfad){
+  const titel={'/datenschutz':'Datenschutz','/nutzungsbedingungen':'Nutzungsbedingungen','/impressum':'Impressum'}[pfad]||'Rechtliches';
+  const t=document.getElementById('rechtTitel'); if(t)t.textContent=titel;
+  const f=document.getElementById('rechtFrame'); if(f&&f.getAttribute('src')!==pfad)f.setAttribute('src',pfad);
+  document.getElementById('rechtOverlay')?.classList.add('open');
+}
+document.addEventListener('click',ev=>{
+  const a=ev.target.closest&&ev.target.closest('a[href]');
+  if(!a||!istApp())return;
+  const h=a.getAttribute('href')||'';
+  if(/^\/(datenschutz|nutzungsbedingungen|impressum)$/.test(h)){ ev.preventDefault(); rechtOeffnen(h); return; }
+  if(h.startsWith('mailto:')){
+    const adr=h.slice(7).split('?')[0];
+    try{ navigator.clipboard.writeText(adr); }catch(e){}
+    toast('Adresse kopiert: '+adr,'info');
+  }
+},true);
+
+async function gastEntfernen(btn,eventId,uid){
+  if(!btn)return;
+  if(!btn.dataset.arm){
+    btn.dataset.arm='1'; btn.textContent='Sicher?'; btn.classList.add('armed');
+    setTimeout(()=>{ if(btn.isConnected&&btn.dataset.arm){ delete btn.dataset.arm; btn.textContent='Entfernen'; btn.classList.remove('armed'); } },3000);
+    return;
+  }
+  btn.disabled=true;
+  const{error}=await sb.from('event_attendees').delete().eq('event_id',eventId).eq('user_id',uid);
+  if(error){ toast(fehlerText(error),'error'); btn.disabled=false; return; }
+  mgGeaendert=true;
+  btn.closest('.mg-guest')?.classList.add('weg');
+  toast('Entfernt – der Link bringt die Person nicht mehr hinein','info');
+  setTimeout(()=>openManage(eventId),350);
+  loadEvts();
+}
+
+async function wartelisteVerlassen(eventId,btn){
+  if(!cUser)return;
+  if(btn)btn.disabled=true;
+  const{error}=await sb.from('event_waitlist').delete().eq('event_id',eventId).eq('user_id',cUser.id);
+  if(error){ toast(fehlerText(error),'error'); if(btn)btn.disabled=false; return; }
+  toast('Du bist nicht mehr auf der Warteliste','info');
+  openDetail(eventId);
+}
+
+// Aus dem Bestaetigungslink und nach "Weiteres Konto hinzufuegen"
+(function startHinweise(){
+  try{
+    const q=new URLSearchParams(location.search);
+    if(q.get('bestaetigt')){
+      history.replaceState({},'',location.pathname);
+      setTimeout(()=>toast(cUser?'E-Mail bestätigt – willkommen bei SPOTOUT!':'E-Mail bestätigt – melde dich jetzt an','success'),1800);
+    }
+    if(sessionStorage.getItem('spotout_neu_registrieren')){
+      sessionStorage.removeItem('spotout_neu_registrieren');
+      setTimeout(()=>{ try{ if(!cUser){ zurAnmeldung('register'); toast('Melde dich mit dem anderen Konto an oder erstelle eines','info'); } }catch(e){} },1200);
+    }
+  }catch(e){}
+})();
+
 /* ══════════ FOLLOW-ANFRAGEN (gesammelt) ══════════ */
 function anfragenOeffnen(){
   if(!cUser){kontoNoetig();return;}
+  try{ closeNotifs(); }catch(e){}
   document.getElementById('anfragenOverlay').classList.add('open');
   anfragenZeichnen();
 }
@@ -20455,6 +20615,7 @@ async function besucherOeffnen(){
     }).join('');
 }
 async function besucherPunkt(){
+  const knopf=document.querySelector('.besuch-knopf'); if(knopf)knopf.hidden=istVerein();
   const punkt=document.getElementById('besuchPunkt');
   if(!punkt||!cProfile?.is_pro||cProfile?.besuche_an===false){ if(punkt)punkt.hidden=true; return; }
   try{ const{data}=await sb.rpc('besucher_neu'); punkt.hidden=!(Number(data)>0); }catch(e){}
@@ -20520,7 +20681,7 @@ async function abzeichenOeffnen(){
   const box=document.getElementById('abzeichenListe');
   if(!ov||!box)return;
   ov.classList.add('open');
-  if(!abzCache.stand||!Object.keys(abzCache.stand).length){
+  {
     box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
     const [{data:abz},{data:stand}]=await Promise.all([
       sb.from('abzeichen').select('schluessel').eq('user_id',cUser.id),
@@ -20556,7 +20717,7 @@ const PUSH_GRUPPEN=[
   {k:'einladungen', t:'Einladungen',        s:'Einladungen und ob du dabei sein darfst'},
   {k:'gaeste',      t:'Deine Gäste',        s:'Wer zu deiner Party möchte oder jemanden mitbringt'},
   {k:'partys',      t:'Änderungen an Partys', s:'Neue Zeit, neuer Ort oder abgesagt'},
-  {k:'freunde',     t:'Freunde unterwegs',  s:'Wenn deine Leute zu einer Party gehen'},
+  {k:'freunde',     t:'Freunde unterwegs',  s:'Wenn deine Leute zu einer Party gehen (mit Pro)'},
   {k:'abzeichen',   t:'Abzeichen',          s:'Wenn du ein neues Abzeichen bekommst'},
 ];
 function pushAus(){ return Array.isArray(cProfile?.push_aus)?cProfile.push_aus:[]; }
@@ -20609,8 +20770,9 @@ function pushEinstZeichnen(){
       +schalter(alle,"pushSetzen('alle',this)")+'</div>'
     +'<div class="set-frage">Was du bekommst</div>'
     +'<div class="push-gruppe'+(alle?' ruhig':'')+'">'
-    +PUSH_GRUPPEN.map(g=>'<div class="push-zeile"><div><b>'+g.t+'</b><span>'+g.s+'</span></div>'
-        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"',this)",alle)+'</div>').join('')
+    +PUSH_GRUPPEN.filter(g=>!istVerein()||!['nachrichten','freunde','abzeichen'].includes(g.k))
+      .map(g=>'<div class="push-zeile"><div><b>'+g.t+'</b><span>'+g.s+'</span></div>'
+        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"',this)",alle).replace('<button','<button data-k="'+g.k+'"')+'</div>').join('')
     +'</div>'
     +'<div class="push-zeile fix"><div><b>Konto & Sicherheit</b><span>Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.</span></div>'
       +'<span class="push-immer">Immer an</span></div>';
@@ -20625,8 +20787,8 @@ function pushSchalterStellen(){
   const gruppe=document.querySelector('#pushListe .push-gruppe');
   if(gruppe){
     gruppe.classList.toggle('ruhig',alle);
-    gruppe.querySelectorAll('.sw').forEach((b,i)=>{
-      const an=!alle&&!aus.includes(PUSH_GRUPPEN[i]?.k);
+    gruppe.querySelectorAll('.sw').forEach(b=>{
+      const an=!alle&&!aus.includes(b.dataset.k);
       b.classList.toggle('an',an); b.setAttribute('aria-checked',an?'true':'false'); b.disabled=alle;
     });
   }
@@ -20751,8 +20913,7 @@ function abosBeiApple(){
 async function warteAufPro(){
   for(let i=0;i<10;i++){
     await new Promise(r=>setTimeout(r,1500));
-    const{data}=await sb.from('profiles').select('is_pro,pro_probe,probe_verbraucht,subscription_current_period_end,subscription_status')
-      .eq('id',cUser.id).maybeSingle();
+    const{data:eigenPro}=await sb.rpc('mein_profil');const data=Array.isArray(eigenPro)?eigenPro[0]:eigenPro;
     if(data?.is_pro){
       cProfile={...cProfile,...data};
       await loadProf();
@@ -21223,7 +21384,7 @@ async function blockAufheben(btn,id){
    direkt das Melden. Drei Punkte versprachen etwas anderes. */
 function moreBtn(art,id,name){
   return '<button class="more-btn" onclick="event.stopPropagation();openReport(\''+art+'\',\''+id+'\',\''
-    +String(name||'').replace(/'/g,'')+'\')" aria-label="Melden">'
+    +String(name||'').replace(/['"\\<>&]/g,'')+'\')" aria-label="Melden">'
     +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.6v5.2"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></button>';
 }
 
@@ -21259,13 +21420,17 @@ const NT_ICON={
   meldung_schwer:{cls:'no',svg:''},
   abzeichen:{cls:'ein',svg:''},
   folge_zusage:{cls:'ok',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>'},
+  nachricht_anfrage:{cls:'ntmsg',svg:''},
+  warteliste_frei:{cls:'ok',svg:''},
+  meldung_neu:{cls:'frage',svg:''},
 };
 
 const NT_PK={beitritt_anfrage:'gast_anfrage',beitritt_ok:'ok',beitritt_nein:'nein',sanktion:'gefahr',
   sanktion_aufgehoben:'ok',meldung_schwer:'gefahr',abzeichen:'stern',neuer_follower:'gast_anfrage',guest_request:'gast_anfrage',guest_ok:'ok',guest_no:'nein',invite:'einladung',
   event_changed:'zeit',event_gone:'event_weg',verein_bestaetigt:'verein',verein_abgelehnt:'nein',
   verein_pruefen:'verein',nachricht:'chat',freund_dabei:'freund_dabei',folge_anfrage:'gast_anfrage',
-  folge_zusage:'folge_ok',day_one:'day_one',foto_entfernt:'foto_weg'};
+  folge_zusage:'folge_ok',day_one:'day_one',foto_entfernt:'foto_weg',
+  nachricht_anfrage:'chat',warteliste_frei:'ok',meldung_neu:'gefahr'};
 function ntIcon(art){
   const d=NT_ICON[art]||NT_ICON.event_changed;
   return '<div class="nt-ic '+d.cls+'">'+pikto(NT_PK[art]||'glocke',20)+'</div>';
@@ -21289,6 +21454,8 @@ async function loadNotifs(){
       .eq('an',cUser.id).order('created_at',{ascending:false}).limit(100),
   ]);
   window.__anfragen=anfr||[];
+  // Fragt jemand nach einer Erledigung erneut an, ist es wieder eine offene Anfrage
+  (anfr||[]).forEach(a=>{ try{ ntErledigt.delete(a.von); }catch(e){} });
   if(error){console.error('[notif]',error);return;}
   const list=data||[];
   // Gesichter zu den Meldungen – nur die, die noch nicht bekannt sind
@@ -21300,7 +21467,7 @@ async function loadNotifs(){
   window.__notifs=list;
   notifRhythmus(list);
 
-  const offen=list.filter(n=>!n.gelesen);
+  const offen=list.filter(n=>!n.gelesen&&n.art!=='folge_anfrage_weg');
   // Kommt etwas dazu, waehrend die App offen ist, wackelt die Glocke kurz.
   if(!notifFirst&&offen.length>ntVorher){
     document.querySelectorAll('.nav-bell').forEach(b=>{
@@ -21478,6 +21645,7 @@ async function ntFolgeLaden(){
 function ntSichtbar(liste){
   const proGespraech=new Map(), raus=[];
   for(const roh of liste){
+    if(roh.art==='folge_anfrage_weg')continue;
     if(roh.art==='folge_anfrage'&&!ntErledigt.has(roh.actor_id))continue;
     const n={...roh};
     if(n.art==='nachricht'&&n.conversation_id){
@@ -21648,7 +21816,9 @@ async function oeffneNotif(id){
     closeNotifs(); await loadProf(); showPage('main'); return;
   }
   if(n.art==='sanktion'||n.art==='sanktion_aufgehoben'){ closeNotifs(); sanktionPruefen(true); return; }
-  if(n.art==='meldung_schwer'&&cProfile?.ist_admin){ closeNotifs(); moderationOeffnen(); return; }
+  if((n.art==='meldung_schwer'||n.art==='meldung_neu')&&cProfile?.ist_admin){ closeNotifs(); moderationOeffnen(); return; }
+  if(n.art==='day_one'){ closeNotifs(); showPage('profile'); return; }
+  if(n.art==='nachricht_anfrage'){ closeNotifs(); showPage('chat'); return; }
   if(n.art==='abzeichen'){
     closeNotifs(); showPage('profile');
     setTimeout(()=>{ try{ abzeichenOeffnen(); }catch(e){} },400);
@@ -22055,6 +22225,7 @@ async function openManage(eventId){
     let raus='<div class="mg-guest"><div class="av-sm">'+av+'</div>'
       +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
       +'<div class="mg-req-s">@'+esc(a.profiles?.username||'')+'</div></div>'
+      +(a.user_id!==ev.created_by?'<button class="mg-raus" onclick="gastEntfernen(this,\''+ev.id+'\',\''+a.user_id+'\')">Entfernen</button>':'')
       +'</div>';
     for(let i=0;i<(a.plus_ones||0);i++){
       const bn=(namen[i]||'').trim();
@@ -22176,9 +22347,18 @@ async function saveManage(){
       description:document.getElementById('mg-desc').value.trim()||null};
     if(plEl)patch.spotify_url=pl;
     const capEl=document.getElementById('mg-cap');
+    // Wird die Party verschoben, wandert die Anmeldefrist mit
+    if(zeitNeu&&mgEvent.registration_deadline){
+      const altStart=new Date(mgEvent.date+'T'+String(mgEvent.time||'20:00').slice(0,5));
+      const neuStart=new Date(date+'T'+time);
+      const frist=new Date(new Date(mgEvent.registration_deadline).getTime()+(neuStart-altStart));
+      if(!isNaN(frist))patch.registration_deadline=frist.toISOString();
+    }
     if(capEl){
       const roh=capEl.value.trim(), cap=parseInt(roh,10);
+      if(!roh&&mgEvent.type!=='private'){toast('Bitte eine Gästezahl eintragen','warn');return;}
       if(roh&&!(cap>=1)){toast('Die Gästezahl muss mindestens 1 sein','warn');return;}
+      if(roh&&cap<(mgEvent.gaeste_zahl||0)){toast('Es sind schon mehr Gäste angemeldet','warn');return;}
       patch.capacity=roh?cap:null;
     }
 
@@ -22517,7 +22697,8 @@ async function fotoSichern(){
   if(istApp()){
     const a=await nativeCall('bild_sichern',{url:f.url,name},45000);
     if(!a||!a.fehler||a.fehler==='abgebrochen')return;
-    await nativeCall('teilen',{text:'',url:f.url},30000);
+    // Nie den privaten Foto-Link in eine andere App teilen
+    toast('Das Foto liess sich nicht sichern. Öffne die Galerie nochmals und versuch es erneut.','warn');
     return;
   }
   try{
@@ -23231,6 +23412,37 @@ function convMelden(){
   if(!convUser?.id)return;
   openReport('user',convUser.id,convUser.full_name||convUser.username||'');
 }
+/* Eine einzelne Nachricht melden: lange auf eine fremde Nachricht druecken
+   (am Computer: Rechtsklick). Apple verlangt, dass jeder Inhalt meldbar ist. */
+(function nachrichtMeldenGesten(){
+  const box=document.getElementById('convMsgs');
+  if(!box)return;
+  let uhr=null, start=null;
+  const melden=(bub)=>{
+    if(!bub?.dataset.mid)return;
+    nativeHaptik('mittel');
+    bub.classList.add('bub-markiert');
+    setTimeout(()=>bub.classList.remove('bub-markiert'),600);
+    openReport('message',bub.dataset.mid,convUser?.full_name||convUser?.username||'');
+  };
+  box.addEventListener('touchstart',e=>{
+    const bub=e.target.closest('.bub[data-mid]'); if(!bub)return;
+    start=[e.touches[0].clientX,e.touches[0].clientY];
+    clearTimeout(uhr); uhr=setTimeout(()=>melden(bub),550);
+  },{passive:true});
+  const stopp=()=>{clearTimeout(uhr);uhr=null;};
+  box.addEventListener('touchmove',e=>{
+    if(!start)return;
+    const t=e.touches[0];
+    if(Math.abs(t.clientX-start[0])>8||Math.abs(t.clientY-start[1])>8)stopp();
+  },{passive:true});
+  box.addEventListener('touchend',stopp,{passive:true});
+  box.addEventListener('touchcancel',stopp,{passive:true});
+  box.addEventListener('contextmenu',e=>{
+    const bub=e.target.closest('.bub[data-mid]'); if(!bub)return;
+    e.preventDefault(); melden(bub);
+  });
+})();
 
 /* ── Pro verschenken ───────────────────────────────────────────────
    Sichtbar nur, wenn das eigene Profil als Betreiber markiert ist –

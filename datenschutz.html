@@ -98,12 +98,16 @@ verwendet diese Daten nicht zum Training seiner Modelle.</p>
 <p>Wenn du es erlaubst, verwenden wir deinen ungefähren Standort, um Partys nach
 Entfernung zu sortieren und dich auf der Karte einzuordnen. <strong>Dein Standort wird
 nicht gespeichert und nicht an andere Nutzerinnen und Nutzer weitergegeben.</strong> Er
-bleibt auf deinem Gerät und wird nur zur Berechnung der Distanz verwendet. Die
+bleibt auf deinem Gerät und wird nur zur Berechnung der Distanz verwendet. Einzige
+Ausnahme: Für den Ortsnamen („Aarau“) schicken wir eine auf rund einen Kilometer gerundete
+Position an OpenStreetMap (Nominatim) und speichern sie nicht. Die
 Erlaubnis kannst du in den Einstellungen deines Geräts jederzeit zurückziehen.</p>
 
 <h3>In der iPhone-App zusätzlich</h3>
 <ul>
-  <li>ein Push-Token, damit du Benachrichtigungen bekommst. Er sagt nichts über dich aus und wird gelöscht, wenn du die App entfernst.</li>
+  <li>ein Push-Token, damit du Benachrichtigungen bekommst. Er sagt nichts über dich aus, wird
+      bei deinem Konto gespeichert und gelöscht, sobald du Benachrichtigungen ausschaltest,
+      dich abmeldest oder dein Konto löschst.</li>
   <li>Kauf-Ereignisse zu Pro und zu Veröffentlichungsgebühren. Zahlungsdaten wie Kartennummern sehen wir nie — die bleiben bei Apple.</li>
 </ul>
 
@@ -170,6 +174,10 @@ gebunden sind. Verkauft werden deine Daten nie, an niemanden.</p>
   <tr><td>OpenStreetMap</td><td>Kartenkacheln und Adresssuche</td><td>EU / weltweit</td></tr>
   <tr><td>Anthropic</td><td>KI-Prüfung von Vereinskonten (siehe Abschnitt 2)</td><td>USA</td></tr>
   <tr><td>Google Fonts</td><td>Schriftart</td><td>USA</td></tr>
+  <tr><td>Google Maps Platform</td><td>Kartendarstellung</td><td>USA</td></tr>
+  <tr><td>jsDelivr / Cloudflare</td><td>Auslieferung von Programmbibliotheken</td><td>weltweit</td></tr>
+  <tr><td>Google Workspace</td><td>Postfach support@spotoutapp.ch</td><td>EU / USA</td></tr>
+  <tr><td>Resend</td><td>Versand von System- und Melde-E-Mails</td><td>EU / USA</td></tr>
 </table>
 <p>Bei Diensten in den USA stützen wir die Übermittlung auf die
 Standardvertragsklauseln der EU-Kommission beziehungsweise auf die
@@ -178,9 +186,11 @@ entsprechenden Garantien nach Schweizer Recht.</p>
 <h2>6. Wie lange wir speichern</h2>
 <ul>
   <li><strong>Kontodaten:</strong> solange dein Konto besteht.</li>
-  <li><strong>Nach der Löschung des Kontos:</strong> Profil, Anmeldungen, Fotos und Nachrichten
-      werden gelöscht. Nachrichten, die du anderen geschickt hast, bleiben in deren
-      Verlauf sichtbar — wir können fremde Postfächer nicht rückwirkend leeren.</li>
+  <li><strong>Nach der Löschung des Kontos:</strong> Profil, Partys, Anmeldungen, Fotos,
+      Gespräche und Nachrichten werden gelöscht – auch Nachrichten, die du anderen geschickt
+      hast, verschwinden aus deren Verlauf. Ein Pro-Abo über die Website kündigen wir dabei
+      automatisch; ein Abo über Apple kündigst du in den iPhone-Einstellungen unter
+      „Abonnements“.</li>
   <li><strong>Partys und Party-Fotos:</strong> automatisch 24 Stunden nach Partybeginn,
       Datei und Eintrag. Entfernte Fotos sofort.</li>
   <li><strong>Besuchte Partys und Abzeichen:</strong> Name, Datum, Ort und Bild einer Party,
@@ -189,9 +199,17 @@ entsprechenden Garantien nach Schweizer Recht.</p>
       vergeben wir automatisch anhand dieser Zahlen; sie sind in deinem Profil für andere
       sichtbar und verschwinden mit deinem Konto.</li>
   <li><strong>Ergebnis der Vereinsprüfung:</strong> solange das Vereinskonto besteht.</li>
-  <li><strong>Meldungen und Sperren:</strong> bis zu 12 Monate, damit wiederholter Missbrauch
-      erkennbar bleibt. Wer gemeldet hat, erfährt die gemeldete Person nie; sie sieht nur,
-      welcher Inhalt betroffen ist, aus welchem Grund und an welchem Tag.</li>
+  <li><strong>Meldungen und Sperren:</strong> bis zu 12 Monate, danach löschen wir sie
+      automatisch. Wer gemeldet hat, erfährt die gemeldete Person nie; sie sieht nur, welcher
+      Inhalt betroffen ist, aus welchem Grund und an welchem Tag. <strong>Verwarnungen und
+      Sperren vergibt ein automatisches Verfahren</strong>, sobald mindestens zwei verschiedene
+      Personen innert 30 Tagen Inhalte derselben Person melden. Du kannst deinen Standpunkt
+      darlegen und verlangen, dass ein Mensch die Entscheidung überprüft:
+      <a href="mailto:support@spotoutapp.ch">support@spotoutapp.ch</a>. Wird ein gesperrtes Konto
+      gelöscht, merken wir uns bis zum Ende der Sperre eine Prüfsumme der E-Mail-Adresse, damit
+      die Sperre nicht durch eine Neuanmeldung umgangen wird.</li>
+  <li><strong>Suchanfragen im Nutzer-Suchfeld:</strong> 30 Tage.</li>
+  <li><strong>Profilbesuche:</strong> 30 Tage, danach werden sie automatisch gelöscht.</li>
   <li><strong>Zahlungsbelege:</strong> 10 Jahre, das schreibt das Obligationenrecht vor.</li>
   <li><strong>Server-Protokolle:</strong> in der Regel 30 Tage.</li>
 </ul>
