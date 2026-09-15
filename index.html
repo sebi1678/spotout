@@ -5229,6 +5229,143 @@
       }
     }
 
+    /* ══════════ KNOEPFE: EINE SPRACHE ══════════
+       Mit der Zeit hatte fast jeder Knopf seine eigene Rundung (10, 11,
+       12, 13, 14, 16, 17, 18 Pixel), seinen eigenen Schatten und eigene
+       Zustaende. Einzeln faellt das nicht auf – nebeneinander wirkt es
+       zusammengesucht. Ab hier gilt fuer alle dasselbe:
+
+         gross    Hauptaktion, meist volle Breite    16 px, Schein darunter
+         kompakt  in Zeilen, Karten und Kopfleisten  12 px
+         Pille    Chips, Filter, kurze Woerter       999 px (bleibt)
+         rund     Symbole                            50 %   (bleibt)
+
+       Der Block steht bewusst am Ende: bei gleichem Gewicht gewinnt die
+       spaetere Regel, oben muss darum nichts umgebaut werden. */
+    :root{
+      --knopf-r:16px;
+      --knopf-r-klein:12px;
+      --knopf-schein:0 8px 24px rgba(255,45,118,.16),inset 0 1px 0 rgba(255,255,255,.22);
+      --knopf-schein-druck:0 3px 10px rgba(255,45,118,.14),inset 0 1px 0 rgba(255,255,255,.16);
+      --knopf-rand:rgba(255,255,255,.13);
+      --knopf-flaeche:rgba(255,255,255,.06);
+    }
+
+    /* Grundlage fuer jeden Knopf. Ohne sie fielen die Symbolknoepfe auf
+       Arial zurueck, ein langer Druck markierte in der App die
+       Beschriftung, und iOS wartete nach jedem Tippen kurz, ob noch ein
+       Doppeltipp zum Zoomen kommt. */
+    button{
+      font-family:var(--font);
+      -webkit-user-select:none;user-select:none;
+      touch-action:manipulation;
+    }
+
+    /* ── Gross ── */
+    .auth-submit-btn,.tour-btn,.pro2-cta,.mpv-cta,.konto-ja,.ort-ja,.vh-neu,
+    .create-next-btn,.plus-gross,.sp-notfall-btn,.crop-ja,.follow-btn,
+    .attend-btn,.sub-btn,.plus-btn{
+      border-radius:var(--knopf-r);
+    }
+    .auth-submit-btn,.tour-btn,.pro2-cta,.mpv-cta,.konto-ja,.ort-ja,.vh-neu,
+    .create-next-btn,.plus-gross,.sp-notfall-btn,.crop-ja,.sub-accent,.sub-public,
+    .follow-btn:not(.following):not(:disabled),.plus-btn:not(.ghost):not(:disabled){
+      box-shadow:var(--knopf-schein);
+    }
+    .auth-submit-btn:active,.tour-btn:active,.pro2-cta:active,.mpv-cta:active,
+    .konto-ja:active,.ort-ja:active,.vh-neu:active,.create-next-btn:active,
+    .plus-gross:active,.sp-notfall-btn:active,.crop-ja:active,.sub-accent:active,
+    .sub-public:active,.follow-btn:not(.following):active,.plus-btn:not(.ghost):active{
+      box-shadow:var(--knopf-schein-druck);
+    }
+    @media(hover:hover){
+      .tour-btn:hover,.pro2-cta:hover,.mpv-cta:hover,.konto-ja:hover,.ort-ja:hover,
+      .vh-neu:hover,.create-next-btn:hover,.plus-gross:hover,.crop-ja:hover,
+      .sub-btn:hover,.plus-btn:hover,.follow-btn:not(.following):hover{
+        filter:brightness(1.06);
+      }
+    }
+
+    /* ── Zweitrangig: gleiche Form wie der grosse, aber ohne Farbe ── */
+    .auth-zweit,.auth-gast,.tour-zurueck,.create-back-btn,.mpv-weiter,.crop-neu,
+    .up-msg-btn,.pro2-verwalten,.pro2-restore,.plus-btn.ghost,.rep-danger,.danger-btn{
+      border-radius:var(--knopf-r);
+    }
+    /* Der Zurueck-Knopf im Erstellen-Weg war der einzige ohne Rand – neben
+       dem leuchtenden Weiter sah er aus wie ein Platzhalter. */
+    .create-back-btn{background:var(--knopf-flaeche);border:1px solid var(--knopf-rand)}
+
+    /* ── Kompakt ── */
+    .card-cta,.prof-action-btn,.cal-act,.inv-btn,.sh-send,.sh-alle,.ein-send,
+    .ein-zweite,.ein-wechsel,.ein-mini,.schenk-ja,.schenk-weg,.msg-btn,.sec-btn,
+    .copy-btn,.nt-clear,.nt-sys button,.mg-warn button,.pend-btn,.mg-yes,.mg-no,
+    .fa-ja,.fa-nein,.bring-add button,.ein-neu button,.offl-btns button,.btn,
+    .nav-raus,.nav-bell,.nav-create-btn,.popup-btn{
+      border-radius:var(--knopf-r-klein);
+    }
+
+    /* ── Druck ──
+       Diese Knoepfe gaben unter dem Finger bisher gar nicht nach. */
+    .konto-ja,.ort-ja,.vh-neu,.mpv-cta,.mpv-weiter,.sp-notfall-btn,.crop-ja,
+    .crop-neu,.schenk-ja,.schenk-weg,.plus-btn,.danger-btn,.rep-danger,
+    .pro2-restore,.auth-zweit,.ein-zweite,.ein-wechsel,.create-back-btn,.msg-btn,
+    .sec-btn,.copy-btn,.nt-clear,.nt-sys button,.mg-warn button,.pend-btn,
+    .gastleiste button,.mreq-yes,.mreq-no,.fa-ja,.fa-nein,.mg-yes,.mg-no,
+    .ein-mini,.bring-add button,.ein-neu button,.offl-btns button,.lang-opt,
+    .gender-opt,.auth-tog-btn,.auth-gast,.einw-opt,.rep-opt,.settings-btn{
+      transition:transform var(--takt-kurz) var(--kurve),
+                 background-color var(--takt-kurz) var(--kurve),
+                 border-color var(--takt-kurz) var(--kurve),
+                 color var(--takt-kurz) var(--kurve),
+                 box-shadow var(--takt-kurz) var(--kurve),
+                 opacity var(--takt-kurz) var(--kurve);
+    }
+    .konto-ja:active,.ort-ja:active,.vh-neu:active,.mpv-cta:active,.mpv-weiter:active,
+    .sp-notfall-btn:active,.crop-ja:active,.crop-neu:active,.schenk-ja:active,
+    .schenk-weg:active,.plus-btn:active,.danger-btn:active,.rep-danger:active,
+    .pro2-restore:active,.auth-zweit:active,.ein-zweite:active,.ein-wechsel:active,
+    .create-back-btn:active,.msg-btn:active,.sec-btn:active,.copy-btn:active,
+    .nt-clear:active,.nt-sys button:active,.mg-warn button:active,.pend-btn:active,
+    .gastleiste button:active,.mreq-yes:active,.mreq-no:active,.fa-ja:active,
+    .fa-nein:active,.mg-yes:active,.mg-no:active,.ein-mini:active,
+    .bring-add button:active,.ein-neu button:active,.offl-btns button:active,
+    .lang-opt:active,.gender-opt:active,.auth-tog-btn:active,.auth-gast:active{
+      transform:scale(var(--druck));
+    }
+    /* Breite Zeilen geben weniger nach als ein Knopf */
+    .einw-opt:active,.rep-opt:active,.settings-btn:active{transform:scale(var(--druck-gross))}
+
+    /* ── Gesperrt ──
+       Vorher zwischen 40 und 75 Prozent Deckkraft, je nach Knopf. Jetzt
+       ueberall gleich blass und flach. Ein Knopf, der gerade arbeitet
+       (Ladekreis), bleibt gut lesbar – er ist beschaeftigt, nicht aus. */
+    button:disabled{cursor:default;box-shadow:none;filter:none}
+    button:disabled:not(.is-busy):not(.busy):not(.send-btn){opacity:.5}
+    button.is-busy:disabled,button.busy:disabled{opacity:.8}
+
+    /* ── Fokus ──
+       Wer mit Tastatur oder Schaltersteuerung bedient – am Rechner, aber
+       auch mit den Bedienungshilfen von iOS –, muss sehen, wo er gerade
+       ist. Der Ring kommt nur dann, nie beim Tippen mit dem Finger. */
+    button:focus-visible,a:focus-visible,[role="button"]:focus-visible{
+      outline:2px solid #FF7FA5;outline-offset:2px;
+    }
+    button:focus:not(:focus-visible){outline:none}
+
+    /* ── Tastflaechen ──
+       Dieselbe Idee wie weiter oben: sichtbar klein, treffbar 44 Punkt.
+       Nur fuer Knoepfe, die allein stehen – bei Ja/Nein-Paaren wuerde die
+       groessere Flaeche des einen in den anderen hineinragen. */
+    .msg-btn,.sec-btn,.copy-btn,.nt-clear,.pend-btn,.more-btn,.bring-del,
+    .ez-weg,.os-weg,.plus-konto-x,.ein-send{position:relative}
+    .msg-btn::after,.sec-btn::after,.copy-btn::after,.nt-clear::after,
+    .pend-btn::after,.more-btn::after,.bring-del::after,.ez-weg::after,
+    .os-weg::after,.plus-konto-x::after,.ein-send::after{
+      content:'';position:absolute;left:50%;top:50%;
+      width:max(100%,44px);height:max(100%,44px);
+      transform:translate(-50%,-50%);
+    }
+
   </style>
 </head>
 <body>
