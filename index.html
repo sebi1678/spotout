@@ -1617,12 +1617,7 @@
     }
     .toast-ic svg{width:18px;height:18px}
     .toast-txt{min-width:0;overflow-wrap:anywhere}
-    .toast::after{
-      content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
-      background:var(--toast-farbe);opacity:.5;transform-origin:left;transform:scaleX(0);
-    }
-    .toast.show::after{animation:toastZeit var(--toast-dauer,2400ms) linear forwards}
-    @keyframes toastZeit{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+    /* Kein ablaufender Strich mehr: er sah aus, als muesse man noch etwas tun. */
     .toast.success{--toast-farbe:#2BD98A;--toast-grund:rgba(43,217,138,.16)}
     .toast.error{--toast-farbe:#FF5A6E;--toast-grund:rgba(255,90,110,.16)}
     .toast.warn{--toast-farbe:#FFC24B;--toast-grund:rgba(255,194,75,.16)}
@@ -1634,7 +1629,6 @@
       .toast,.toast.geht{transition:opacity var(--takt) ease}
       .toast,.toast.show{transform:translate(-50%,0)}
       .toast.stoss{animation:none}
-      .toast.show::after{animation:none}
     }
 
     /* ── LOCATION BANNER ── */
@@ -4782,6 +4776,42 @@
     .mod-notiz{font-size:.8rem;color:var(--text2);margin-top:8px;overflow-wrap:anywhere}
     .mod-akt{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
     .mod-akt .nt-knopf.armed{background:rgba(255,60,60,.2);border-color:rgba(255,80,80,.5)}
+    /* ── Benachrichtigungen: Schalter wie auf TikTok ── */
+    .sw{
+      position:relative;flex:0 0 48px;width:48px;height:28px;border-radius:999px;border:none;padding:0;cursor:pointer;
+      background:rgba(255,255,255,.16);transition:background var(--takt-kurz,.18s) ease;
+    }
+    .sw span{
+      position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;
+      box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform var(--takt-kurz,.18s) ease;
+    }
+    .sw.an{background:var(--grad-cta)}
+    .sw.an span{transform:translateX(20px)}
+    .sw:disabled{opacity:.45;cursor:default}
+    .push-karte{
+      display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px 15px;margin-bottom:14px;
+      border-radius:15px;background:rgba(124,92,252,.10);border:1px solid rgba(124,92,252,.26);
+    }
+    .push-karte.warn{background:rgba(255,194,75,.08);border-color:rgba(255,194,75,.3)}
+    .push-karte b{font-size:.9rem;color:#fff}
+    .push-karte span{font-size:.78rem;line-height:1.5;color:var(--muted)}
+    .push-karte .nt-knopf{margin-top:4px}
+    .push-zeile{
+      display:flex;align-items:center;gap:12px;padding:12px 0;
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+    .push-zeile>div{flex:1;min-width:0}
+    .push-zeile b{display:block;font-size:.88rem;font-weight:700;color:#fff;overflow-wrap:anywhere}
+    .push-zeile span{display:block;font-size:.75rem;line-height:1.45;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+    .push-zeile.haupt{padding:14px 15px;border:1px solid rgba(255,255,255,.08);border-radius:15px;background:rgba(255,255,255,.05)}
+    .push-zeile.fix{border-bottom:none;margin-top:6px}
+    .push-gruppe{transition:opacity var(--takt-kurz,.18s) ease}
+    .push-gruppe.ruhig{opacity:.5}
+    .fa-zeile{transition:opacity .25s ease,transform .25s ease}
+    .fa-zeile.fertig{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09)}
+    .fa-zeile.weg{opacity:0;transform:translateX(-12px)}
+    .fa-zeile .fl-knopf{min-width:0}
+    #notifBody .nt-akt-unten .fl-knopf{min-width:0;margin-left:10px;padding:7px 12px;font-size:.76rem}
     .pl-card{
       display:flex;align-items:center;gap:13px;width:100%;cursor:pointer;
       text-decoration:none;
@@ -7068,6 +7098,11 @@
 
       <div class="set-gruppe">
         <div class="set-lbl">App</div>
+        <button class="settings-btn" onclick="pushEinstOeffnen()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="s-label">Benachrichtigungen</span><span class="s-wert" id="setPushWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <div class="set-frage">Sprache</div>
         <div class="lang-row" id="langRow">
           <button class="lang-opt" data-lang="de" onclick="setLang('de')"><b>DE</b><span>Deutsch</span></button>
@@ -7332,6 +7367,20 @@
     <div class="modal-body">
       <div class="set-hilfe">Hebst du eine Blockierung auf, könnt ihr euch wieder schreiben und seht eure Partys.</div>
       <div id="blockiertListe"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="pushOverlay" onclick="closeIfOutside(event,'pushOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Benachrichtigungen</div>
+      <button class="modal-x" onclick="closeOverlay('pushOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div id="pushStatus"></div>
+      <div id="pushListe"></div>
     </div>
   </div>
 </div>
@@ -11879,6 +11928,7 @@ async function renderProf(){
   const visitedEvts=(atts||[])
     .filter(a=>a.events&&istVorbei(a.events))
     .sort((x,y)=>new Date(y.events.date)-new Date(x.events.date));
+  const warBesucht=document.getElementById('tab-visited')?.classList.contains('active');
   document.getElementById('profContent').innerHTML=`
     <div class="prof-wrap-insta">
       <div class="fa-box" id="faBox"></div>
@@ -11960,6 +12010,7 @@ async function renderProf(){
       </div>
       <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
     </div>`;
+  if(warBesucht)switchProfTab('visited');
 }
 
 function switchProfTab(tab){
@@ -14797,22 +14848,68 @@ async function renderFolgeAnfragen(){
       const pr=a.profiles||{};
       const nm=pr.full_name||pr.username||'Jemand';
       const av=pr.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(pr.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
-      return '<div class="fa-zeile">'
+      return '<div class="fa-zeile" data-von="'+a.von+'">'
         +'<div class="av-sm" onclick="openUserProf(\''+pr.id+'\')" style="cursor:pointer">'+av+'</div>'
         +'<div class="fa-txt"><b>'+esc(nm)+'</b><span>möchte dir folgen</span></div>'
-        +'<button class="fa-ja" onclick="beantworteAnfrage(\''+a.von+'\',true)" aria-label="Annehmen">'+ja+'</button>'
-        +'<button class="fa-nein" onclick="beantworteAnfrage(\''+a.von+'\',false)" aria-label="Ablehnen">'+nein+'</button>'
+        +'<button class="fa-ja" onclick="beantworteAnfrage(\''+a.von+'\',true,this)" aria-label="Bestätigen">'+ja+'</button>'
+        +'<button class="fa-nein" onclick="beantworteAnfrage(\''+a.von+'\',false,this)" aria-label="Löschen">'+nein+'</button>'
         +'</div>';
     }).join('');
 }
 
-async function beantworteAnfrage(von, ja){
-  const{data,error}=await sb.rpc('anfrage_beantworten',{p_von:von,p_ja:ja});
-  if(error){toast(fehlerText(error),'error');return;}
-  toast(ja?'Angenommen':'Abgelehnt','info');
-  try{ ntErledigt.set(von, ja?'Angenommen':'Abgelehnt'); renderNotifs(); }catch(e){}
-  renderFolgeAnfragen();
-  if(ja)renderProf();
+/* Vorher wurde danach das ganze Profil neu gezeichnet: die Zeile war
+   weg, der Reiter sprang zurueck, und man sah nie, dass es geklappt hat.
+   Jetzt bleibt die Zeile stehen – wie auf Instagram mit "Auch folgen". */
+async function beantworteAnfrage(von, ja, btn){
+  const zeile=btn?.closest('.fa-zeile');
+  zeile?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  const{data,error}=await sb.rpc('anfrage_beantworten',{p_von:von,p_ja:!!ja});
+  if(error){
+    toast(fehlerText(error),'error');
+    zeile?.querySelectorAll('button').forEach(b=>b.disabled=false);
+    return;
+  }
+  const erledigt=data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Gelöscht');
+  ntErledigt.set(von,erledigt);
+  if(ja&&data==='angenommen')await anfrageFolgeStand(von);
+  anfrageErledigtZeigen(von,ja&&data==='angenommen',data==='keine_anfrage');
+  try{ renderNotifs(); }catch(e){}
+}
+async function anfrageFolgeStand(von){
+  try{
+    const{data}=await sb.rpc('folge_status',{p_ids:[von]});
+    const st=(data||[])[0];
+    ntFolge.set(von,st?{...st,folgt_mir:true}:{ich_folge:false,folgt_mir:true,angefragt:false});
+  }catch(e){ ntFolge.set(von,{ich_folge:false,folgt_mir:true,angefragt:false}); }
+}
+function anfrageErledigtZeigen(von,angenommen,schonErledigt){
+  const zeile=document.querySelector('.fa-zeile[data-von="'+von+'"]');
+  const pill=document.querySelector('#faBox .mg-pill');
+  if(zeile&&!zeile.classList.contains('fertig')){
+    zeile.classList.add('fertig');
+    if(pill){
+      const n=Math.max(0,(parseInt(pill.textContent,10)||1)-1);
+      pill.textContent=n; pill.hidden=!n;
+    }
+    zeile.querySelectorAll('.fa-ja,.fa-nein').forEach(b=>b.remove());
+    const txt=zeile.querySelector('.fa-txt span');
+    if(angenommen){
+      if(txt)txt.textContent='folgt dir jetzt';
+      const st=ntFolge.get(von)||{};
+      zeile.insertAdjacentHTML('beforeend',flKnopf(von,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true));
+    }else{
+      if(txt)txt.textContent=schonErledigt?'Schon erledigt':'Anfrage gelöscht';
+      setTimeout(()=>{ zeile.classList.add('weg'); setTimeout(()=>{
+        zeile.remove();
+        const box=document.getElementById('faBox');
+        if(box&&!box.querySelector('.fa-zeile'))box.innerHTML='';
+      },260); },900);
+    }
+  }
+  if(angenommen){
+    const f=document.getElementById('myFollowers');
+    if(f&&zeile)f.textContent=(parseInt(f.textContent,10)||0)+1;
+  }
 }
 
 /* ── Folgen oder anfragen ─────────────────────────────────────────
@@ -16550,6 +16647,34 @@ en:{
   "Aus":"Off",
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
+  "Alle pausieren":"Pause all",
+  "Keine Push-Nachrichten, bis du es wieder einschaltest":"No push notifications until you turn them back on",
+  "Wenn dir jemand schreibt":"When someone messages you",
+  "Neue Follower, Anfragen und Zusagen":"New followers, requests and approvals",
+  "Einladungen und ob du dabei sein darfst":"Invitations and whether you’re in",
+  "Deine Gäste":"Your guests",
+  "Wer zu deiner Party möchte oder jemanden mitbringt":"Who wants to come to your party or bring someone",
+  "Änderungen an Partys":"Party changes",
+  "Neue Zeit, neuer Ort oder abgesagt":"New time, new place or cancelled",
+  "Freunde unterwegs":"Friends going out",
+  "Wenn deine Leute zu einer Party gehen":"When your people go to a party",
+  "Abzeichen":"Badges",
+  "Wenn du ein neues Abzeichen bekommst":"When you earn a new badge",
+  "Konto & Sicherheit":"Account & safety",
+  "Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.":"Warnings, suspensions and important account notices always come through.",
+  "Im iPhone ausgeschaltet":"Turned off on your iPhone",
+  "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT can’t send you notifications right now. Turn them back on in iPhone Settings.",
+  "iPhone-Einstellungen öffnen":"Open iPhone Settings",
+  "Mitteilungen einschalten":"Turn on notifications",
+  "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"So you see messages and invitations even on your lock screen.",
+  "Push gibt es in der App":"Push is available in the app",
+  "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"In the browser you see updates under the bell. Your choice here also applies to the iPhone app.",
+  "Pausiert":"Paused",
+  "folgt dir jetzt":"follows you now",
+  "Anfrage gelöscht":"Request deleted",
+  "Gelöscht":"Deleted",
+  "Öffnen":"Open",
+  "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Open iPhone Settings › Notifications › Spotout",
   "Pro verschenken":"Gift Pro",
   "Deine Anfrage ist beim Host.":"Your request is with the host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
@@ -17752,7 +17877,35 @@ fr:{
   "Aus":"Désactivé",
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
-  "Pro verschenken":"Offrir Pro",
+    "Alle pausieren":"Tout mettre en pause",
+  "Keine Push-Nachrichten, bis du es wieder einschaltest":"Aucune notification push jusqu’à ce que tu les réactives",
+  "Wenn dir jemand schreibt":"Quand quelqu’un t’écrit",
+  "Neue Follower, Anfragen und Zusagen":"Nouveaux abonnés, demandes et acceptations",
+  "Einladungen und ob du dabei sein darfst":"Invitations et si tu peux venir",
+  "Deine Gäste":"Tes invités",
+  "Wer zu deiner Party möchte oder jemanden mitbringt":"Qui veut venir à ta fête ou amener quelqu’un",
+  "Änderungen an Partys":"Changements de fête",
+  "Neue Zeit, neuer Ort oder abgesagt":"Nouvelle heure, nouveau lieu ou annulée",
+  "Freunde unterwegs":"Amis de sortie",
+  "Wenn deine Leute zu einer Party gehen":"Quand tes potes vont à une fête",
+  "Abzeichen":"Badges",
+  "Wenn du ein neues Abzeichen bekommst":"Quand tu gagnes un nouveau badge",
+  "Konto & Sicherheit":"Compte & sécurité",
+  "Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.":"Les avertissements, suspensions et infos importantes sur ton compte arrivent toujours.",
+  "Im iPhone ausgeschaltet":"Désactivé sur ton iPhone",
+  "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT ne peut pas t’envoyer de notifications. Réactive-les dans les Réglages de l’iPhone.",
+  "iPhone-Einstellungen öffnen":"Ouvrir les Réglages",
+  "Mitteilungen einschalten":"Activer les notifications",
+  "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"Pour voir messages et invitations même écran verrouillé.",
+  "Push gibt es in der App":"Les notifications push sont dans l’app",
+  "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"Dans le navigateur, tout apparaît sous la cloche. Ton choix s’applique aussi à l’app iPhone.",
+  "Pausiert":"En pause",
+  "folgt dir jetzt":"te suit maintenant",
+  "Anfrage gelöscht":"Demande supprimée",
+  "Gelöscht":"Supprimé",
+  "Öffnen":"Ouvrir",
+  "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Ouvre Réglages › Notifications › Spotout",
+"Pro verschenken":"Offrir Pro",
   "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
   "Diesmal nicht.":"Pas cette fois.",
@@ -18954,7 +19107,35 @@ it:{
   "Aus":"Spento",
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
-  "Pro verschenken":"Regala Pro",
+    "Alle pausieren":"Metti tutto in pausa",
+  "Keine Push-Nachrichten, bis du es wieder einschaltest":"Nessuna notifica push finché non le riattivi",
+  "Wenn dir jemand schreibt":"Quando qualcuno ti scrive",
+  "Neue Follower, Anfragen und Zusagen":"Nuovi follower, richieste e conferme",
+  "Einladungen und ob du dabei sein darfst":"Inviti e se puoi partecipare",
+  "Deine Gäste":"I tuoi ospiti",
+  "Wer zu deiner Party möchte oder jemanden mitbringt":"Chi vuole venire alla tua festa o portare qualcuno",
+  "Änderungen an Partys":"Modifiche alle feste",
+  "Neue Zeit, neuer Ort oder abgesagt":"Nuovo orario, nuovo luogo o annullata",
+  "Freunde unterwegs":"Amici in giro",
+  "Wenn deine Leute zu einer Party gehen":"Quando i tuoi amici vanno a una festa",
+  "Abzeichen":"Badge",
+  "Wenn du ein neues Abzeichen bekommst":"Quando ottieni un nuovo badge",
+  "Konto & Sicherheit":"Account e sicurezza",
+  "Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.":"Avvisi, sospensioni e comunicazioni importanti sull’account arrivano sempre.",
+  "Im iPhone ausgeschaltet":"Disattivate sull’iPhone",
+  "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT non può inviarti notifiche. Riattivale nelle Impostazioni dell’iPhone.",
+  "iPhone-Einstellungen öffnen":"Apri Impostazioni",
+  "Mitteilungen einschalten":"Attiva le notifiche",
+  "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"Per vedere messaggi e inviti anche a schermo bloccato.",
+  "Push gibt es in der App":"Le notifiche push sono nell’app",
+  "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"Nel browser vedi tutto nella campanella. La tua scelta vale anche per l’app iPhone.",
+  "Pausiert":"In pausa",
+  "folgt dir jetzt":"ora ti segue",
+  "Anfrage gelöscht":"Richiesta eliminata",
+  "Gelöscht":"Eliminato",
+  "Öffnen":"Apri",
+  "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Apri Impostazioni › Notifiche › Spotout",
+"Pro verschenken":"Regala Pro",
   "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
   "Diesmal nicht.":"Non questa volta.",
@@ -19678,6 +19859,101 @@ async function nativePushAnmelden(erzwingen){
 }
 
 function nativeHaptik(art){ if(istApp())nativeCall('haptik',{art},3000); }
+
+/* ── Benachrichtigungen einzeln abschalten ─────────────────────────
+   Wie auf TikTok: ein Schalter fuer alles, darunter Gruppen. Der Server
+   liest profiles.push_aus und schickt dann keine Push-Nachricht – in der
+   Liste im App steht die Meldung trotzdem. Verwarnungen und Sperren
+   kommen immer an. */
+const PUSH_GRUPPEN=[
+  {k:'nachrichten', t:'Nachrichten',        s:'Wenn dir jemand schreibt'},
+  {k:'follower',    t:'Follower',           s:'Neue Follower, Anfragen und Zusagen'},
+  {k:'einladungen', t:'Einladungen',        s:'Einladungen und ob du dabei sein darfst'},
+  {k:'gaeste',      t:'Deine Gäste',        s:'Wer zu deiner Party möchte oder jemanden mitbringt'},
+  {k:'partys',      t:'Änderungen an Partys', s:'Neue Zeit, neuer Ort oder abgesagt'},
+  {k:'freunde',     t:'Freunde unterwegs',  s:'Wenn deine Leute zu einer Party gehen'},
+  {k:'abzeichen',   t:'Abzeichen',          s:'Wenn du ein neues Abzeichen bekommst'},
+];
+function pushAus(){ return Array.isArray(cProfile?.push_aus)?cProfile.push_aus:[]; }
+function pushWertText(){
+  const aus=pushAus();
+  if(istApp()&&pushZustand!=='an')return 'Aus';
+  if(aus.includes('alle'))return 'Pausiert';
+  const an=PUSH_GRUPPEN.filter(g=>!aus.includes(g.k)).length;
+  return an===PUSH_GRUPPEN.length?'An':an+' von '+PUSH_GRUPPEN.length;
+}
+function pushWertZeigen(){
+  const el=document.getElementById('setPushWert');
+  if(el)el.textContent=cUser?pushWertText():'';
+}
+function schalter(an,klick,gesperrt){
+  return '<button class="sw'+(an?' an':'')+'" role="switch" aria-checked="'+(an?'true':'false')+'"'
+    +(gesperrt?' disabled':'')+' onclick="'+klick+'"><span></span></button>';
+}
+async function pushEinstOeffnen(){
+  if(!cUser){kontoNoetig();return;}
+  document.getElementById('pushOverlay').classList.add('open');
+  pushEinstZeichnen();
+  // Stand am Telefon frisch holen – jemand kann es in den iPhone-Einstellungen geaendert haben
+  if(istApp()){ await nativePushAnmelden(false); pushEinstZeichnen(); }
+}
+function pushEinstZeichnen(){
+  const st=document.getElementById('pushStatus');
+  const li=document.getElementById('pushListe');
+  if(!st||!li)return;
+  const aus=pushAus();
+  const alle=aus.includes('alle');
+  let status='';
+  if(istApp()){
+    if(pushZustand==='aus'){
+      status='<div class="push-karte warn"><b>Im iPhone ausgeschaltet</b>'
+        +'<span>SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.</span>'
+        +'<button class="nt-knopf haupt" onclick="pushSystemEinst()">iPhone-Einstellungen öffnen</button></div>';
+    }else if(pushZustand!=='an'){
+      status='<div class="push-karte"><b>Mitteilungen einschalten</b>'
+        +'<span>Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.</span>'
+        +'<button class="nt-knopf haupt" onclick="pushErlaubenHier(this)">Erlauben</button></div>';
+    }
+  }else{
+    status='<div class="push-karte"><b>Push gibt es in der App</b>'
+      +'<span>Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.</span></div>';
+  }
+  st.innerHTML=status;
+  li.innerHTML=
+    '<div class="push-zeile haupt"><div><b>Alle pausieren</b><span>Keine Push-Nachrichten, bis du es wieder einschaltest</span></div>'
+      +schalter(alle,"pushSetzen('alle')")+'</div>'
+    +'<div class="set-frage">Was du bekommst</div>'
+    +'<div class="push-gruppe'+(alle?' ruhig':'')+'">'
+    +PUSH_GRUPPEN.map(g=>'<div class="push-zeile"><div><b>'+g.t+'</b><span>'+g.s+'</span></div>'
+        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"')",alle)+'</div>').join('')
+    +'</div>'
+    +'<div class="push-zeile fix"><div><b>Konto & Sicherheit</b><span>Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.</span></div>'
+      +schalter(true,'',true)+'</div>';
+  pushWertZeigen();
+}
+async function pushSetzen(k){
+  if(!cUser||!cProfile)return;
+  const vorher=pushAus();
+  const neu=vorher.includes(k)?vorher.filter(x=>x!==k):[...vorher,k];
+  cProfile.push_aus=neu;
+  pushEinstZeichnen();
+  nativeHaptik('leicht');
+  const{error}=await sb.from('profiles').update({push_aus:neu}).eq('id',cUser.id);
+  if(error){
+    cProfile.push_aus=vorher;
+    pushEinstZeichnen();
+    toast(fehlerText(error),'error');
+  }
+}
+async function pushErlaubenHier(btn){
+  if(btn){btn.disabled=true;btn.textContent='Moment…';}
+  await pushErlauben();
+  pushEinstZeichnen();
+}
+async function pushSystemEinst(){
+  const a=await nativeCall('einstellungen_oeffnen',{},4000);
+  if(a&&a.fehler)toast('Öffne die iPhone-Einstellungen › Mitteilungen › Spotout','info');
+}
 
 /* ── Party-Gebühr: in der App über Apple, im Browser über Stripe ──── */
 
@@ -20427,8 +20703,13 @@ let ntFolge=new Map(), ntFolgeLaeuft=false;
 function ntAktionen(n){
   const halt='event.stopPropagation();';
   if(n.art==='folge_anfrage'&&n.actor_id){
-    if(ntErledigt.has(n.actor_id))
-      return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'+esc(ntErledigt.get(n.actor_id))+'</span></div>';
+    if(ntErledigt.has(n.actor_id)){
+      const was=ntErledigt.get(n.actor_id), st=ntFolge.get(n.actor_id);
+      const zurueck=(was==='Bestätigt'&&st)
+        ? flKnopf(n.actor_id,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true) : '';
+      return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'
+        +(was==='Bestätigt'?'✓ ':'')+esc(was)+'</span>'+zurueck+'</div>';
+    }
     return '<div class="nt-akt nt-akt-unten">'
       +'<button class="nt-knopf haupt" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',true)">Bestätigen</button>'
       +'<button class="nt-knopf" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',false)">Löschen</button></div>';
@@ -20504,7 +20785,7 @@ function renderNotifs(){
            ? 'Meldungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.'
            : 'Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.')
         +'</span>'
-        +(pushZustand==='aus'?'':'<button onclick="pushErlauben()">Erlauben</button>')
+        +(pushZustand==='aus'?'<button onclick="pushSystemEinst()">Öffnen</button>':'<button onclick="pushErlauben()">Erlauben</button>')
         +'</div>';
   }else{
     const erlaubnis=(typeof Notification!=='undefined')?Notification.permission:'unsupported';
@@ -20589,10 +20870,11 @@ async function ntAnfrage(btn,von,ja){
     akt?.querySelectorAll('button').forEach(b=>b.disabled=false);
     return;
   }
-  ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Angenommen':'Abgelehnt'));
+  ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Gelöscht'));
+  if(ja&&data==='angenommen')await anfrageFolgeStand(von);
   renderNotifs();
-  try{ renderFolgeAnfragen(); }catch(e){}
-  if(ja&&document.getElementById('page-profile')?.classList.contains('active'))renderProf();
+  // Das Profil dahinter nur an der Stelle nachfuehren, nicht neu aufbauen
+  anfrageErledigtZeigen(von,ja&&data==='angenommen',data==='keine_anfrage');
 }
 
 async function oeffneNotif(id){
@@ -22606,6 +22888,7 @@ function showSettingsModal(){
   const pt=document.getElementById('setProTour');
   if(pt)pt.hidden=!cProfile?.is_pro;
   setKartenApp(kartenAppGespeichert());
+  pushWertZeigen();
   rausWahlAnzeigen();
   schenkenAnzeigen();
   setProfilUI(!!cProfile?.privat);
