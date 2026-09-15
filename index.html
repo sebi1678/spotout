@@ -5503,10 +5503,12 @@
     .nt-av:not(.ohne) .nt-ic.no{background:#e0445a}
     .nt-av:not(.ohne) .nt-ic.frage{background:#e39a12}
     .nt-av:not(.ohne) .nt-ic.ein{background:#7C5CFC}
-    .nt-av:not(.ohne) .nt-ic.msg{background:#FF2D76}
+    .nt-av:not(.ohne) .nt-ic.ntmsg{background:#FF2D76}
     .nt-av.ohne .nt-ic{width:44px;height:44px;flex:none;border-radius:14px}
     .nt-av.ohne .nt-ic svg{width:20px;height:20px}
-    .nt-ic.msg{background:rgba(255,45,118,.16);color:#FF7FA5}
+    /* nicht .msg – so heissen schon die Chat-Blasen, und deren Polster
+       blies den kleinen Punkt zu einem Fleck auf */
+    .nt-ic.ntmsg{background:rgba(255,45,118,.16);color:#FF7FA5}
     .nt-blase{
       margin-top:6px;padding:8px 12px;border-radius:14px 14px 14px 5px;
       background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
@@ -18688,7 +18690,7 @@ const NT_ICON={
   verein_bestaetigt:{cls:'ok',svg:'<path d="M20 6 9 17l-5-5"/>'},
   verein_abgelehnt:{cls:'no',svg:'<path d="M18 6 6 18M6 6l12 12"/>'},
   verein_pruefen:{cls:'frage',svg:'<path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/>'},
-  nachricht:{cls:'msg',svg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+  nachricht:{cls:'ntmsg',svg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
   // Diese drei gab es in der Datenbank schon, hier aber nicht – sie
   // standen mit einer Uhr da.
   freund_dabei:{cls:'ein',svg:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'},
