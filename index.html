@@ -240,7 +240,7 @@
       display:flex;align-items:center;justify-content:center;
       cursor:pointer;transition:transform var(--takt-kurz);border:none;color:var(--text);
     }
-    .nav-icon-btn:hover{background:rgba(255,255,255,.15)}
+    @media(hover:hover){.nav-icon-btn:hover{background:rgba(255,255,255,.15)}}
     .nav-right-group{display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:1}
     /* Vier Knöpfe nebeneinander sind auf einem 320-Pixel-Gerät drei
        Pixel zu viel. Statt einen davon zu opfern, rücken sie enger
@@ -640,7 +640,7 @@
       box-shadow:0 8px 32px rgba(255,45,118,0.18),0 2px 8px rgba(0,0,0,.2);
       letter-spacing:.01em;
     }
-    .auth-submit-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+    @media(hover:hover){.auth-submit-btn:hover{filter:brightness(1.06)}}
     .auth-submit-btn:active{transform:scale(var(--druck));box-shadow:0 4px 16px rgba(255,45,118,0.16)}
     .auth-divider{
       display:flex;align-items:center;gap:12px;margin:8px 0;
@@ -664,11 +664,11 @@
          Bekannten da war. Jetzt sitzt der Knopf immer unten. */
       display:flex;flex-direction:column;
     }
-    .card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
+    @media(hover:hover){.card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4)}}
     .card:active{transform:scale(var(--druck-gross))}
     .card-glow-img{width:100%;aspect-ratio:16/10;position:relative;overflow:hidden;background:#0d1030}
     .card-glow-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;transition:transform var(--takt-lang) var(--kurve)}
-    .card:hover .card-glow-img img{transform:scale(1.05)}
+    @media(hover:hover){.card:hover .card-glow-img img{transform:scale(1.05)}}
     .card-img-overlay{
       position:absolute;inset:0;z-index:2;
       background:linear-gradient(to top,rgba(9,13,36,.85) 0%,rgba(9,13,36,.2) 50%,transparent 100%);
@@ -750,7 +750,7 @@
       cursor:pointer;background:rgba(255,255,255,.06);color:var(--muted);
       transition:transform var(--takt);flex-shrink:0;
     }
-    .filter-chip:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+    @media(hover:hover){.filter-chip:hover{color:#fff;border-color:rgba(255,255,255,.3)}}
     .filter-chip.active{
       color:#fff;background:rgba(255,45,118,.15);
       border-color:rgba(255,45,118,.5);
@@ -1021,7 +1021,7 @@
     }
     .d-hero-btns{position:absolute;top:calc(var(--safe-top) + 14px);left:14px;right:14px;display:flex;justify-content:space-between;z-index:3}
     .d-hero-rechts{display:flex;align-items:center;gap:8px}
-    .d-hero-btn:hover{background:rgba(9,13,36,.8)}
+    @media(hover:hover){.d-hero-btn:hover{background:rgba(9,13,36,.8)}}
     .d-body{padding:18px 20px 0}
     .d-pill-row{display:flex;align-items:center;gap:6px;margin-bottom:10px}
     .d-title{font-size:1.5rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em}
@@ -1079,7 +1079,7 @@
       font-family:var(--font);font-size:.75rem;font-weight:700;color:#fff;
       display:flex;align-items:center;gap:5px;transition:transform var(--takt-kurz);
     }
-    .msg-btn:hover{background:rgba(255,255,255,.14)}
+    @media(hover:hover){.msg-btn:hover{background:rgba(255,255,255,.14)}}
 
     .sec-lbl{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
     /* Kleiner Knopf rechts in einer Abschnittszeile */
@@ -1154,7 +1154,7 @@
     }
     /* Pro bekommt eine eigene Zeile – sonst quetscht es die anderen */
     .prof-action-btn.pro-action{flex:1 0 100%}
-    .prof-action-btn:hover{background:rgba(255,255,255,.12)}
+    @media(hover:hover){.prof-action-btn:hover{background:rgba(255,255,255,.12)}}
     .prof-action-btn.pro-action{
       background:linear-gradient(135deg,rgba(255,45,118,.15),rgba(255,90,69,.1));
       border-color:rgba(255,45,118,.3);color:#FF4D8A;
@@ -1177,7 +1177,7 @@
     .insta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
     .insta-tile{aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative;background:rgba(255,255,255,.05)}
     .insta-tile img{width:100%;height:100%;object-fit:cover;transition:transform var(--takt-lang)}
-    .insta-tile:hover img{transform:scale(1.05)}
+    @media(hover:hover){.insta-tile:hover img{transform:scale(1.05)}}
     .insta-tile-icon{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3)}
     .insta-tile-overlay{
       position:absolute;inset:0;
@@ -1185,7 +1185,7 @@
       opacity:0;transition:opacity var(--takt);
       display:flex;flex-direction:column;justify-content:flex-end;padding:8px;
     }
-    .insta-tile:hover .insta-tile-overlay{opacity:1}
+    @media(hover:hover){.insta-tile:hover .insta-tile-overlay{opacity:1}}
     .insta-empty{
       grid-column:1/-1;padding:48px 20px;text-align:center;
       color:var(--muted);font-size:.88rem;
@@ -1210,7 +1210,7 @@
       border-radius:18px;padding:14px;margin-bottom:10px;cursor:pointer;
       transition:transform var(--takt);
     }
-    .cal-item:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    @media(hover:hover){.cal-item:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}}
     .cal-item.cal-past{opacity:.45}
     .cal-date{text-align:center;min-width:40px}
     .cal-day{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
@@ -1230,7 +1230,7 @@
       background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
       border-radius:16px;margin-bottom:8px;cursor:pointer;transition:transform var(--takt-kurz);
     }
-    .chat-item:hover{background:rgba(255,255,255,.09)}
+    @media(hover:hover){.chat-item:hover{background:rgba(255,255,255,.09)}}
     .chat-av{width:48px;height:48px;border-radius:50%;overflow:hidden;background:var(--grad-cta);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#fff;flex-shrink:0}
     .chat-av img{width:100%;height:100%;object-fit:cover}
     .chat-info{flex:1;min-width:0}
@@ -1370,7 +1370,7 @@
       cursor:pointer;width:100%;transition:transform var(--takt-kurz);
       box-shadow:0 4px 20px rgba(255,45,118,0.18);
     }
-    .pro-cta:hover{filter:brightness(1.08)}
+    @media(hover:hover){.pro-cta:hover{filter:brightness(1.08)}}
     .pro-features{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
     .pro-feat{
       background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
@@ -1393,7 +1393,7 @@
       background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);
       border-radius:14px;padding:14px 16px;cursor:pointer;transition:transform var(--takt);
     }
-    .msg-setting-opt:hover{background:rgba(255,255,255,.08)}
+    @media(hover:hover){.msg-setting-opt:hover{background:rgba(255,255,255,.08)}}
     .msg-setting-opt.active{border-color:rgba(255,45,118,.4);background:rgba(255,45,118,.08)}
     .msg-setting-radio{
       width:20px;height:20px;border-radius:50%;
@@ -1464,7 +1464,7 @@
     .addr-drop.show{display:block}
     .addr-opt{padding:12px 14px;cursor:pointer;font-size:.86rem;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.06)}
     .addr-opt:last-child{border-bottom:none}
-    .addr-opt:hover{background:rgba(255,255,255,.08);color:#fff}
+    @media(hover:hover){.addr-opt:hover{background:rgba(255,255,255,.08);color:#fff}}
 
     /* ── ICON PICKER ── */
     .icon-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
@@ -1518,7 +1518,7 @@
       border-radius:16px;padding:14px 16px;cursor:pointer;
       transition:transform var(--takt);position:relative;
     }
-    .type-card-pro:hover{border-color:rgba(255,255,255,.2);transform:translateX(3px)}
+    @media(hover:hover){.type-card-pro:hover{border-color:rgba(255,255,255,.2);transform:translateX(3px)}}
     .type-card-pro.sel-public{border-color:rgba(255,45,118,.5);background:rgba(255,45,118,.08)}
     .type-card-pro.sel-private{border-color:rgba(99,59,255,.5);background:rgba(99,59,255,.08)}
     .type-card-pro.sel-events{border-color:rgba(255,215,0,.4);background:rgba(255,215,0,.06)}
@@ -1553,12 +1553,12 @@
       display:flex;align-items:center;justify-content:center;
       transition:transform var(--takt-kurz);margin-bottom:4px;
     }
-    .img-upload-pro:hover{border-color:rgba(255,45,118,.4);background:rgba(255,45,118,.05)}
+    @media(hover:hover){.img-upload-pro:hover{border-color:rgba(255,45,118,.4);background:rgba(255,45,118,.05)}}
     .img-upload-pro input[type=file]{display:none}
     .img-ph-pro{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:.85rem}
     .u-preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0}
     .u-overlay{position:absolute;inset:0;background:rgba(0,0,0,.66);display:none;align-items:center;justify-content:center;color:#fff;font-weight:700;border-radius:16px}
-    .img-upload-pro:hover .u-overlay{display:flex}
+    @media(hover:hover){.img-upload-pro:hover .u-overlay{display:flex}}
 
     /* ── LOADING ── */
     .loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:40px;color:var(--muted);font-size:.88rem}
@@ -1723,7 +1723,7 @@
       background:rgba(11,15,39,.92)!important;color:#fff!important;
       border-color:rgba(255,255,255,.12)!important;
     }
-    .leaflet-control-zoom a:hover{background:rgba(30,36,70,.95)!important}
+    @media(hover:hover){.leaflet-control-zoom a:hover{background:rgba(30,36,70,.95)!important}}
 
     /* Pins */
     .mpin{position:relative;width:38px;height:38px}
@@ -1757,7 +1757,7 @@
     .leaflet-popup-content{margin:13px 15px!important;width:186px!important}
     .leaflet-popup-tip{background:rgba(12,16,42,.97)!important;box-shadow:none!important}
     .leaflet-popup-close-button{color:rgba(255,255,255,.45)!important;font-size:18px!important;padding:6px 8px 0 0!important}
-    .leaflet-popup-close-button:hover{color:#fff!important}
+    @media(hover:hover){.leaflet-popup-close-button:hover{color:#fff!important}}
     .popup-when{font-size:.6rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
     .popup-name{font-size:.9rem;font-weight:800;color:#fff;line-height:1.25;margin-bottom:5px}
     .popup-meta{font-size:.71rem;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:11px}
@@ -1844,7 +1844,7 @@
       font-family:var(--font);font-size:.9rem;font-weight:600;color:#fff;
       transition:transform var(--takt-kurz);
     }
-    .settings-btn:hover{background:rgba(255,255,255,.09)}
+    @media(hover:hover){.settings-btn:hover{background:rgba(255,255,255,.09)}}
     .settings-btn.danger.armed{
       background:rgba(255,69,86,.16);border-color:rgba(255,69,86,.55);color:#FF8A92;
     }
@@ -2634,7 +2634,8 @@
       border-bottom:1px solid rgba(255,255,255,.06);transition:background var(--takt-kurz);
     }
     .addr-item:last-child{border-bottom:none}
-    .addr-item:hover,.addr-item:active{background:rgba(255,45,118,.14)}
+    .addr-item:active{background:rgba(255,45,118,.14)}
+    @media(hover:hover){.addr-item:hover{background:rgba(255,45,118,.14)}}
     .a-main{font-size:.88rem;font-weight:700;color:#fff}
     .a-sub{font-size:.74rem;color:var(--muted)}
     .addr-hint{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:.74rem;font-weight:700}
