@@ -1563,6 +1563,11 @@
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 8v5'/%3E%3Cpath d='M12 16.5v.01'/%3E%3C/svg%3E");
     }
     .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    /* Mit left:50% gab der Browser dem Feld hoechstens die halbe
+       Bildschirmbreite – ein laengerer Satz stand dann als schmale Saeule
+       da. max-content nimmt die Breite, die der Text braucht, bis zur
+       Obergrenze. */
+    .toast{width:max-content}
     .toast.success::before{
       background-color:rgba(43,217,138,.16);
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232BD98A' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4.5 12.5 5 5 10-10'/%3E%3C/svg%3E");
@@ -11483,6 +11488,7 @@ function renderProPage(){
       : null;
     const status={active:'Aktiv',trialing:'Testwoche',past_due:'Zahlung offen',cancelled:'Gekündigt',canceled:'Gekündigt',expired:'Abgelaufen'}[cProfile.subscription_status]||'Aktiv';
     const probe=probeLaeuft();
+    const gekuendigt=['cancelled','canceled'].includes(cProfile.subscription_status);
     // In der App führt der Weg zum Kündigen über Apple, nicht über uns.
     const verwalten = istApp()
       ? '<div class="pro2-q"><b>Kündigen oder Zahlungsmittel ändern</b>'
@@ -11500,11 +11506,13 @@ function renderProPage(){
           <p>Dein Profil ist für alle vollständig sichtbar, und du kannst jeden anschreiben.</p>
           ${probe?`<div class="pro2-probe">
             <b>${probeText()}</b>
-            <span>${bis?'Ab dem '+bis+' läuft das Abo mit CHF 3.00 im Monat weiter. Kündigst du vorher, wird nichts abgebucht.':'Kündigst du vor Ablauf der sieben Tage, wird nichts abgebucht.'}</span>
+            <span>${gekuendigt
+              ? (bis?'Pro bleibt aktiv bis <b>'+bis+'</b>. Es wird nichts abgebucht.':'Gekündigt – es wird nichts abgebucht.')
+              : (bis?'Ab dem '+bis+' läuft das Abo mit CHF 3.00 im Monat weiter. Kündigst du vorher, wird nichts abgebucht.':'Kündigst du vor Ablauf der sieben Tage, wird nichts abgebucht.')}</span>
           </div>`:''}
           <div class="pro2-meta">
             <div><b>Status</b><span>${status}</span></div>
-            <div><b>${probe?'Erste Zahlung':(bis?'Verlängert am':'Abo')}</b><span>${bis||'CHF 3.00 / Monat'}</span></div>
+            <div><b>${gekuendigt?(bis?'Aktiv bis':'Abo'):probe?'Erste Zahlung':(bis?'Verlängert am':'Abo')}</b><span>${bis||'CHF 3.00 / Monat'}</span></div>
           </div>
         </div>
 
@@ -14497,6 +14505,10 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Pro bleibt aktiv bis":"Pro stays active until",
+  ". Es wird nichts abgebucht.":". Nothing will be charged.",
+  "Gekündigt – es wird nichts abgebucht.":"Cancelled – nothing will be charged.",
+  "Aktiv bis":"Active until",
   "Day One – einer der ersten 100 auf SPOTOUT":"Day One – one of the first 100 on SPOTOUT",
   "Day One – einer der ersten 100":"Day One – one of the first 100",
   "Person melden":"Report person",
@@ -15543,6 +15555,10 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Pro bleibt aktiv bis":"Pro reste actif jusqu’au",
+  ". Es wird nichts abgebucht.":". Rien ne sera prélevé.",
+  "Gekündigt – es wird nichts abgebucht.":"Résilié – rien ne sera prélevé.",
+  "Aktiv bis":"Actif jusqu’au",
   "Day One – einer der ersten 100 auf SPOTOUT":"Day One – parmi les 100 premiers sur SPOTOUT",
   "Day One – einer der ersten 100":"Day One – parmi les 100 premiers",
   "Person melden":"Signaler la personne",
@@ -16589,6 +16605,10 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Pro bleibt aktiv bis":"Pro resta attivo fino al",
+  ". Es wird nichts abgebucht.":". Non verrà addebitato nulla.",
+  "Gekündigt – es wird nichts abgebucht.":"Disdetto – non verrà addebitato nulla.",
+  "Aktiv bis":"Attivo fino al",
   "Day One – einer der ersten 100 auf SPOTOUT":"Day One – tra i primi 100 su SPOTOUT",
   "Day One – einer der ersten 100":"Day One – tra i primi 100",
   "Person melden":"Segnala la persona",
