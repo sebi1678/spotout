@@ -12829,6 +12829,7 @@ const PRO_ICON={
   geld:'<circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.9-1.8-1.4-3-1.4-1.9 0-3 1-3 2.3 0 3 6 1.6 6 4.6 0 1.4-1.2 2.4-3 2.4-1.3 0-2.4-.5-3.1-1.5"/><path d="M12 5.4v13.2"/>',
   stern:'<path d="M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 16.9 6.6 19.8l1-6.1L3.2 9.4l6.1-.9z"/>',
   check:'<path d="M20 6 9 17l-5-5"/>',
+  auge:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
 };
 function proIcon(k,w){return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.7)+'" stroke-linecap="round" stroke-linejoin="round">'+PRO_ICON[k]+'</svg>';}
 
@@ -12840,6 +12841,8 @@ const PRO_VORTEILE=[
    d:'Starte Unterhaltungen mit allen, die du auf SPOTOUT triffst. Ohne Pro kannst du nur antworten.'},
   {k:'profil',t:'Dein Profil sehen alle',
    d:'Bio, Instagram und Snapchat stehen offen auf deinem Profil – auch <b>Gratis-Nutzer</b> sehen sie und können dir folgen.'},
+  {k:'auge',t:'Sehen, wer bei dir war',
+   d:'Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.'},
   {k:'geld',t:'Günstiger veröffentlichen',
    d:'Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.'},
 ];
@@ -12855,6 +12858,7 @@ const PRO_VERGLEICH=[
   ['Bio & Social-Links im Profil',0,1],
   ['Chats selbst starten',0,1],
   ['Gästeliste sehen',0,1],
+  ['Sehen, wer dein Profil besucht hat',0,1],
   ['Gebühr fürs Veröffentlichen','5 / 15 / 30','3 / 8 / 15'],
 ];
 
@@ -17114,6 +17118,9 @@ en:{
   "Über „Teilen“ geht es auch ohne Pro.":"You can also use “Share” without Pro.",
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"You have no contacts yet. Follow someone via search – or share the party below with “Share”.",
   "Einladung kopiert – jetzt einfügen und senden":"Invitation copied – now paste and send",
+  "Sehen, wer bei dir war":"See who visited you",
+  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Like on TikTok: see who viewed your profile in the last 30 days. You can turn it off anytime – but then you won’t see it either.",
+  "Sehen, wer dein Profil besucht hat":"See who visited your profile",
   "Pro verschenken":"Gift Pro",
   "Deine Anfrage ist beim Host.":"Your request is with the host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
@@ -18349,6 +18356,9 @@ fr:{
   "Über „Teilen“ geht es auch ohne Pro.":"Avec « Partager », ça marche aussi sans Pro.",
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"Tu n’as pas encore de contacts. Suis quelqu’un via la recherche – ou partage la fête avec « Partager ».",
   "Einladung kopiert – jetzt einfügen und senden":"Invitation copiée – colle-la et envoie",
+  "Sehen, wer bei dir war":"Voir qui est passé",
+  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Comme sur TikTok : vois qui a consulté ton profil ces 30 derniers jours. Tu peux désactiver à tout moment – mais tu ne le verras plus.",
+  "Sehen, wer dein Profil besucht hat":"Voir qui a visité ton profil",
 "Pro verschenken":"Offrir Pro",
   "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
@@ -19584,6 +19594,9 @@ it:{
   "Über „Teilen“ geht es auch ohne Pro.":"Con “Condividi” funziona anche senza Pro.",
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder teil die Party unten über „Teilen“.":"Non hai ancora contatti. Segui qualcuno dalla ricerca – oppure condividi la festa con “Condividi”.",
   "Einladung kopiert – jetzt einfügen und senden":"Invito copiato – ora incollalo e invia",
+  "Sehen, wer bei dir war":"Vedi chi è passato",
+  "Wie auf TikTok: Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.":"Come su TikTok: vedi chi ha visto il tuo profilo negli ultimi 30 giorni. Puoi disattivarlo in qualsiasi momento – ma poi non lo vedrai più.",
+  "Sehen, wer dein Profil besucht hat":"Vedere chi ha visitato il tuo profilo",
 "Pro verschenken":"Regala Pro",
   "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
