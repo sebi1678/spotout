@@ -4801,16 +4801,26 @@
     .mod-akt .nt-knopf.armed{background:rgba(255,60,60,.2);border-color:rgba(255,80,80,.5)}
     /* ── Benachrichtigungen: Schalter wie auf TikTok ── */
     .sw{
-      position:relative;flex:0 0 48px;width:48px;height:28px;border-radius:999px;border:none;padding:0;cursor:pointer;
-      background:rgba(255,255,255,.16);transition:background var(--takt-kurz,.18s) ease;
+      -webkit-appearance:none;appearance:none;position:relative;display:block;box-sizing:border-box;
+      flex:0 0 51px;width:51px;height:31px;min-width:51px;min-height:31px;margin:0;padding:0;border:none;border-radius:999px;
+      background:rgba(120,120,128,.36);cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;
+      transition:background-color .22s ease;
     }
-    .sw span{
-      position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;
-      box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform var(--takt-kurz,.18s) ease;
+    .sw>i{
+      position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:999px;background:#fff;
+      box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);
+      transition:transform .26s cubic-bezier(.3,1.3,.5,1),width .18s ease;
     }
-    .sw.an{background:var(--grad-cta)}
-    .sw.an span{transform:translateX(20px)}
-    .sw:disabled{opacity:.45;cursor:default}
+    .sw.an{background:#FF2D76}
+    .sw.an>i{transform:translateX(20px)}
+    .sw:active,.sw:active>i{scale:none}
+    button.sw:active{transform:none}
+    .sw:not(:disabled):active>i{width:31px}
+    .sw.an:not(:disabled):active>i{transform:translateX(16px)}
+    .sw:disabled{cursor:default}
+    .push-gruppe.ruhig .sw{background:rgba(120,120,128,.22)}
+    .push-immer{flex:none;font-size:.74rem;font-weight:700;color:var(--muted);padding:5px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);white-space:nowrap}
     .push-karte{
       display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px 15px;margin-bottom:14px;
       border-radius:15px;background:rgba(124,92,252,.10);border:1px solid rgba(124,92,252,.26);
@@ -4824,8 +4834,8 @@
       border-bottom:1px solid rgba(255,255,255,.07);
     }
     .push-zeile>div{flex:1;min-width:0}
-    .push-zeile b{display:block;font-size:.88rem;font-weight:700;color:#fff;overflow-wrap:anywhere}
-    .push-zeile span{display:block;font-size:.75rem;line-height:1.45;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+    .push-zeile>div>b{display:block;font-size:.88rem;font-weight:700;color:#fff;overflow-wrap:anywhere}
+    .push-zeile>div>span{display:block;font-size:.75rem;line-height:1.45;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
     .push-zeile.haupt{padding:14px 15px;border:1px solid rgba(255,255,255,.08);border-radius:15px;background:rgba(255,255,255,.05)}
     .push-zeile.fix{border-bottom:none;margin-top:6px}
     .push-gruppe{transition:opacity var(--takt-kurz,.18s) ease}
@@ -15175,9 +15185,9 @@ async function openFollowList(userId,mode){
 
   const col=mode==='followers'?'follower_id':'following_id';
   const other=mode==='followers'?'following_id':'follower_id';
-  const{data,error}=await sb.from('follows').select(col).eq(other,userId).limit(200);
+  const{data,error}=await sb.rpc('folge_liste',{p_user:userId,p_art:mode==='followers'?'followers':'following'});
   if(error){body.innerHTML='<div class="up-empty">Konnte nicht geladen werden</div>';return;}
-  const ids=(data||[]).map(r=>r[col]).filter(Boolean);
+  const ids=(data||[]).map(r=>r.id).filter(Boolean);
   if(!ids.length){
     body.innerHTML='<div class="up-empty">'+(mode==='followers'?'Noch keine Follower':'Folgt noch niemandem')+'</div>';
     return;
@@ -16868,6 +16878,7 @@ en:{
   "25 Follower":"25 followers",
   "Geschafft":"Done",
   "Abzeichen bekommst du, indem du SPOTOUT nutzt – an Partys gehen, mitbringen, selbst feiern.":"You earn badges by using SPOTOUT – going to parties, bringing things, hosting.",
+  "Immer an":"Always on",
   "Pro verschenken":"Gift Pro",
   "Deine Anfrage ist beim Host.":"Your request is with the host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
@@ -18098,6 +18109,7 @@ fr:{
   "Gelöscht":"Supprimé",
   "Öffnen":"Ouvrir",
   "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Ouvre Réglages › Notifications › Spotout",
+  "Immer an":"Toujours activé",
 "Pro verschenken":"Offrir Pro",
   "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
@@ -19328,6 +19340,7 @@ it:{
   "Gelöscht":"Eliminato",
   "Öffnen":"Apri",
   "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Apri Impostazioni › Notifiche › Spotout",
+  "Immer an":"Sempre attivo",
 "Pro verschenken":"Regala Pro",
   "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
   " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
@@ -20147,7 +20160,7 @@ function pushWertZeigen(){
 }
 function schalter(an,klick,gesperrt){
   return '<button class="sw'+(an?' an':'')+'" role="switch" aria-checked="'+(an?'true':'false')+'"'
-    +(gesperrt?' disabled':'')+' onclick="'+klick+'"><span></span></button>';
+    +(gesperrt?' disabled':'')+' onclick="'+klick+'"><i></i></button>';
 }
 async function pushEinstOeffnen(){
   if(!cUser){kontoNoetig();return;}
@@ -20187,7 +20200,7 @@ function pushEinstZeichnen(){
         +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"')",alle)+'</div>').join('')
     +'</div>'
     +'<div class="push-zeile fix"><div><b>Konto & Sicherheit</b><span>Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.</span></div>'
-      +schalter(true,'',true)+'</div>';
+      +'<span class="push-immer">Immer an</span></div>';
   pushWertZeigen();
 }
 async function pushSetzen(k){
