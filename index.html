@@ -929,42 +929,6 @@
     /* Bewusst nicht im SPOTOUT-Stil: Schwarz, weisse Ziffern, orange
        Rechenzeichen. Wer darauf schaut, soll einen Taschenrechner
        sehen und nicht weiterfragen. */
-    .tarn{
-      position:fixed;inset:0;z-index:2000;display:none;
-      flex-direction:column;justify-content:flex-end;
-      background:#000;padding:0 10px calc(18px + var(--safe-bottom));
-      user-select:none;-webkit-user-select:none;
-    }
-    .tarn.an{display:flex}
-    .tarn-anzeige{
-      color:#fff;font-size:4rem;font-weight:300;text-align:right;
-      padding:0 16px 14px;letter-spacing:-.02em;line-height:1.1;
-      font-variant-numeric:tabular-nums;
-      overflow:hidden;white-space:nowrap;
-      -webkit-tap-highlight-color:transparent;cursor:default;
-    }
-    .tarn-tasten{
-      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
-    }
-    .tarn-t{
-      aspect-ratio:1/1;border:none;border-radius:999px;cursor:pointer;
-      background:#333;color:#fff;font-size:1.7rem;font-weight:400;
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      -webkit-tap-highlight-color:transparent;
-      display:flex;align-items:center;justify-content:center;
-    }
-    .tarn-t:active{filter:brightness(1.5)}
-    .tarn-grau{background:#a5a5a5;color:#000}
-    .tarn-op{background:#ff9f0a;color:#fff}
-    .tarn-null{grid-column:span 2;aspect-ratio:auto;border-radius:999px;
-      justify-content:flex-start;padding-left:28px}
-    @media (max-height:680px){
-      .tarn-anzeige{font-size:3rem!important;padding-bottom:8px}
-      .tarn-tasten{gap:8px}
-      .tarn-t{font-size:1.5rem}
-    }
-    /* Solange die Tarnung liegt, bewegt sich darunter nichts. */
-    body.tarn-still{overflow:hidden}
     .crop-hilfe{font-size:.8rem;color:var(--muted);line-height:1.5;margin:0 0 14px}
     .crop-buehne{
       position:relative;width:100%;max-width:320px;margin:0 auto 16px;
@@ -5209,7 +5173,7 @@
     }
     .rwahl.on .rwahl-haken{opacity:1}
     .rwahl-haken svg{width:12px;height:12px}
-    /* Schnell raus bei der Registrierung: fuenf Moeglichkeiten sollen
+    /* Doomscroll-Knopf bei der Registrierung: vier Moeglichkeiten sollen
        auf einem kleinen Handy ohne Scrollen Platz haben – darum eine
        Spur flacher als die Wahl der Kontoart. */
     .rwahl.rwahl-klein{padding:10px 13px;margin-bottom:8px;gap:12px}
@@ -5900,21 +5864,13 @@
           <div class="rhinweis">Mit einer E-Mail auf dieser Website ist der Verein sofort bestätigt.</div>
         </div>
 
-        <!-- ── 4 · privat: Schnell raus ──
-             Nur fuer private Konten: ein Verein geht nicht selbst auf Partys
-             und braucht keinen Fluchtweg. Gewaehlt werden muss – "Brauche
-             ich nicht" zaehlt als Wahl. -->
+        <!-- ── 4 · privat: Doomscroll-Knopf ──
+             Party langweilig? Ein Tipp, und man scrollt in der eigenen App
+             weiter. Nur fuer private Konten – ein Verein geht nicht selbst
+             auf Partys. "Brauche ich nicht" zaehlt als Wahl. -->
         <div class="rstep" data-rs="4" data-art="privat">
-          <div class="rfrage">Wohin, wenn jemand über die Schulter schaut?</div>
+          <div class="rfrage">Party langweilig? Wo scrollst du weiter?</div>
           <div id="regRausWahl">
-          <button type="button" class="rwahl rwahl-klein" data-raus="tarnung" onclick="regRausWaehlen('tarnung')">
-            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01" stroke-width="2.6"/></svg></span>
-            <span class="rwahl-txt">
-              <b>Taschenrechner</b>
-              <span>Rechnet wirklich. Zurück mit langem Druck.</span>
-            </span>
-            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
-          </button>
           <button type="button" class="rwahl rwahl-klein" data-raus="instagram" onclick="regRausWaehlen('instagram')">
             <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01" stroke-width="2.6"/></svg></span>
             <span class="rwahl-txt">
@@ -5929,10 +5885,10 @@
             </span>
             <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
           </button>
-          <button type="button" class="rwahl rwahl-klein" data-raus="wetter" onclick="regRausWaehlen('wetter')">
-            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 20H8a4.5 4.5 0 1 1 1.2-8.84A5.5 5.5 0 0 1 19.8 13a3.5 3.5 0 0 1-2.3 7z"/></svg></span>
+          <button type="button" class="rwahl rwahl-klein" data-raus="youtube" onclick="regRausWaehlen('youtube')">
+            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9.2 5 2.8-5 2.8z"/></svg></span>
             <span class="rwahl-txt">
-              <b>Wetter</b>
+              <b>YouTube Shorts</b>
             </span>
             <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
           </button>
@@ -6031,8 +5987,8 @@
   <div class="top-nav">
     <img src="data:image/png;base64,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" style="height:28px;width:auto" alt="Spotout"/>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Schnell raus">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg>
@@ -6200,8 +6156,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Schnell raus">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
@@ -6218,8 +6174,8 @@
   <div class="top-nav">
     <div class="nav-titel">Nachrichten</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Schnell raus">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
@@ -6266,8 +6222,8 @@
   <div class="top-nav">
     <div class="nav-titel">Meine Partys</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Schnell raus">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
@@ -6304,8 +6260,8 @@
   <div class="top-nav">
     <div class="nav-titel">SPOTOUT Pro</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Schnell raus">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/></svg></button>
@@ -6344,35 +6300,6 @@
 
 
 <!-- ════ TOUR ════ -->
-<!-- ════ TARNUNG ════
-     Ein Taschenrechner, der wirklich rechnet. Er liegt ueber allem und
-     verraet mit keinem Pixel, was darunter liegt. Zurueck geht es mit
-     einem langen Druck auf die Anzeige – das findet niemand zufaellig,
-     und der Besitzer vergisst es nicht. -->
-<div class="tarn" id="tarnung" aria-hidden="true">
-  <div class="tarn-anzeige" id="tarnAnzeige">0</div>
-  <div class="tarn-tasten">
-    <button class="tarn-t tarn-grau" onclick="tarnTaste('C')">C</button>
-    <button class="tarn-t tarn-grau" onclick="tarnTaste('±')">+/−</button>
-    <button class="tarn-t tarn-grau" onclick="tarnTaste('%')">%</button>
-    <button class="tarn-t tarn-op" onclick="tarnTaste('/')">÷</button>
-    <button class="tarn-t" onclick="tarnTaste('7')">7</button>
-    <button class="tarn-t" onclick="tarnTaste('8')">8</button>
-    <button class="tarn-t" onclick="tarnTaste('9')">9</button>
-    <button class="tarn-t tarn-op" onclick="tarnTaste('*')">×</button>
-    <button class="tarn-t" onclick="tarnTaste('4')">4</button>
-    <button class="tarn-t" onclick="tarnTaste('5')">5</button>
-    <button class="tarn-t" onclick="tarnTaste('6')">6</button>
-    <button class="tarn-t tarn-op" onclick="tarnTaste('-')">−</button>
-    <button class="tarn-t" onclick="tarnTaste('1')">1</button>
-    <button class="tarn-t" onclick="tarnTaste('2')">2</button>
-    <button class="tarn-t" onclick="tarnTaste('3')">3</button>
-    <button class="tarn-t tarn-op" onclick="tarnTaste('+')">+</button>
-    <button class="tarn-t tarn-null" onclick="tarnTaste('0')">0</button>
-    <button class="tarn-t" onclick="tarnTaste('.')">,</button>
-    <button class="tarn-t tarn-op" onclick="tarnTaste('=')">=</button>
-  </div>
-</div>
 
 <div class="tour" id="tour">
   <div class="tour-kopf">
@@ -7026,14 +6953,13 @@
           <button class="lang-opt" data-lang="it" onclick="setLang('it')"><b>IT</b><span>Italiano</span></button>
         </div>
         <div id="setRausBox">
-          <div class="set-frage">Schnell raus</div>
-        <div class="set-hilfe">Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.</div>
+          <div class="set-frage">Doomscroll-Knopf</div>
+        <div class="set-hilfe">Party gerade langweilig? Ein Tipp auf den Knopf oben, und du scrollst direkt in deiner App weiter.</div>
         <div class="chipset" id="setRausWahl">
           <button class="cset" data-raus="" onclick="setSchnellRaus('')">Aus</button>
-          <button class="cset" data-raus="tarnung" onclick="setSchnellRaus('tarnung')">Taschenrechner</button>
-          <button class="cset" data-raus="instagram" onclick="setSchnellRaus('instagram')">Instagram Reels</button>
           <button class="cset" data-raus="tiktok" onclick="setSchnellRaus('tiktok')">TikTok</button>
-          <button class="cset" data-raus="wetter" onclick="setSchnellRaus('wetter')">Wetter</button>
+          <button class="cset" data-raus="instagram" onclick="setSchnellRaus('instagram')">Instagram Reels</button>
+          <button class="cset" data-raus="youtube" onclick="setSchnellRaus('youtube')">YouTube Shorts</button>
         </div>
         </div>
         <div class="set-frage">Karten-App</div>
@@ -7908,8 +7834,8 @@ const TOUREN={
         +'</div>',
     },
     {
-      t:'Ein Tipp, und SPOTOUT ist weg',
-      s:'Schaut jemand mit? Ein Tipp auf „Schnell raus" oben, und SPOTOUT ist weg.',
+      t:'Party langweilig?',
+      s:'Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.',
       /* Die eigene Wahl aus der Registrierung ist markiert – so sieht man
          gleich, was der Knopf bei einem selbst tut. */
       b:()=>{
@@ -7917,13 +7843,13 @@ const TOUREN={
         const chip=(k,n)=>'<span class="cset'+(w===k?' on':'')+'">'+n+'</span>';
         return '<div class="tb">'
           +'<div class="tb-leiste"><span class="tb-logo">SPOTOUT</span>'
-          +'<span class="tb-ic raus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>'
+          +'<span class="tb-ic raus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="m9.5 11 2.5-2.5 2.5 2.5"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg></span>'
           +'<span class="tb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>'
           +'</div>'
           +'<div class="tb-kopf"><span>Wohin der Knopf führt</span></div>'
           +'<div class="chipset tb-chips">'
-          +chip('tarnung','Taschenrechner')+chip('instagram','Instagram Reels')
-          +chip('tiktok','TikTok')+chip('wetter','Wetter')
+          +chip('tiktok','TikTok')+chip('instagram','Instagram Reels')
+          +chip('youtube','YouTube Shorts')
           +'</div></div>';
       },
     },
@@ -15431,7 +15357,7 @@ en:{
   "Angemeldete Gäste":"Registered guests",
   "Dann stehen die nächsten Partys zuoberst.":"Then the nearest parties show up first.",
   "Jeder Link gilt für genau eine Person.":"Each link is valid for exactly one person.",
-  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"One tap on the button at the top and SPOTOUT is gone. To leave the calculator: long-press the number.",
+  "Party gerade langweilig? Ein Tipp auf den Knopf oben, und du scrollst direkt in deiner App weiter.":"Party boring right now? One tap on the button at the top and you keep scrolling in your app.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Private or club can’t be switched later. For both, create a second account.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tap a suggestion so it shows up on the map. You can also find huts and club houses by name.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"You collect the entry fee yourself on site. The publishing fee applies regardless.",
@@ -15454,16 +15380,14 @@ en:{
   "Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.":"Public parties cost a small one-off fee. Private ones are free.",
   "Leute finden und schreiben":"Find people and chat",
   "Über die Lupe oben findest du Leute. Wer dir schreiben darf, stellst du in den Einstellungen ein.":"Find people with the magnifier at the top. Who can message you is up to you in Settings.",
-  "Schaut jemand mit? Ein Tipp auf „Schnell raus\" oben, und SPOTOUT ist weg.":"Someone watching? One tap on “Quick exit” at the top and SPOTOUT is gone.",
   "Alles bisher geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei.":"Everything so far is free. Pro costs CHF 3.00 a month, the first week is free.",
   "Vier Dinge sind jetzt anders.":"Four things are different now.",
   "Auf jeder Party siehst du, wer von deinen Kontakten dabei ist – nicht nur eine Zahl.":"At every party you see which of your contacts are going – not just a number.",
   "Du kannst jetzt jedem als Erster schreiben.":"You can now message anyone first.",
   "Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.":"Everyone sees your bio and channels now. You can change your name any time.",
-  "Ein Tipp, und SPOTOUT ist weg":"One tap and SPOTOUT is gone",
+  "Party langweilig?":"Party boring?",
   "Wohin der Knopf führt":"Where the button takes you",
-  "Wohin, wenn jemand über die Schulter schaut?":"Where to, if someone looks over your shoulder?",
-  "Rechnet wirklich. Zurück mit langem Druck.":"Really calculates. Long-press to come back.",
+  "Party langweilig? Wo scrollst du weiter?":"Party boring? Where do you keep scrolling?",
   "Brauche ich nicht":"I don’t need it",
   "Kein Knopf in der Leiste":"No button in the bar",
   "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Pick where the button takes you – or “I don’t need it”.",
@@ -16132,7 +16056,6 @@ en:{
   "Getränke":"Drinks",
   "Total":"Total",
   "Veranstalter":"Organiser",
-  "Taschenrechner":"Calculator",
   "Fehler":"Error",
   "Bild ausrichten":"Position your picture",
   "Schieb das Bild mit dem Finger, zieh mit zwei Fingern zum Zoomen.":"Drag the picture with one finger, pinch with two to zoom.",
@@ -16141,11 +16064,12 @@ en:{
   "Das Bild liess sich nicht öffnen":"The picture could not be opened",
   "Der Zuschnitt hat nicht geklappt":"The crop did not work",
   "Moment…":"One moment…",
-  "Schnell raus":"Quick exit",
+  "Doomscroll-Knopf":"Doomscroll button",
   "Aus":"Off",
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
   "Pro verschenken":"Gift Pro",
+  "Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.":"One tap on the button at the top and you're straight into TikTok, Reels or Shorts.",
   "Das Gespräch konnte nicht geöffnet werden":"Couldn't open the conversation",
   "Diese Party ist nicht mehr verfügbar":"This party is no longer available",
   "Party konnte nicht geladen werden – prüf dein Internet":"Couldn't load the party – check your internet",
@@ -16585,7 +16509,7 @@ fr:{
   "Angemeldete Gäste":"Invités inscrits",
   "Dann stehen die nächsten Partys zuoberst.":"Les soirées les plus proches apparaissent alors en premier.",
   "Jeder Link gilt für genau eine Person.":"Chaque lien vaut pour une seule personne.",
-  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un appui sur le bouton en haut et SPOTOUT disparaît. Pour quitter la calculatrice : appui long sur le nombre.",
+  "Party gerade langweilig? Ein Tipp auf den Knopf oben, und du scrollst direkt in deiner App weiter.":"La soirée est ennuyeuse ? Un appui sur le bouton en haut et tu scrolles directement dans ton app.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privé ou association ne peut pas être changé. Pour les deux, crée un second compte.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Choisis une suggestion pour qu’elle apparaisse sur la carte. Tu trouves aussi refuges et locaux de club par leur nom.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"Tu encaisses toi-même l’entrée sur place. La taxe de publication s’applique quand même.",
@@ -16608,16 +16532,14 @@ fr:{
   "Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.":"Les soirées publiques coûtent une petite taxe unique. Les privées sont gratuites.",
   "Leute finden und schreiben":"Trouver des gens et écrire",
   "Über die Lupe oben findest du Leute. Wer dir schreiben darf, stellst du in den Einstellungen ein.":"La loupe en haut te permet de trouver des gens. Qui peut t’écrire, tu le règles dans les réglages.",
-  "Schaut jemand mit? Ein Tipp auf „Schnell raus\" oben, und SPOTOUT ist weg.":"Quelqu’un regarde ? Un appui sur « Sortie rapide » en haut et SPOTOUT disparaît.",
   "Alles bisher geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei.":"Tout ce qui précède est gratuit. Pro coûte CHF 3.00 par mois, la première semaine est offerte.",
   "Vier Dinge sind jetzt anders.":"Quatre choses changent maintenant.",
   "Auf jeder Party siehst du, wer von deinen Kontakten dabei ist – nicht nur eine Zahl.":"Pour chaque soirée, tu vois lesquels de tes contacts y vont – pas seulement un nombre.",
   "Du kannst jetzt jedem als Erster schreiben.":"Tu peux maintenant écrire en premier à n’importe qui.",
   "Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.":"Tout le monde voit maintenant ta bio et tes réseaux. Tu peux changer ton nom à tout moment.",
-  "Ein Tipp, und SPOTOUT ist weg":"Un appui et SPOTOUT disparaît",
+  "Party langweilig?":"Soirée ennuyeuse ?",
   "Wohin der Knopf führt":"Où mène le bouton",
-  "Wohin, wenn jemand über die Schulter schaut?":"Où aller si quelqu’un regarde par-dessus ton épaule ?",
-  "Rechnet wirklich. Zurück mit langem Druck.":"Calcule vraiment. Appui long pour revenir.",
+  "Party langweilig? Wo scrollst du weiter?":"Soirée ennuyeuse ? Tu scrolles où ?",
   "Brauche ich nicht":"Pas besoin",
   "Kein Knopf in der Leiste":"Pas de bouton dans la barre",
   "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Choisis où mène le bouton – ou « Pas besoin ».",
@@ -17286,7 +17208,6 @@ fr:{
   "Getränke":"Boissons",
   "Total":"Total",
   "Veranstalter":"Organisateur",
-  "Taschenrechner":"Calculatrice",
   "Fehler":"Erreur",
   "Bild ausrichten":"Cadrer ta photo",
   "Schieb das Bild mit dem Finger, zieh mit zwei Fingern zum Zoomen.":"Déplace la photo avec un doigt, pince à deux doigts pour zoomer.",
@@ -17295,11 +17216,12 @@ fr:{
   "Das Bild liess sich nicht öffnen":"Impossible d’ouvrir la photo",
   "Der Zuschnitt hat nicht geklappt":"Le recadrage n’a pas fonctionné",
   "Moment…":"Un instant…",
-  "Schnell raus":"Sortie rapide",
+  "Doomscroll-Knopf":"Bouton doomscroll",
   "Aus":"Désactivé",
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
   "Pro verschenken":"Offrir Pro",
+  "Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.":"Un appui sur le bouton en haut et tu scrolles direct dans TikTok, Reels ou Shorts.",
   "Das Gespräch konnte nicht geöffnet werden":"Impossible d'ouvrir la conversation",
   "Diese Party ist nicht mehr verfügbar":"Cette soirée n'est plus disponible",
   "Party konnte nicht geladen werden – prüf dein Internet":"Impossible de charger la soirée – vérifie ta connexion",
@@ -17739,7 +17661,7 @@ it:{
   "Angemeldete Gäste":"Ospiti iscritti",
   "Dann stehen die nächsten Partys zuoberst.":"Così le feste più vicine compaiono per prime.",
   "Jeder Link gilt für genau eine Person.":"Ogni link vale per una sola persona.",
-  "Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.":"Un tocco sul pulsante in alto e SPOTOUT sparisce. Per uscire dalla calcolatrice: tieni premuto il numero.",
+  "Party gerade langweilig? Ein Tipp auf den Knopf oben, und du scrollst direkt in deiner App weiter.":"La festa è noiosa? Un tocco sul pulsante in alto e scrolli subito nella tua app.",
   "Privat oder Verein lässt sich nicht umstellen. Für beides legst du ein zweites Konto an.":"Privato o associazione non si può cambiare. Per entrambi crea un secondo account.",
   "Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.":"Tocca un suggerimento perché compaia sulla mappa. Rifugi e sedi di associazioni li trovi anche per nome.",
   "Den Eintritt kassierst du selbst vor Ort. Die Veröffentlichungsgebühr gilt unabhängig davon.":"L’ingresso lo incassi tu sul posto. La tariffa di pubblicazione vale comunque.",
@@ -17762,16 +17684,14 @@ it:{
   "Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.":"Le feste pubbliche costano una piccola tariffa una tantum. Quelle private sono gratis.",
   "Leute finden und schreiben":"Trova persone e scrivi",
   "Über die Lupe oben findest du Leute. Wer dir schreiben darf, stellst du in den Einstellungen ein.":"Con la lente in alto trovi le persone. Chi può scriverti lo decidi nelle impostazioni.",
-  "Schaut jemand mit? Ein Tipp auf „Schnell raus\" oben, und SPOTOUT ist weg.":"Qualcuno guarda? Un tocco su «Uscita rapida» in alto e SPOTOUT sparisce.",
   "Alles bisher geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei.":"Finora tutto è gratis. Pro costa CHF 3.00 al mese, la prima settimana è gratuita.",
   "Vier Dinge sind jetzt anders.":"Ora quattro cose cambiano.",
   "Auf jeder Party siehst du, wer von deinen Kontakten dabei ist – nicht nur eine Zahl.":"Per ogni festa vedi chi dei tuoi contatti ci va – non solo un numero.",
   "Du kannst jetzt jedem als Erster schreiben.":"Ora puoi scrivere per primo a chiunque.",
   "Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.":"Ora tutti vedono bio e canali. Puoi cambiare nome quando vuoi.",
-  "Ein Tipp, und SPOTOUT ist weg":"Un tocco e SPOTOUT sparisce",
+  "Party langweilig?":"Festa noiosa?",
   "Wohin der Knopf führt":"Dove porta il pulsante",
-  "Wohin, wenn jemand über die Schulter schaut?":"Dove vai se qualcuno ti guarda alle spalle?",
-  "Rechnet wirklich. Zurück mit langem Druck.":"Calcola davvero. Tieni premuto per tornare.",
+  "Party langweilig? Wo scrollst du weiter?":"Festa noiosa? Dove continui a scrollare?",
   "Brauche ich nicht":"Non mi serve",
   "Kein Knopf in der Leiste":"Nessun pulsante nella barra",
   "Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht\".":"Scegli dove porta il pulsante – oppure «Non mi serve».",
@@ -18440,7 +18360,6 @@ it:{
   "Getränke":"Bevande",
   "Total":"Totale",
   "Veranstalter":"Organizzatore",
-  "Taschenrechner":"Calcolatrice",
   "Fehler":"Errore",
   "Bild ausrichten":"Inquadra la tua foto",
   "Schieb das Bild mit dem Finger, zieh mit zwei Fingern zum Zoomen.":"Trascina la foto con un dito, pizzica con due per ingrandire.",
@@ -18449,11 +18368,12 @@ it:{
   "Das Bild liess sich nicht öffnen":"Impossibile aprire la foto",
   "Der Zuschnitt hat nicht geklappt":"Il ritaglio non ha funzionato",
   "Moment…":"Un momento…",
-  "Schnell raus":"Uscita rapida",
+  "Doomscroll-Knopf":"Pulsante doomscroll",
   "Aus":"Spento",
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
   "Pro verschenken":"Regala Pro",
+  "Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.":"Un tocco sul pulsante in alto e scrolli subito su TikTok, Reels o Shorts.",
   "Das Gespräch konnte nicht geöffnet werden":"Impossibile aprire la conversazione",
   "Diese Party ist nicht mehr verfügbar":"Questa festa non è più disponibile",
   "Party konnte nicht geladen werden – prüf dein Internet":"Impossibile caricare la festa – controlla la connessione",
@@ -21613,117 +21533,25 @@ function proMarke(nurZeichen){
     : '<span class="pro-marke">'+PRO_STERN+'Pro</span>';
 }
 
-/* ── Schnell raus ──────────────────────────────────────────────────
-   Ein Knopf, ein Tipp, weg. Es gibt Momente, in denen man nicht
-   erklaeren will, was auf dem Bildschirm steht.
-
-   Drei Dinge muessen dabei stimmen:
-   - Es geht sofort. Keine Rueckfrage, kein Menue, keine Bestaetigung.
-   - Es bleibt nichts offen. Jedes Fenster geht zu, bevor gewechselt
-     wird – wer im Vorbeigehen zurueckschaut, sieht die Startseite.
-   - Es merkt sich nichts. Der gemerkte Ort wird geloescht, sonst
-     landet man beim Zurueckkommen wieder genau dort, wo man weg
-     wollte. */
+/* ── Doomscroll-Knopf ──────────────────────────────────────────────
+   Party langweilig? Ein Tipp, und man scrollt in der eigenen App weiter.
+   Ein Gag mit Ernst dahinter: es geht sofort, ohne Rueckfrage, und beim
+   Zurueckkommen steht SPOTOUT aufgeraeumt auf der Startseite. */
 
 const RAUS_ZIELE = {
-  /* Reels statt Startseite: wer ueber die Schulter schaut, sieht ein
-     laufendes Video und nicht eine Seite, die gerade erst laedt. */
-  instagram: {app:'instagram://reels',          netz:'https://www.instagram.com/reels/'},
-  tiktok:    {app:'snssdk1233://',              netz:'https://www.tiktok.com/'},
-  wetter:    {app:'weather://',                 netz:'https://www.meteoschweiz.admin.ch/'},
+  /* Direkt ins Scrollen, nicht auf eine Startseite. */
+  tiktok:    {app:'snssdk1233://',                     netz:'https://www.tiktok.com/'},
+  instagram: {app:'instagram://reels',                 netz:'https://www.instagram.com/reels/'},
+  youtube:   {app:'youtube://www.youtube.com/shorts',  netz:'https://www.youtube.com/shorts'},
 };
 
-/* ── Die Tarnung ───────────────────────────────────────────────────
-   Der Weg in eine andere App hat einen Haken: er dauert einen Moment,
-   und wenn Instagram gar nicht installiert ist, passiert nichts. Die
-   Tarnung ist sofort da und geht immer – sie ist nur eine Ebene mehr
-   im selben Fenster.
-
-   Der Taschenrechner rechnet wirklich. Ein Rechner, der bei 7 × 8
-   nichts tut, faellt schneller auf als gar keine Tarnung. */
-let tarnZahl='0', tarnGemerkt=null, tarnOp=null, tarnNeu=true, tarnUhr=null;
-
-function tarnAn(){
-  const t=document.getElementById('tarnung');
-  if(!t)return;
-  tarnZahl='0'; tarnGemerkt=null; tarnOp=null; tarnNeu=true;
-  tarnZeichnen();
-  t.classList.add('an');
-  t.setAttribute('aria-hidden','false');
-  // Nichts von SPOTOUT soll darunter noch scrollen oder klingeln.
-  document.body.classList.add('tarn-still');
-}
-
-function tarnAus(){
-  const t=document.getElementById('tarnung');
-  if(!t)return;
-  t.classList.remove('an');
-  t.setAttribute('aria-hidden','true');
-  document.body.classList.remove('tarn-still');
-}
-
-function tarnZeichnen(){
-  const a=document.getElementById('tarnAnzeige');
-  if(!a)return;
-  const z=String(tarnZahl);
-  a.textContent = z.length>9 ? Number(z).toPrecision(7).replace('.',',') : z.replace('.',',');
-  // Lange Zahlen kleiner setzen, wie es ein Taschenrechner tut.
-  a.style.fontSize = z.length>9 ? '2.6rem' : (z.length>6 ? '3.2rem' : '4rem');
-}
-
-function tarnRechnen(a,b,op){
-  a=Number(a); b=Number(b);
-  if(op==='+')return a+b;
-  if(op==='-')return a-b;
-  if(op==='*')return a*b;
-  if(op==='/')return b===0?'Fehler':a/b;
-  return b;
-}
-
-function tarnTaste(k){
-  if(/^[0-9]$/.test(k)){
-    tarnZahl = (tarnNeu||tarnZahl==='0') ? k : (tarnZahl+k).slice(0,12);
-    tarnNeu=false;
-  }else if(k==='.'){
-    if(tarnNeu){ tarnZahl='0.'; tarnNeu=false; }
-    else if(!tarnZahl.includes('.')) tarnZahl+='.';
-  }else if(k==='C'){
-    tarnZahl='0'; tarnGemerkt=null; tarnOp=null; tarnNeu=true;
-  }else if(k==='±'){
-    tarnZahl = tarnZahl.startsWith('-') ? tarnZahl.slice(1) : ('-'+tarnZahl);
-  }else if(k==='%'){
-    tarnZahl = String(Number(tarnZahl)/100); tarnNeu=true;
-  }else if(k==='='){
-    if(tarnOp!==null&&tarnGemerkt!==null){
-      const r=tarnRechnen(tarnGemerkt,tarnZahl,tarnOp);
-      tarnZahl = (r==='Fehler')?'Fehler':String(Math.round(r*1e10)/1e10);
-      tarnGemerkt=null; tarnOp=null;
-    }
-    tarnNeu=true;
-  }else{
-    if(tarnOp!==null&&tarnGemerkt!==null&&!tarnNeu){
-      const r=tarnRechnen(tarnGemerkt,tarnZahl,tarnOp);
-      tarnZahl=(r==='Fehler')?'Fehler':String(Math.round(r*1e10)/1e10);
-    }
-    tarnGemerkt=tarnZahl; tarnOp=k; tarnNeu=true;
-  }
-  tarnZeichnen();
-}
-
-/* Zurueck: langer Druck auf die Anzeige. Ein sichtbarer Knopf waere
-   ein Verrat, ein kurzer Tipp ein Versehen. */
-function tarnGriffAn(){
-  const a=document.getElementById('tarnAnzeige');
-  if(!a||a.dataset.bereit)return;
-  a.dataset.bereit='1';
-  const los=()=>{ tarnUhr=setTimeout(tarnAus,600); };
-  const stopp=()=>{ clearTimeout(tarnUhr); };
-  a.addEventListener('pointerdown',los);
-  ['pointerup','pointercancel','pointerleave'].forEach(e=>a.addEventListener(e,stopp));
-}
-
 function schnellRausWahl(){
-  try{ return localStorage.getItem('spotout_raus')||''; }catch(e){ return ''; }
+  try{
+    const k=localStorage.getItem('spotout_raus')||'';
+    // Taschenrechner und Wetter gibt es nicht mehr – wer sie hatte, scrollt jetzt in TikTok
+    if(k==='tarnung'||k==='wetter'){ localStorage.setItem('spotout_raus','tiktok'); return 'tiktok'; }
+    return k;
+  }catch(e){ return ''; }
 }
 
 /* Nur speichern, ohne Rueckmeldung – die Registrierung ruft das auf,
@@ -21754,16 +21582,6 @@ function rausKnopfZeigen(){
 function schnellRaus(){
   const wahl=schnellRausWahl();
   if(!wahl)return;
-
-  // Erst aufraeumen – niemand soll beim Zurueckkommen dort landen,
-  // wo er gerade weg wollte.
-  if(wahl==='tarnung'){
-    try{ alleFensterZu(); }catch(e){}
-    try{ vergissOrt(); }catch(e){}
-    tarnGriffAn();
-    tarnAn();
-    return;
-  }
 
   const ziel=RAUS_ZIELE[wahl];
   if(!ziel)return;
