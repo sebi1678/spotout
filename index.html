@@ -366,10 +366,12 @@
       -webkit-tap-highlight-color:transparent;transition:transform var(--takt-kurz);
     }
     .tour-zurueck:active{transform:scale(var(--druck))}
-    /* Auf der ersten Karte ist er unsichtbar, behält aber seinen Platz.
-       Nähme man ihn aus dem Layout, würde der Fuss niedriger und der
-       Titel der Karte spränge beim Umblättern. */
-    .tour-zurueck-weg{visibility:hidden;pointer-events:none}
+    /* Auf der ersten Karte faellt er ganz weg. Vorher behielt er
+       unsichtbar seinen Platz, und "Weiter" stand neben einem leeren
+       Loch – das sah verrutscht aus. Die Mindesthoehe der Reihe haelt
+       den Fuss trotzdem gleich hoch, damit der Titel nicht springt. */
+    .tour-zurueck-weg{display:none}
+    .tour-reihe{min-height:52px}
     .tour-zurueck svg{width:15px;height:15px}
     .tour-btn{
       flex:1;min-width:0;border:none;border-radius:16px;cursor:pointer;
