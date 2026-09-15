@@ -7678,8 +7678,24 @@ async function kontoWegLoeschen(){
     /* Reihenfolge zählt: erst das, was auf das Profil zeigt, dann das
        Profil selbst. Umgekehrt bliebe bei einem Abbruch ein Konto ohne
        Profil zurück – angemeldet, aber ohne alles. */
-    // Jeder Schritt wird geprueft – vorher kam trotz Fehler die naechste Loeschung
     const uid=cUser.id;
+    /* Eine Funktion auf dem Server loescht den Zugang selbst – alles
+       andere (Profil, Partys, Nachrichten, Follows, Fotos …) haengt daran
+       und geht in einem Zug mit. Vorher blieb der Zugang bestehen: wer
+       sich danach nochmals anmeldete, landete in einem leeren Konto. */
+    await pushTokenLoesen();
+    const{error:serverFehler}=await sb.rpc('konto_endgueltig_loeschen');
+    if(!serverFehler){
+      try{ kontenSchreiben(kontenLesen().filter(k=>k.id!==uid)); }catch(e){}
+      zurueckZurAnmeldung();
+      try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
+      toast('Konto gelöscht','success');
+      setTimeout(()=>location.reload(),800);
+      return;
+    }
+    // Fallback, falls die Funktion (noch) nicht da ist: Schritt fuer Schritt
+    if(!/konto_endgueltig_loeschen|function|PGRST202/i.test((serverFehler.message||'')+(serverFehler.code||'')))throw serverFehler;
+    // Jeder Schritt wird geprueft – vorher kam trotz Fehler die naechste Loeschung
     const schritte=[
       ()=>sb.from('event_attendees').delete().eq('user_id',uid),
       ()=>sb.from('search_history').delete().eq('user_id',uid),
