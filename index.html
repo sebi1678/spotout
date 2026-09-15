@@ -3534,6 +3534,26 @@
       text-align:center;font-size:.82rem;
     }
     .rep-foot a{color:var(--muted);text-decoration:none}
+    /* Was gemeldet wird, und die Frage dazu */
+    .rep-ziel{margin:-4px 0 10px;font-size:.84rem;color:var(--text2);overflow-wrap:anywhere}
+    .rep-ziel b{color:#fff;font-weight:700}
+    .rep-frage{margin:0 0 12px;font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+    /* Ein Grund: runder Punkt statt Kaestchen */
+    .rep-opt.einzeln::before{border-radius:50%}
+    .rep-opt.einzeln.on::before{
+      background-image:radial-gradient(circle,#fff 0 3.5px,transparent 4px);background-size:100% 100%;
+    }
+    .rep-opt.rep-kontakt{margin-top:14px}
+    .rep-danger.armed{background:#FF4556;border-color:#FF4556;color:#fff}
+    .rep-ok{text-align:center;padding:10px 4px 8px}
+    .rep-ok-ic{
+      width:58px;height:58px;border-radius:50%;margin:4px auto 14px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(43,217,138,.14);color:#2BD98A;
+    }
+    .rep-ok-ic svg{width:28px;height:28px}
+    .rep-ok b{display:block;font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:6px}
+    .rep-ok span{display:block;font-size:.88rem;line-height:1.5;color:var(--text2)}
 
     /* ══════════ COMMUNITY-REGELN ══════════ */
     .rules-lead{
@@ -14450,6 +14470,28 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Person melden":"Report person",
+  "Nachricht melden":"Report message",
+  "Foto melden":"Report photo",
+  "Was stimmt nicht?":"What’s wrong?",
+  "Belästigung oder Drohung":"Harassment or threats",
+  "Sexuelle Inhalte":"Sexual content",
+  "Falsches Profil oder fremde Fotos":"Fake profile or someone else’s photos",
+  "Jünger als 16":"Younger than 16",
+  "Spam, Werbung oder Betrug":"Spam, ads or scam",
+  "Gibt es nicht oder ist Abzocke":"Doesn’t exist or is a scam",
+  "Falsche Angaben (Ort, Zeit, Preis)":"Wrong details (place, time, price)",
+  "Gefährlich: Gewalt, Waffen, Drogen":"Dangerous: violence, weapons, drugs",
+  "Per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.":"By email. Without the tick we handle the report quietly.",
+  "Schreib kurz, was los ist.":"Tell us briefly what happened.",
+  "Das hat nicht geklappt. Versuch es nochmals.":"That didn’t work. Please try again.",
+  "Schon gemeldet":"Already reported",
+  "Danke, ist angekommen":"Thanks, we got it",
+  "Du musst nichts weiter tun – wir schauen es uns an.":"Nothing else to do – we’re looking into it.",
+  "Wir schauen es uns innerhalb von 24 Stunden an und melden uns per E-Mail.":"We’ll look at it within 24 hours and get back to you by email.",
+  "Wir schauen es uns innerhalb von 24 Stunden an.":"We’ll look at it within 24 hours.",
+  "Person auch blockieren":"Block this person too",
+  "Wirklich blockieren? Nochmals tippen":"Really block? Tap again",
   "Party ist voll – nur Pro kann auf die Warteliste":"Party is full – only Pro can join the waitlist",
   "Mit Pro siehst du, wer kommt.":"With Pro you see who’s coming.",
   "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"With Pro you can still see who was there for 24 hours after the party.",
@@ -15013,12 +15055,9 @@ en:{
   "Kauf nicht möglich: ":"Purchase failed: ",
   "Antwort":"Reply",
   "Ich möchte eine Antwort":"I would like a reply",
-  "Wir melden uns per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.":"We will get back to you by email. Without the tick we handle the report quietly.",
   "Was ist passiert? (freiwillig)":"What happened? (optional)",
   "deine@mailadresse.ch":"your@email.com",
-  "Bitte mindestens einen Grund ankreuzen":"Please tick at least one reason",
   "Bitte eine gültige E-Mail-Adresse eintragen":"Please enter a valid email address",
-  "Danke – wir melden uns per E-Mail":"Thanks – we will get back to you by email",
   "Wie lädst du ein?":"How do you invite?",
   "Du kannst das später jederzeit umstellen.":"You can change this any time later.",
   "Für jede Person eine eigene Einladung":"A separate invitation for each person",
@@ -15052,9 +15091,6 @@ en:{
   "Spam oder Werbung":"Spam or advertising",
   "Belästigung":"Harassment",
   "Hass oder Beleidigung":"Hate or insults",
-  "Gewalt oder Waffen":"Violence or weapons",
-  "Sexueller Inhalt":"Sexual content",
-  "Betrug oder falsche Party":"Fraud or fake party",
   "Falsche Angaben":"False information",
   "Etwas anderes":"Something else",
   "Meldung senden":"Send report",
@@ -15062,7 +15098,6 @@ en:{
   "Diese Person blockieren":"Block this person",
   "Was ist passiert? (optional)":"What happened? (optional)",
   "Bitte einen Grund wählen":"Please pick a reason",
-  "Danke – wir schauen es uns an":"Thanks — we’ll look into it",
   "Du hast das schon gemeldet":"You already reported this",
   "Blockiert – ihr seht euch gegenseitig nicht mehr":"Blocked — you won’t see each other any more",
   "Blockierung aufgehoben":"Block removed",
@@ -15479,6 +15514,28 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Person melden":"Signaler la personne",
+  "Nachricht melden":"Signaler le message",
+  "Foto melden":"Signaler la photo",
+  "Was stimmt nicht?":"Qu’est-ce qui ne va pas ?",
+  "Belästigung oder Drohung":"Harcèlement ou menaces",
+  "Sexuelle Inhalte":"Contenu sexuel",
+  "Falsches Profil oder fremde Fotos":"Faux profil ou photos d’autrui",
+  "Jünger als 16":"Moins de 16 ans",
+  "Spam, Werbung oder Betrug":"Spam, pub ou arnaque",
+  "Gibt es nicht oder ist Abzocke":"N’existe pas ou arnaque",
+  "Falsche Angaben (Ort, Zeit, Preis)":"Infos erronées (lieu, heure, prix)",
+  "Gefährlich: Gewalt, Waffen, Drogen":"Dangereux : violence, armes, drogues",
+  "Per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.":"Par e-mail. Sans coche, nous traitons le signalement discrètement.",
+  "Schreib kurz, was los ist.":"Dis-nous brièvement ce qui se passe.",
+  "Das hat nicht geklappt. Versuch es nochmals.":"Ça n’a pas marché. Réessaie.",
+  "Schon gemeldet":"Déjà signalé",
+  "Danke, ist angekommen":"Merci, c’est reçu",
+  "Du musst nichts weiter tun – wir schauen es uns an.":"Rien d’autre à faire – nous nous en occupons.",
+  "Wir schauen es uns innerhalb von 24 Stunden an und melden uns per E-Mail.":"Nous examinons cela sous 24 heures et te répondons par e-mail.",
+  "Wir schauen es uns innerhalb von 24 Stunden an.":"Nous examinons cela sous 24 heures.",
+  "Person auch blockieren":"Bloquer aussi cette personne",
+  "Wirklich blockieren? Nochmals tippen":"Vraiment bloquer ? Appuie encore",
   "Party ist voll – nur Pro kann auf die Warteliste":"La soirée est complète – seul Pro peut rejoindre la liste d’attente",
   "Mit Pro siehst du, wer kommt.":"Avec Pro, tu vois qui vient.",
   "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"Avec Pro, tu vois encore pendant 24 heures après la soirée qui était là.",
@@ -16042,12 +16099,9 @@ fr:{
   "Kauf nicht möglich: ":"Achat impossible : ",
   "Antwort":"Réponse",
   "Ich möchte eine Antwort":"Je veux une réponse",
-  "Wir melden uns per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.":"Nous te répondrons par e-mail. Sans la coche, nous traitons le signalement en silence.",
   "Was ist passiert? (freiwillig)":"Que s’est-il passé ? (facultatif)",
   "deine@mailadresse.ch":"ton@adresse.ch",
-  "Bitte mindestens einen Grund ankreuzen":"Coche au moins une raison",
   "Bitte eine gültige E-Mail-Adresse eintragen":"Entre une adresse e-mail valide",
-  "Danke – wir melden uns per E-Mail":"Merci – nous te répondrons par e-mail",
   "Wie lädst du ein?":"Comment invites-tu ?",
   "Du kannst das später jederzeit umstellen.":"Tu peux changer cela à tout moment.",
   "Für jede Person eine eigene Einladung":"Une invitation propre à chaque personne",
@@ -16081,9 +16135,6 @@ fr:{
   "Spam oder Werbung":"Spam ou publicité",
   "Belästigung":"Harcèlement",
   "Hass oder Beleidigung":"Haine ou insultes",
-  "Gewalt oder Waffen":"Violence ou armes",
-  "Sexueller Inhalt":"Contenu sexuel",
-  "Betrug oder falsche Party":"Fraude ou fausse soirée",
   "Falsche Angaben":"Fausses informations",
   "Etwas anderes":"Autre chose",
   "Meldung senden":"Envoyer le signalement",
@@ -16091,7 +16142,6 @@ fr:{
   "Diese Person blockieren":"Bloquer cette personne",
   "Was ist passiert? (optional)":"Que s’est-il passé ? (facultatif)",
   "Bitte einen Grund wählen":"Choisis un motif",
-  "Danke – wir schauen es uns an":"Merci — on regarde ça",
   "Du hast das schon gemeldet":"Tu l’as déjà signalé",
   "Blockiert – ihr seht euch gegenseitig nicht mehr":"Bloqué — vous ne vous voyez plus",
   "Blockierung aufgehoben":"Blocage levé",
@@ -16508,6 +16558,28 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Person melden":"Segnala la persona",
+  "Nachricht melden":"Segnala il messaggio",
+  "Foto melden":"Segnala la foto",
+  "Was stimmt nicht?":"Cosa non va?",
+  "Belästigung oder Drohung":"Molestie o minacce",
+  "Sexuelle Inhalte":"Contenuti sessuali",
+  "Falsches Profil oder fremde Fotos":"Profilo falso o foto altrui",
+  "Jünger als 16":"Meno di 16 anni",
+  "Spam, Werbung oder Betrug":"Spam, pubblicità o truffa",
+  "Gibt es nicht oder ist Abzocke":"Non esiste o è una truffa",
+  "Falsche Angaben (Ort, Zeit, Preis)":"Dati errati (luogo, ora, prezzo)",
+  "Gefährlich: Gewalt, Waffen, Drogen":"Pericoloso: violenza, armi, droghe",
+  "Per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.":"Via e-mail. Senza spunta gestiamo la segnalazione in silenzio.",
+  "Schreib kurz, was los ist.":"Scrivi in breve cosa succede.",
+  "Das hat nicht geklappt. Versuch es nochmals.":"Non ha funzionato. Riprova.",
+  "Schon gemeldet":"Già segnalato",
+  "Danke, ist angekommen":"Grazie, ricevuto",
+  "Du musst nichts weiter tun – wir schauen es uns an.":"Non devi fare altro – ce ne occupiamo noi.",
+  "Wir schauen es uns innerhalb von 24 Stunden an und melden uns per E-Mail.":"Lo esaminiamo entro 24 ore e ti rispondiamo via e-mail.",
+  "Wir schauen es uns innerhalb von 24 Stunden an.":"Lo esaminiamo entro 24 ore.",
+  "Person auch blockieren":"Blocca anche questa persona",
+  "Wirklich blockieren? Nochmals tippen":"Bloccare davvero? Tocca di nuovo",
   "Party ist voll – nur Pro kann auf die Warteliste":"La festa è al completo – solo Pro può entrare in lista d’attesa",
   "Mit Pro siehst du, wer kommt.":"Con Pro vedi chi viene.",
   "Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.":"Con Pro vedi ancora per 24 ore dopo la festa chi c’era.",
@@ -17071,12 +17143,9 @@ it:{
   "Kauf nicht möglich: ":"Acquisto non riuscito: ",
   "Antwort":"Risposta",
   "Ich möchte eine Antwort":"Vorrei una risposta",
-  "Wir melden uns per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.":"Ti risponderemo via e-mail. Senza la spunta gestiamo la segnalazione in silenzio.",
   "Was ist passiert? (freiwillig)":"Cosa è successo? (facoltativo)",
   "deine@mailadresse.ch":"tuo@indirizzo.ch",
-  "Bitte mindestens einen Grund ankreuzen":"Spunta almeno un motivo",
   "Bitte eine gültige E-Mail-Adresse eintragen":"Inserisci un indirizzo e-mail valido",
-  "Danke – wir melden uns per E-Mail":"Grazie – ti risponderemo via e-mail",
   "Wie lädst du ein?":"Come inviti?",
   "Du kannst das später jederzeit umstellen.":"Puoi cambiarlo in qualsiasi momento.",
   "Für jede Person eine eigene Einladung":"Un invito personale per ogni persona",
@@ -17110,9 +17179,6 @@ it:{
   "Spam oder Werbung":"Spam o pubblicità",
   "Belästigung":"Molestie",
   "Hass oder Beleidigung":"Odio o insulti",
-  "Gewalt oder Waffen":"Violenza o armi",
-  "Sexueller Inhalt":"Contenuto sessuale",
-  "Betrug oder falsche Party":"Truffa o festa falsa",
   "Falsche Angaben":"Dati falsi",
   "Etwas anderes":"Qualcos’altro",
   "Meldung senden":"Invia la segnalazione",
@@ -17120,7 +17186,6 @@ it:{
   "Diese Person blockieren":"Blocca questa persona",
   "Was ist passiert? (optional)":"Cos’è successo? (facoltativo)",
   "Bitte einen Grund wählen":"Scegli un motivo",
-  "Danke – wir schauen es uns an":"Grazie – ci diamo un’occhiata",
   "Du hast das schon gemeldet":"L’hai già segnalato",
   "Blockiert – ihr seht euch gegenseitig nicht mehr":"Bloccato – non vi vedete più a vicenda",
   "Blockierung aufgehoben":"Blocco rimosso",
@@ -17985,19 +18050,45 @@ function pickUpdate(id,typ){
    Apple verlangt das für jede App mit Inhalten von Nutzern (Richtlinie 1.2):
    melden, blockieren, Blockiertes ausblenden, Regeln und Kontakt. */
 
-let repZiel=null,repGruende=new Set(),repAntwort=false;
+let repZiel=null,repAntwort=false;
 window.__blocked=new Set();
 
-const REP_GRUENDE=[
-  ['spam','Spam oder Werbung'],
-  ['belaestigung','Belästigung'],
-  ['hass','Hass oder Beleidigung'],
-  ['gewalt','Gewalt oder Waffen'],
-  ['sexuell','Sexueller Inhalt'],
-  ['betrug','Betrug oder falsche Party'],
-  ['falsch','Falsche Angaben'],
-  ['anderes','Etwas anderes'],
-];
+/* Welche Gruende zur Wahl stehen, haengt davon ab, was gemeldet wird –
+   "falsche Party" ergibt bei einer Person keinen Sinn. Die Datenbank
+   kennt fuer "grund" nur acht Schluessel; die feinere Wahl steht
+   zusaetzlich in "gruende", damit bei der Pruefung klar ist, was genau
+   gemeint war. Aufbau: [grund, feinere Wahl, Text]. */
+const REP_GRUENDE={
+  user:[
+    ['belaestigung','belaestigung','Belästigung oder Drohung'],
+    ['hass','hass','Hass oder Beleidigung'],
+    ['sexuell','sexuell','Sexuelle Inhalte'],
+    ['falsch','fake_profil','Falsches Profil oder fremde Fotos'],
+    ['falsch','unter16','Jünger als 16'],
+    ['spam','spam','Spam, Werbung oder Betrug'],
+    ['anderes','anderes','Etwas anderes'],
+  ],
+  event:[
+    ['betrug','erfunden','Gibt es nicht oder ist Abzocke'],
+    ['falsch','falsche_angaben','Falsche Angaben (Ort, Zeit, Preis)'],
+    ['gewalt','gefaehrlich','Gefährlich: Gewalt, Waffen, Drogen'],
+    ['sexuell','sexuell','Sexuelle Inhalte'],
+    ['hass','hass','Hass oder Beleidigung'],
+    ['spam','spam','Spam oder Werbung'],
+    ['anderes','anderes','Etwas anderes'],
+  ],
+  message:[
+    ['belaestigung','belaestigung','Belästigung oder Drohung'],
+    ['hass','hass','Hass oder Beleidigung'],
+    ['sexuell','sexuell','Sexuelle Inhalte'],
+    ['spam','spam','Spam, Werbung oder Betrug'],
+    ['anderes','anderes','Etwas anderes'],
+  ],
+};
+REP_GRUENDE.photo=REP_GRUENDE.message;
+const REP_TITEL={user:'Person melden',event:'Party melden',message:'Nachricht melden',photo:'Foto melden'};
+const REP_HAKEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-10"/></svg>';
+let repWahl=null;
 
 async function loadBlocks(){
   if(!cUser)return;
@@ -18009,50 +18100,73 @@ function istBlockiert(id){ return !!id&&window.__blocked.has(id); }
 
 function closeReport(){document.getElementById('reportOverlay').classList.remove('open');}
 
+function repGruendeFuer(art){ return REP_GRUENDE[art]||REP_GRUENDE.message; }
+
 // art: 'user' | 'event' | 'photo' | 'message'
-function openReport(art,id,name){
+async function openReport(art,id,name){
   if(!cUser){kontoNoetig();return;}
   repZiel={art,id,name:name||''};
-  repGruende=new Set();
+  repWahl=null;
   repAntwort=false;
+  // Der Titel sagt, was gemeldet wird – vorher stand dort nur "Melden".
+  const titel=document.querySelector('#reportOverlay .modal-title');
+  if(titel)titel.textContent=REP_TITEL[art]||'Melden';
   const body=document.getElementById('reportBody');
-  const was={user:'diese Person',event:'diese Party',photo:'dieses Foto',message:'diese Nachricht'}[art]||'das';
-  body.innerHTML='<div class="rep-hint">Warum meldest du '+was+'? '
-    +'Kreuz alles an, was zutrifft – wir schauen uns jede Meldung innerhalb von 24 Stunden an.</div>'
-    +REP_GRUENDE.map(([k,t])=>
-      '<button class="rep-opt" data-grund="'+k+'" onclick="repGrundUm(\''+k+'\',this)">'
-      +'<span>'+t+'</span></button>').join('')
+  body.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
+  document.getElementById('reportOverlay').classList.add('open');
+
+  /* Schon gemeldet? Dann gleich sagen – nicht erst, nachdem alles
+     ausgefuellt ist und die Datenbank es abweist. Eigene Meldungen
+     darf man lesen; klappt die Abfrage nicht, geht es normal weiter. */
+  let frueher=null;
+  try{
+    const{data}=await sb.from('reports').select('id')
+      .eq('reporter_id',cUser.id).eq('target_art',art).eq('target_id',id).limit(1);
+    frueher=data;
+  }catch(e){}
+  if(repZiel?.id!==id)return;          // inzwischen etwas anderes geoeffnet
+  if(frueher&&frueher.length){ repFertig(true); return; }
+
+  body.innerHTML=(repZiel.name?'<div class="rep-ziel"><b>'+esc(repZiel.name)+'</b></div>':'')
+    +'<div class="rep-frage">Was stimmt nicht?</div>'
+    +repGruendeFuer(art).map((g,i)=>
+      '<button class="rep-opt einzeln" data-i="'+i+'" onclick="repWaehlen('+i+')">'
+      +'<span>'+g[2]+'</span></button>').join('')
     +'<textarea class="rep-note" id="repNote" rows="3" maxlength="600" style="display:none" '
       +'placeholder="Was ist passiert? (freiwillig)"></textarea>'
-    +'<div class="rep-trenn">Antwort</div>'
     +'<button class="rep-opt rep-kontakt" id="repKontakt" onclick="repKontaktUm(this)">'
-      +'<span>Ich möchte eine Antwort<small>Wir melden uns per E-Mail. Ohne Häkchen bearbeiten '
-      +'wir die Meldung still.</small></span></button>'
+      +'<span>Ich möchte eine Antwort<small>Per E-Mail. Ohne Häkchen bearbeiten wir die Meldung still.</small></span></button>'
     +'<input class="rep-note" id="repMail" type="email" inputmode="email" autocomplete="email" '
       +'style="display:none" placeholder="deine@mailadresse.ch"/>'
-    +'<button class="sub-btn sub-public" id="repSend" onclick="sendReport()">Meldung senden</button>'
-    +(art==='user'?'<button class="rep-danger" onclick="blockUser(\''+id+'\')">'
-      +'Diese Person blockieren</button>':'')
+    +'<div class="rfehler" id="repFehler" hidden></div>'
+    +'<button class="sub-btn sub-public" id="repSend" onclick="sendReport()" disabled>Meldung senden</button>'
+    +(art==='user'&&!istBlockiert(id)
+      ?'<button class="rep-danger" onclick="blockKnopf(this,\''+id+'\')">Diese Person blockieren</button>':'')
     +'<div class="rep-foot">'
     +'<a href="#" onclick="event.preventDefault();closeReport();openRules()">Community-Regeln lesen</a></div>';
-  document.getElementById('reportOverlay').classList.add('open');
 }
 
 function openRules(){document.getElementById('rulesOverlay').classList.add('open');}
 
-function repGrundUm(k,el){
-  if(repGruende.has(k))repGruende.delete(k); else repGruende.add(k);
-  if(el)el.classList.toggle('on',repGruende.has(k));
-  // Erst wenn etwas angekreuzt ist, nach Einzelheiten fragen – vorher
-  // ist das Feld nur im Weg.
+/* Ein Grund, ein Tipp. Mehrere Haekchen machten die Meldung nicht
+   genauer, nur das Ausfuellen laenger. */
+function repWaehlen(i){
+  repWahl=i;
+  document.querySelectorAll('#reportBody .rep-opt.einzeln').forEach(b=>
+    b.classList.toggle('on',Number(b.dataset.i)===i));
   const n=document.getElementById('repNote');
-  if(n&&n.style.display==='none'&&repGruende.size){
-    n.style.display='block';
-    el?.scrollIntoView({block:'nearest',behavior:'smooth'});
-  }
+  if(n&&n.style.display==='none')n.style.display='block';
+  const s=document.getElementById('repSend');
+  if(s)s.disabled=false;
+  repFehler('');
 }
-// Alter Name, damit nichts bricht, was ihn noch ruft.
-function setRepGrund(k,el){ return repGrundUm(k,el); }
+
+function repFehler(t){
+  const f=document.getElementById('repFehler');
+  if(!f)return;
+  f.textContent=t||'';
+  f.hidden=!t;
+}
 
 function repKontaktUm(el){
   repAntwort=!repAntwort;
@@ -18067,42 +18181,80 @@ function repKontaktUm(el){
 }
 
 async function sendReport(){
-  if(!repZiel)return;
-  if(!repGruende.size){toast('Bitte mindestens einen Grund ankreuzen','warn');return;}
+  if(!repZiel||repWahl===null)return;
+  const g=repGruendeFuer(repZiel.art)[repWahl];
+  if(!g)return;
+  const notiz=(document.getElementById('repNote')?.value||'').trim()||null;
+  // Bei "Etwas anderes" braucht es ein paar Worte, sonst weiss niemand, worum es geht.
+  if(g[1]==='anderes'&&!notiz){
+    repFehler('Schreib kurz, was los ist.');
+    document.getElementById('repNote')?.focus();
+    return;
+  }
   const mail=(document.getElementById('repMail')?.value||'').trim();
   if(repAntwort&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){
-    toast('Bitte eine gültige E-Mail-Adresse eintragen','warn');
+    repFehler('Bitte eine gültige E-Mail-Adresse eintragen');
     document.getElementById('repMail')?.focus();
     return;
   }
+  repFehler('');
   const btn=document.getElementById('repSend');
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Wird gesendet…';}
-  const gruende=[...repGruende];
-  const notiz=(document.getElementById('repNote')?.value||'').trim()||null;
+  if(btn){btn.disabled=true;btn.classList.add('is-busy');btn.innerHTML='<span class="btn-spin"></span>Wird gesendet…';}
   const{error}=await sb.from('reports').insert({
     reporter_id:cUser.id,target_art:repZiel.art,target_id:repZiel.id,
-    grund:gruende[0],gruende,notiz,
+    grund:g[0],gruende:g[0]===g[1]?[g[0]]:[g[0],g[1]],notiz,
     antwort_gewuenscht:repAntwort,kontakt_email:repAntwort?mail:null});
   if(error&&error.code!=='23505'){
-    toast('Melden fehlgeschlagen: '+error.message,'error');
-    if(btn){btn.disabled=false;btn.textContent='Meldung senden';}
+    // Kein roher Datenbanktext – damit kann niemand etwas anfangen.
+    repFehler('Das hat nicht geklappt. Versuch es nochmals.');
+    if(btn){btn.disabled=false;btn.classList.remove('is-busy');btn.textContent='Meldung senden';}
     return;
   }
-  closeReport();
-  toast(error?.code==='23505'
-    ? 'Du hast das schon gemeldet'
-    : repAntwort
-      ? 'Danke – wir melden uns per E-Mail'
-      : 'Danke – wir schauen es uns an','success');
+  repFertig(!!error);
+}
+
+/* Die Bestaetigung steht im Fenster selbst, nicht als Zettel, der nach
+   zwei Sekunden weg ist. Wer eine Person gemeldet hat, bekommt hier
+   gleich den Weg, sie auch loszuwerden. */
+function repFertig(schonGemeldet){
+  const body=document.getElementById('reportBody');
+  if(!body||!repZiel)return;
+  const{art,id}=repZiel;
+  body.innerHTML='<div class="rep-ok">'
+    +'<div class="rep-ok-ic">'+REP_HAKEN+'</div>'
+    +'<b>'+(schonGemeldet?'Schon gemeldet':'Danke, ist angekommen')+'</b>'
+    +'<span>'+(schonGemeldet
+        ? 'Du musst nichts weiter tun – wir schauen es uns an.'
+        : repAntwort
+          ? 'Wir schauen es uns innerhalb von 24 Stunden an und melden uns per E-Mail.'
+          : 'Wir schauen es uns innerhalb von 24 Stunden an.')+'</span>'
+    +'</div>'
+    +'<button class="sub-btn sub-public" onclick="closeReport()">Fertig</button>'
+    +(art==='user'&&!istBlockiert(id)
+      ?'<button class="rep-danger" onclick="blockKnopf(this,\''+id+'\')">Person auch blockieren</button>':'');
+}
+
+/* Blockieren braucht einen zweiten Tipp. Es wirkt sofort und in beide
+   Richtungen (die Datenbank prueft beide Seiten) – das soll niemandem
+   aus Versehen passieren. */
+function blockKnopf(el,id){
+  if(!el)return blockUser(id);
+  if(el.classList.contains('armed')){ clearTimeout(el._uhr); return blockUser(id); }
+  el.dataset.text=el.textContent;
+  el.classList.add('armed');
+  el.textContent='Wirklich blockieren? Nochmals tippen';
+  el._uhr=setTimeout(()=>{ el.classList.remove('armed'); el.textContent=el.dataset.text; },4000);
 }
 
 async function blockUser(id){
   if(!cUser||!id)return;
   const{error}=await sb.from('blocks').insert({blocker_id:cUser.id,blocked_id:id});
-  if(error&&error.code!=='23505'){toast('Blockieren fehlgeschlagen: '+error.message,'error');return;}
+  if(error&&error.code!=='23505'){toast('Das hat nicht geklappt. Versuch es nochmals.','error');return;}
   window.__blocked.add(id);
   closeReport();
   closeUserProf();
+  // Wer mitten im Gespraech blockiert, soll nicht darin sitzen bleiben.
+  if(convUser?.id===id&&document.getElementById('page-conv')?.classList.contains('active'))showPage('chat');
   toast('Blockiert – ihr seht euch gegenseitig nicht mehr','success');
   await loadEvts();
   if(document.getElementById('page-chat')?.classList.contains('active'))loadChats();
@@ -18116,11 +18268,12 @@ async function unblockUser(id){
   loadEvts();
 }
 
+/* Eine Flagge statt drei Punkten: der Knopf oeffnet kein Menue, sondern
+   direkt das Melden. Drei Punkte versprachen etwas anderes. */
 function moreBtn(art,id,name){
   return '<button class="more-btn" onclick="event.stopPropagation();openReport(\''+art+'\',\''+id+'\',\''
     +String(name||'').replace(/'/g,'')+'\')" aria-label="Melden">'
-    +'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">'
-    +'<circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>';
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11.5l-2.3 4 2.3 4H5"/></svg></button>';
 }
 
 /* ══════════ BENACHRICHTIGUNGEN ══════════
