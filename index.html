@@ -6039,6 +6039,42 @@
     .besuch-knopf svg{width:16px;height:16px}
     .besuch-punkt{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 2px #090D24}
     .set-besuche{margin:4px 0 6px}
+
+    /* ══════════ LUFT: Profile duerfen nie gequetscht aussehen ══════════ */
+    .prof-header{padding:22px 20px 18px;gap:18px}
+    .insta-av{width:86px!important;height:86px!important;flex:0 0 86px}
+    .prof-stats-row{min-width:0}
+    .insta-stat{min-width:0;padding:4px 2px}
+    .insta-stat-num{font-size:1.18rem;font-weight:800;letter-spacing:-.01em}
+    .insta-stat-lbl{font-size:.76rem;margin-top:5px;color:var(--text2);white-space:nowrap}
+    .prof-bio{padding:0 20px 6px}
+    /* Name hat seine eigene Zeile, die Marken stehen darunter */
+    .prof-name-row{flex-wrap:wrap;align-items:center;gap:6px 6px;margin-bottom:0}
+    .prof-name-row .insta-name{flex:1 1 100%;min-width:0;font-size:1.08rem;line-height:1.3;overflow-wrap:anywhere}
+    .prof-name-row .pro-marke,.prof-name-row .d1,.prof-name-row .verein-marke{flex:none}
+    .insta-handle{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0 0;font-size:.86rem;min-width:0}
+    .insta-handle .up-folgt-dir{margin:0}
+    .insta-bio{margin:12px 0 0;font-size:.9rem;line-height:1.55}
+    .prof-bio .abz-reihe{margin-top:12px}
+    .prof-bio .insta-socials,.prof-bio .up2-links,.prof-bio .up2-web{margin-top:12px}
+    .prof-actions{padding:16px 20px 18px;gap:10px}
+    .prof-action-btn,.up-akt .follow-btn,.up-akt .up-msg-btn{min-height:42px}
+    .insta-tabs{margin-top:2px}
+    .up-seite .up2-zu{margin:6px 20px 0}
+    /* Listen: Name kuerzt sich, Marken bleiben ganz */
+    .sr-name{overflow:visible}
+    .sr-name-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sr-name .pro-marke,.sr-name .d1{flex:none}
+    .att-name{min-width:0}
+    @media(max-width:360px){
+      .prof-header{gap:14px;padding:18px 16px 16px}
+      .insta-av{width:76px!important;height:76px!important;flex:0 0 76px}
+      .insta-stat-num{font-size:1.06rem}
+      .insta-stat-lbl{font-size:.72rem}
+      .prof-bio{padding:0 16px 6px}
+      .prof-actions{padding:14px 16px 16px}
+      .sr-name .d1{width:20px;padding:0;font-size:0;gap:0;justify-content:center}
+    }
   </style>
 </head>
 <body>
@@ -6543,7 +6579,7 @@
         <div style="font-size:.75rem;color:var(--muted)" id="convSub"></div>
       </div>
       <button class="more-btn" id="convMelden" onclick="convMelden()" aria-label="Melden oder blockieren">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h11.5l-2.3 4 2.3 4H5"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.6v5.2"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg>
       </button>
     </div>
     <div class="conv-msgs" id="convMsgs"></div>
@@ -11533,8 +11569,8 @@ function searchRow(u,ausVerlauf){
   return '<button class="sr-row" onclick="ausSucheOeffnen(\''+u.id+'\')">'
     +'<div class="sr-av'+(u.is_pro?' pro':'')+'">'+av+'</div>'
     +'<div class="sr-mid">'
-      +'<div class="sr-name">'+esc(name)
-        +(u.is_pro?proMarke():'')
+      +'<div class="sr-name"><span class="sr-name-t">'+esc(name)+'</span>'
+        +(u.is_pro?proMarke(true):'')
         +(u.day_one?dayOneMarke():'')+'</div>'
       +'<div class="sr-handle">@'+esc(u.username||'')+'</div>'
       +(u.is_pro&&u.bio?'<div class="sr-bio">'+esc(u.bio)+'</div>':'')
