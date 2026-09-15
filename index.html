@@ -838,6 +838,43 @@
       font-family:var(--font);font-size:.86rem;font-weight:700;
     }
     .auth-zweit:disabled{opacity:.55;cursor:default}
+    /* ── Passwort vergessen ──
+       Dieselbe Karte wie die Anmeldung, nur ohne Reiter und Gast-Knopf:
+       wer hier ist, hat genau eine Aufgabe. */
+    .auth-vergessen{
+      align-self:flex-end;background:none;border:0;cursor:pointer;
+      color:var(--text2);font-family:var(--font);font-size:.82rem;font-weight:700;
+      padding:8px 4px 0;min-height:40px;
+    }
+    .auth-vergessen + .auth-submit-btn{margin-top:6px}
+    .pw-sektion{display:none;text-align:center}
+    .auth-wrap[data-pw] > .auth-toggle,
+    .auth-wrap[data-pw] > .auth-section,
+    .auth-wrap[data-pw] > .auth-oder,
+    .auth-wrap[data-pw] > .auth-gast{display:none!important}
+    .auth-wrap[data-pw="vergessen"] > #auth-vergessen,
+    .auth-wrap[data-pw="neu"] > #auth-neu{display:flex!important}
+    .pw-teil{display:flex;flex-direction:column;gap:7px}
+    .pw-teil[hidden]{display:none}
+    .pw-icon{
+      width:64px;height:64px;margin:2px auto 18px;border-radius:20px;color:#FF2D76;
+      background:rgba(255,45,118,.1);border:1.5px solid rgba(255,45,118,.22);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .pw-titel{font-size:1.35rem;font-weight:800;letter-spacing:-.02em;color:var(--text);margin:0 0 6px}
+    .pw-text{color:var(--muted);font-size:.88rem;line-height:1.55;margin:0 0 14px}
+    .pw-mail{color:var(--text);font-size:.9rem;font-weight:700;margin:-4px 0 16px;word-break:break-all}
+    .pw-sektion .auth-field{text-align:left}
+    .pw-zurueck{
+      margin-top:12px;background:none;border:0;cursor:pointer;min-height:44px;
+      color:var(--text2);font-family:var(--font);font-size:.84rem;font-weight:700;
+    }
+    .pw-auge{
+      flex:0 0 40px;width:40px;height:40px;margin-right:-8px;border:0;background:none;cursor:pointer;
+      color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;
+    }
+    .pw-auge.an{color:#FF7FA5}
+    .pw-versteckt{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
     /* Eine Begleitperson steht eingerueckt unter der Person, ueber die
        sie dabei ist – auf der Partyseite wie im Verwalten-Fenster.
 
@@ -5724,6 +5761,7 @@
           <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <input type="password" id="login-pw" placeholder="Passwort" autocomplete="current-password"/>
         </div>
+        <button type="button" class="auth-vergessen" onclick="pwAnsicht('vergessen')">Passwort vergessen?</button>
         <button class="auth-submit-btn" onclick="doLogin()">Anmelden</button>
       </div>
       <!-- REGISTER -->
@@ -5879,6 +5917,43 @@
           Mit der Registrierung stimmst du den <a href="/nutzungsbedingungen" target="_blank" rel="noopener">Nutzungsbedingungen</a>
           und der <a href="/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> zu.
         </p>
+      </div>
+      <!-- PASSWORT VERGESSEN -->
+      <div id="auth-vergessen" class="auth-section pw-sektion">
+        <div class="pw-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8"/><path d="m16 7 3 3"/><path d="m18.5 4.5 2 2"/></svg></div>
+        <div class="pw-teil" id="pwFormular">
+          <h2 class="pw-titel">Passwort vergessen?</h2>
+          <p class="pw-text">Kein Problem. Wir schicken dir einen Link, mit dem du ein neues setzt.</p>
+          <div class="auth-field">
+            <svg width="17" height="17" class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="pwMail" placeholder="E-Mail" autocomplete="email"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();pwLinkSchicken()}"/>
+          </div>
+          <button class="auth-submit-btn" id="pwSchickenBtn" onclick="pwLinkSchicken()">Link schicken</button>
+        </div>
+        <div class="pw-teil" id="pwGesendet" hidden>
+          <h2 class="pw-titel">Schau in dein Postfach</h2>
+          <p class="pw-text">Falls es ein Konto mit dieser Adresse gibt, ist der Link unterwegs. Schau auch im Spam-Ordner nach.</p>
+          <p class="pw-mail" id="pwGesendetMail"></p>
+          <button class="auth-zweit" id="pwNochmalBtn" onclick="pwNochmal()">Nochmals schicken</button>
+        </div>
+        <button type="button" class="pw-zurueck" onclick="pwAnsicht(null)">Zurück zur Anmeldung</button>
+      </div>
+      <!-- NEUES PASSWORT – hierher fuehrt der Link aus der E-Mail -->
+      <div id="auth-neu" class="auth-section pw-sektion">
+        <div class="pw-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8"/><path d="m16 7 3 3"/><path d="m18.5 4.5 2 2"/></svg></div>
+        <h2 class="pw-titel">Setz ein neues Passwort</h2>
+        <p class="pw-text">Mindestens 6 Zeichen. Danach bist du gleich angemeldet.</p>
+        <input type="email" id="pwNeuName" autocomplete="username" class="pw-versteckt" tabindex="-1" aria-hidden="true"/>
+        <div class="auth-field">
+          <svg width="17" height="17" class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="pwNeu" placeholder="Neues Passwort" autocomplete="new-password" minlength="6"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();pwSpeichern()}"/>
+          <button type="button" class="pw-auge" onclick="pwZeigen()" aria-label="Passwort anzeigen">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <button class="auth-submit-btn" id="pwSpeichernBtn" onclick="pwSpeichern()">Passwort speichern</button>
       </div>
       <!-- Erst schauen, dann entscheiden. Wer nicht weiss, was drin ist,
            legt kein Konto an. -->
@@ -6954,6 +7029,11 @@
 
       <div class="set-gruppe">
         <div class="set-lbl">Konto</div>
+      <button class="settings-btn" id="pwAendernBtn" onclick="pwAendernMail()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="s-label">Passwort ändern</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
       <button class="settings-btn" onclick="doLogout()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span class="s-label">Abmelden</span>
@@ -7248,6 +7328,20 @@
 const SB_URL='https://tuxyyrlxjkxabhvremqu.supabase.co';
 const SB_KEY='sb_publishable_dldlgp40jFNPHVV8o7lF4A_UmGSxEFZ';
 const{createClient}=supabase;
+/* Kommt jemand ueber den Link aus der Passwort-Mail, steht das in der
+   Adresse. Gelesen wird es hier, vor createClient – danach hat supabase
+   die Adresse schon aufgeraeumt. */
+const PW_LINK=(()=>{
+  try{
+    const roh=(location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,'');
+    const p=new URLSearchParams(roh);
+    return {
+      neu:p.get('type')==='recovery'||p.get('pw')==='neu',
+      abgelaufen:!!p.get('error_code')||p.get('error')==='access_denied',
+      tokenHash:p.get('type')==='recovery'?p.get('token_hash'):null
+    };
+  }catch(e){ return {neu:false,abgelaufen:false,tokenHash:null}; }
+})();
 const sb=createClient(SB_URL,SB_KEY);
 
 let cUser=null,cProfile=null,userLat=null,userLng=null;
@@ -7525,9 +7619,28 @@ async function clearSearchHistory(){
 
 async function init(){
   checkProSuccess();
+  if(PW_LINK.tokenHash){
+    try{ await sb.auth.verifyOtp({token_hash:PW_LINK.tokenHash,type:'recovery'}); }catch(e){}
+  }
   const{data:{session}}=await sb.auth.getSession();
-  if(session){cUser=session.user;await loadProf();kontoMerken();enterApp();}
+  if(PW_LINK.neu||PW_LINK.abgelaufen){
+    try{ history.replaceState(null,'',location.pathname); }catch(e){}
+  }
+  if(PW_LINK.abgelaufen&&!session){
+    if(PW_LINK.neu){
+      pwAnsicht('vergessen');
+      toast('Der Link ist abgelaufen. Fordere einfach einen neuen an.','warn');
+    }else{
+      toast('Dieser Link ist abgelaufen. Melde dich an oder fordere einen neuen an.','warn');
+    }
+  }else if(PW_LINK.neu&&session&&!PW_LINK.abgelaufen){
+    cUser=session.user;
+    pwAnsicht('neu');
+  }else if(session){cUser=session.user;await loadProf();kontoMerken();enterApp();}
   sb.auth.onAuthStateChange(async(ev,s)=>{
+    if(ev==='PASSWORD_RECOVERY'&&s){cUser=s.user;pwAnsicht('neu');return;}
+    // Solange das neue Passwort noch nicht gesetzt ist, bleibt man hier.
+    if(pwNeuOffen&&ev!=='SIGNED_OUT')return;
     if(ev==='SIGNED_IN'&&s){cUser=s.user;await loadProf();kontoMerken();enterApp();}
     else if(ev==='SIGNED_OUT'){cUser=null;cProfile=null;zurueckZurAnmeldung();}
   });
@@ -8142,6 +8255,7 @@ function enterApp(){
 }
 
 function switchAuthTab(tab,btn){
+  pwAnsichtWeg();
   document.querySelectorAll('.auth-tog-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('auth-login').style.display=tab==='login'?'flex':'none';
@@ -8155,6 +8269,148 @@ function switchAuthTab(tab,btn){
      Zeilen, die sagen, wozu das Konto gut ist, entstanden erst beim
      Umschalten auf "Für einen Verein". Genau da war die Luecke. */
   if(tab==='register'){ rSchritt=1; setKontoart(regArt||'privat'); }
+}
+
+/* ══════════ PASSWORT VERGESSEN ══════════
+   Die E-Mail selbst kommt von Supabase (die gestaltete Vorlage). Hier
+   nur: Link anfordern, und nach dem Klick darauf ein neues Passwort
+   setzen. Ob es zur Adresse ein Konto gibt, verraten wir nicht. */
+let pwNeuOffen=false;
+let pwAendernBis=0;
+
+function pwAnsichtWeg(){
+  pwNeuOffen=false;
+  const w=document.querySelector('#page-auth .auth-wrap');
+  if(w)delete w.dataset.pw;
+}
+
+function pwAnsicht(welche){
+  const w=document.querySelector('#page-auth .auth-wrap');
+  if(!w)return;
+  if(!welche){ pwAnsichtWeg(); return; }
+  showOnly('auth');
+  document.getElementById('bnav')?.classList.add('hidden');
+  w.dataset.pw=welche;
+  pwNeuOffen=welche==='neu';
+  if(welche==='vergessen'){
+    const von=document.getElementById('login-email');
+    const nach=document.getElementById('pwMail');
+    if(von&&nach&&!nach.value)nach.value=von.value.trim();
+    document.getElementById('pwFormular').hidden=false;
+    document.getElementById('pwGesendet').hidden=true;
+  }else{
+    // Damit der Schluesselbund das neue Passwort dem richtigen Konto zuordnet
+    const name=document.getElementById('pwNeuName');
+    if(name)name.value=cUser?.email||'';
+  }
+  const seite=document.querySelector('#page-auth .auth-page');
+  if(seite)seite.scrollTop=0;
+  window.scrollTo(0,0);
+}
+
+function pwRueckweg(){
+  return location.protocol==='https:'?location.origin+'/?pw=neu':undefined;
+}
+
+async function pwMailSchicken(em){
+  const{error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:pwRueckweg()});
+  if(!error)return null;
+  const f=anmeldeFehler(error);
+  // Der allgemeine Text zum Mail-Limit spricht von der Registrierung
+  if(f.sperre)return {text:'Zu viele E-Mails kurz nacheinander. Warte eine Minute.',art:'warn',sperre:f.sperre};
+  return f;
+}
+
+async function pwLinkSchicken(){
+  const feld=document.getElementById('pwMail');
+  const btn=document.getElementById('pwSchickenBtn');
+  const em=(feld?.value||'').trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){
+    toast('Gib deine E-Mail-Adresse ein','warn'); feld?.focus(); return;
+  }
+  if(!btn||btn.disabled)return;
+  btn.disabled=true; btn.textContent='Wird geschickt…';
+  const f=await pwMailSchicken(em);
+  btn.disabled=false; btn.textContent='Link schicken';
+  if(f){
+    toast(f.text,f.art);
+    if(f.sperre)knopfSperren(btn,f.sperre,'Link schicken');
+    return;
+  }
+  feld.blur();
+  document.getElementById('pwGesendetMail').textContent=em;
+  document.getElementById('pwFormular').hidden=true;
+  document.getElementById('pwGesendet').hidden=false;
+  knopfSperren(document.getElementById('pwNochmalBtn'),60,'Nochmals schicken');
+}
+
+async function pwNochmal(){
+  const btn=document.getElementById('pwNochmalBtn');
+  const em=document.getElementById('pwGesendetMail')?.textContent||'';
+  if(!btn||btn.disabled||!em)return;
+  btn.disabled=true; btn.textContent='Wird geschickt…';
+  const f=await pwMailSchicken(em);
+  if(f){
+    toast(f.text,f.art);
+    knopfSperren(btn,f.sperre||60,'Nochmals schicken');
+    return;
+  }
+  toast('Ist unterwegs – schau auch im Spam-Ordner nach','success');
+  knopfSperren(btn,60,'Nochmals schicken');
+}
+
+function pwZeigen(){
+  const f=document.getElementById('pwNeu');
+  if(!f)return;
+  const zeigen=f.type==='password';
+  f.type=zeigen?'text':'password';
+  document.querySelector('#auth-neu .pw-auge')?.classList.toggle('an',zeigen);
+}
+
+async function pwSpeichern(){
+  const feld=document.getElementById('pwNeu');
+  const btn=document.getElementById('pwSpeichernBtn');
+  const pw=feld?.value||'';
+  if(pw.length<6){
+    toast('Das Passwort braucht mindestens 6 Zeichen.','warn'); feld?.focus(); return;
+  }
+  if(!btn||btn.disabled)return;
+  btn.disabled=true; btn.textContent='Wird gespeichert…';
+  const{data,error}=await sb.auth.updateUser({password:pw});
+  btn.disabled=false; btn.textContent='Passwort speichern';
+  if(error){
+    const m=String(error.message||'').toLowerCase();
+    const c=String(error.code||'').toLowerCase();
+    if(c==='same_password'||m.includes('different from the old')){
+      toast('Das ist dein bisheriges Passwort. Nimm ein neues.','warn');
+    }else if(c.startsWith('session_')||m.includes('session')||m.includes('jwt')){
+      pwAnsicht('vergessen');
+      toast('Der Link ist abgelaufen. Fordere einfach einen neuen an.','warn');
+    }else{
+      const f=anmeldeFehler(error); toast(f.text,f.art);
+    }
+    return;
+  }
+  feld.value=''; feld.type='password';
+  pwAnsichtWeg();
+  if(data?.user)cUser=data.user;
+  await loadProf(); kontoMerken(); enterApp();
+  toast('Passwort geändert – willkommen zurück','success');
+}
+
+/* Aus den Einstellungen: derselbe Link an die eigene Adresse. Ein
+   Passwort ohne Bestaetigung per Mail zu aendern waere bequemer – aber
+   dann reicht ein entsperrtes Handy, um jemandem das Konto zu nehmen. */
+async function pwAendernMail(){
+  const em=cUser?.email;
+  if(!em)return;
+  if(Date.now()<pwAendernBis){
+    toast('Link zum Ändern ist unterwegs – schau in dein Postfach','success'); return;
+  }
+  pwAendernBis=Date.now()+60000;
+  const f=await pwMailSchicken(em);
+  if(f){ pwAendernBis=0; toast(f.text,f.art); return; }
+  toast('Link zum Ändern ist unterwegs – schau in dein Postfach','success');
 }
 
 async function doLogin(){
@@ -15527,6 +15783,26 @@ en:{
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
   "Pro verschenken":"Gift Pro",
+  "Passwort vergessen?":"Forgot password?",
+  "Kein Problem. Wir schicken dir einen Link, mit dem du ein neues setzt.":"No problem. We'll send you a link to set a new one.",
+  "Link schicken":"Send link",
+  "Falls es ein Konto mit dieser Adresse gibt, ist der Link unterwegs. Schau auch im Spam-Ordner nach.":"If there's an account with this address, the link is on its way. Check your spam folder too.",
+  "Nochmals schicken":"Send again",
+  "Zurück zur Anmeldung":"Back to sign in",
+  "Setz ein neues Passwort":"Set a new password",
+  "Mindestens 6 Zeichen. Danach bist du gleich angemeldet.":"At least 6 characters. You'll be signed in right after.",
+  "Neues Passwort":"New password",
+  "Passwort speichern":"Save password",
+  "Wird geschickt…":"Sending…",
+  "Passwort geändert – willkommen zurück":"Password changed – welcome back",
+  "Das ist dein bisheriges Passwort. Nimm ein neues.":"That's your current password. Pick a new one.",
+  "Der Link ist abgelaufen. Fordere einfach einen neuen an.":"The link has expired. Just request a new one.",
+  "Dieser Link ist abgelaufen. Melde dich an oder fordere einen neuen an.":"This link has expired. Sign in or request a new one.",
+  "Gib deine E-Mail-Adresse ein":"Enter your email address",
+  "Zu viele E-Mails kurz nacheinander. Warte eine Minute.":"Too many emails in a row. Wait a minute.",
+  "Passwort ändern":"Change password",
+  "Link zum Ändern ist unterwegs – schau in dein Postfach":"The link is on its way – check your inbox",
+  "Passwort anzeigen":"Show password",
   "Benutzername ohne @. Läuft schon ein Abo, wird die Zeit hinten angehängt.":"Username without the @. If a subscription is already running, the time is added on top.",
   "Schenken":"Gift",
   "Zurücknehmen":"Take back",
@@ -16610,6 +16886,26 @@ fr:{
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
   "Pro verschenken":"Offrir Pro",
+  "Passwort vergessen?":"Mot de passe oublié ?",
+  "Kein Problem. Wir schicken dir einen Link, mit dem du ein neues setzt.":"Pas de souci. On t'envoie un lien pour en choisir un nouveau.",
+  "Link schicken":"Envoyer le lien",
+  "Falls es ein Konto mit dieser Adresse gibt, ist der Link unterwegs. Schau auch im Spam-Ordner nach.":"S'il existe un compte avec cette adresse, le lien est en route. Regarde aussi dans les spams.",
+  "Nochmals schicken":"Renvoyer",
+  "Zurück zur Anmeldung":"Retour à la connexion",
+  "Setz ein neues Passwort":"Choisis un nouveau mot de passe",
+  "Mindestens 6 Zeichen. Danach bist du gleich angemeldet.":"Au moins 6 caractères. Tu seras connecté juste après.",
+  "Neues Passwort":"Nouveau mot de passe",
+  "Passwort speichern":"Enregistrer le mot de passe",
+  "Wird geschickt…":"Envoi…",
+  "Passwort geändert – willkommen zurück":"Mot de passe modifié – bon retour",
+  "Das ist dein bisheriges Passwort. Nimm ein neues.":"C'est ton mot de passe actuel. Choisis-en un nouveau.",
+  "Der Link ist abgelaufen. Fordere einfach einen neuen an.":"Le lien a expiré. Demandes-en simplement un nouveau.",
+  "Dieser Link ist abgelaufen. Melde dich an oder fordere einen neuen an.":"Ce lien a expiré. Connecte-toi ou demandes-en un nouveau.",
+  "Gib deine E-Mail-Adresse ein":"Saisis ton adresse e-mail",
+  "Zu viele E-Mails kurz nacheinander. Warte eine Minute.":"Trop d'e-mails d'affilée. Attends une minute.",
+  "Passwort ändern":"Changer le mot de passe",
+  "Link zum Ändern ist unterwegs – schau in dein Postfach":"Le lien est en route – regarde ta boîte mail",
+  "Passwort anzeigen":"Afficher le mot de passe",
   "Benutzername ohne @. Läuft schon ein Abo, wird die Zeit hinten angehängt.":"Nom d’utilisateur sans @. Si un abonnement est en cours, la durée s’ajoute à la fin.",
   "Schenken":"Offrir",
   "Zurücknehmen":"Retirer",
@@ -17693,6 +17989,26 @@ it:{
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
   "Pro verschenken":"Regala Pro",
+  "Passwort vergessen?":"Password dimenticata?",
+  "Kein Problem. Wir schicken dir einen Link, mit dem du ein neues setzt.":"Nessun problema. Ti mandiamo un link per impostarne una nuova.",
+  "Link schicken":"Invia link",
+  "Falls es ein Konto mit dieser Adresse gibt, ist der Link unterwegs. Schau auch im Spam-Ordner nach.":"Se esiste un account con questo indirizzo, il link è in arrivo. Controlla anche lo spam.",
+  "Nochmals schicken":"Invia di nuovo",
+  "Zurück zur Anmeldung":"Torna al login",
+  "Setz ein neues Passwort":"Imposta una nuova password",
+  "Mindestens 6 Zeichen. Danach bist du gleich angemeldet.":"Almeno 6 caratteri. Subito dopo sei dentro.",
+  "Neues Passwort":"Nuova password",
+  "Passwort speichern":"Salva password",
+  "Wird geschickt…":"Invio…",
+  "Passwort geändert – willkommen zurück":"Password cambiata – bentornato",
+  "Das ist dein bisheriges Passwort. Nimm ein neues.":"È la tua password attuale. Scegline una nuova.",
+  "Der Link ist abgelaufen. Fordere einfach einen neuen an.":"Il link è scaduto. Richiedine semplicemente uno nuovo.",
+  "Dieser Link ist abgelaufen. Melde dich an oder fordere einen neuen an.":"Questo link è scaduto. Accedi o richiedine uno nuovo.",
+  "Gib deine E-Mail-Adresse ein":"Inserisci il tuo indirizzo e-mail",
+  "Zu viele E-Mails kurz nacheinander. Warte eine Minute.":"Troppe e-mail di fila. Aspetta un minuto.",
+  "Passwort ändern":"Cambia password",
+  "Link zum Ändern ist unterwegs – schau in dein Postfach":"Il link è in arrivo – controlla la posta",
+  "Passwort anzeigen":"Mostra password",
   "Benutzername ohne @. Läuft schon ein Abo, wird die Zeit hinten angehängt.":"Nome utente senza @. Se un abbonamento è già attivo, il tempo viene aggiunto in coda.",
   "Schenken":"Regala",
   "Zurücknehmen":"Ritira",
