@@ -5420,6 +5420,32 @@
     /* Die Abo-Bedingungen stehen jetzt unter dem Knopf */
     .pro2-note{margin:12px auto 0;max-width:330px;line-height:1.5}
 
+    /* ══════════ EINSTELLUNGEN: GRUPPEN ══════════
+       Statt Trennlinien im Markup Gruppen mit Luft dazwischen. Die kleine
+       Ueberschrift nennt die Gruppe, die weisse Frage darunter die
+       einzelne Einstellung. */
+    .set-gruppe{margin-bottom:28px}
+    .set-gruppe:last-child{margin-bottom:8px}
+    .set-gruppe[hidden]{display:none}
+    .set-frage{font-size:.86rem;font-weight:700;color:#fff;margin:16px 0 9px}
+    .set-lbl + .set-frage,.set-lbl + div > .set-frage:first-child{margin-top:0}
+    .set-optionen{display:flex;flex-direction:column;gap:8px}
+    .set-opt-t{font-size:.9rem;font-weight:600;color:#fff}
+    .set-opt-s{font-size:.75rem;color:var(--muted);margin-top:1px;line-height:1.4}
+    .set-abstand{margin-top:14px}
+    .settings-btn .s-wert{
+      margin-left:auto;font-size:.78rem;font-weight:600;color:var(--muted);
+      max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .settings-btn .s-wert:empty{display:none}
+    .settings-btn .s-wert + .s-arrow{margin-left:6px}
+    .set-konto{
+      display:flex;align-items:center;gap:12px;margin:0 0 24px;padding:12px 14px;
+      border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    }
+    .set-konto[hidden]{display:none}
+    .set-konto .kz-text{min-width:0}
+
   </style>
 </head>
 <body>
@@ -6638,7 +6664,7 @@
   </div>
 </div>
 
-<!-- ════ USER SEARCH ════ -->
+<!-- ════ EINSTELLUNGEN ════ -->
 <div class="overlay" id="settingsOverlay" onclick="closeIfOutside(event,'settingsOverlay')">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -6649,51 +6675,142 @@
       </button>
     </div>
     <div class="modal-body">
-      <!-- Sprache -->
-      <div style="margin-bottom:20px">
-        <div class="set-lbl">Sprache</div>
+      <!-- Vorher: neun Abschnitte in zufaelliger Reihenfolge, getrennt
+           durch Linien im Markup, "Sicherheit" ueber der Tour, und das
+           Betreiber-Werkzeug mitten zwischen den Nutzer-Einstellungen.
+           Jetzt vier Gruppen, das Wichtigste zuerst. -->
+      <div class="set-konto" id="setKontoZeile" hidden></div>
+
+      <div class="set-gruppe">
+        <div class="set-lbl">Privatsphäre</div>
+        <div id="setProfilBox">
+          <div class="set-frage">Dein Profil</div>
+          <div id="profSettingWrap" class="set-optionen">
+          <label class="msg-setting-opt" onclick="setProfilPrivat(false)">
+            <div class="msg-setting-radio" id="psr-offen"></div>
+            <div><div class="set-opt-t">Öffentlich</div><div class="set-opt-s">Jeder kann dir folgen und dich zu Partys einladen</div></div>
+          </label>
+          <label class="msg-setting-opt" onclick="setProfilPrivat(true)">
+            <div class="msg-setting-radio" id="psr-privat"></div>
+            <div><div class="set-opt-t">Privat</div><div class="set-opt-s">Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.</div></div>
+          </label>
+          </div>
+        </div>
+        <div id="setNachrichtenBox">
+          <div class="set-frage">Wer darf dir schreiben?</div>
+          <div id="msgSettingWrap" class="set-optionen">
+          <label class="msg-setting-opt" onclick="setMsgSetting('everyone')">
+            <div class="msg-setting-radio" id="msr-everyone"></div>
+            <div><div class="set-opt-t">Jeder kann schreiben</div><div class="set-opt-s">Alle Nachrichten direkt erhalten</div></div>
+          </label>
+          <label class="msg-setting-opt" onclick="setMsgSetting('requests')">
+            <div class="msg-setting-radio" id="msr-requests"></div>
+            <div><div class="set-opt-t">Nur Anfragen</div><div class="set-opt-s">Du entscheidest, wer dir schreiben darf</div></div>
+          </label>
+          <label class="msg-setting-opt" onclick="setMsgSetting('nobody')">
+            <div class="msg-setting-radio" id="msr-nobody"></div>
+            <div><div class="set-opt-t">Niemand</div><div class="set-opt-s">Keine Nachrichten empfangen</div></div>
+          </label>
+          </div>
+        </div>
+        <button class="settings-btn set-abstand" onclick="blockiertOeffnen()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/></svg>
+          <span class="s-label">Blockierte Personen</span><span class="s-wert" id="setBlockZahl"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <div class="set-gruppe">
+        <div class="set-lbl">App</div>
+        <div class="set-frage">Sprache</div>
         <div class="lang-row" id="langRow">
           <button class="lang-opt" data-lang="de" onclick="setLang('de')"><b>DE</b><span>Deutsch</span></button>
           <button class="lang-opt" data-lang="en" onclick="setLang('en')"><b>EN</b><span>English</span></button>
           <button class="lang-opt" data-lang="fr" onclick="setLang('fr')"><b>FR</b><span>Français</span></button>
           <button class="lang-opt" data-lang="it" onclick="setLang('it')"><b>IT</b><span>Italiano</span></button>
         </div>
-      </div>
-      <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px"></div>
-      <!-- Profil öffentlich oder privat -->
-      <div style="margin-bottom:20px" id="setProfilBox">
-        <div class="set-lbl">Dein Profil</div>
-        <div id="profSettingWrap" style="display:flex;flex-direction:column;gap:8px">
-          <label class="msg-setting-opt" onclick="setProfilPrivat(false)">
-            <div class="msg-setting-radio" id="psr-offen"></div>
-            <div>
-              <div style="font-size:.9rem;font-weight:600;color:#fff">Öffentlich</div>
-              <div style="font-size:.75rem;color:var(--muted)">Jeder kann dir folgen und dich zu Partys einladen</div>
-            </div>
-          </label>
-          <label class="msg-setting-opt" onclick="setProfilPrivat(true)">
-            <div class="msg-setting-radio" id="psr-privat"></div>
-            <div>
-              <div style="font-size:.9rem;font-weight:600;color:#fff">Privat</div>
-              <div style="font-size:.75rem;color:var(--muted)">Wer dir folgen will, fragt an. Nur wer verbunden ist, sieht deine Angaben und kann dich einladen</div>
-            </div>
-          </label>
+        <div id="setRausBox">
+          <div class="set-frage">Schnell raus</div>
+        <div class="set-hilfe">Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.</div>
+        <div class="chipset" id="setRausWahl">
+          <button class="cset" data-raus="" onclick="setSchnellRaus('')">Aus</button>
+          <button class="cset" data-raus="tarnung" onclick="setSchnellRaus('tarnung')">Taschenrechner</button>
+          <button class="cset" data-raus="instagram" onclick="setSchnellRaus('instagram')">Instagram Reels</button>
+          <button class="cset" data-raus="tiktok" onclick="setSchnellRaus('tiktok')">TikTok</button>
+          <button class="cset" data-raus="wetter" onclick="setSchnellRaus('wetter')">Wetter</button>
         </div>
-      </div>
-      <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px"></div>
-      <!-- Karten-App -->
-      <div style="margin-bottom:20px">
-        <div class="set-lbl">Karten-App</div>
+        </div>
+        <div class="set-frage">Karten-App</div>
         <div class="chipset" id="setKartenWahl">
           <button class="cset" data-app="" onclick="setKartenApp('')">Jedes Mal fragen</button>
           <button class="cset" data-app="apple" onclick="setKartenApp('apple')">Apple Karten</button>
           <button class="cset" data-app="google" onclick="setKartenApp('google')">Google Maps</button>
         </div>
       </div>
-      <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px"></div>
-      <!-- Nur der Betreiber: Pro verschenken -->
-      <div style="margin-bottom:20px" id="setSchenkenBox" hidden>
-        <div class="set-lbl">Pro verschenken</div>
+
+      <div class="set-gruppe">
+        <div class="set-lbl">Hilfe</div>
+      <button class="settings-btn" onclick="tourNochmal('start')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.4 2.5c-.6.2-.9.8-.9 1.4v.3"/><path d="M12 17v.01"/></svg>
+        <span class="s-label">So funktioniert SPOTOUT</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="settings-btn" id="setProTour" onclick="tourNochmal('pro')" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.4l-5.25 2.75 1-5.85L3.5 9.15l5.9-.85z"/></svg>
+        <span class="s-label">Was Pro alles kann</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="settings-btn" onclick="openRules()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="M12 8.5v4M12 15.5v.01"/></svg>
+        <span class="s-label">Community-Regeln</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <a class="settings-btn" href="mailto:support@spotoutapp.ch">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <span class="s-label">Support schreiben</span><span class="s-wert">support@spotoutapp.ch</span>
+      </a>
+      </div>
+
+      <div class="set-gruppe">
+        <div class="set-lbl">Rechtliches</div>
+      <a class="settings-btn" href="/nutzungsbedingungen" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+        <span class="s-label">Nutzungsbedingungen</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      <a class="settings-btn" href="/datenschutz" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="s-label">Datenschutzerklärung</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      <a class="settings-btn" href="/impressum" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8v.01"/></svg>
+        <span class="s-label">Impressum</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+      </div>
+
+      <div class="set-gruppe">
+        <div class="set-lbl">Konto</div>
+      <button class="settings-btn" onclick="doLogout()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="s-label">Abmelden</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="settings-btn danger" id="kontoWegBtn" onclick="kontoWeg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        <span class="s-label" id="kontoWegLabel">Konto löschen</span>
+        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="konto-weg-hinweis" id="kontoWegHinweis" hidden>
+        Alles wird gelöscht: dein Profil, deine Partys, deine Anmeldungen und
+        deine Nachrichten. Rückgängig geht das nicht.
+      </div>
+      </div>
+
+      <!-- Nur der Betreiber sieht das – ganz unten, getrennt vom Rest -->
+      <div class="set-gruppe" id="setSchenkenBox" hidden>
+        <div class="set-lbl">Betreiber: Pro verschenken</div>
         <div class="set-hilfe">Benutzername ohne @. Läuft schon ein Abo, wird die Zeit hinten angehängt.</div>
         <div class="schenk-reihe">
           <input type="text" id="schenkName" placeholder="benutzername" autocapitalize="off"
@@ -6711,97 +6828,6 @@
           <button class="schenk-weg" onclick="proZurueck()">Zurücknehmen</button>
         </div>
         <div class="ein-leer" id="schenkStand" hidden></div>
-      </div>
-      <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px" id="setSchenkenStrich" hidden></div>
-      <!-- Schnell raus -->
-      <div style="margin-bottom:20px">
-        <div class="set-lbl">Schnell raus</div>
-        <div class="set-hilfe">Ein Tipp auf den Knopf oben, und SPOTOUT ist weg. Vom Taschenrechner zurück: lange auf die Zahl drücken.</div>
-        <div class="chipset" id="setRausWahl">
-          <button class="cset" data-raus="" onclick="setSchnellRaus('')">Aus</button>
-          <button class="cset" data-raus="tarnung" onclick="setSchnellRaus('tarnung')">Taschenrechner</button>
-          <button class="cset" data-raus="instagram" onclick="setSchnellRaus('instagram')">Instagram Reels</button>
-          <button class="cset" data-raus="tiktok" onclick="setSchnellRaus('tiktok')">TikTok</button>
-          <button class="cset" data-raus="wetter" onclick="setSchnellRaus('wetter')">Wetter</button>
-        </div>
-      </div>
-      <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px"></div>
-      <!-- Message setting -->
-      <div style="margin-bottom:20px">
-        <div class="set-lbl">Nachrichten</div>
-        <div id="msgSettingWrap" style="display:flex;flex-direction:column;gap:8px">
-          <label class="msg-setting-opt" onclick="setMsgSetting('everyone')">
-            <div class="msg-setting-radio" id="msr-everyone"></div>
-            <div>
-              <div style="font-size:.9rem;font-weight:600;color:#fff">Jeder kann schreiben</div>
-              <div style="font-size:.75rem;color:var(--muted)">Alle Nachrichten direkt erhalten</div>
-            </div>
-          </label>
-          <label class="msg-setting-opt" onclick="setMsgSetting('requests')">
-            <div class="msg-setting-radio" id="msr-requests"></div>
-            <div>
-              <div style="font-size:.9rem;font-weight:600;color:#fff">Nur Anfragen</div>
-              <div style="font-size:.75rem;color:var(--muted)">Du entscheidest, wer dir schreiben darf</div>
-            </div>
-          </label>
-          <label class="msg-setting-opt" onclick="setMsgSetting('nobody')">
-            <div class="msg-setting-radio" id="msr-nobody"></div>
-            <div>
-              <div style="font-size:.9rem;font-weight:600;color:#fff">Niemand</div>
-              <div style="font-size:.75rem;color:var(--muted)">Keine Nachrichten empfangen</div>
-            </div>
-          </label>
-        </div>
-      </div>
-      <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px"></div>
-      <div class="set-lbl">Sicherheit</div>
-      <button class="settings-btn" onclick="tourNochmal('start')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.4 2.5c-.6.2-.9.8-.9 1.4v.3"/><path d="M12 17v.01"/></svg>
-        <span class="s-label">So funktioniert SPOTOUT</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <button class="settings-btn" id="setProTour" onclick="tourNochmal('pro')" hidden>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.4l-5.25 2.75 1-5.85L3.5 9.15l5.9-.85z"/></svg>
-        <span class="s-label">Was Pro alles kann</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <button class="settings-btn" onclick="openRules()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="M12 8.5v4M12 15.5v.01"/></svg>
-        <span class="s-label">Community-Regeln</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-<div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px"></div>
-      <div class="set-lbl">Rechtliches</div>
-      <a class="settings-btn" href="/nutzungsbedingungen" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-        <span class="s-label">Nutzungsbedingungen</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-      <a class="settings-btn" href="/datenschutz" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span class="s-label">Datenschutzerklärung</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-      <a class="settings-btn" href="/impressum" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8v.01"/></svg>
-        <span class="s-label">Impressum</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </a>
-<div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:20px"></div>
-      <div class="set-lbl">Konto</div>
-      <button class="settings-btn" onclick="doLogout()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span class="s-label">Abmelden</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <button class="settings-btn danger" id="kontoWegBtn" onclick="kontoWeg()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-        <span class="s-label" id="kontoWegLabel">Konto löschen</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <div class="konto-weg-hinweis" id="kontoWegHinweis" hidden>
-        Alles wird gelöscht: dein Profil, deine Partys, deine Anmeldungen und
-        deine Nachrichten. Rückgängig geht das nicht.
       </div>
     </div>
   </div>
@@ -14505,6 +14531,13 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Privatsphäre":"Privacy",
+  "Hilfe":"Help",
+  "Wer darf dir schreiben?":"Who can message you?",
+  "Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.":"People who want to follow you have to ask. Only connections see your details.",
+  "Blockierte Personen":"Blocked people",
+  "Support schreiben":"Contact support",
+  "Betreiber: Pro verschenken":"Operator: gift Pro",
   "Pro bleibt aktiv bis":"Pro stays active until",
   ". Es wird nichts abgebucht.":". Nothing will be charged.",
   "Gekündigt – es wird nichts abgebucht.":"Cancelled – nothing will be charged.",
@@ -14934,7 +14967,6 @@ en:{
   "Öffentlich":"Public",
   "Jeder kann dir folgen und dich zu Partys einladen":"Anyone can follow you and invite you to parties",
   "Privat":"Private",
-  "Wer dir folgen will, fragt an. Nur wer verbunden ist, sieht deine Angaben und kann dich einladen":"People ask before following. Only connections see your details and can invite you",
   "Dein Profil ist jetzt privat":"Your profile is now private",
   "Dein Profil ist jetzt öffentlich":"Your profile is now public",
   "Dieses Profil ist privat":"This profile is private",
@@ -15555,6 +15587,13 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Privatsphäre":"Confidentialité",
+  "Hilfe":"Aide",
+  "Wer darf dir schreiben?":"Qui peut t’écrire ?",
+  "Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.":"Qui veut te suivre doit demander. Seules tes connexions voient tes infos.",
+  "Blockierte Personen":"Personnes bloquées",
+  "Support schreiben":"Écrire au support",
+  "Betreiber: Pro verschenken":"Exploitant : offrir Pro",
   "Pro bleibt aktiv bis":"Pro reste actif jusqu’au",
   ". Es wird nichts abgebucht.":". Rien ne sera prélevé.",
   "Gekündigt – es wird nichts abgebucht.":"Résilié – rien ne sera prélevé.",
@@ -15984,7 +16023,6 @@ fr:{
   "Öffentlich":"Public",
   "Jeder kann dir folgen und dich zu Partys einladen":"Tout le monde peut te suivre et t’inviter à des soirées",
   "Privat":"Privé",
-  "Wer dir folgen will, fragt an. Nur wer verbunden ist, sieht deine Angaben und kann dich einladen":"On demande avant de te suivre. Seuls tes contacts voient tes infos et peuvent t’inviter",
   "Dein Profil ist jetzt privat":"Ton profil est maintenant privé",
   "Dein Profil ist jetzt öffentlich":"Ton profil est maintenant public",
   "Dieses Profil ist privat":"Ce profil est privé",
@@ -16605,6 +16643,13 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Privatsphäre":"Privacy",
+  "Hilfe":"Aiuto",
+  "Wer darf dir schreiben?":"Chi può scriverti?",
+  "Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.":"Chi vuole seguirti deve chiedere. Solo i collegamenti vedono i tuoi dati.",
+  "Blockierte Personen":"Persone bloccate",
+  "Support schreiben":"Scrivi al supporto",
+  "Betreiber: Pro verschenken":"Gestore: regala Pro",
   "Pro bleibt aktiv bis":"Pro resta attivo fino al",
   ". Es wird nichts abgebucht.":". Non verrà addebitato nulla.",
   "Gekündigt – es wird nichts abgebucht.":"Disdetto – non verrà addebitato nulla.",
@@ -17034,7 +17079,6 @@ it:{
   "Öffentlich":"Pubblico",
   "Jeder kann dir folgen und dich zu Partys einladen":"Chiunque può seguirti e invitarti alle feste",
   "Privat":"Privato",
-  "Wer dir folgen will, fragt an. Nur wer verbunden ist, sieht deine Angaben und kann dich einladen":"Chi vuole seguirti manda una richiesta. Solo chi è collegato vede i tuoi dati e può invitarti",
   "Dein Profil ist jetzt privat":"Il tuo profilo ora è privato",
   "Dein Profil ist jetzt öffentlich":"Il tuo profilo ora è pubblico",
   "Dieses Profil ist privat":"Questo profilo è privato",
@@ -19701,10 +19745,7 @@ let schenkLaeuft=false;
 
 function schenkenAnzeigen(){
   const box=document.getElementById('setSchenkenBox');
-  const strich=document.getElementById('setSchenkenStrich');
-  const zeigen=!!cProfile?.ist_admin;
-  if(box)box.hidden=!zeigen;
-  if(strich)strich.hidden=!zeigen;
+  if(box)box.hidden=!cProfile?.ist_admin;
 }
 
 async function proVerschenken(){
@@ -20044,6 +20085,25 @@ function showSettingsModal(){
   // Load current message setting
   const current=cProfile?.allow_messages||'everyone';
   setMsgSettingUI(current);
+  /* Wer gerade angemeldet ist – mit mehreren Konten auf einem Geraet
+     stellt man sonst leicht im falschen etwas um. */
+  const kz=document.getElementById('setKontoZeile');
+  if(kz){
+    const nm=cProfile?.full_name||cProfile?.username||'';
+    const av=cProfile?.avatar_url
+      ? '<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>'
+      : esc((nm||'?').charAt(0).toUpperCase());
+    kz.innerHTML=cUser?('<span class="kz-av">'+av+'</span><span class="kz-text">'
+      +'<span class="kz-name">'+esc(nm)+'</span><span class="kz-art">'+esc(cUser.email||'')+'</span></span>'):'';
+    kz.hidden=!cUser;
+  }
+  // Ein Verein hat keine Chats und geht nicht selbst auf Partys
+  const verein=istVerein();
+  ['setNachrichtenBox','setRausBox'].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.hidden=verein;
+  });
+  const bz=document.getElementById('setBlockZahl');
+  if(bz)bz.textContent=window.__blocked?.size?String(window.__blocked.size):'';
 }
 
 function setMsgSettingUI(val){
