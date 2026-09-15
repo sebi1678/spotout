@@ -5563,6 +5563,16 @@
     .nt-leer span{display:block;max-width:290px;margin:0 auto 16px;font-size:.85rem;line-height:1.5;color:var(--text2)}
     @media (prefers-reduced-motion: reduce){ .nt-row.frisch{animation:none} }
 
+    /* Die Glocke meldet sich, statt nur eine Zahl zu aendern */
+    @keyframes glocke{
+      0%,100%{transform:rotate(0)} 15%{transform:rotate(16deg)} 30%{transform:rotate(-12deg)}
+      45%{transform:rotate(8deg)} 60%{transform:rotate(-5deg)} 75%{transform:rotate(2deg)}
+    }
+    .nav-bell.wackelt svg{animation:glocke .9s var(--kurve);transform-origin:50% 12%}
+    @media (prefers-reduced-motion: reduce){ .nav-bell.wackelt svg{animation:none} }
+    /* In der Chatliste: die eigene letzte Nachricht beginnt mit "Du:" */
+    .chat-du{color:var(--muted)}
+
   </style>
 </head>
 <body>
@@ -12040,7 +12050,7 @@ async function loadChats(){
     const av=o?.avatar_url?('<img loading="lazy" decoding="async" src="'+o.avatar_url+'"/>'):((o?.full_name||o?.username||'?').charAt(0).toUpperCase());
     return`<div class="chat-item ${unread?'unread':''}" onclick="openConv('${c.id}',${JSON.stringify(o).replace(/"/g,'&quot;')})">
       <div class="chat-av">${av}</div>
-      <div class="chat-info"><div class="chat-name">${o?.full_name||o?.username||'Unbekannt'}</div><div class="chat-preview">${last?(last.image_url&&!last.content?'Bild':esc(last.content)):'Noch keine Nachrichten'}</div></div>
+      <div class="chat-info"><div class="chat-name">${o?.full_name||o?.username||'Unbekannt'}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
       <div class="chat-meta"><div class="chat-time">${last?fmtT(last.created_at):''}</div>${unread?'<div class="unread-dot"></div>':''}</div>
     </div>`;
   }).join('');
@@ -14695,6 +14705,7 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Du:":"You:",
   "Früher":"Earlier",
   "Antworten":"Reply",
   "Antworten…":"Reply…",
@@ -15777,6 +15788,7 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Du:":"Toi :",
   "Früher":"Plus tôt",
   "Antworten":"Répondre",
   "Antworten…":"Répondre…",
@@ -16859,6 +16871,7 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Du:":"Tu:",
   "Früher":"Prima",
   "Antworten":"Rispondi",
   "Antworten…":"Rispondi…",
@@ -18663,7 +18676,7 @@ function moreBtn(art,id,name){
    Angelegt werden sie ausschliesslich von Datenbank-Triggern. Der Client
    liest, markiert als gelesen und zeigt sie an. */
 
-let notifTimer=null,notifSeen=new Set(),notifFirst=true;
+let notifTimer=null,notifSeen=new Set(),notifFirst=true,ntVorher=0;
 
 const NT_ICON={
   guest_request:{cls:'frage',svg:'<path d="M16 20.5v-1.7a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1.7"/><circle cx="9" cy="7.5" r="4"/><path d="M19 8v6M22 11h-6"/>'},
@@ -18713,6 +18726,14 @@ async function loadNotifs(){
   notifRhythmus(list);
 
   const offen=list.filter(n=>!n.gelesen);
+  // Kommt etwas dazu, waehrend die App offen ist, wackelt die Glocke kurz.
+  if(!notifFirst&&offen.length>ntVorher){
+    document.querySelectorAll('.nav-bell').forEach(b=>{
+      b.classList.remove('wackelt'); void b.offsetWidth; b.classList.add('wackelt');
+      setTimeout(()=>b.classList.remove('wackelt'),1000);
+    });
+  }
+  ntVorher=offen.length;
   const text=offen.length>9?'9+':String(offen.length);
   document.querySelectorAll('.js-notif-dot').forEach(dot=>{
     dot.style.display=offen.length?'block':'none';
