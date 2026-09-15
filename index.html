@@ -7351,16 +7351,16 @@ function tbHinweis(t){
 const STERN='<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/></svg>';
 function tbPro(){ return '<span class="tb-pro">'+STERN+'Pro</span>'; }
 
-/* Dieselben Symbole wie die echte Mitbringliste – nicht nachgezeichnet,
-   sondern dasselbe Markup. */
-const TB_BEUTEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5.5 8h13l-1 12.5a1 1 0 0 1-1 .9H7.5a1 1 0 0 1-1-.9z"/><path d="M8.8 8V6.2a3.2 3.2 0 0 1 6.4 0V8"/></svg>';
-const TB_HAKEN_D='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg>';
 
 const TOUREN={
+  /* Sechs Karten statt dreizehn, jede sagt eine Sache. Suche, Karte,
+     Mitbringliste und Konto wechseln haben keine eigene Karte mehr –
+     man findet sie dort, wo man sie braucht. Wer die Tour schon
+     gesehen hat, bekommt sie deswegen nicht nochmals. */
   start:[
     {
-      t:'Was heute läuft, siehst du hier',
-      s:'Die Startseite zeigt öffentliche Partys, Feste und Openairs in deiner Nähe – die nächsten zuerst. Tippe eine an, und du siehst alles dazu.',
+      t:'Was in deiner Nähe läuft',
+      s:'Partys, Feste und Openairs – die nächsten zuerst. Mit „Karte" siehst du alle auf einen Blick.',
       b:()=>'<div class="tb"><div class="tb-kachel">'
         +'<div class="tb-bild"><i>Öffentlich</i><b>4.6 km</b></div>'
         +'<div class="tb-txt"><div class="tb-n">Herbstfest Rohr</div>'
@@ -7369,7 +7369,7 @@ const TOUREN={
     },
     {
       t:'Ein Tipp, und du bist dabei',
-      s:'Auf der Party steht, wie viele kommen. „Ich bin dabei" trägt dich ein – der Gastgeber sieht dich, und die Party landet in deinem Kalender.',
+      s:'„Ich bin dabei" trägt dich ein. Danach steht die Party in deinem Kalender – mit Route und Erinnerung.',
       b:()=>'<div class="tb">'
         +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#7C3AED,#38BDF8)">L</div>'
         +'<div><div class="tb-t">Lena Meier</div><div class="tb-s">vor 2 Stunden angemeldet</div></div>'
@@ -7380,92 +7380,19 @@ const TOUREN={
         +'<div class="tb-knopf">Ich bin dabei!</div></div>',
     },
     {
-      t:'Deine eigene Party in sechs Schritten',
-      s:'Unten auf das Plus. Pflicht sind nur Name, Zeit und Ort – alles andere kannst du überspringen und später ergänzen.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-schritte">'
-        +'<span class="tb-schritt an"></span><span class="tb-schritt an"></span>'
-        +'<span class="tb-schritt"></span><span class="tb-schritt"></span>'
-        +'<span class="tb-schritt"></span><span class="tb-schritt"></span></div>'
-        +'<div class="tb-feld"><span>Name</span>Hausparty bei Sebi</div>'
-        +'<div class="tb-feld"><span>Wann</span>Sa. 26. Sept. · 20:00 Uhr</div>'
-        +'<div class="tb-feld"><span>Wo</span>Rohrerstrasse 12, Rohr</div>'
-        +'<div class="tb-knopf">Weiter</div></div>',
-    },
-    {
-      t:'Wer bringt was mit?',
-      s:'Leg eine Liste an, jeder trägt sich ein. Jeder Eintrag geht nur einmal – so bringt niemand zweimal Chips. Beim Erstellen tippst du nur, was es ist; die Menge stellst du mit + und − ein.',
-      /* Bewusst mit denselben Klassen wie die echte Liste auf der
-         Partyseite: dann sieht die Karte nicht *ähnlich* aus, sondern
-         genau so, und niemand sucht nachher etwas anderes. */
-      b:()=>'<div class="tb tb-echt"><div class="bring-sec">'
-        +'<div class="bring-hdr">'
-          +'<div class="bring-ic">'+TB_BEUTEL+'</div>'
-          +'<div style="flex:1;min-width:0">'
-            +'<div class="bring-title">Mitbringliste</div>'
-            +'<div class="bring-sub">1 von 3 noch offen</div></div>'
-          +'<div class="bring-count">2/3</div>'
-        +'</div>'
-        +'<div class="bring-progress"><i style="transform:scaleX(.67)"></i></div>'
-        +'<div class="bring-mine">'+TB_HAKEN_D+'<span>Du bringst mit: <b>Chips &amp; Nüsse ×2</b></span></div>'
-        +'<div class="bring-row taken mine-row">'
-          +'<div class="bring-box mine">'+TB_HAKEN_D+'</div>'
-          +'<div style="flex:1;min-width:0"><div class="bring-t"><span>Chips &amp; Nüsse</span>'
-            +'<span class="bring-menge">×2</span></div>'
-          +'<div class="bring-who">Du bringst das mit</div></div></div>'
-        +'<div class="bring-row taken">'
-          +'<div class="bring-box on">'+TB_HAKEN_D+'</div>'
-          +'<div style="flex:1;min-width:0"><div class="bring-t"><span>Bluetooth-Box</span></div>'
-          +'<div class="bring-who"><b>Jan</b> bringt das mit</div></div></div>'
-        +'<div class="bring-row">'
-          +'<div class="bring-box">'+TB_HAKEN_D+'</div>'
-          +'<div style="flex:1;min-width:0"><div class="bring-t"><span>Eis</span></div>'
-          +'<div class="bring-who">Noch frei – tipp an, wenn du das übernimmst</div></div></div>'
-        +'</div></div>',
-    },
-    {
-      t:'Öffentlich oder nur für deine Leute',
-      s:'Eine öffentliche Party sehen alle in der Nähe. Eine private sieht nur, wen du einlädst – jede Einladung ist ein eigener Link, der genau einmal funktioniert.',
+      t:'Deine eigene Party',
+      s:'Unten auf Plus. Name, Zeit und Ort reichen – öffentlich für alle oder privat nur für Eingeladene.',
       b:()=>'<div class="tb">'
         +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
         +'<div><div class="tb-t">Öffentlich</div><div class="tb-s">Steht auf der Startseite und auf der Karte</div></div></div>'
         +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
         +'<div><div class="tb-t">Privat</div><div class="tb-s">Nur mit persönlicher Einladung sichtbar</div></div></div>'
-        +tbHinweis('Eine öffentliche Party zu veröffentlichen kostet einmalig – gestaffelt nach Gästezahl, mit Pro die Hälfte. Private Partys sind gratis.')
+        +tbHinweis('Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.')
         +'</div>',
     },
     {
-      t:'Suchen, auch ohne Standort',
-      s:'Tipp einen Ort in die Suchleiste – etwa St. Gallen. Liste und Karte springen dorthin. Mit dem Umkreis stellst du ein, wie weit du fahren würdest.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-feld"><span>Suche</span>St. Gallen</div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Umkreis 10 km</div><div class="tb-s">3 Partys in der Nähe</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Nur gratis</div><div class="tb-s">Filter gilt auch auf der Karte</div></div></div></div>',
-    },
-    {
-      t:'Alles auch auf der Karte',
-      s:'Dieselben Partys als Punkte. Kategorie, Suche und Filter gelten hier genauso. Ein Knopf macht sie zum Vollbild, einer holt dich zu deinem Standort.',
-      b:()=>'<div class="tb"><div class="tb-kachel">'
-        +'<div class="tb-bild"><i>Karte</i><b>3 Partys</b></div>'
-        +'<div class="tb-txt"><div class="tb-n">Rohr und Umgebung</div>'
-        +'<div class="tb-m">Tipp auf einen Punkt öffnet die Party<br>Vollbild und Standort über die Knöpfe rechts</div>'
-        +'</div></div></div>',
-    },
-    {
-      t:'Deine Partys an einem Ort',
-      s:'Unter „Meine Partys" steht alles, wozu du zugesagt hast, und alles, was du selbst machst. Die nächste zuoberst, mit Countdown. Von dort geht es direkt zur Route oder in deinen Kalender.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#FF2D76,#FF6B00)">2</div>'
-        +'<div><div class="tb-t">Herbstfest Rohr</div><div class="tb-s">in 2 Tagen · 17:00 Uhr</div></div>'
-        +'<div class="tb-wer">dabei</div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">In den Kalender</div><div class="tb-s">Mit Adresse und Erinnerung zwei Stunden vorher</div></div></div></div>',
-    },
-    {
-      t:'Leuten folgen und schreiben',
-      s:'Über die Lupe oben findest du Leute. Folgst du jemandem, siehst du, auf welche Partys er geht. Antworten darf jeder – wer ein Gespräch anfangen will, braucht Pro.',
+      t:'Leute finden und schreiben',
+      s:'Über die Lupe oben findest du Leute. Wer dir schreiben darf, stellst du in den Einstellungen ein.',
       b:()=>'<div class="tb">'
         +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#7C3AED,#38BDF8)">L</div>'
         +'<div><div class="tb-t">Lena Meier</div><div class="tb-s">@lena_m</div></div>'
@@ -7479,23 +7406,8 @@ const TOUREN={
         +'</div>',
     },
     {
-      t:'Du bestimmst, wer dich erreicht',
-      s:'In den Einstellungen stellst du ein, wer dir schreiben darf – jeder, nur auf Anfrage, oder niemand. Und dein Profil kannst du auf privat stellen: dann sieht dich jeder, aber folgen darf nur, wen du bestätigst. Beides gibt es ohne Pro.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-kopf"><span>Wer darf dir schreiben?</span></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Jeder</div><div class="tb-s">Alle Nachrichten kommen an</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-offen">'+PLUS+'</div>'
-        +'<div><div class="tb-t">Nur auf Anfrage</div><div class="tb-s">Du entscheidest vorher, wer durchkommt</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-offen">'+PLUS+'</div>'
-        +'<div><div class="tb-t">Niemand</div><div class="tb-s">Keine Nachrichten – auch von niemandem</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-offen">'+PLUS+'</div>'
-        +'<div><div class="tb-t">Privates Profil</div><div class="tb-s">Folgen nur nach deiner Bestätigung</div></div></div>'
-        +'</div>',
-    },
-    {
       t:'Ein Tipp, und SPOTOUT ist weg',
-      s:'Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.',
+      s:'Schaut jemand mit? Ein Tipp auf „Schnell raus" oben, und SPOTOUT ist weg.',
       /* Die eigene Wahl aus der Registrierung ist markiert – so sieht man
          gleich, was der Knopf bei einem selbst tut. */
       b:()=>{
@@ -7515,7 +7427,7 @@ const TOUREN={
     },
     {
       t:'Und das ist Pro',
-      s:'Alles oben gezeigte geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei – und schaltet vier Dinge zusätzlich frei. Nichts davon nimmt dir jemand wieder weg, wenn du es nicht nimmst.',
+      s:'Alles bisher geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei.',
       b:()=>'<div class="tb">'
         +'<div class="tb-kopf"><span>Was Pro zusätzlich kann</span>'+tbPro()+'</div>'
         +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
@@ -7528,22 +7440,11 @@ const TOUREN={
         +'<div><div class="tb-t">Halbe Gebühr</div><div class="tb-s">Auf jede eigene öffentliche Party</div></div></div>'
         +'</div>',
     },
-    {
-      t:'Dein Profil – und dein Verein',
-      s:'Bild und Name änderst du im Profil. Führst du auch einen Verein, wechselst du dort mit einem Tipp zwischen den Konten, ohne dich abzumelden.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#FF2D76,#FF6B00)">S</div>'
-        +'<div><div class="tb-t">Sebastian</div><div class="tb-s">Privat · gerade aktiv</div></div>'
-        +'<div class="tb-wer">aktiv</div></div>'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#633BFF,#54A7FF)">T</div>'
-        +'<div><div class="tb-t">Turnverein Rohr</div><div class="tb-s">Verein · tippen zum Wechseln</div></div></div></div>',
-    },
   ],
-
   pro:[
     {
       t:'Du bist Pro',
-      s:'Sieben Tage gratis. Was jetzt anders ist, siehst du auf den nächsten Karten – es sind vier Dinge.',
+      s:'Vier Dinge sind jetzt anders.',
       b:()=>'<div class="tb">'
         +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div><div><div class="tb-t">Sieh, wer hingeht</div></div></div>'
         +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div><div><div class="tb-t">Schreib, wen du willst</div></div></div>'
@@ -7553,7 +7454,7 @@ const TOUREN={
     },
     {
       t:'Jetzt stehen dort Namen',
-      s:'Auf jeder Party siehst du, wer aus deinen Kontakten dabei ist. Vorher stand dort nur eine Zahl. Dazu bekommst du eine Meldung, sobald sich jemand anmeldet, dem du folgst.',
+      s:'Auf jeder Party siehst du, wer von deinen Kontakten dabei ist – nicht nur eine Zahl.',
       b:()=>'<div class="tb">'
         +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#7C3AED,#38BDF8)">L</div>'
         +'<div><div class="tb-t">Lena Meier</div><div class="tb-s">@lena_m</div></div>'
@@ -7567,7 +7468,7 @@ const TOUREN={
     },
     {
       t:'Schreib zuerst',
-      s:'Du kannst jetzt jedem eine Nachricht schicken, auch ohne dass ihr euch folgt. Ohne Pro konntest du nur antworten.',
+      s:'Du kannst jetzt jedem als Erster schreiben.',
       b:()=>'<div class="tb">'
         +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#FF2D76,#7C3AED)">S</div>'
         +'<div><div class="tb-t">Schnazgi</div><div class="tb-s">Tippe an, um zu schreiben</div></div></div>'
@@ -7576,7 +7477,7 @@ const TOUREN={
     },
     {
       t:'Dein Profil ist offen',
-      s:'Bio, Instagram und Snapchat sehen jetzt alle – auch Leute ohne Pro. Und deinen Namen kannst du ab sofort jederzeit ändern.',
+      s:'Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.',
       b:()=>'<div class="tb">'
         +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
         +'<div><div class="tb-t">Bio und Kanäle sichtbar</div><div class="tb-s">Für alle, nicht nur für Pro</div></div></div>'
@@ -14576,8 +14477,21 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Was in deiner Nähe läuft":"What’s on near you",
+  "Partys, Feste und Openairs – die nächsten zuerst. Mit „Karte\" siehst du alle auf einen Blick.":"Parties, festivals and open-airs – the soonest first. Tap “Map” to see them all at a glance.",
+  "„Ich bin dabei\" trägt dich ein. Danach steht die Party in deinem Kalender – mit Route und Erinnerung.":"“I’m in” signs you up. The party then shows up in your calendar – with directions and a reminder.",
+  "Deine eigene Party":"Your own party",
+  "Unten auf Plus. Name, Zeit und Ort reichen – öffentlich für alle oder privat nur für Eingeladene.":"Tap plus at the bottom. Name, time and place are enough – public for everyone or private for invited guests only.",
+  "Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.":"Public parties cost a small one-off fee. Private ones are free.",
+  "Leute finden und schreiben":"Find people and chat",
+  "Über die Lupe oben findest du Leute. Wer dir schreiben darf, stellst du in den Einstellungen ein.":"Find people with the magnifier at the top. Who can message you is up to you in Settings.",
+  "Schaut jemand mit? Ein Tipp auf „Schnell raus\" oben, und SPOTOUT ist weg.":"Someone watching? One tap on “Quick exit” at the top and SPOTOUT is gone.",
+  "Alles bisher geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei.":"Everything so far is free. Pro costs CHF 3.00 a month, the first week is free.",
+  "Vier Dinge sind jetzt anders.":"Four things are different now.",
+  "Auf jeder Party siehst du, wer von deinen Kontakten dabei ist – nicht nur eine Zahl.":"At every party you see which of your contacts are going – not just a number.",
+  "Du kannst jetzt jedem als Erster schreiben.":"You can now message anyone first.",
+  "Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.":"Everyone sees your bio and channels now. You can change your name any time.",
   "Ein Tipp, und SPOTOUT ist weg":"One tap and SPOTOUT is gone",
-  "Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus\" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.":"Someone looking over your shoulder? One tap on “Quick exit” at the top takes you to the calculator, Reels, TikTok or the weather. You choose where in Settings.",
   "Wohin der Knopf führt":"Where the button takes you",
   "Wohin, wenn jemand über die Schulter schaut?":"Where to, if someone looks over your shoulder?",
   "Rechnet wirklich. Zurück mit langem Druck.":"Really calculates. Long-press to come back.",
@@ -14763,16 +14677,7 @@ en:{
   "Gebühr fürs Veröffentlichen":"Fee for publishing",
   "Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.":"Publishing a public party costs you CHF 3, 8 or 15 instead of 5, 15 or 30. Two parties and Pro has paid for itself.",
   "Den Eintritt kassierst du vor Ort. SPOTOUT wickelt keine Eintrittsgelder ab. Die Veröffentlichungsgebühr fällt unabhängig davon an.":"You collect the entry fee on site. SPOTOUT does not handle entry money. The publishing fee applies either way.",
-  "Eine öffentliche Party zu veröffentlichen kostet einmalig – gestaffelt nach Gästezahl, mit Pro die Hälfte. Private Partys sind gratis.":"Publishing a public party costs once – tiered by guest count, half with Pro. Private parties are free.",
-  "Suchen, auch ohne Standort":"Search without location",
-  "Tipp einen Ort in die Suchleiste – etwa St. Gallen. Liste und Karte springen dorthin. Mit dem Umkreis stellst du ein, wie weit du fahren würdest.":"Type a town into the search bar – St. Gallen, say. List and map jump there. The radius sets how far you’d travel.",
-  "Alles auch auf der Karte":"Everything on the map too",
-  "Dieselben Partys als Punkte. Kategorie, Suche und Filter gelten hier genauso. Ein Knopf macht sie zum Vollbild, einer holt dich zu deinem Standort.":"The same parties as pins. Category, search and filters apply here too. One button goes fullscreen, one brings you to where you are.",
-  "Deine Partys an einem Ort":"Your parties in one place",
-  "Unter „Meine Partys\" steht alles, wozu du zugesagt hast, und alles, was du selbst machst. Die nächste zuoberst, mit Countdown. Von dort geht es direkt zur Route oder in deinen Kalender.":"“My parties” holds everything you said yes to and everything you host. The next one on top, with a countdown. From there straight to directions or your calendar.",
   "Antworten darf jeder. Wer als Erster schreiben will, braucht Pro. Öffnest du die Glocke, gelten alle Meldungen als gelesen – du musst nichts einzeln wegtippen.":"Anyone can reply. Writing first needs Pro. Open the bell and everything counts as read – no tapping each one away.",
-  "Dein Profil – und dein Verein":"Your profile – and your club",
-  "Bild und Name änderst du im Profil. Führst du auch einen Verein, wechselst du dort mit einem Tipp zwischen den Konten, ohne dich abzumelden.":"Picture and name are changed in your profile. If you also run a club, one tap switches accounts without signing out.",
   "Umkreis 10 km":"10 km radius",
   "3 Partys in der Nähe":"3 parties nearby",
   "Filter gilt auch auf der Karte":"Filter applies on the map too",
@@ -14814,10 +14719,7 @@ en:{
   "Bitte gib eine gültige E-Mail-Adresse ein.":"Please enter a valid email address.",
   "Das Passwort braucht mindestens 6 Zeichen.":"The password needs at least 6 characters.",
   "Nur ein Wort? Geht auch. Ändern kannst du es später nur mit Pro. Tippe nochmals auf Weiter, wenn es so bleiben soll.":"Just one word? That works. Changing it later needs Pro. Tap Next again to keep it.",
-  "Was heute läuft, siehst du hier":"What’s on today, right here",
   "Ein Tipp, und du bist dabei":"One tap and you’re in",
-  "Deine eigene Party in sechs Schritten":"Your own party in six steps",
-  "Öffentlich oder nur für deine Leute":"Public, or just your people",
   "Du bist Pro":"You’re Pro",
   "Jetzt stehen dort Namen":"Now it shows names",
   "Schreib zuerst":"Message first",
@@ -15593,8 +15495,21 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Was in deiner Nähe läuft":"Ce qui se passe près de chez toi",
+  "Partys, Feste und Openairs – die nächsten zuerst. Mit „Karte\" siehst du alle auf einen Blick.":"Soirées, fêtes et open airs – les prochaines d’abord. Avec « Carte » tu les vois toutes d’un coup d’œil.",
+  "„Ich bin dabei\" trägt dich ein. Danach steht die Party in deinem Kalender – mit Route und Erinnerung.":"« Je viens » t’inscrit. La soirée apparaît ensuite dans ton calendrier – avec itinéraire et rappel.",
+  "Deine eigene Party":"Ta propre soirée",
+  "Unten auf Plus. Name, Zeit und Ort reichen – öffentlich für alle oder privat nur für Eingeladene.":"Appuie sur le plus en bas. Nom, heure et lieu suffisent – publique pour tous ou privée pour les invités.",
+  "Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.":"Les soirées publiques coûtent une petite taxe unique. Les privées sont gratuites.",
+  "Leute finden und schreiben":"Trouver des gens et écrire",
+  "Über die Lupe oben findest du Leute. Wer dir schreiben darf, stellst du in den Einstellungen ein.":"La loupe en haut te permet de trouver des gens. Qui peut t’écrire, tu le règles dans les réglages.",
+  "Schaut jemand mit? Ein Tipp auf „Schnell raus\" oben, und SPOTOUT ist weg.":"Quelqu’un regarde ? Un appui sur « Sortie rapide » en haut et SPOTOUT disparaît.",
+  "Alles bisher geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei.":"Tout ce qui précède est gratuit. Pro coûte CHF 3.00 par mois, la première semaine est offerte.",
+  "Vier Dinge sind jetzt anders.":"Quatre choses changent maintenant.",
+  "Auf jeder Party siehst du, wer von deinen Kontakten dabei ist – nicht nur eine Zahl.":"Pour chaque soirée, tu vois lesquels de tes contacts y vont – pas seulement un nombre.",
+  "Du kannst jetzt jedem als Erster schreiben.":"Tu peux maintenant écrire en premier à n’importe qui.",
+  "Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.":"Tout le monde voit maintenant ta bio et tes réseaux. Tu peux changer ton nom à tout moment.",
   "Ein Tipp, und SPOTOUT ist weg":"Un appui et SPOTOUT disparaît",
-  "Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus\" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.":"Quelqu’un regarde par-dessus ton épaule ? Un appui sur « Sortie rapide » en haut et tu es sur la calculatrice, les Reels, TikTok ou la météo. Tu choisis où dans les réglages.",
   "Wohin der Knopf führt":"Où mène le bouton",
   "Wohin, wenn jemand über die Schulter schaut?":"Où aller si quelqu’un regarde par-dessus ton épaule ?",
   "Rechnet wirklich. Zurück mit langem Druck.":"Calcule vraiment. Appui long pour revenir.",
@@ -15780,16 +15695,7 @@ fr:{
   "Gebühr fürs Veröffentlichen":"Frais de publication",
   "Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.":"Publier une soirée publique te coûte CHF 3, 8 ou 15 au lieu de 5, 15 ou 30. Dès deux soirées, Pro est rentable.",
   "Den Eintritt kassierst du vor Ort. SPOTOUT wickelt keine Eintrittsgelder ab. Die Veröffentlichungsgebühr fällt unabhängig davon an.":"Tu encaisses l’entrée sur place. SPOTOUT ne gère pas les entrées. Les frais de publication s’appliquent dans tous les cas.",
-  "Eine öffentliche Party zu veröffentlichen kostet einmalig – gestaffelt nach Gästezahl, mit Pro die Hälfte. Private Partys sind gratis.":"Publier une soirée publique coûte une fois – par palier selon le nombre d’invités, moitié avec Pro. Les soirées privées sont gratuites.",
-  "Suchen, auch ohne Standort":"Chercher sans localisation",
-  "Tipp einen Ort in die Suchleiste – etwa St. Gallen. Liste und Karte springen dorthin. Mit dem Umkreis stellst du ein, wie weit du fahren würdest.":"Tape une localité dans la recherche – Saint-Gall par exemple. La liste et la carte s’y rendent. Le rayon définit jusqu’où tu irais.",
-  "Alles auch auf der Karte":"Tout aussi sur la carte",
-  "Dieselben Partys als Punkte. Kategorie, Suche und Filter gelten hier genauso. Ein Knopf macht sie zum Vollbild, einer holt dich zu deinem Standort.":"Les mêmes soirées en points. Catégorie, recherche et filtres s’appliquent aussi. Un bouton passe en plein écran, un autre te recentre.",
-  "Deine Partys an einem Ort":"Tes soirées au même endroit",
-  "Unter „Meine Partys\" steht alles, wozu du zugesagt hast, und alles, was du selbst machst. Die nächste zuoberst, mit Countdown. Von dort geht es direkt zur Route oder in deinen Kalender.":"« Mes soirées » réunit tout ce que tu as accepté et tout ce que tu organises. La prochaine en haut, avec compte à rebours. De là, l’itinéraire ou ton agenda.",
   "Antworten darf jeder. Wer als Erster schreiben will, braucht Pro. Öffnest du die Glocke, gelten alle Meldungen als gelesen – du musst nichts einzeln wegtippen.":"Répondre est ouvert à tous. Écrire en premier demande Pro. Ouvre la cloche et tout est marqué comme lu – rien à effacer un par un.",
-  "Dein Profil – und dein Verein":"Ton profil – et ton association",
-  "Bild und Name änderst du im Profil. Führst du auch einen Verein, wechselst du dort mit einem Tipp zwischen den Konten, ohne dich abzumelden.":"Photo et nom se changent dans ton profil. Si tu gères aussi une association, un tap suffit pour changer de compte sans te déconnecter.",
   "Umkreis 10 km":"Rayon 10 km",
   "3 Partys in der Nähe":"3 soirées à proximité",
   "Filter gilt auch auf der Karte":"Le filtre vaut aussi sur la carte",
@@ -15831,10 +15737,7 @@ fr:{
   "Bitte gib eine gültige E-Mail-Adresse ein.":"Merci d’indiquer une adresse e-mail valide.",
   "Das Passwort braucht mindestens 6 Zeichen.":"Le mot de passe doit faire au moins 6 caractères.",
   "Nur ein Wort? Geht auch. Ändern kannst du es später nur mit Pro. Tippe nochmals auf Weiter, wenn es so bleiben soll.":"Un seul mot ? Ça marche. Le changer plus tard nécessite Pro. Retouche Suivant pour le garder.",
-  "Was heute läuft, siehst du hier":"Ce qui se passe aujourd’hui",
   "Ein Tipp, und du bist dabei":"Un geste et tu y es",
-  "Deine eigene Party in sechs Schritten":"Ta propre soirée en six étapes",
-  "Öffentlich oder nur für deine Leute":"Publique, ou juste tes proches",
   "Du bist Pro":"Tu es Pro",
   "Jetzt stehen dort Namen":"Maintenant il y a des noms",
   "Schreib zuerst":"Écris en premier",
@@ -16610,8 +16513,21 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Was in deiner Nähe läuft":"Cosa succede vicino a te",
+  "Partys, Feste und Openairs – die nächsten zuerst. Mit „Karte\" siehst du alle auf einen Blick.":"Feste, sagre e open air – prima le prossime. Con «Mappa» le vedi tutte a colpo d’occhio.",
+  "„Ich bin dabei\" trägt dich ein. Danach steht die Party in deinem Kalender – mit Route und Erinnerung.":"«Ci sto» ti iscrive. Poi la festa compare nel tuo calendario – con percorso e promemoria.",
+  "Deine eigene Party":"La tua festa",
+  "Unten auf Plus. Name, Zeit und Ort reichen – öffentlich für alle oder privat nur für Eingeladene.":"Tocca il più in basso. Bastano nome, ora e luogo – pubblica per tutti o privata solo per gli invitati.",
+  "Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.":"Le feste pubbliche costano una piccola tariffa una tantum. Quelle private sono gratis.",
+  "Leute finden und schreiben":"Trova persone e scrivi",
+  "Über die Lupe oben findest du Leute. Wer dir schreiben darf, stellst du in den Einstellungen ein.":"Con la lente in alto trovi le persone. Chi può scriverti lo decidi nelle impostazioni.",
+  "Schaut jemand mit? Ein Tipp auf „Schnell raus\" oben, und SPOTOUT ist weg.":"Qualcuno guarda? Un tocco su «Uscita rapida» in alto e SPOTOUT sparisce.",
+  "Alles bisher geht gratis. Pro kostet CHF 3.00 im Monat, die erste Woche ist frei.":"Finora tutto è gratis. Pro costa CHF 3.00 al mese, la prima settimana è gratuita.",
+  "Vier Dinge sind jetzt anders.":"Ora quattro cose cambiano.",
+  "Auf jeder Party siehst du, wer von deinen Kontakten dabei ist – nicht nur eine Zahl.":"Per ogni festa vedi chi dei tuoi contatti ci va – non solo un numero.",
+  "Du kannst jetzt jedem als Erster schreiben.":"Ora puoi scrivere per primo a chiunque.",
+  "Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.":"Ora tutti vedono bio e canali. Puoi cambiare nome quando vuoi.",
   "Ein Tipp, und SPOTOUT ist weg":"Un tocco e SPOTOUT sparisce",
-  "Schaut jemand über die Schulter? Ein Tipp auf „Schnell raus\" oben, und du bist beim Taschenrechner, bei Reels, TikTok oder dem Wetter. Wohin, wählst du in den Einstellungen.":"Qualcuno ti guarda alle spalle? Un tocco su «Uscita rapida» in alto e sei sulla calcolatrice, sui Reels, su TikTok o sul meteo. Scegli dove nelle impostazioni.",
   "Wohin der Knopf führt":"Dove porta il pulsante",
   "Wohin, wenn jemand über die Schulter schaut?":"Dove vai se qualcuno ti guarda alle spalle?",
   "Rechnet wirklich. Zurück mit langem Druck.":"Calcola davvero. Tieni premuto per tornare.",
@@ -16797,16 +16713,7 @@ it:{
   "Gebühr fürs Veröffentlichen":"Tariffa di pubblicazione",
   "Eine öffentliche Party zu veröffentlichen kostet dich CHF 3, 8 oder 15 statt 5, 15 oder 30. Ab zwei Partys hat sich Pro gelohnt.":"Pubblicare una festa pubblica ti costa CHF 3, 8 o 15 invece di 5, 15 o 30. Con due feste Pro si è ripagato.",
   "Den Eintritt kassierst du vor Ort. SPOTOUT wickelt keine Eintrittsgelder ab. Die Veröffentlichungsgebühr fällt unabhängig davon an.":"L’ingresso lo incassi sul posto. SPOTOUT non gestisce i soldi dell’ingresso. La tariffa di pubblicazione vale comunque.",
-  "Eine öffentliche Party zu veröffentlichen kostet einmalig – gestaffelt nach Gästezahl, mit Pro die Hälfte. Private Partys sind gratis.":"Pubblicare una festa pubblica costa una volta – a scaglioni secondo gli ospiti, metà con Pro. Le feste private sono gratis.",
-  "Suchen, auch ohne Standort":"Cercare senza posizione",
-  "Tipp einen Ort in die Suchleiste – etwa St. Gallen. Liste und Karte springen dorthin. Mit dem Umkreis stellst du ein, wie weit du fahren würdest.":"Scrivi una località nella ricerca – per esempio San Gallo. Elenco e mappa ci saltano. Il raggio dice fin dove andresti.",
-  "Alles auch auf der Karte":"Tutto anche sulla mappa",
-  "Dieselben Partys als Punkte. Kategorie, Suche und Filter gelten hier genauso. Ein Knopf macht sie zum Vollbild, einer holt dich zu deinem Standort.":"Le stesse feste come punti. Categoria, ricerca e filtri valgono anche qui. Un tasto va a schermo intero, uno ti porta dove sei.",
-  "Deine Partys an einem Ort":"Le tue feste in un posto solo",
-  "Unter „Meine Partys\" steht alles, wozu du zugesagt hast, und alles, was du selbst machst. Die nächste zuoberst, mit Countdown. Von dort geht es direkt zur Route oder in deinen Kalender.":"In «Le mie feste» c’è tutto ciò a cui hai detto sì e tutto ciò che organizzi. La prossima in cima, con conto alla rovescia. Da lì al percorso o al calendario.",
   "Antworten darf jeder. Wer als Erster schreiben will, braucht Pro. Öffnest du die Glocke, gelten alle Meldungen als gelesen – du musst nichts einzeln wegtippen.":"Rispondere può chiunque. Scrivere per primo richiede Pro. Apri la campana e tutto risulta letto – non devi toccarle una a una.",
-  "Dein Profil – und dein Verein":"Il tuo profilo – e la tua associazione",
-  "Bild und Name änderst du im Profil. Führst du auch einen Verein, wechselst du dort mit einem Tipp zwischen den Konten, ohne dich abzumelden.":"Foto e nome si cambiano nel profilo. Se gestisci anche un’associazione, un tocco cambia account senza disconnetterti.",
   "Umkreis 10 km":"Raggio 10 km",
   "3 Partys in der Nähe":"3 feste vicine",
   "Filter gilt auch auf der Karte":"Il filtro vale anche sulla mappa",
@@ -16848,10 +16755,7 @@ it:{
   "Bitte gib eine gültige E-Mail-Adresse ein.":"Inserisci un indirizzo email valido.",
   "Das Passwort braucht mindestens 6 Zeichen.":"La password deve avere almeno 6 caratteri.",
   "Nur ein Wort? Geht auch. Ändern kannst du es später nur mit Pro. Tippe nochmals auf Weiter, wenn es so bleiben soll.":"Una sola parola? Va bene. Cambiarla più tardi richiede Pro. Tocca di nuovo Avanti per tenerla.",
-  "Was heute läuft, siehst du hier":"Cosa succede oggi",
   "Ein Tipp, und du bist dabei":"Un tocco e ci sei",
-  "Deine eigene Party in sechs Schritten":"La tua festa in sei passi",
-  "Öffentlich oder nur für deine Leute":"Pubblica, o solo per i tuoi",
   "Du bist Pro":"Sei Pro",
   "Jetzt stehen dort Namen":"Ora ci sono i nomi",
   "Schreib zuerst":"Scrivi per primo",
