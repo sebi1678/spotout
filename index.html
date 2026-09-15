@@ -460,15 +460,6 @@
     .tb-echt{background:none;border:none;padding:0}
     .tb-echt .bring-sec{margin:0}
     .tb-echt .bring-row{cursor:default}
-    .tb-pro{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:3px 9px 3px 7px;border-radius:999px;
-      background:linear-gradient(135deg,rgba(124,92,252,.34),rgba(255,45,118,.28));
-      border:1px solid rgba(205,188,255,.4);
-      font-size:.62rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
-      color:#EADFFF;
-    }
-    .tb-pro svg{width:11px;height:11px;fill:currentColor;stroke:none}
     .tb-kopf{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       margin-bottom:2px;font-size:.74rem;font-weight:700;color:var(--muted);
@@ -973,16 +964,6 @@
       background:rgba(255,60,60,.07);color:#ff6b6b;
       border:1px solid rgba(255,80,80,.28);
     }
-    .d1{
-      display:inline-flex;align-items:center;gap:4px;vertical-align:middle;
-      margin-left:6px;padding:2px 8px;border-radius:980px;
-      font-size:.55rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
-      color:#e9c46a;background:rgba(233,196,106,.13);
-      border:1px solid rgba(233,196,106,.30);
-    }
-    .d1 svg{width:9px;height:9px}
-    .d1-gross{font-size:.65rem;padding:3px 10px}
-    .d1-gross svg{width:11px;height:11px}
     .nav-raus{
       width:36px;height:36px;border-radius:12px;flex-shrink:0;
       border:1px solid rgba(255,255,255,.13);
@@ -1188,12 +1169,6 @@
       grid-column:1/-1;padding:48px 20px;text-align:center;
       color:var(--muted);font-size:.88rem;
       display:flex;flex-direction:column;align-items:center;gap:12px;
-    }
-    .pro-badge{
-      display:inline-flex;align-items:center;gap:4px;
-      background:linear-gradient(135deg,rgba(255,45,118,.2),rgba(255,90,69,.15));
-      border:1px solid rgba(255,45,118,.3);
-      border-radius:980px;padding:3px 10px;font-size:.7rem;font-weight:700;color:#FF4D8A;
     }
 
     /* ── CALENDAR ── */
@@ -2578,10 +2553,6 @@
     .sr-name{
       display:flex;align-items:center;gap:7px;font-size:.9rem;font-weight:700;color:#fff;
       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .sr-pro{
-      flex-shrink:0;font-size:.6rem;font-weight:800;color:#FF2D76;
-      background:rgba(255,45,118,.16);border-radius:980px;padding:2px 7px;
     }
     .sr-handle{font-size:.79rem;color:var(--muted);margin-top:1px}
     .sr-bio{
@@ -5388,6 +5359,40 @@
       transform:translate(-50%,-50%);
     }
 
+    /* ══════════ PRO UND DAY ONE: MARKEN ══════════
+       Eine Pro-Marke fuer die ganze App, und Day One mit eigenem Zeichen.
+       Beide gleich hoch, damit sie nebeneinander wie ein Paar aussehen und
+       nicht wie zwei Aufkleber aus verschiedenen Boegen. */
+    .pro-marke,.d1{
+      display:inline-flex;align-items:center;gap:4px;flex-shrink:0;vertical-align:middle;
+      height:19px;padding:0 8px 0 6px;border-radius:999px;
+      font-family:var(--font);font-size:.6rem;font-weight:900;letter-spacing:.08em;
+      text-transform:uppercase;line-height:1;white-space:nowrap;
+    }
+    .pro-marke{
+      color:#fff;
+      background:linear-gradient(135deg,#FF2D76 0%,#C23BD4 55%,#7C5CFC 100%);
+      box-shadow:0 2px 10px rgba(255,45,118,.28),inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    .pro-marke svg{width:10px;height:10px;fill:currentColor;stroke:none}
+    .pro-marke.nur-zeichen{width:19px;padding:0;justify-content:center}
+    .d1{
+      cursor:pointer;color:#F6D78B;
+      background:linear-gradient(135deg,rgba(246,215,139,.20),rgba(201,138,40,.10));
+      box-shadow:inset 0 0 0 1px rgba(246,215,139,.45);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .d1 svg{width:11px;height:11px}
+    .d1:active{transform:scale(var(--druck-klein))}
+    .d1-gross{height:22px;font-size:.66rem;padding:0 10px 0 8px}
+    .d1-gross svg{width:13px;height:13px}
+    /* Pro holen im eigenen Profil: dieselbe Farbe wie die Marke */
+    .prof-action-btn.pro-action{
+      color:#fff;border-color:rgba(255,45,118,.45);
+      background:linear-gradient(135deg,rgba(255,45,118,.22),rgba(124,92,252,.18));
+    }
+    .prof-action-btn.pro-action svg{width:13px;height:13px;fill:currentColor;stroke:none}
+
   </style>
 </head>
 <body>
@@ -7343,7 +7348,7 @@ function tbHinweis(t){
 }
 
 const STERN='<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/></svg>';
-function tbPro(){ return '<span class="tb-pro">'+STERN+'Pro</span>'; }
+function tbPro(){ return proMarke(); }
 
 
 const TOUREN={
@@ -9903,7 +9908,7 @@ async function openDetail(id){
       +'<div class="att-lock-txt">'+(nachspiel
           ?'Mit Pro siehst du noch 24 Stunden nach der Party, wer dabei war.'
           :'Mit Pro siehst du, wer kommt.')+'</div>'
-      +'<button class="pro-cta" style="padding:9px 18px;font-size:.8rem;width:auto" onclick="showPage(\'pro\')">Pro werden ✦</button>'
+      +'<button class="mpro-btn" onclick="showPage(\'pro\')">Pro werden</button>'
       +'</div></div>';
   }
   /* Das Fotoalbum ist ausgebaut. Es gibt in SPOTOUT nur noch zwei
@@ -10139,7 +10144,7 @@ function searchRow(u,ausVerlauf){
     +'<div class="sr-av'+(u.is_pro?' pro':'')+'">'+av+'</div>'
     +'<div class="sr-mid">'
       +'<div class="sr-name">'+esc(name)
-        +(u.is_pro?'<span class="sr-pro">✦ Pro</span>':'')
+        +(u.is_pro?proMarke():'')
         +(u.day_one?dayOneMarke():'')+'</div>'
       +'<div class="sr-handle">@'+esc(u.username||'')+'</div>'
       +(u.is_pro&&u.bio?'<div class="sr-bio">'+esc(u.bio)+'</div>':'')
@@ -10780,7 +10785,7 @@ async function renderProf(){
       <div class="prof-bio">
         <div class="prof-name-row">
           <span class="insta-name">${cProfile.full_name||cProfile.username}</span>
-          ${cProfile.is_pro?'<span class="pro-badge" style="background:linear-gradient(135deg,rgba(255,45,118,.25),rgba(255,90,69,.15));border-color:rgba(255,45,118,.4)">✦ Pro</span>':''}
+          ${cProfile.is_pro?proMarke():''}
           ${cProfile.day_one?dayOneMarke():''}
         </div>
         <div class="insta-handle">@${cProfile.username}${age?' · '+age:''}</div>
@@ -10804,7 +10809,7 @@ async function renderProf(){
         <button class="prof-action-btn prof-action-quadrat" onclick="showPage('search')" aria-label="Leute finden">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7.5" r="3.5"/><path d="M19 8v6M22 11h-6"/></svg>
         </button>
-        ${!cProfile.is_pro?'<button class="prof-action-btn pro-action" onclick="showPage(\'pro\')">✦ Pro werden</button>':''}
+        ${!cProfile.is_pro?'<button class="prof-action-btn pro-action" onclick="showPage(\'pro\')">'+PRO_STERN+'Pro werden</button>':''}
       </div>
 
       <!-- TABS -->
@@ -13505,7 +13510,7 @@ async function openUserProf(userId){
     // Name, Handle, Bio – alles an derselben linken Kante
     +'<div class="up2-name">'+esc(p.full_name||p.username||'Unbekannt')
       +(istV?vereinMarke():'')
-      +(p.is_pro?'<span class="pro-badge" style="font-size:.6rem">✦ Pro</span>':'')
+      +(p.is_pro?proMarke():'')
       +(p.day_one?dayOneMarke():'')+'</div>'
     +'<div class="up2-handle">@'+esc(p.username||'')
       +(istV&&p.verein_ort?' · '+esc(p.verein_ort):'')+'</div>'
@@ -13719,7 +13724,7 @@ async function openFollowList(userId,mode){
     return '<div class="fl-row" onclick="document.getElementById(\'followListOverlay\').classList.remove(\'open\');openUserProf(\''+u.id+'\')">'
       +'<div class="av-sm">'+av+'</div>'
       +'<div style="min-width:0"><div class="att-name">'+esc(u.full_name||u.username||'Unbekannt')
-        +(u.is_pro?' <span class="pro-badge" style="font-size:.55rem">✦</span>':'')+'</div>'
+        +(u.is_pro?' '+proMarke(true):'')+'</div>'
       +'<div class="att-user">@'+esc(u.username||'')+'</div></div></div>';
   }).join('');
 }
@@ -14470,6 +14475,8 @@ async function checkProfilLink(){
 
 const I18N={
 en:{
+  "Day One – einer der ersten 100 auf SPOTOUT":"Day One – one of the first 100 on SPOTOUT",
+  "Day One – einer der ersten 100":"Day One – one of the first 100",
   "Person melden":"Report person",
   "Nachricht melden":"Report message",
   "Foto melden":"Report photo",
@@ -15514,6 +15521,8 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Day One – einer der ersten 100 auf SPOTOUT":"Day One – parmi les 100 premiers sur SPOTOUT",
+  "Day One – einer der ersten 100":"Day One – parmi les 100 premiers",
   "Person melden":"Signaler la personne",
   "Nachricht melden":"Signaler le message",
   "Foto melden":"Signaler la photo",
@@ -16558,6 +16567,8 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Day One – einer der ersten 100 auf SPOTOUT":"Day One – tra i primi 100 su SPOTOUT",
+  "Day One – einer der ersten 100":"Day One – tra i primi 100",
   "Person melden":"Segnala la persona",
   "Nachricht melden":"Segnala il messaggio",
   "Foto melden":"Segnala la foto",
@@ -19696,10 +19707,27 @@ async function proZurueck(){
    sich nicht kaufen und nicht nachholen – deshalb bedeutet es etwas.
    Vergeben wird es in der Datenbank, der Browser zeigt es nur an. */
 function dayOneMarke(gross){
-  return '<span class="d1'+(gross?' d1-gross':'')+'" title="Von Anfang an dabei">'
-    +'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">'
-    +'<path d="M12 2.3l2.6 6.2 6.7.5-5.1 4.4 1.6 6.5L12 16.4 6.2 19.9l1.6-6.5L2.7 9l6.7-.5z"/></svg>'
+  /* Eigenes Zeichen – ein Sonnenaufgang, "von Anfang an". Vorher trug
+     Day One denselben Stern wie Pro und sah aus wie eine kleinere
+     Pro-Marke in Gold. Ein Tooltip erklaert auf dem Handy nichts, also
+     sagt ein Tipp, was es bedeutet. */
+  return '<span class="d1'+(gross?' d1-gross':'')+'" role="button" tabindex="0" '
+    +'aria-label="Day One – einer der ersten 100" onclick="event.stopPropagation();dayOneInfo()">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
+    +'<path d="M3 18.5h18"/><path d="M6.5 18.5a5.5 5.5 0 0 1 11 0"/><path d="M12 4.5v3M5 8l2 2M19 8l-2 2"/></svg>'
     +'Day One</span>';
+}
+function dayOneInfo(){ toast('Day One – einer der ersten 100 auf SPOTOUT','info'); }
+
+/* ── Pro-Marke ─────────────────────────────────────────────────────
+   Pro stand in drei Rosatoenen da, mal mit Textstern, mal mit SVG, und
+   an drei Stellen mit eigener Schriftgroesse im Markup. Jetzt gibt es
+   genau eine Marke. nurZeichen: fuer enge Listen. */
+const PRO_STERN='<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.7-4.9 4.5 1.4 6.6L12 17.1l-6 3.3 1.4-6.6L2.5 9.3l6.6-.7z"/></svg>';
+function proMarke(nurZeichen){
+  return nurZeichen
+    ? '<span class="pro-marke nur-zeichen" role="img" aria-label="Pro">'+PRO_STERN+'</span>'
+    : '<span class="pro-marke">'+PRO_STERN+'Pro</span>';
 }
 
 /* ── Schnell raus ──────────────────────────────────────────────────
