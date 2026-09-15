@@ -505,7 +505,30 @@
       padding:9px 10px 9px 13px;border-radius:14px;
       background:#090d24;border:1px solid rgba(255,255,255,.08);
     }
-    /* Tour-Karte Party-Fotos */
+    /* Tour-Karte Party-Fotos – sieht aus wie die echte Galerie */
+    .tour-bild .tb-fk svg{width:auto;height:auto;display:inline-block}
+    .tb-fk{padding:14px 14px 12px}
+    .tb-fk-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .tb-fk-kopf b{font-size:.88rem;font-weight:800;color:#fff}
+    .tb-fk-uhr{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;
+      background:rgba(255,255,255,.08);font-size:.7rem;font-weight:700;color:var(--text2);white-space:nowrap}
+    .tb-fk-raster{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .tb-fk-neu,.tb-fk-bild{aspect-ratio:1/1;border-radius:12px;position:relative;overflow:hidden}
+    .tb-fk-neu{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+      border:1.5px dashed rgba(255,255,255,.24);background:rgba(255,255,255,.04);color:#fff;font-size:.66rem;font-weight:800}
+    .tb-fk-bild::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.38))}
+    .tb-fk-bild.b1{background:radial-gradient(circle at 26% 30%,rgba(255,255,255,.6) 0 5%,transparent 6%),radial-gradient(circle at 72% 24%,rgba(255,214,120,.65) 0 8%,transparent 9%),radial-gradient(circle at 58% 72%,rgba(255,255,255,.22) 0 14%,transparent 15%),linear-gradient(150deg,#ff2d76,#7b2cff)}
+    .tb-fk-bild.b2{background:radial-gradient(circle at 70% 34%,rgba(255,255,255,.5) 0 6%,transparent 7%),radial-gradient(circle at 30% 64%,rgba(120,220,255,.45) 0 11%,transparent 12%),linear-gradient(160deg,#ff9f1c,#ff2d76)}
+    .tb-fk-bild.b3{background:radial-gradient(circle at 34% 26%,rgba(255,255,255,.45) 0 7%,transparent 8%),radial-gradient(circle at 76% 62%,rgba(255,120,200,.5) 0 10%,transparent 11%),linear-gradient(140deg,#00c2ff,#5b2cff)}
+    .tb-fk-bild.b4{background:radial-gradient(circle at 60% 30%,rgba(255,240,170,.55) 0 9%,transparent 10%),radial-gradient(circle at 22% 70%,rgba(255,255,255,.3) 0 6%,transparent 7%),linear-gradient(155deg,#12c2a0,#0b4f6c)}
+    .tb-fk-bild.b5{background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.4) 0 8%,transparent 9%),radial-gradient(circle at 78% 20%,rgba(255,170,90,.55) 0 7%,transparent 8%),linear-gradient(145deg,#f72585,#3a0ca3)}
+    .tb-fk-bild i{position:absolute;left:5px;bottom:5px;z-index:1;width:19px;height:19px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.58rem;font-weight:800;color:#fff;
+      background:rgba(9,13,36,.72);border:1px solid rgba(255,255,255,.35)}
+    .tb-fk-fuss{display:flex;align-items:center;gap:8px;margin-top:11px;padding:9px 11px;border-radius:12px;
+      background:rgba(255,255,255,.05);font-size:.74rem;line-height:1.4;color:var(--text2)}
+    .tb-fk-fuss svg{flex:none}
+    /* Tour-Karte Party-Fotos (alt) */
     .tb-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
     .tb-foto{aspect-ratio:1/1;border-radius:10px}
     .tb-foto-neu{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;
@@ -1617,12 +1640,7 @@
     }
     .toast-ic svg{width:18px;height:18px}
     .toast-txt{min-width:0;overflow-wrap:anywhere}
-    .toast::after{
-      content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
-      background:var(--toast-farbe);opacity:.5;transform-origin:left;transform:scaleX(0);
-    }
-    .toast.show::after{animation:toastZeit var(--toast-dauer,2400ms) linear forwards}
-    @keyframes toastZeit{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+    /* Kein ablaufender Strich mehr: er sah aus, als muesse man noch etwas tun. */
     .toast.success{--toast-farbe:#2BD98A;--toast-grund:rgba(43,217,138,.16)}
     .toast.error{--toast-farbe:#FF5A6E;--toast-grund:rgba(255,90,110,.16)}
     .toast.warn{--toast-farbe:#FFC24B;--toast-grund:rgba(255,194,75,.16)}
@@ -1634,7 +1652,6 @@
       .toast,.toast.geht{transition:opacity var(--takt) ease}
       .toast,.toast.show{transform:translate(-50%,0)}
       .toast.stoss{animation:none}
-      .toast.show::after{animation:none}
     }
 
     /* ── LOCATION BANNER ── */
@@ -4744,6 +4761,105 @@
     .pk:not(.pk-bunt) [stroke^="#"]{stroke:currentColor}
     .pk:not(.pk-bunt) [fill="#FFE08A"],.pk:not(.pk-bunt) [fill="#FFD166"]{display:none}
     @media(prefers-reduced-motion:reduce){.bnav-btn.active .pk{animation:none}.pk{transition:none}}
+    /* ── Verwarnung, Sperre, Moderation ── */
+    .mg-req-s{font-size:.74rem;color:var(--muted);margin-top:1px}
+    .sk-kopf{width:56px;height:56px;margin:4px auto 14px;border-radius:18px;display:flex;align-items:center;justify-content:center;
+      color:#FFC24B;background:rgba(255,194,75,.12)}
+    .sk-kopf.gross{width:72px;height:72px;border-radius:22px;color:#FF6B7A;background:rgba(255,90,110,.12)}
+    .sk-h{font-size:1.35rem;font-weight:800;letter-spacing:-.02em;text-align:center;margin:0 0 10px;color:#fff}
+    .sk-text{font-size:.9rem;line-height:1.5;color:var(--text2);margin:0 0 12px;text-align:center}
+    .sk-liste{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+    .sk-punkt{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09)}
+    .sk-titel{font-size:.88rem;font-weight:700;color:#fff;overflow-wrap:anywhere}
+    .sk-gruende{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .sk-gruende span{font-size:.72rem;font-weight:700;padding:4px 9px;border-radius:999px;color:#FFC9D6;background:rgba(255,45,118,.12)}
+    .sk-datum{font-size:.72rem;color:var(--muted);margin-top:8px}
+    .sk-anonym{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--text2);margin:4px 0 14px}
+    .sk-stufen{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 14px}
+    .sk-stufe{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:12px;
+      background:rgba(255,255,255,.04);color:var(--muted);font-size:.68rem;text-align:center}
+    .sk-stufe b{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:.72rem;background:rgba(255,255,255,.08);color:#fff}
+    .sk-stufe.an{color:#fff;background:rgba(255,45,118,.12)}
+    .sk-stufe.an b{background:var(--grad-cta)}
+    .sk-klein{font-size:.76rem;line-height:1.5;color:var(--muted);text-align:center;margin:0 0 14px}
+    .sk-klein a{color:#FF8FB3}
+    .sk-ok{width:100%;margin:4px 0 8px}
+    .sperr-seite{position:fixed;inset:0;z-index:950;background:var(--bg);overflow-y:auto;overflow-x:hidden;
+      display:flex;justify-content:center;padding:calc(var(--safe-top) + 40px) 22px calc(var(--safe-bottom) + 30px)}
+    .sperr-seite[hidden]{display:none!important}
+    .sperr-inhalt{width:100%;max-width:420px}
+    .rep-anonym{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-size:.76rem;color:var(--muted)}
+    .mod-karte{padding:12px 14px;margin-bottom:8px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+    .mod-karte.weg{opacity:.55}
+    .mod-kopf{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .mod-kopf b{font-size:.86rem;color:#fff;min-width:0;overflow-wrap:anywhere}
+    .mod-pill{flex-shrink:0;font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--text2)}
+    .mod-zeit{font-size:.72rem;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+    .mod-notiz{font-size:.8rem;color:var(--text2);margin-top:8px;overflow-wrap:anywhere}
+    .mod-akt{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .mod-akt .nt-knopf.armed{background:rgba(255,60,60,.2);border-color:rgba(255,80,80,.5)}
+    /* ── Benachrichtigungen: Schalter wie auf TikTok ── */
+    .sw{
+      position:relative;flex:0 0 48px;width:48px;height:28px;border-radius:999px;border:none;padding:0;cursor:pointer;
+      background:rgba(255,255,255,.16);transition:background var(--takt-kurz,.18s) ease;
+    }
+    .sw span{
+      position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;
+      box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform var(--takt-kurz,.18s) ease;
+    }
+    .sw.an{background:var(--grad-cta)}
+    .sw.an span{transform:translateX(20px)}
+    .sw:disabled{opacity:.45;cursor:default}
+    .push-karte{
+      display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px 15px;margin-bottom:14px;
+      border-radius:15px;background:rgba(124,92,252,.10);border:1px solid rgba(124,92,252,.26);
+    }
+    .push-karte.warn{background:rgba(255,194,75,.08);border-color:rgba(255,194,75,.3)}
+    .push-karte b{font-size:.9rem;color:#fff}
+    .push-karte span{font-size:.78rem;line-height:1.5;color:var(--muted)}
+    .push-karte .nt-knopf{margin-top:4px}
+    .push-zeile{
+      display:flex;align-items:center;gap:12px;padding:12px 0;
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+    .push-zeile>div{flex:1;min-width:0}
+    .push-zeile b{display:block;font-size:.88rem;font-weight:700;color:#fff;overflow-wrap:anywhere}
+    .push-zeile span{display:block;font-size:.75rem;line-height:1.45;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+    .push-zeile.haupt{padding:14px 15px;border:1px solid rgba(255,255,255,.08);border-radius:15px;background:rgba(255,255,255,.05)}
+    .push-zeile.fix{border-bottom:none;margin-top:6px}
+    .push-gruppe{transition:opacity var(--takt-kurz,.18s) ease}
+    .push-gruppe.ruhig{opacity:.5}
+    .fa-zeile{transition:opacity .25s ease,transform .25s ease}
+    .fa-zeile.fertig{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09)}
+    .fa-zeile.weg{opacity:0;transform:translateX(-12px)}
+    .fa-zeile .fl-knopf{min-width:0}
+    #notifBody .nt-akt-unten .fl-knopf{min-width:0;margin-left:10px;padding:7px 12px;font-size:.76rem}
+    /* ── Abzeichen ── */
+    .abz-reihe{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px;cursor:pointer;
+      background:none;border:none;padding:0;font-family:var(--font)}
+    .abz-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:4px 10px 4px 7px;border-radius:999px;
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);
+      font-size:.72rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .abz-leer{display:inline-flex;align-items:center;gap:6px;width:auto;padding:5px 11px 5px 8px;border-radius:999px;
+      border:1px dashed rgba(255,255,255,.2);font-size:.72rem;font-weight:700;color:var(--muted)}
+    .abz-kopf{margin-bottom:14px}
+    .abz-kopf b{display:block;font-size:1.05rem;font-weight:800;color:#fff}
+    .abz-kopf span{display:block;font-size:.78rem;line-height:1.5;color:var(--muted);margin-top:3px}
+    .abz-raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+    .abz-karte{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;padding:12px;border-radius:15px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+    .abz-karte.hat{background:rgba(124,92,252,.12);border-color:rgba(124,92,252,.35)}
+    .abz-karte:not(.hat) .abz-ic{opacity:.45}
+    .abz-ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.07);color:#fff;margin-bottom:5px}
+    .abz-karte b{font-size:.84rem;font-weight:800;color:#fff;overflow-wrap:anywhere}
+    .abz-karte span{font-size:.72rem;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+    .abz-karte em{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-style:normal;font-size:.7rem;font-weight:800;color:#2BD98A}
+    .abz-balken{width:100%;height:5px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden;margin-top:8px}
+    .abz-balken i{display:block;height:100%;border-radius:999px;background:var(--grad-cta)}
+    .abz-karte small{font-size:.66rem;font-weight:700;color:var(--muted);margin-top:3px}
+    .insta-tile.archiv{cursor:default}
     .pl-card{
       display:flex;align-items:center;gap:13px;width:100%;cursor:pointer;
       text-decoration:none;
@@ -6279,7 +6395,7 @@
 <div id="page-conv" class="page">
   <div class="conv-wrap">
     <div class="conv-hdr">
-      <button class="conv-back" onclick="showPage('chat')">
+      <button class="conv-back" onclick="convZurueck()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <div class="chat-av" id="convAv" onclick="convProfilOeffnen()" style="cursor:pointer"></div>
@@ -7030,6 +7146,11 @@
 
       <div class="set-gruppe">
         <div class="set-lbl">App</div>
+        <button class="settings-btn" onclick="pushEinstOeffnen()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="s-label">Benachrichtigungen</span><span class="s-wert" id="setPushWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <div class="set-frage">Sprache</div>
         <div class="lang-row" id="langRow">
           <button class="lang-opt" data-lang="de" onclick="setLang('de')"><b>DE</b><span>Deutsch</span></button>
@@ -7128,6 +7249,11 @@
           <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
+        <button class="settings-btn" onclick="moderationOeffnen()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 4.2 2.8 17.3A2 2 0 0 0 4.5 20.3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z" fill="url(#pkSonne)"/><path d="M10.3 4.2 2.8 17.3A2 2 0 0 0 4.5 20.3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 9.4v4.4" fill="none" stroke="#3A1600" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.2" fill="#3A1600"/></svg>
+          <span class="s-label">Meldungen</span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <div class="set-frage">Pro verschenken</div>
         <div class="set-hilfe">Benutzername ohne @. Läuft schon ein Abo, wird die Zeit hinten angehängt.</div>
         <div class="schenk-reihe">
@@ -7182,7 +7308,7 @@
       <div class="foto-regel"><div class="foto-regel-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></div>
         <div><b>Nichts Nacktes, nichts Fieses</b><span>Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.</span></div></div>
       <div class="foto-regel"><div class="foto-regel-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></div>
-        <div><b>Nur für Gäste, 27 Stunden lang</b><span>Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.</span></div></div>
+        <div><b>Nur für Gäste, 24 Stunden lang</b><span>Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.</span></div></div>
       <button class="auth-submit-btn foto-regeln-ok" onclick="fotoRegelnOk()">Verstanden</button>
     </div>
   </div>
@@ -7198,6 +7324,27 @@
     <button class="foto-voll-pfeil rechts" onclick="fotoBlaettern(1)" aria-label="Nächstes Foto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg></button>
   </div>
   <div class="foto-voll-leiste" id="fotoVollLeiste"></div>
+</div>
+
+<!-- ════ VERWARNUNG & SPERRE ════ -->
+<div class="overlay" id="sanktionOverlay">
+  <div class="modal no-swipe">
+    <div class="modal-hdr"><div class="modal-title">Verwarnung</div></div>
+    <div class="modal-body" id="sanktionBody"></div>
+  </div>
+</div>
+<div class="sperr-seite" id="sperrSeite" hidden><div class="sperr-inhalt" id="sperrInhalt"></div></div>
+
+<!-- ════ MODERATION (Betreiber) ════ -->
+<div class="overlay" id="moderationOverlay" onclick="closeIfOutside(event,'moderationOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Meldungen</div>
+      <button class="modal-x" onclick="closeOverlay('moderationOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="moderationListe"></div></div>
+  </div>
 </div>
 
 <!-- ════ MELDEN ════ -->
@@ -7269,6 +7416,31 @@
       <div class="set-hilfe">Hebst du eine Blockierung auf, könnt ihr euch wieder schreiben und seht eure Partys.</div>
       <div id="blockiertListe"></div>
     </div>
+  </div>
+</div>
+
+<div class="overlay" id="pushOverlay" onclick="closeIfOutside(event,'pushOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Benachrichtigungen</div>
+      <button class="modal-x" onclick="closeOverlay('pushOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div id="pushStatus"></div>
+      <div id="pushListe"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="abzeichenOverlay" onclick="closeIfOutside(event,'abzeichenOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Abzeichen</div>
+      <button class="modal-x" onclick="closeOverlay('abzeichenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="abzeichenListe"></div></div>
   </div>
 </div>
 
@@ -7529,10 +7701,9 @@ const PIKTO={
       +'<path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" '+PK_W+'/>'+PK_FUNKEN(19.8,4.6,.9),
 
   /* ── Partyseite ── */
-  melden: PK_F('Pink','M6.6 4.2h10.7c.6 0 1 .7.6 1.2L16 8.6l1.9 3.2c.4.5 0 1.2-.6 1.2H6.6z')
-      +PK_P('M6.6 4.2h10.7c.6 0 1 .7.6 1.2L16 8.6l1.9 3.2c.4.5 0 1.2-.6 1.2H6.6z')
-      +'<path d="M6 21V3.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>'
-      +'<path d="M9.2 6.9h3.6" '+PK_W+' opacity=".8"/>',
+  melden: '<circle cx="12" cy="12" r="8.8" fill="none" stroke="currentColor" stroke-width="1.9"/>'
+      +'<path d="M12 7.4v5.6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>'
+      +'<circle cx="12" cy="16.4" r="1.3" fill="currentColor"/>',
   teilen: '<rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="url(#pkMint)" opacity=".35"/>'
       +PK_P('M7.5 10H7a2.5 2.5 0 0 0-2.5 2.5V18A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-5.5A2.5 2.5 0 0 0 17 10h-.5')
       +'<path d="M12 14.5V3.8M8 7.6l4-3.8 4 3.8" fill="none" stroke="#34E3A4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -7982,7 +8153,7 @@ async function kontoWegLoeschen(){
   }catch(err){
     kontoWegLaeuft=false;
     kontoWegAbbrechen();
-    toast('Das Konto liess sich nicht löschen: '+(err?.message||'unbekannter Fehler'),'error');
+    toast(fehlerText(err),'error');
   }
 }
 
@@ -8147,18 +8318,18 @@ const TOUREN={
     },
     {
       t:'Fotos von der Party',
-      s:'Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-kopf"><span>Party-Fotos</span><span class="tb-uhr">'+pikto('zeit',14)+'27 h</span></div>'
-        +'<div class="tb-fotos">'
-          +'<div class="tb-foto tb-foto-neu">'+pikto('plus',18)+'<span>Foto</span></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#ff2d76,#7b2cff)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#ff9f1c,#ff2d76)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#00c2ff,#7b2cff)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#1dd3b0,#086375)"></div>'
-          +'<div class="tb-foto" style="background:linear-gradient(135deg,#f72585,#3a0ca3)"></div>'
+      s:'Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 24 Stunden sind sie wieder weg.',
+      b:()=>'<div class="tb tb-fk">'
+        +'<div class="tb-fk-kopf"><b>Party-Fotos</b><span class="tb-fk-uhr">'+pikto('zeit',13)+'noch 21 h</span></div>'
+        +'<div class="tb-fk-raster">'
+          +'<div class="tb-fk-neu">'+pikto('kamera',20)+'<span>Teilen</span></div>'
+          +'<div class="tb-fk-bild b1"><i>L</i></div>'
+          +'<div class="tb-fk-bild b2"></div>'
+          +'<div class="tb-fk-bild b3"><i>J</i></div>'
+          +'<div class="tb-fk-bild b4"></div>'
+          +'<div class="tb-fk-bild b5"><i>S</i></div>'
         +'</div>'
-        +'<div class="tb-hinweis-klein">'+pikto('binich',14)+'<span>Wer drauf ist, kann ein Foto sofort entfernen.</span></div>'
+        +'<div class="tb-fk-fuss">'+pikto('binich',15)+'<span>Du bist drauf? Ein Tipp, und das Foto ist weg.</span></div>'
         +'</div>',
     },
     {
@@ -8705,6 +8876,7 @@ function enterApp(){
   }catch(err){}
   // Verify pro status on every app load
   setTimeout(verifyProStatus,1000);
+  setTimeout(()=>sanktionPruefen(true),1200);
 }
 
 function switchAuthTab(tab,btn){
@@ -8873,7 +9045,9 @@ async function doLogin(){
   const btn=document.querySelector('#auth-login .auth-submit-btn');
   if(btn){btn.textContent='Anmelden…';btn.disabled=true;}
   const{error}=await sb.auth.signInWithPassword({email:em,password:pw});
-  if(btn){btn.textContent='Anmelden';btn.disabled=false;}
+  // Erst bei einem Fehler wieder frei – sonst startet ein zweiter Tipp die App doppelt
+  if(btn&&error){btn.textContent='Anmelden';btn.disabled=false;}
+  if(btn&&!error)setTimeout(()=>{btn.textContent='Anmelden';btn.disabled=false;},6000);
   if(error){
     if(error.message==='Email not confirmed'){
       showEmailConfirmScreen(em);
@@ -9310,6 +9484,9 @@ function spurenLoeschen(){
   // Was vom alten Konto sonst stehen blieb: Chat-Punkt, angefangener Text,
   // Benachrichtigungs-Stand, Blockliste und Partyliste
   const ub=document.getElementById('unreadBadge'); if(ub)ub.style.display='none';
+  const ss=document.getElementById('sperrSeite'); if(ss)ss.hidden=true;
+  document.body.classList.remove('gesperrt');
+  sanktionAktuell=null; sanktionZuletzt=0;
   const ci=document.getElementById('convInput'); if(ci)ci.value='';
   try{
     notifFirst=true; ntVorher=0; notifStand=''; notifWarNeu=new Set();
@@ -9478,7 +9655,9 @@ function goHome(){showPage('main');}
 function openChatOrUpgrade(){ showPage('chat'); }
 
 async function loadEvts(){
-  ['events','public','private'].forEach(t=>document.getElementById('grid-'+t).innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>');
+  // Nur beim allerersten Laden ein Drehraedchen. Danach bleibt die Liste
+  // stehen, bis die neue da ist – sonst springt die Seite nach jeder Aktion nach oben.
+  if(!evts.length)['events','public','private'].forEach(t=>document.getElementById('grid-'+t).innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>');
   /* Nur was noch kommt. Vergangenes gehoert in den Kalender und ins
      Profil, nicht in die Uebersicht – und es kostet sonst mit jedem
      Monat mehr, ohne jemandem zu nuetzen. Ein Tag Rueckstand, damit
@@ -10232,7 +10411,7 @@ function evEnde(e){
       return en;
     }
   }
-  return new Date(st.getTime()+5*36e5);
+  return new Date(st.getTime()+6*36e5);   // wie event_ende auf dem Server
 }
 
 function istVorbei(e){
@@ -10388,7 +10567,7 @@ function renderGrid(type,list){
   if(!list.length){
     const w=worldVars(type);
     const icons={events:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',public:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',private:'<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/>'};
-    g.innerHTML=`<div class="empty"><div class="empty-icon" style="color:${w.accent}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${icons[type]}</svg></div><p>Noch keine Events. Erstelle das erste!</p></div>`;
+    g.innerHTML=`<div class="empty"><div class="empty-icon" style="color:${w.accent}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${icons[type]}</svg></div><p>${type==='private'?'Noch keine privaten Partys. Sobald dich jemand einlädt, steht sie hier.':'Gerade ist hier nichts los. Schau später wieder vorbei oder mach selbst eine Party.'}</p></div>`;
     return;
   }
   const grenze=Math.min(gridZeigt[type]||GRID_SCHRITT, list.length);
@@ -10511,11 +10690,11 @@ function cardHTML(e){
   </div>
   <div class="card-body">
     <div style="font-size:.65rem;font-weight:700;color:${w.text};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">${e.category||typeLabel}</div>
-    <div class="card-name">${e.name}</div>
+    <div class="card-name">${esc(e.name)}</div>
     ${(e.profiles?.kontoart==='verein' && e.created_by!==cUser?.id)
       ? '<div class="card-host">'+vereinMarke()+'<span class="card-host-n">'+esc(e.profiles.full_name||e.profiles.username||'')+'</span></div>'
       : ''}
-    <div class="card-loc">${e.address?.split(',')[0]||'Schweiz'}</div>
+    <div class="card-loc">${esc(e.address?.split(',')[0]||'Schweiz')}</div>
     ${istVorbei(e)?'':freundeZeile(e.id)}
     ${istVorbei(e)
       ? '<div class="card-vorbei">Vorbei</div>'
@@ -10647,7 +10826,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
   if(istVerein())return attNote('Vereinskonten melden sich nicht an');
 
   if(deadline&&deadlinePassed&&!isAtt){
-    return attNote('Anmeldefrist war am '+fmtD(deadline.toISOString().slice(0,10))+' um '+fmtT(deadline),'warn');
+    return attNote('Anmeldefrist war am '+fmtD(deadline.getFullYear()+'-'+String(deadline.getMonth()+1).padStart(2,'0')+'-'+String(deadline.getDate()).padStart(2,'0'))+' um '+fmtT(deadline),'warn');
   }
   if(isFull&&!isAtt){
     if(aufWarteliste)return attNote('Du stehst auf der Warteliste');
@@ -10763,15 +10942,17 @@ async function openDetail(id){
   const now=new Date();
   // Ende steht auf der Party, sonst gilt Beginn + 5 h – nicht der Tagesschluss.
   const startAt=evStart(e)||new Date(e.date+'T20:00:00');
-  const endAt=evEnde(e)||new Date(startAt.getTime()+5*36e5);
+  const endAt=evEnde(e)||new Date(startAt.getTime()+6*36e5);
   const isOver=now>endAt;
-  const hoursSinceParty=(now-endAt)/36e5;
-  const isExpired=hoursSinceParty>24;
+  // Geloescht wird 24 Stunden nach Beginn – genau wie auf dem Server
+  const loeschAm=new Date(startAt.getTime()+24*36e5);
+  const bisLoeschen=(loeschAm-now)/36e5;
+  const isExpired=bisLoeschen<=0;
   const deadline=e.registration_deadline?new Date(e.registration_deadline):null;
   const deadlinePassed=deadline?now>deadline:false;
   const hoursUntilDeadline=deadline?(deadline-now)/(1000*60*60):null;
   let statusBanner='';
-  if(isExpired){statusBanner=`<div style="background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#c0392b">Diese Party wird bald automatisch gelöscht.</div>`;}
+  if(isOver&&bisLoeschen<3){statusBanner=`<div style="background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#c0392b">Diese Party wird bald automatisch gelöscht.</div>`;}
   else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div style="background:rgba(91,94,166,.08);border:1px solid rgba(91,94,166,.2);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">${pikto('zeit',16)}<div style="font-size:.82rem;color:#9b9de0">${anmeldungRest(hoursUntilDeadline)}</div></div>`;}
   // Die Gästeliste ist ein Pro-Merkmal – auch im Rückblick. Ohne Pro
   // bleibt sie zu, sonst wäre Pro nach der Party wertlos.
@@ -10801,7 +10982,7 @@ async function openDetail(id){
      ist Schluss – und ohne Pro gibt es das Fenster gar nicht. Genau das ist
      der Grund, warum jemand Pro nimmt. Der Host sieht seine Liste immer. */
   const nachspiel=isOver&&!isExpired;
-  const stundenOffen=nachspiel?Math.max(1,Math.ceil(24-hoursSinceParty)):0;
+  const stundenOffen=nachspiel?Math.max(1,Math.ceil(bisLoeschen)):0;
   // Der Host sieht seine Gästeliste immer – Pro-Nutzer zusätzlich.
   const canSeeAtts=isOver?(isHost||(viewerIsPro&&nachspiel)):(isHost||viewerIsPro);
   const attCount=atts?.length||0;
@@ -10939,7 +11120,7 @@ async function openDetail(id){
     </div>
     <div class="d-body">
       ${pendH}
-      <div class="d-title">${e.name}</div>
+      <div class="d-title">${esc(e.name)}</div>
       <div class="d-info-grid">
         <div class="d-info-cell">
           <div class="d-info-cell-lbl">${D_SYM.datum} Datum</div>
@@ -10951,7 +11132,7 @@ async function openDetail(id){
         </div>
         <div class="d-info-cell full">
           <div class="d-info-cell-lbl">${D_SYM.ort} Adresse</div>
-          <div class="d-info-cell-val">${e.address||'–'}</div>
+          <div class="d-info-cell-val">${esc(e.address||'–')}</div>
         </div>
         <div class="d-info-cell${isPrivEv?' full':''}">
           <div class="d-info-cell-lbl">${D_SYM.gaeste} Gäste</div>
@@ -11041,7 +11222,7 @@ async function deleteEvent(id){
   const{error}=await sb.from('events').delete().eq('id',id);
   delBusy=false;
   if(error){
-    toast('Löschen fehlgeschlagen: '+error.message,'error');
+    toast(fehlerText(error),'error');
     if(btn){btn.disabled=false;btn.classList.remove('armed');btn.textContent='Party löschen';}
     return;
   }
@@ -11059,8 +11240,27 @@ let attBusy=false;
 async function toggleAtt(id,isAtt){
   if(!cUser){kontoNoetig();return;}
   if(attBusy)return;                       // Doppeltipp abfangen
-  attBusy=true;
   const btn=document.getElementById('attendBtn');
+  /* Ein Tipp trug einen sofort aus – bei einer vollen oder privaten Party
+     kommt man danach vielleicht nicht mehr rein. Darum wie im Kalender:
+     einmal tippen macht scharf, das zweite Mal traegt aus. */
+  if(isAtt&&btn&&!btn.dataset.arm){
+    btn.dataset.arm='1'; btn.dataset.vorArm=btn.innerHTML;
+    btn.classList.add('armed'); btn.textContent='Nochmals tippen zum Austragen';
+    nativeHaptik('leicht');
+    clearTimeout(btn._armUhr);
+    btn._armUhr=setTimeout(()=>{
+      if(!btn.dataset.arm)return;
+      delete btn.dataset.arm; btn.classList.remove('armed');
+      btn.innerHTML=btn.dataset.vorArm||''; delete btn.dataset.vorArm;
+    },3500);
+    return;
+  }
+  if(btn&&btn.dataset.arm){
+    clearTimeout(btn._armUhr); delete btn.dataset.arm; btn.classList.remove('armed');
+    btn.innerHTML=btn.dataset.vorArm||btn.innerHTML; delete btn.dataset.vorArm;
+  }
+  attBusy=true;
   const prev=btn?btn.innerHTML:'';
   if(btn){
     btn.disabled=true;btn.classList.add('is-busy');
@@ -11086,8 +11286,10 @@ async function toggleAtt(id,isAtt){
     if(!isAtt)setTimeout(()=>maybeOpenBringSheet(id),350);
   }catch(err){
     console.error('[attend]',err);
-    toast('Hat nicht geklappt: '+(err?.message||'unbekannter Fehler'),'error');
+    toast(fehlerText(err),'error');
     if(btn){btn.disabled=false;btn.classList.remove('is-busy');btn.innerHTML=prev;}
+    // Voll geworden, waehrend man geschaut hat: den echten Stand zeigen
+    if(String(err?.message||'').includes('SPOTOUT_PARTY_VOLL')){ attBusy=false; loadEvts().then(()=>openDetail(id)); }
   }finally{
     attBusy=false;
   }
@@ -11106,11 +11308,11 @@ async function joinWaitlist(eventId){
     if(error&&error.code==='23505'){
       toast('Du stehst schon auf der Warteliste','info');
     }else if(error){
-      toast('Fehler: '+error.message,'error');
+      toast(fehlerText(error),'error');
       if(btn)btn.disabled=false;
       return;
     }else{
-      toast('Anfrage gesendet! Der Host wird benachrichtigt.','success');
+      toast('Du stehst auf der Warteliste','success');
     }
     openDetail(eventId);
   }finally{
@@ -11202,10 +11404,10 @@ const SEARCH_COLS='id,username,full_name,avatar_url,is_pro,day_one,instagram_han
 const SUCHVERLAUF='spotout_suchverlauf_v1';
 
 function verlaufLesen(){
-  try{ return JSON.parse(localStorage.getItem(SUCHVERLAUF)||'[]'); }catch(e){ return []; }
+  try{ return JSON.parse(localStorage.getItem(SUCHVERLAUF+':'+(cUser?.id||'gast'))||'[]'); }catch(e){ return []; }
 }
 function verlaufSchreiben(l){
-  try{ localStorage.setItem(SUCHVERLAUF,JSON.stringify(l.slice(0,8))); }catch(e){}
+  try{ localStorage.setItem(SUCHVERLAUF+':'+(cUser?.id||'gast'),JSON.stringify(l.slice(0,8))); }catch(e){}
 }
 function verlaufMerken(u){
   if(!u||!u.id)return;
@@ -11421,7 +11623,7 @@ function calActs(e,big){
   h+='<button class="cal-act" onclick="openRoute(\''+e.id+'\')">'+pin+'Route</button>';
   h+='<button class="cal-act" onclick="addToDeviceCal(\''+e.id+'\')">'+cal+'Kalender</button>';
   if(e._mine)h+='<button class="cal-act cal-act-host" onclick="openManage(\''+e.id+'\')">'+gear+'Verwalten</button>';
-  if(!e._mine)h+='<button class="cal-act danger" onclick="leaveFromCal(\''+e.id+'\')">'+out+'Absagen</button>';
+  if(!e._mine&&!(e._start&&e._start<=new Date()))h+='<button class="cal-act danger" onclick="leaveFromCal(\''+e.id+'\')">'+out+'Absagen</button>';
   h+='</div>';
   return h;
 }
@@ -11526,7 +11728,7 @@ function addToDeviceCal(id){
     '<b>'+esc(e.name||'')+'</b>'
     +zeile('zeit', fmtD(e.date)+' · '+zeitText(e.time))
     +(e.address?zeile('ort', e.address):'')
-    +(Number(e.price)>0?zeile('geld','Eintritt CHF '+Number(e.price).toFixed(2)+' – vor Ort bezahlen')
+    +(Number(e.price)>0?zeile('geld','Eintritt CHF '+Number(e.price).toFixed(2)+' ('+zahlartenText(e.zahlarten)+')')
                        :zeile('geld','Eintritt frei'))
     +(gastgeber?zeile('wer','Von '+gastgeber):'');
 
@@ -11763,7 +11965,7 @@ async function leaveFromCal(id){
     const{error}=await sb.from('event_attendees').delete()
       .eq('event_id',id).eq('user_id',cUser.id);
     if(error){
-      toast('Hat nicht geklappt: '+error.message,'error');
+      toast(fehlerText(error),'error');
       if(btn){ btn.disabled=false; btn.textContent=btn.dataset.text||'Absagen'; btn.classList.remove('armed'); }
       return;
     }
@@ -11786,7 +11988,7 @@ function startCalCountdown(){
     const diff=Number(el.dataset.ts)-Date.now();
     if(diff<=0){el.textContent='Jetzt';lbl.textContent='läuft';return;}
     const min=Math.floor(diff/60000), h=Math.floor(min/60), d=Math.floor(h/24);
-    if(d>0){el.textContent=d+' Tage';lbl.textContent='bis Start';}
+    if(d>0){el.textContent=d+(d===1?' Tag':' Tage');lbl.textContent='bis Start';}
     else if(h>0){el.textContent=h+'h '+(min%60)+'m';lbl.textContent='bis Start';}
     else{el.textContent=min+' min';lbl.textContent='bis Start';}
   };
@@ -11798,6 +12000,14 @@ async function renderProf(){
   if(!cProfile)return;
   const{data:myEvts}=await sb.from('events').select('*').eq('created_by',cUser.id).order('date',{ascending:false});
   const{data:atts}=await sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id);
+  /* 24 Stunden nach Beginn ist eine Party geloescht. Wo man war, bleibt im
+     Archiv – als Kachel ohne Link, weil es die Party selbst nicht mehr gibt. */
+  const [{data:archiv},{data:abz},{data:abzStand}]=await Promise.all([
+    sb.from('besucht_archiv').select('*').eq('user_id',cUser.id).order('datum',{ascending:false}).limit(300),
+    sb.from('abzeichen').select('schluessel,created_at').eq('user_id',cUser.id),
+    sb.from('abzeichen_stand').select('*').eq('user_id',cUser.id).maybeSingle(),
+  ]);
+  abzCache={eigene:(abz||[]).map(a=>a.schluessel),stand:abzStand||{}};
   const age=calcAge(cProfile.birthdate);
   // Die Striche blieben stehen, weil die Zahlen nie geholt wurden
   const{data:fstats}=await sb.rpc('get_follow_stats',
@@ -11807,10 +12017,15 @@ async function renderProf(){
   const init=(cProfile.full_name||cProfile.username||'?').charAt(0).toUpperCase();
   // "Besucht" ist das Archiv: Hier bleibt, wo man war – dauerhaft.
   // Vorher verschwand alles nach 24 Stunden, dann war der Reiter leer.
-  renderFolgeAnfragen();
-  const visitedEvts=(atts||[])
-    .filter(a=>a.events&&istVorbei(a.events))
-    .sort((x,y)=>new Date(y.events.date)-new Date(x.events.date));
+  const archivBesucht=(archiv||[]).filter(r=>!r.war_host);
+  const archivGehostet=(archiv||[]).filter(r=>r.war_host).length;
+  const visitedEvts=[
+    ...(atts||[]).filter(a=>a.events&&istVorbei(a.events)&&a.events.created_by!==cUser.id),
+    ...archivBesucht.map(r=>({archiv:true,events:{id:r.event_id,name:r.name,image_url:r.image_url,
+        type:r.type,category:r.category,emoji:r.emoji,date:r.datum,time:r.zeit,address:r.ort}})),
+  ].filter((a,i,l)=>l.findIndex(b=>b.events.id===a.events.id)===i)
+   .sort((x,y)=>new Date(y.events.date)-new Date(x.events.date));
+  const warBesucht=document.getElementById('tab-visited')?.classList.contains('active');
   document.getElementById('profContent').innerHTML=`
     <div class="prof-wrap-insta">
       <div class="fa-box" id="faBox"></div>
@@ -11827,7 +12042,7 @@ async function renderProf(){
           <input type="file" id="avFileProfil" accept="image/*" style="display:none" onchange="upAv(event)"/>
         </div>
         <div class="prof-stats-row">
-          <div class="insta-stat"><div class="insta-stat-num">${myEvts?.length||0}</div><div class="insta-stat-lbl">Partys</div></div>
+          <div class="insta-stat"><div class="insta-stat-num">${(myEvts?.length||0)+archivGehostet}</div><div class="insta-stat-lbl">Partys</div></div>
           <div class="insta-stat" style="cursor:pointer" onclick="openFollowList('${cUser.id}','followers')">
             <div class="insta-stat-num" id="myFollowers">${fs?.followers??0}</div><div class="insta-stat-lbl">Follower</div></div>
           <div class="insta-stat" style="cursor:pointer" onclick="openFollowList('${cUser.id}','following')">
@@ -11837,12 +12052,13 @@ async function renderProf(){
       <!-- NAME + BIO -->
       <div class="prof-bio">
         <div class="prof-name-row">
-          <span class="insta-name">${cProfile.full_name||cProfile.username}</span>
+          <span class="insta-name">${esc(cProfile.full_name||cProfile.username)}</span>
           ${cProfile.is_pro?proMarke():''}
           ${cProfile.day_one?dayOneMarke():''}
         </div>
-        <div class="insta-handle">@${cProfile.username}${age?' · '+age:''}</div>
-        ${cProfile.is_pro&&cProfile.bio?'<div class="insta-bio">'+cProfile.bio+'</div>':''}
+        <div class="insta-handle">@${esc(cProfile.username)}${age?' · '+age:''}</div>
+        ${cProfile.is_pro&&cProfile.bio?'<div class="insta-bio">'+esc(cProfile.bio)+'</div>':''}
+        ${istVerein()?'':abzeichenReihe(abzCache.eigene,true)}
         ${buildSocialLinks(cProfile)}
         ${proSelfTeaser()}
 
@@ -11881,17 +12097,19 @@ async function renderProf(){
       <div id="prof-panel-mine" class="insta-grid">
         ${(myEvts||[]).length?myEvts.map(e=>{
           const img=e.image_url?('<img loading="lazy" decoding="async" src="'+e.image_url+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>');
-          return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+e.name+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(e.date)+'</div></div></div>';
+          return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(e.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(e.date)+'</div></div></div>';
         }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Noch keine Events erstellt</div>'}
       </div>
       <div id="prof-panel-visited" class="insta-grid" style="display:none">
         ${visitedEvts.length?visitedEvts.map(a=>{
           const img=a.events.image_url?('<img loading="lazy" decoding="async" src="'+a.events.image_url+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(a.events.type,a.events.category)+'">'+iconSvg(evIconKey(a.events),26)+'</div>');
-          return '<div class="insta-tile" onclick="openDetail(\''+a.events.id+'\')">'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+a.events.name+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(a.events.date)+'</div></div></div>';
+          return '<div class="insta-tile'+(a.archiv?' archiv':'')+'"'+(a.archiv?'':' onclick="openDetail(\''+a.events.id+'\')"')+'>'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(a.events.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(a.events.date)+'</div></div></div>';
         }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Noch keine Events besucht</div>'}
       </div>
       <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
     </div>`;
+  if(warBesucht)switchProfTab('visited');
+  renderFolgeAnfragen();
 }
 
 function switchProfTab(tab){
@@ -12398,11 +12616,20 @@ async function startChat(uid,name,un){
   if(!cProfile?.is_pro){showPage('pro');toast('Nur Pro-Nutzer können ein Gespräch beginnen','info');return;}
   closeDetail();
   // Check target user's message setting
+  // Gibt es das Gespraech schon, geht es direkt hinein – auch bei "Nur Anfragen"
+  const{data:schon}=await sb.from('conversations').select('*')
+    .or(`and(user1_id.eq.${cUser.id},user2_id.eq.${uid}),and(user1_id.eq.${uid},user2_id.eq.${cUser.id})`)
+    .maybeSingle();
+  if(schon){ await openConv(schon.id,{id:uid,full_name:name,username:un}); return; }
   const{data:target}=await sb.from('profiles').select('allow_messages').eq('id',uid).single();
   if(target?.allow_messages==='nobody'){toast('Diese Person nimmt keine Nachrichten an','info');return;}
-  if(target?.allow_messages==='requests'){
-    // Send message request instead
-    const{error}=await sb.from('message_requests').upsert({from_user_id:cUser.id,to_user_id:uid,message:'Möchte dir schreiben',status:'pending'},{onConflict:'from_user_id,to_user_id'});
+  const{data:alt}=target?.allow_messages==='requests'
+    ? await sb.from('message_requests').select('id,status').eq('from_user_id',cUser.id).eq('to_user_id',uid).maybeSingle()
+    : {data:null};
+  if(target?.allow_messages==='requests'&&alt?.status!=='accepted'){
+    if(alt?.status==='pending'){toast('Deine Anfrage läuft schon','info');return;}
+    if(alt?.status==='declined'){toast('Diese Person möchte gerade keine Nachrichten','info');return;}
+    const{error}=await sb.from('message_requests').insert({from_user_id:cUser.id,to_user_id:uid,message:'Möchte dir schreiben',status:'pending'});
     if(!error)toast('Anfrage gesendet! '+name+' wird benachrichtigt.','success');
     else toast(fehlerText(error),'error');
     return;
@@ -12422,7 +12649,7 @@ async function startChat(uid,name,un){
         ? 'Ein Gespräch anfangen können nur Pro-Nutzer'
         : /SPOTOUT_VEREIN/.test(m)
           ? 'Vereine schreiben keine Nachrichten'
-          : 'Chat konnte nicht geöffnet werden: '+(m||'unbekannter Fehler'),'error');
+          : fehlerText(ce),'error');
       return;
     }
     conv=nc;
@@ -12885,10 +13112,10 @@ async function loadChats(){
     }
     const last=c.messages?.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
     const unread=c.messages?.some(m=>!m.read&&m.sender_id!==cUser.id);
-    const av=o?.avatar_url?('<img loading="lazy" decoding="async" src="'+o.avatar_url+'"/>'):((o?.full_name||o?.username||'?').charAt(0).toUpperCase());
+    const av=o?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(o.avatar_url)+'"/>'):esc((o?.full_name||o?.username||'?').charAt(0).toUpperCase());
     return`<div class="chat-item ${unread?'unread':''}" onclick="openConv('${c.id}',${JSON.stringify(o).replace(/"/g,'&quot;')})">
       <div class="chat-av">${av}</div>
-      <div class="chat-info"><div class="chat-name">${o?.full_name||o?.username||'Unbekannt'}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
+      <div class="chat-info"><div class="chat-name">${esc(o?.full_name||o?.username||'Unbekannt')}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
       <div class="chat-meta"><div class="chat-time">${last?fmtT(last.created_at):''}</div>${unread?'<div class="unread-dot"></div>':''}</div>
     </div>`;
   }).join('');
@@ -12911,16 +13138,19 @@ async function loadMsgRequests(){
         +'<div class="av-sm" onclick="openUserProf(\''+p.id+'\')" style="cursor:pointer">'+av+'</div>'
         +'<div style="flex:1;min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'Unbekannt')+'</div>'
         +'<div class="att-user">möchte dir schreiben</div></div>'
-        +'<button class="mreq-yes" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',true)">Annehmen</button>'
-        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false)">✕</button>'
+        +'<button class="mreq-yes" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',true,this)">Annehmen</button>'
+        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false,this)" aria-label="Ablehnen">✕</button>'
         +'</div>';
     }).join('');
 }
 
-async function answerMsgReq(reqId,fromId,accept){
+async function answerMsgReq(reqId,fromId,accept,btn){
+  const knoepfe=btn?[...btn.parentElement.querySelectorAll('button')]:[];
+  if(knoepfe.some(k=>k.disabled))return;
+  knoepfe.forEach(k=>k.disabled=true);
   const{error}=await sb.from('message_requests')
     .update({status:accept?'accepted':'declined'}).eq('id',reqId);
-  if(error){toast('Hat nicht geklappt: '+error.message,'error');return;}
+  if(error){toast(fehlerText(error),'error');knoepfe.forEach(k=>k.disabled=false);return;}
   if(accept){
     let{data:conv}=await sb.from('conversations').select('*')
       .or(`and(user1_id.eq.${cUser.id},user2_id.eq.${fromId}),and(user1_id.eq.${fromId},user2_id.eq.${cUser.id})`)
@@ -12961,6 +13191,12 @@ async function gespraechOeffnen(cid){
   }
 }
 
+function convZurueck(){
+  const z=seitenVorher.pop();
+  showPage(z&&!['conv','auth'].includes(z)?z:'chat');
+  if(seitenVorher[seitenVorher.length-1]==='conv')seitenVorher.pop();
+}
+
 async function openConv(cid,other){
   // Angefangener Text gehoert zu diesem Gespraech, nicht zum naechsten
   const eingabe=document.getElementById('convInput');
@@ -12970,7 +13206,7 @@ async function openConv(cid,other){
   const vorher=document.querySelector('.page.active')?.id?.replace('page-','');
   if(vorher&&vorher!=='conv'){ seitenVorher.push(vorher); if(seitenVorher.length>10)seitenVorher.shift(); }
   convId=cid;convUser=other;
-  const av=other?.avatar_url?('<img loading="lazy" decoding="async" src="'+other.avatar_url+'"/>'):((other?.full_name||other?.username||'?').charAt(0).toUpperCase());
+  const av=other?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(other.avatar_url)+'"/>'):esc((other?.full_name||other?.username||'?').charAt(0).toUpperCase());
   const elAv=document.getElementById('convAv');
   const elNm=document.getElementById('convName');
   const elSub=document.getElementById('convSub');
@@ -13083,7 +13319,7 @@ async function sendMsg(){
   if(error){
     console.error('[msg]',error);
     inp.value=txt;                       // Text zurückgeben statt verlieren
-    toast('Nachricht nicht gesendet: '+error.message,'error');
+    toast(fehlerText(error),'error');
     if(warFokus&&feld)feld.focus();
     return;
   }
@@ -13908,7 +14144,23 @@ function fehlerText(error){
   }
   if(m.includes('duplicate key'))
     return 'Das gibt es schon';
-  return 'Fehler: '+m;
+  if(m.includes('SPOTOUT_PARTY_VOLL'))return 'Die Party ist leider voll.';
+  if(m.includes('SPOTOUT_ANFRAGE_NOETIG'))return 'Dieses Profil ist privat – stell eine Anfrage.';
+  if(m.includes('SPOTOUT_BLOCKIERT')||/blockiert/i.test(m))return 'Das geht nicht – ihr habt euch blockiert.';
+  if(m.includes('SPOTOUT_KEINE_NACHRICHTEN'))return 'Diese Person nimmt keine Nachrichten an.';
+  if(m.includes('SPOTOUT_NUR_ANFRAGEN'))return 'Diese Person nimmt nur Anfragen an.';
+  if(m.includes('SPOTOUT_PRO_ZUM_ANFANGEN'))return 'Ein Gespräch anfangen können nur Pro-Nutzer.';
+  if(m.includes('SPOTOUT_VEREIN_MELDET_SICH_NICHT_AN'))return 'Vereinskonten melden sich nicht bei Partys an.';
+  if(m.includes('SPOTOUT_VEREIN'))return 'Mit einem Vereinskonto geht das nicht.';
+  if(m.includes('SPOTOUT_GESPERRT'))return 'Dein Konto ist gerade gesperrt.';
+  if(/failed to fetch|network|load failed/i.test(m))return 'Keine Verbindung. Versuch es gleich nochmals.';
+  if(/row-level security|permission denied/i.test(m))return 'Das ist gerade nicht möglich.';
+  // Deutsche Meldungen vom Server duerfen so stehen bleiben
+  if(!/SPOTOUT_/.test(m)&&/[äöü]|\b(der|die|das|nur|nicht)\b/.test(m))return m;
+  /* Vorher stand hier "Fehler: " plus der rohe Text vom Server – auf
+     Englisch, mit Tabellennamen. Das sieht nach kaputter App aus. */
+  console.error('[fehler]',error);
+  return 'Das hat nicht geklappt. Versuch es nochmals.';
 }
 
 /* ── Dresscode ─────────────────────────────────────────────────────
@@ -14312,7 +14564,7 @@ async function submitEventInner(){
   const code=(currentType==='private'&&linkModus==='offen')?inviteCode():null;
   const deadlineDate=document.getElementById('fDeadlineDate').value;
   const deadlineTime=document.getElementById('fDeadlineTime').value||'23:59';
-  const registrationDeadline=deadlineOn&&deadlineDate?`${deadlineDate}T${deadlineTime}:00`:null;
+  const registrationDeadline=deadlineOn&&deadlineDate?new Date(`${deadlineDate}T${deadlineTime}:00`).toISOString():null;
   const priv=currentType==='private';
   const{data,error}=await sb.from('events').insert({
     created_by:cUser.id,type:currentType,name,
@@ -14652,12 +14904,16 @@ async function openUserProf(userId){
     +'<div class="up2-top">'
       +'<div class="up2-av'+(p.is_pro?' pro':'')+'">'+av+'</div>'
       +'<div class="up2-zahlen">'
-        +'<div class="up2-zahl" style="cursor:default"><b>'+partyZahl+'</b><span>'
+        +'<div class="up2-zahl" style="cursor:default"><b>'+(p.offen===false?'–':partyZahl)+'</b><span>'
           +(istV?'Anlässe':'Partys')+'</span></div>'
-        +'<button class="up2-zahl" onclick="openFollowList(\''+p.id+'\',\'followers\')">'
-          +'<b id="upFollowers">'+followers+'</b><span>Follower</span></button>'
-        +'<button class="up2-zahl" onclick="openFollowList(\''+p.id+'\',\'following\')">'
-          +'<b>'+following+'</b><span>Folgt</span></button>'
+        +(p.offen===false
+          // Zu: keine Listen, keine Zahlen – sonst waere "privat" nur ein Wort
+          ? '<div class="up2-zahl" style="cursor:default"><b id="upFollowers">–</b><span>Follower</span></div>'
+            +'<div class="up2-zahl" style="cursor:default"><b>–</b><span>Folgt</span></div>'
+          : '<button class="up2-zahl" onclick="openFollowList(\''+p.id+'\',\'followers\')">'
+            +'<b id="upFollowers">'+followers+'</b><span>Follower</span></button>'
+            +'<button class="up2-zahl" onclick="openFollowList(\''+p.id+'\',\'following\')">'
+            +'<b>'+following+'</b><span>Folgt</span></button>')
       +'</div>'
     +'</div>'
     // Name, Handle, Bio – alles an derselben linken Kante
@@ -14667,6 +14923,7 @@ async function openUserProf(userId){
       +(p.day_one?dayOneMarke():'')+'</div>'
     +'<div class="up2-handle">@'+esc(p.username||'')
       +(istV&&p.verein_ort?' · '+esc(p.verein_ort):'')+'</div>'
+    +(istV?'':abzeichenPlatz(p.id))
     +((p.is_pro||istV)&&p.bio?'<div class="up2-bio">'+esc(p.bio)+'</div>':'')
     +webLink
     +(socials||socialLockHint(p))
@@ -14675,7 +14932,7 @@ async function openUserProf(userId){
       +(p.privat&&!iFollow
         ? buildAnfrageBtn(p.id,!!p.anfrage_laeuft,!!st?.folgt_dir)
         : buildFollowBtn(p.id,iFollow,!!st?.folgt_dir))
-      +(canChat?'<button class="up-msg-btn" onclick="closeUserProf();startChat(\''+p.id+'\',\''+esc(p.full_name||p.username||'')+'\',\''+esc(p.username||'')+'\')">'
+      +(canChat?'<button class="up-msg-btn" onclick="startChat(upUser.id,upUser.full_name||upUser.username||\'\',upUser.username||\'\')">'
         +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Schreiben</button>':'')
     +'</div>'
     +'<div class="up2-trenn"></div>'
@@ -14729,22 +14986,68 @@ async function renderFolgeAnfragen(){
       const pr=a.profiles||{};
       const nm=pr.full_name||pr.username||'Jemand';
       const av=pr.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(pr.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
-      return '<div class="fa-zeile">'
+      return '<div class="fa-zeile" data-von="'+a.von+'">'
         +'<div class="av-sm" onclick="openUserProf(\''+pr.id+'\')" style="cursor:pointer">'+av+'</div>'
         +'<div class="fa-txt"><b>'+esc(nm)+'</b><span>möchte dir folgen</span></div>'
-        +'<button class="fa-ja" onclick="beantworteAnfrage(\''+a.von+'\',true)" aria-label="Annehmen">'+ja+'</button>'
-        +'<button class="fa-nein" onclick="beantworteAnfrage(\''+a.von+'\',false)" aria-label="Ablehnen">'+nein+'</button>'
+        +'<button class="fa-ja" onclick="beantworteAnfrage(\''+a.von+'\',true,this)" aria-label="Bestätigen">'+ja+'</button>'
+        +'<button class="fa-nein" onclick="beantworteAnfrage(\''+a.von+'\',false,this)" aria-label="Löschen">'+nein+'</button>'
         +'</div>';
     }).join('');
 }
 
-async function beantworteAnfrage(von, ja){
-  const{data,error}=await sb.rpc('anfrage_beantworten',{p_von:von,p_ja:ja});
-  if(error){toast(fehlerText(error),'error');return;}
-  toast(ja?'Angenommen':'Abgelehnt','info');
-  try{ ntErledigt.set(von, ja?'Angenommen':'Abgelehnt'); renderNotifs(); }catch(e){}
-  renderFolgeAnfragen();
-  if(ja)renderProf();
+/* Vorher wurde danach das ganze Profil neu gezeichnet: die Zeile war
+   weg, der Reiter sprang zurueck, und man sah nie, dass es geklappt hat.
+   Jetzt bleibt die Zeile stehen – wie auf Instagram mit "Auch folgen". */
+async function beantworteAnfrage(von, ja, btn){
+  const zeile=btn?.closest('.fa-zeile');
+  zeile?.querySelectorAll('button').forEach(b=>b.disabled=true);
+  const{data,error}=await sb.rpc('anfrage_beantworten',{p_von:von,p_ja:!!ja});
+  if(error){
+    toast(fehlerText(error),'error');
+    zeile?.querySelectorAll('button').forEach(b=>b.disabled=false);
+    return;
+  }
+  const erledigt=data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Gelöscht');
+  ntErledigt.set(von,erledigt);
+  if(ja&&data==='angenommen')await anfrageFolgeStand(von);
+  anfrageErledigtZeigen(von,ja&&data==='angenommen',data==='keine_anfrage');
+  try{ renderNotifs(); }catch(e){}
+}
+async function anfrageFolgeStand(von){
+  try{
+    const{data}=await sb.rpc('folge_status',{p_ids:[von]});
+    const st=(data||[])[0];
+    ntFolge.set(von,st?{...st,folgt_mir:true}:{ich_folge:false,folgt_mir:true,angefragt:false});
+  }catch(e){ ntFolge.set(von,{ich_folge:false,folgt_mir:true,angefragt:false}); }
+}
+function anfrageErledigtZeigen(von,angenommen,schonErledigt){
+  const zeile=document.querySelector('.fa-zeile[data-von="'+von+'"]');
+  const pill=document.querySelector('#faBox .mg-pill');
+  if(zeile&&!zeile.classList.contains('fertig')){
+    zeile.classList.add('fertig');
+    if(pill){
+      const n=Math.max(0,(parseInt(pill.textContent,10)||1)-1);
+      pill.textContent=n; pill.hidden=!n;
+    }
+    zeile.querySelectorAll('.fa-ja,.fa-nein').forEach(b=>b.remove());
+    const txt=zeile.querySelector('.fa-txt span');
+    if(angenommen){
+      if(txt)txt.textContent='folgt dir jetzt';
+      const st=ntFolge.get(von)||{};
+      zeile.insertAdjacentHTML('beforeend',flKnopf(von,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true));
+    }else{
+      if(txt)txt.textContent=schonErledigt?'Schon erledigt':'Anfrage gelöscht';
+      setTimeout(()=>{ zeile.classList.add('weg'); setTimeout(()=>{
+        zeile.remove();
+        const box=document.getElementById('faBox');
+        if(box&&!box.querySelector('.fa-zeile'))box.innerHTML='';
+      },260); },900);
+    }
+  }
+  if(angenommen){
+    const f=document.getElementById('myFollowers');
+    if(f&&zeile)f.textContent=(parseInt(f.textContent,10)||0)+1;
+  }
 }
 
 /* ── Folgen oder anfragen ─────────────────────────────────────────
@@ -14824,9 +15127,15 @@ async function toggleFollow(btnOrId,legacyFlag){
       const{error}=await sb.from('follows').delete()
         .eq('follower_id',cUser.id).eq('following_id',userId);
       if(error)throw error;
+      // Privates Profil: nach dem Entfolgen ist es wieder zu
+      if(upUser?.id===userId&&upUser?.privat){ followBusy=false; await openUserProf(userId); return; }
     }else{
-      const{error}=await sb.from('follows').insert({follower_id:cUser.id,following_id:userId});
-      if(error&&error.code!=='23505')throw error;   // 23505 = folgt bereits
+      const{data:ergebnis,error}=await sb.rpc('folgen_anfragen',{p_an:userId});
+      if(error)throw error;
+      if(ergebnis==='blockiert')throw new Error('SPOTOUT_BLOCKIERT');
+      if(ergebnis==='gesperrt')throw new Error('SPOTOUT_GESPERRT');
+      // Inzwischen privat: dann ist es eine Anfrage – Profil neu, damit der Knopf stimmt
+      if(ergebnis==='angefragt'){ followBusy=false; await openUserProf(userId); return; }
     }
     // Wahrheit aus der Datenbank nachziehen, falls sich etwas unterscheidet
     const{data:stats}=await sb.rpc('get_follow_stats',{p_user_id:userId,p_viewer_id:cUser.id});
@@ -14838,7 +15147,7 @@ async function toggleFollow(btnOrId,legacyFlag){
     console.error('[follow]',err);
     if(btn)btn.classList.toggle('following',wasFollowing);   // zurückdrehen
     bumpFollowers(wasFollowing?1:-1);
-    toast('Hat nicht geklappt: '+(err?.message||'unbekannter Fehler'),'error');
+    toast(fehlerText(err),'error');
   }finally{
     if(btn)btn.disabled=false;
     followBusy=false;
@@ -14923,11 +15232,16 @@ async function flFolgen(btn,uid){
     }else{
       const{data,error}=await sb.rpc('folgen_anfragen',{p_an:uid});
       if(error)throw error;
+      if(data==='blockiert'||data==='gesperrt')throw new Error(data==='blockiert'?'SPOTOUT_BLOCKIERT':'SPOTOUT_GESPERRT');
       flKnopfSetzen(btn,data==='angefragt'?'angefragt':'folge');
     }
     const alt=ntFolge.get(uid);
     if(alt)ntFolge.set(uid,{...alt,ich_folge:btn.dataset.stand==='folge',angefragt:btn.dataset.stand==='angefragt'});
-    if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
+    // Das Profil darunter an Ort und Stelle nachfuehren statt neu aufbauen
+    const fb=document.getElementById('followBtn');
+    if(fb&&upUser?.id===uid)fb.classList.toggle('following',btn.dataset.stand==='folge');
+    if(document.getElementById('page-profile')?.classList.contains('active'))
+      loadMyFollowStats().then(st=>{ const a=document.getElementById('myFollowing'); if(a)a.textContent=st.following; });
   }catch(err){
     toast(fehlerText(err),'error');
   }finally{
@@ -15247,10 +15561,21 @@ async function openJoinOverlay(code){
       +'<span><b>Neu bei SPOTOUT?</b> Das Konto ist gratis und in einer halben Minute erstellt. '
       +'Deine Einladung bleibt so lange gespeichert – danach bist du automatisch dabei.</span></div>'
       +'<button class="attend-btn" style="background:'+w.btnBg+';color:'+w.btnColor+'" onclick="joinAfterLogin()">Gratis starten und beitreten</button>';
+  }else if(e.beitritt_status==='offen'){
+    action='<div class="join-note">'+'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>'
+      +'<span><b>Deine Anfrage ist beim Host.</b> '+esc(e.host_full_name||e.host_username||'Der Host')
+      +' bestätigt dich – du bekommst dann eine Benachrichtigung.</span></div>';
+  }else if(e.beitritt_status==='abgelehnt'){
+    action='<div class="join-note join-note-warn">'+'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>'
+      +'<span><b>Diesmal nicht.</b> Der Host hat deine Anfrage abgelehnt.</span></div>';
   }else if(e.already_in){
     action='<button class="attend-btn attend-btn-in" onclick="closeJoin();openDetail(\''+e.id+'\')">Du bist schon dabei – ansehen</button>';
   }else{
-    action='<button class="attend-btn" id="joinBtn" style="background:'+w.btnBg+';color:'+w.btnColor+'" onclick="doJoin()">Ich bin dabei!</button>';
+    // Private Party: der Host bestaetigt jede Person, die ueber einen Link kommt
+    action=(e.type==='private'
+        ?'<div class="join-note">'+'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>'+'<span>Der Host bestätigt dich kurz, dann bist du dabei.</span></div>':'')
+      +'<button class="attend-btn" id="joinBtn" style="background:'+w.btnBg+';color:'+w.btnColor+'" onclick="doJoin()">'
+      +(e.type==='private'?'Beitritt anfragen':'Ich bin dabei!')+'</button>';
   }
 
   body.innerHTML=
@@ -15277,10 +15602,15 @@ function joinAfterLogin(){
 
 async function doJoin(){
   const btn=document.getElementById('joinBtn');
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Wird beigetreten…';}
+  if(btn){btn.dataset.text=btn.dataset.text||btn.textContent;btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Einen Moment…';}
   const{data,error}=await sb.rpc('join_by_invite',{p_code:window.__joinCode});
   const r=Array.isArray(data)?data[0]:data;
-  if(error||!r){toast('Beitritt fehlgeschlagen','error');if(btn){btn.disabled=false;btn.textContent='Ich bin dabei!';}return;}
+  if(error||!r){toast('Beitritt fehlgeschlagen','error');if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Ich bin dabei!';}return;}
+  if(r.ergebnis==='angefragt'){
+    closeJoin();
+    toast('Anfrage gesendet – der Host bestätigt dich','success');
+    return;
+  }
   const meldung={
     beigetreten:'Du bist dabei!',
     schon_dabei:'Du warst schon dabei',
@@ -15288,6 +15618,8 @@ async function doJoin(){
     frist_abgelaufen:'Die Anmeldefrist ist abgelaufen',
     link_verbraucht:'Diese Einladung ist schon eingelöst',
     code_ungueltig:'Dieser Code stimmt nicht',
+    abgelehnt:'Der Host hat deine Anfrage abgelehnt',
+    gesperrt:'Dein Konto ist gesperrt',
     nicht_angemeldet:'Bitte zuerst anmelden'
   }[r.ergebnis]||'Unbekannte Antwort';
   const ok=r.ergebnis==='beigetreten'||r.ergebnis==='schon_dabei';
@@ -15296,7 +15628,7 @@ async function doJoin(){
     closeJoin();
     await loadEvts();
     if(r.ev_id)openDetail(r.ev_id);
-  }else if(btn){btn.disabled=false;btn.textContent='Ich bin dabei!';}
+  }else if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Ich bin dabei!';}
 }
 
 /* ══════════ MITBRINGEN DIREKT NACH DEM ANMELDEN ══════════ */
@@ -15361,8 +15693,11 @@ async function claimFromSheet(itemId,eventId,mine){
   const patch=mine
     ? {claimed_by:null,claimed_at:null}
     : {claimed_by:cUser.id,claimed_at:new Date().toISOString()};
-  const{error}=await sb.from('event_items').update(patch).eq('id',itemId);
+  let q=sb.from('event_items').update(patch).eq('id',itemId);
+  if(!mine)q=q.is('claimed_by',null);
+  const{data:getroffen,error}=await q.select('id');
   if(error){toast(fehlerText(error),'error');return;}
+  if(!mine&&!(getroffen||[]).length)toast('Das hat gerade jemand anderes übernommen','info');
   await renderBringSheet(eventId);
   renderBringList(eventId,false);
 }
@@ -15581,7 +15916,7 @@ async function inviteToEvent(userId){
   const{error}=await sb.from('event_invites')
     .insert({event_id:shareEv.id,user_id:userId,invited_by:cUser.id});
   if(error&&error.code!=='23505'){
-    toast('Einladung fehlgeschlagen: '+error.message,'error');
+    toast(fehlerText(error),'error');
     if(btn){btn.disabled=false;btn.textContent='Einladen';}
     return;
   }
@@ -15611,7 +15946,7 @@ async function sendEventTo(userId){
     if(btn){btn.textContent='Gesendet';btn.classList.add('done');}
   }catch(err){
     console.error('[share]',err);
-    toast('Nicht gesendet: '+(err?.message||'unbekannter Fehler'),'error');
+    toast(fehlerText(err),'error');
     if(btn){btn.disabled=false;btn.textContent='Senden';}
   }
 }
@@ -16464,9 +16799,121 @@ en:{
   "Aus":"Off",
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
+  "Alle pausieren":"Pause all",
+  "Keine Push-Nachrichten, bis du es wieder einschaltest":"No push notifications until you turn them back on",
+  "Wenn dir jemand schreibt":"When someone messages you",
+  "Neue Follower, Anfragen und Zusagen":"New followers, requests and approvals",
+  "Einladungen und ob du dabei sein darfst":"Invitations and whether you’re in",
+  "Deine Gäste":"Your guests",
+  "Wer zu deiner Party möchte oder jemanden mitbringt":"Who wants to come to your party or bring someone",
+  "Änderungen an Partys":"Party changes",
+  "Neue Zeit, neuer Ort oder abgesagt":"New time, new place or cancelled",
+  "Freunde unterwegs":"Friends going out",
+  "Wenn deine Leute zu einer Party gehen":"When your people go to a party",
+  "Abzeichen":"Badges",
+  "Wenn du ein neues Abzeichen bekommst":"When you earn a new badge",
+  "Konto & Sicherheit":"Account & safety",
+  "Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.":"Warnings, suspensions and important account notices always come through.",
+  "Im iPhone ausgeschaltet":"Turned off on your iPhone",
+  "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT can’t send you notifications right now. Turn them back on in iPhone Settings.",
+  "iPhone-Einstellungen öffnen":"Open iPhone Settings",
+  "Mitteilungen einschalten":"Turn on notifications",
+  "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"So you see messages and invitations even on your lock screen.",
+  "Push gibt es in der App":"Push is available in the app",
+  "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"In the browser you see updates under the bell. Your choice here also applies to the iPhone app.",
+  "Pausiert":"Paused",
+  "folgt dir jetzt":"follows you now",
+  "Anfrage gelöscht":"Request deleted",
+  "Gelöscht":"Deleted",
+  "Öffnen":"Open",
+  "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Open iPhone Settings › Notifications › Spotout",
+  "Die Party ist leider voll.":"Sorry, the party is full.",
+  "Dieses Profil ist privat – stell eine Anfrage.":"This profile is private – send a request.",
+  "Das geht nicht – ihr habt euch blockiert.":"Not possible – one of you blocked the other.",
+  "Diese Person nimmt keine Nachrichten an.":"This person doesn’t accept messages.",
+  "Diese Person nimmt nur Anfragen an.":"This person only accepts requests.",
+  "Ein Gespräch anfangen können nur Pro-Nutzer.":"Only Pro users can start a conversation.",
+  "Vereinskonten melden sich nicht bei Partys an.":"Club accounts don’t sign up for parties.",
+  "Mit einem Vereinskonto geht das nicht.":"Not possible with a club account.",
+  "Dein Konto ist gerade gesperrt.":"Your account is currently suspended.",
+  "Keine Verbindung. Versuch es gleich nochmals.":"No connection. Try again in a moment.",
+  "Das ist gerade nicht möglich.":"That’s not possible right now.",
+  "Nochmals tippen zum Austragen":"Tap again to leave",
+  "Das hat gerade jemand anderes übernommen":"Someone else just took that",
+  "Das Datum liegt in der Vergangenheit":"That date is in the past",
+  "Die Gästezahl muss mindestens 1 sein":"The guest limit must be at least 1",
+  "Noch keine privaten Partys. Sobald dich jemand einlädt, steht sie hier.":"No private parties yet. As soon as someone invites you, it shows up here.",
+  "Gerade ist hier nichts los. Schau später wieder vorbei oder mach selbst eine Party.":"Nothing going on here right now. Check back later or throw a party yourself.",
+  "Deine Anfrage läuft schon":"Your request is already pending",
+  "Diese Person möchte gerade keine Nachrichten":"This person doesn’t want messages right now",
+  "noch 21 h":"21 h left",
+  "Du bist drauf? Ein Tipp, und das Foto ist weg.":"You’re in it? One tap and the photo is gone.",
+  "Abzeichen sammeln":"Collect badges",
+  "Neu dabei":"New here",
+  "Deine erste Party besucht":"Went to your first party",
+  "Partymaus":"Party animal",
+  "5 Partys besucht":"Went to 5 parties",
+  "Partylegende":"Party legend",
+  "20 Partys besucht":"Went to 20 parties",
+  "Mitbringer":"Bringer",
+  "3-mal etwas mitgebracht":"Brought something 3 times",
+  "Gastgeber":"Host",
+  "Deine erste eigene Party":"Your first own party",
+  "Superhost":"Superhost",
+  "3 Partys mit 10 oder mehr Gästen":"3 parties with 10+ guests",
+  "Fotograf":"Photographer",
+  "10 Party-Fotos geteilt":"Shared 10 party photos",
+  "Nachteule":"Night owl",
+  "3 Partys bis nach 2 Uhr":"3 parties past 2 a.m.",
+  "25 Follower":"25 followers",
+  "Geschafft":"Done",
+  "Abzeichen bekommst du, indem du SPOTOUT nutzt – an Partys gehen, mitbringen, selbst feiern.":"You earn badges by using SPOTOUT – going to parties, bringing things, hosting.",
   "Pro verschenken":"Gift Pro",
+  "Deine Anfrage ist beim Host.":"Your request is with the host.",
+  " bestätigt dich – du bekommst dann eine Benachrichtigung.":" will confirm you – you'll get a notification.",
+  "Diesmal nicht.":"Not this time.",
+  "Der Host hat deine Anfrage abgelehnt.":"The host declined your request.",
+  "Der Host bestätigt dich kurz, dann bist du dabei.":"The host confirms you quickly, then you're in.",
+  "Beitritt anfragen":"Request to join",
+  "Einen Moment…":"One moment…",
+  "Anfrage gesendet – der Host bestätigt dich":"Request sent – the host will confirm you",
+  "Der Host hat deine Anfrage abgelehnt":"The host declined your request",
+  "Dein Konto ist gesperrt":"Your account is suspended",
+  "Möchten dabei sein":"Want to join",
+  "über deinen Einladungslink":"via your invite link",
+  "Bestätigt – ist jetzt dabei":"Confirmed – they're in",
+  "Die Party ist voll":"The party is full",
+  "Schon entschieden":"Already decided",
+  "Erledigt":"Done",
+  "Party ist voll":"Party is full",
+  "Verwarnung":"Warning",
+  "Meldungen":"Reports",
+  "Wer gemeldet hat, bleibt anonym. Es zählen nur Meldungen von verschiedenen Personen.":"Whoever reported stays anonymous. Only reports from different people count.",
+  "7 Tage gesperrt":"Suspended for 7 days",
+  "Dauerhaft gesperrt":"Permanently suspended",
+  "Mehrere Personen haben Inhalte von dir gemeldet. Das ist eine Verwarnung – dein Konto bleibt aktiv.":"Several people reported content from you. This is a warning – your account stays active.",
+  "Bei weiteren Meldungen wird dein Konto 7 Tage gesperrt. Stimmt etwas nicht? Schreib an ":"With further reports your account will be suspended for 7 days. Something wrong? Write to ",
+  "Dein Konto ist 7 Tage gesperrt":"Your account is suspended for 7 days",
+  "Wieder frei am ":"Free again on ",
+  "Die Sperre gilt dauerhaft.":"The suspension is permanent.",
+  "So lange kannst du keine Partys erstellen, dich nicht anmelden, nicht schreiben und niemandem folgen.":"Until then you can't create parties, join, write or follow anyone.",
+  "Ein Fehler? Schreib an ":"A mistake? Write to ",
+  " – wir prüfen es.":" – we'll check it.",
+  "Keine Meldungen in den letzten 60 Tagen.":"No reports in the last 60 days.",
+  "Wieder einblenden":"Show again",
+  "Inhalt entfernen":"Remove content",
+  "Abweisen":"Dismiss",
+  "Wirklich?":"Really?",
+  "Aufgehoben":"Lifted",
+  "Wieder eingeblendet":"Shown again",
+  "Abgewiesen":"Dismissed",
+  "Entfernt":"Removed",
+  "Du kannst dich nicht selbst melden.":"You can't report yourself.",
+  "Du hast heute schon sehr viele Meldungen gesendet. Versuch es morgen wieder.":"You've already sent a lot of reports today. Try again tomorrow.",
+  "Die Person erfährt nie, wer gemeldet hat.":"The person never finds out who reported.",
+  "Gemeldet am ":"Reported on ",
   "Fotos von der Party":"Photos from the party",
-  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.":"From the start of the party you share photos here. Only guests see them – and after 27 hours they're gone.",
+  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 24 Stunden sind sie wieder weg.":"From the start of the party you share photos here. Only guests see them – and after 24 hours they're gone.",
   "Wer drauf ist, kann ein Foto sofort entfernen.":"Anyone in a photo can remove it right away.",
   "Bestätigen":"Confirm",
   "Folgt dir":"Follows you",
@@ -16488,22 +16935,22 @@ en:{
   "Von Anfang an dabei – das Abzeichen steht ab sofort in deinem Profil.":"Here from the start – the badge now shows on your profile.",
   "Party-Fotos":"Party photos",
   "Foto":"Photo",
-  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"From the start of the party you share photos here – guests only, for 27 hours.",
+  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 24 Stunden lang.":"From the start of the party you share photos here – guests only, for 24 hours.",
   "Noch keine Fotos. Mach den Anfang!":"No photos yet. Be the first!",
-  "Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.":"Only guests see the photos. They're gone after 27 hours.",
+  "Nur Gäste sehen die Fotos. Nach 24 Stunden sind sie weg.":"Only guests see the photos. They're gone after 24 hours.",
   "Die Fotos dieser Party sind gelöscht – so war's abgemacht.":"This party's photos have been deleted – as promised.",
   "Bevor du Fotos teilst":"Before you share photos",
   "Nur mit Einverständnis":"Only with consent",
   "Frag kurz, bevor du jemanden fotografierst und hochlädst.":"Ask before you take and upload a photo of someone.",
   "Nichts Nacktes, nichts Fieses":"Nothing nude, nothing nasty",
   "Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.":"Photos like that get removed – and so does anyone who goes too far.",
-  "Nur für Gäste, 27 Stunden lang":"Guests only, for 27 hours",
+  "Nur für Gäste, 24 Stunden lang":"Guests only, for 24 hours",
   "Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.":"Anyone in a photo can remove it right away. After that we delete everything.",
   "Mehr als 10 Fotos gehen nicht – die ersten werden genommen":"No more than 10 photos – the first ones will be used",
   "Du hast schon 10 Fotos hochgeladen.":"You've already uploaded 10 photos.",
   "Dieses Bildformat geht leider nicht.":"Sorry, this image format doesn't work.",
   "Das Foto ist zu gross.":"The photo is too large.",
-  "Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.":"Photos are for guests only, from the start of the party for 27 hours.",
+  "Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.":"Photos are for guests only, from the start of the party for 24 hours.",
   "Hochladen hat nicht geklappt. Versuch es nochmal.":"Upload didn't work. Try again.",
   "Das Foto konnte nicht gespeichert werden.":"The photo couldn't be saved.",
   "Foto ist drin":"Photo added",
@@ -17623,9 +18070,80 @@ fr:{
   "Aus":"Désactivé",
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
-  "Pro verschenken":"Offrir Pro",
+    "Alle pausieren":"Tout mettre en pause",
+  "Keine Push-Nachrichten, bis du es wieder einschaltest":"Aucune notification push jusqu’à ce que tu les réactives",
+  "Wenn dir jemand schreibt":"Quand quelqu’un t’écrit",
+  "Neue Follower, Anfragen und Zusagen":"Nouveaux abonnés, demandes et acceptations",
+  "Einladungen und ob du dabei sein darfst":"Invitations et si tu peux venir",
+  "Deine Gäste":"Tes invités",
+  "Wer zu deiner Party möchte oder jemanden mitbringt":"Qui veut venir à ta fête ou amener quelqu’un",
+  "Änderungen an Partys":"Changements de fête",
+  "Neue Zeit, neuer Ort oder abgesagt":"Nouvelle heure, nouveau lieu ou annulée",
+  "Freunde unterwegs":"Amis de sortie",
+  "Wenn deine Leute zu einer Party gehen":"Quand tes potes vont à une fête",
+  "Abzeichen":"Badges",
+  "Wenn du ein neues Abzeichen bekommst":"Quand tu gagnes un nouveau badge",
+  "Konto & Sicherheit":"Compte & sécurité",
+  "Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.":"Les avertissements, suspensions et infos importantes sur ton compte arrivent toujours.",
+  "Im iPhone ausgeschaltet":"Désactivé sur ton iPhone",
+  "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT ne peut pas t’envoyer de notifications. Réactive-les dans les Réglages de l’iPhone.",
+  "iPhone-Einstellungen öffnen":"Ouvrir les Réglages",
+  "Mitteilungen einschalten":"Activer les notifications",
+  "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"Pour voir messages et invitations même écran verrouillé.",
+  "Push gibt es in der App":"Les notifications push sont dans l’app",
+  "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"Dans le navigateur, tout apparaît sous la cloche. Ton choix s’applique aussi à l’app iPhone.",
+  "Pausiert":"En pause",
+  "folgt dir jetzt":"te suit maintenant",
+  "Anfrage gelöscht":"Demande supprimée",
+  "Gelöscht":"Supprimé",
+  "Öffnen":"Ouvrir",
+  "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Ouvre Réglages › Notifications › Spotout",
+"Pro verschenken":"Offrir Pro",
+  "Deine Anfrage ist beim Host.":"Ta demande est chez l'hôte.",
+  " bestätigt dich – du bekommst dann eine Benachrichtigung.":" va te confirmer – tu recevras une notification.",
+  "Diesmal nicht.":"Pas cette fois.",
+  "Der Host hat deine Anfrage abgelehnt.":"L'hôte a refusé ta demande.",
+  "Der Host bestätigt dich kurz, dann bist du dabei.":"L'hôte te confirme rapidement, puis tu es dedans.",
+  "Beitritt anfragen":"Demander à rejoindre",
+  "Einen Moment…":"Un instant…",
+  "Anfrage gesendet – der Host bestätigt dich":"Demande envoyée – l'hôte va te confirmer",
+  "Der Host hat deine Anfrage abgelehnt":"L'hôte a refusé ta demande",
+  "Dein Konto ist gesperrt":"Ton compte est suspendu",
+  "Möchten dabei sein":"Veulent participer",
+  "über deinen Einladungslink":"via ton lien d'invitation",
+  "Bestätigt – ist jetzt dabei":"Confirmé – la personne est inscrite",
+  "Die Party ist voll":"La soirée est complète",
+  "Schon entschieden":"Déjà décidé",
+  "Erledigt":"Fait",
+  "Party ist voll":"Soirée complète",
+  "Verwarnung":"Avertissement",
+  "Meldungen":"Signalements",
+  "Wer gemeldet hat, bleibt anonym. Es zählen nur Meldungen von verschiedenen Personen.":"La personne qui a signalé reste anonyme. Seuls les signalements de personnes différentes comptent.",
+  "7 Tage gesperrt":"Suspendu 7 jours",
+  "Dauerhaft gesperrt":"Suspendu définitivement",
+  "Mehrere Personen haben Inhalte von dir gemeldet. Das ist eine Verwarnung – dein Konto bleibt aktiv.":"Plusieurs personnes ont signalé du contenu de ta part. C'est un avertissement – ton compte reste actif.",
+  "Bei weiteren Meldungen wird dein Konto 7 Tage gesperrt. Stimmt etwas nicht? Schreib an ":"En cas de nouveaux signalements, ton compte sera suspendu 7 jours. Un problème ? Écris à ",
+  "Dein Konto ist 7 Tage gesperrt":"Ton compte est suspendu 7 jours",
+  "Wieder frei am ":"Libre à nouveau le ",
+  "Die Sperre gilt dauerhaft.":"La suspension est définitive.",
+  "So lange kannst du keine Partys erstellen, dich nicht anmelden, nicht schreiben und niemandem folgen.":"D'ici là, tu ne peux ni créer de soirées, ni t'inscrire, ni écrire, ni suivre quelqu'un.",
+  "Ein Fehler? Schreib an ":"Une erreur ? Écris à ",
+  " – wir prüfen es.":" – nous vérifions.",
+  "Keine Meldungen in den letzten 60 Tagen.":"Aucun signalement ces 60 derniers jours.",
+  "Wieder einblenden":"Réafficher",
+  "Inhalt entfernen":"Retirer le contenu",
+  "Abweisen":"Rejeter",
+  "Wirklich?":"Vraiment ?",
+  "Aufgehoben":"Levé",
+  "Wieder eingeblendet":"Réaffiché",
+  "Abgewiesen":"Rejeté",
+  "Entfernt":"Retiré",
+  "Du kannst dich nicht selbst melden.":"Tu ne peux pas te signaler toi-même.",
+  "Du hast heute schon sehr viele Meldungen gesendet. Versuch es morgen wieder.":"Tu as déjà envoyé beaucoup de signalements aujourd'hui. Réessaie demain.",
+  "Die Person erfährt nie, wer gemeldet hat.":"La personne ne saura jamais qui a signalé.",
+  "Gemeldet am ":"Signalé le ",
   "Fotos von der Party":"Photos de la soirée",
-  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.":"Dès le début de la soirée, vous partagez vos photos ici. Seuls les invités les voient – et après 27 heures, elles disparaissent.",
+  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 24 Stunden sind sie wieder weg.":"Dès le début de la soirée, vous partagez vos photos ici. Seuls les invités les voient – et après 24 heures, elles disparaissent.",
   "Wer drauf ist, kann ein Foto sofort entfernen.":"Toute personne sur une photo peut la retirer immédiatement.",
   "Bestätigen":"Confirmer",
   "Folgt dir":"Te suit",
@@ -17647,22 +18165,22 @@ fr:{
   "Von Anfang an dabei – das Abzeichen steht ab sofort in deinem Profil.":"Là depuis le début – le badge apparaît désormais sur ton profil.",
   "Party-Fotos":"Photos de la soirée",
   "Foto":"Photo",
-  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"Dès le début de la soirée, vous partagez vos photos ici – réservé aux invités, pendant 27 heures.",
+  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 24 Stunden lang.":"Dès le début de la soirée, vous partagez vos photos ici – réservé aux invités, pendant 24 heures.",
   "Noch keine Fotos. Mach den Anfang!":"Pas encore de photos. Lance-toi !",
-  "Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.":"Seuls les invités voient les photos. Elles disparaissent après 27 heures.",
+  "Nur Gäste sehen die Fotos. Nach 24 Stunden sind sie weg.":"Seuls les invités voient les photos. Elles disparaissent après 24 heures.",
   "Die Fotos dieser Party sind gelöscht – so war's abgemacht.":"Les photos de cette soirée ont été supprimées – comme promis.",
   "Bevor du Fotos teilst":"Avant de partager des photos",
   "Nur mit Einverständnis":"Seulement avec accord",
   "Frag kurz, bevor du jemanden fotografierst und hochlädst.":"Demande avant de photographier quelqu'un et de publier la photo.",
   "Nichts Nacktes, nichts Fieses":"Rien de dénudé, rien de méchant",
   "Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.":"Ces photos sont supprimées – et ceux qui exagèrent aussi.",
-  "Nur für Gäste, 27 Stunden lang":"Réservé aux invités, pendant 27 heures",
+  "Nur für Gäste, 24 Stunden lang":"Réservé aux invités, pendant 24 heures",
   "Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.":"Toute personne sur une photo peut la retirer immédiatement. Ensuite, on supprime tout.",
   "Mehr als 10 Fotos gehen nicht – die ersten werden genommen":"Pas plus de 10 photos – les premières sont prises",
   "Du hast schon 10 Fotos hochgeladen.":"Tu as déjà publié 10 photos.",
   "Dieses Bildformat geht leider nicht.":"Désolé, ce format d'image ne marche pas.",
   "Das Foto ist zu gross.":"La photo est trop grande.",
-  "Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.":"Les photos sont réservées aux invités, dès le début de la soirée et pendant 27 heures.",
+  "Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.":"Les photos sont réservées aux invités, dès le début de la soirée et pendant 24 heures.",
   "Hochladen hat nicht geklappt. Versuch es nochmal.":"L'envoi n'a pas marché. Réessaie.",
   "Das Foto konnte nicht gespeichert werden.":"La photo n'a pas pu être enregistrée.",
   "Foto ist drin":"Photo ajoutée",
@@ -18782,9 +19300,80 @@ it:{
   "Aus":"Spento",
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
-  "Pro verschenken":"Regala Pro",
+    "Alle pausieren":"Metti tutto in pausa",
+  "Keine Push-Nachrichten, bis du es wieder einschaltest":"Nessuna notifica push finché non le riattivi",
+  "Wenn dir jemand schreibt":"Quando qualcuno ti scrive",
+  "Neue Follower, Anfragen und Zusagen":"Nuovi follower, richieste e conferme",
+  "Einladungen und ob du dabei sein darfst":"Inviti e se puoi partecipare",
+  "Deine Gäste":"I tuoi ospiti",
+  "Wer zu deiner Party möchte oder jemanden mitbringt":"Chi vuole venire alla tua festa o portare qualcuno",
+  "Änderungen an Partys":"Modifiche alle feste",
+  "Neue Zeit, neuer Ort oder abgesagt":"Nuovo orario, nuovo luogo o annullata",
+  "Freunde unterwegs":"Amici in giro",
+  "Wenn deine Leute zu einer Party gehen":"Quando i tuoi amici vanno a una festa",
+  "Abzeichen":"Badge",
+  "Wenn du ein neues Abzeichen bekommst":"Quando ottieni un nuovo badge",
+  "Konto & Sicherheit":"Account e sicurezza",
+  "Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.":"Avvisi, sospensioni e comunicazioni importanti sull’account arrivano sempre.",
+  "Im iPhone ausgeschaltet":"Disattivate sull’iPhone",
+  "SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.":"SPOTOUT non può inviarti notifiche. Riattivale nelle Impostazioni dell’iPhone.",
+  "iPhone-Einstellungen öffnen":"Apri Impostazioni",
+  "Mitteilungen einschalten":"Attiva le notifiche",
+  "Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.":"Per vedere messaggi e inviti anche a schermo bloccato.",
+  "Push gibt es in der App":"Le notifiche push sono nell’app",
+  "Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.":"Nel browser vedi tutto nella campanella. La tua scelta vale anche per l’app iPhone.",
+  "Pausiert":"In pausa",
+  "folgt dir jetzt":"ora ti segue",
+  "Anfrage gelöscht":"Richiesta eliminata",
+  "Gelöscht":"Eliminato",
+  "Öffnen":"Apri",
+  "Öffne die iPhone-Einstellungen › Mitteilungen › Spotout":"Apri Impostazioni › Notifiche › Spotout",
+"Pro verschenken":"Regala Pro",
+  "Deine Anfrage ist beim Host.":"La tua richiesta è dall'host.",
+  " bestätigt dich – du bekommst dann eine Benachrichtigung.":" ti confermerà – riceverai una notifica.",
+  "Diesmal nicht.":"Non questa volta.",
+  "Der Host hat deine Anfrage abgelehnt.":"L'host ha rifiutato la tua richiesta.",
+  "Der Host bestätigt dich kurz, dann bist du dabei.":"L'host ti conferma velocemente, poi sei dentro.",
+  "Beitritt anfragen":"Chiedi di partecipare",
+  "Einen Moment…":"Un attimo…",
+  "Anfrage gesendet – der Host bestätigt dich":"Richiesta inviata – l'host ti confermerà",
+  "Der Host hat deine Anfrage abgelehnt":"L'host ha rifiutato la tua richiesta",
+  "Dein Konto ist gesperrt":"Il tuo account è sospeso",
+  "Möchten dabei sein":"Vogliono partecipare",
+  "über deinen Einladungslink":"tramite il tuo link d'invito",
+  "Bestätigt – ist jetzt dabei":"Confermato – ora partecipa",
+  "Die Party ist voll":"La festa è al completo",
+  "Schon entschieden":"Già deciso",
+  "Erledigt":"Fatto",
+  "Party ist voll":"Festa al completo",
+  "Verwarnung":"Avvertimento",
+  "Meldungen":"Segnalazioni",
+  "Wer gemeldet hat, bleibt anonym. Es zählen nur Meldungen von verschiedenen Personen.":"Chi ha segnalato resta anonimo. Contano solo segnalazioni di persone diverse.",
+  "7 Tage gesperrt":"Sospeso per 7 giorni",
+  "Dauerhaft gesperrt":"Sospeso definitivamente",
+  "Mehrere Personen haben Inhalte von dir gemeldet. Das ist eine Verwarnung – dein Konto bleibt aktiv.":"Diverse persone hanno segnalato tuoi contenuti. Questo è un avvertimento – il tuo account resta attivo.",
+  "Bei weiteren Meldungen wird dein Konto 7 Tage gesperrt. Stimmt etwas nicht? Schreib an ":"Con altre segnalazioni il tuo account verrà sospeso per 7 giorni. Qualcosa non va? Scrivi a ",
+  "Dein Konto ist 7 Tage gesperrt":"Il tuo account è sospeso per 7 giorni",
+  "Wieder frei am ":"Di nuovo libero il ",
+  "Die Sperre gilt dauerhaft.":"La sospensione è definitiva.",
+  "So lange kannst du keine Partys erstellen, dich nicht anmelden, nicht schreiben und niemandem folgen.":"Fino ad allora non puoi creare feste, iscriverti, scrivere o seguire nessuno.",
+  "Ein Fehler? Schreib an ":"Un errore? Scrivi a ",
+  " – wir prüfen es.":" – lo verifichiamo.",
+  "Keine Meldungen in den letzten 60 Tagen.":"Nessuna segnalazione negli ultimi 60 giorni.",
+  "Wieder einblenden":"Mostra di nuovo",
+  "Inhalt entfernen":"Rimuovi contenuto",
+  "Abweisen":"Respingi",
+  "Wirklich?":"Davvero?",
+  "Aufgehoben":"Revocato",
+  "Wieder eingeblendet":"Mostrato di nuovo",
+  "Abgewiesen":"Respinto",
+  "Entfernt":"Rimosso",
+  "Du kannst dich nicht selbst melden.":"Non puoi segnalare te stesso.",
+  "Du hast heute schon sehr viele Meldungen gesendet. Versuch es morgen wieder.":"Oggi hai già inviato molte segnalazioni. Riprova domani.",
+  "Die Person erfährt nie, wer gemeldet hat.":"La persona non saprà mai chi ha segnalato.",
+  "Gemeldet am ":"Segnalato il ",
   "Fotos von der Party":"Foto della festa",
-  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 27 Stunden sind sie wieder weg.":"Dall'inizio della festa condividete qui le foto. Solo gli ospiti le vedono – e dopo 27 ore spariscono.",
+  "Ab Partybeginn teilt ihr hier Fotos. Nur Gäste sehen sie – und nach 24 Stunden sind sie wieder weg.":"Dall'inizio della festa condividete qui le foto. Solo gli ospiti le vedono – e dopo 24 ore spariscono.",
   "Wer drauf ist, kann ein Foto sofort entfernen.":"Chi è nella foto può rimuoverla subito.",
   "Bestätigen":"Conferma",
   "Folgt dir":"Ti segue",
@@ -18806,22 +19395,22 @@ it:{
   "Von Anfang an dabei – das Abzeichen steht ab sofort in deinem Profil.":"Qui dall'inizio – il badge ora è sul tuo profilo.",
   "Party-Fotos":"Foto della festa",
   "Foto":"Foto",
-  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.":"Dall'inizio della festa condividete qui le foto – solo per gli ospiti, per 27 ore.",
+  "Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 24 Stunden lang.":"Dall'inizio della festa condividete qui le foto – solo per gli ospiti, per 24 ore.",
   "Noch keine Fotos. Mach den Anfang!":"Ancora nessuna foto. Inizia tu!",
-  "Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.":"Solo gli ospiti vedono le foto. Dopo 27 ore spariscono.",
+  "Nur Gäste sehen die Fotos. Nach 24 Stunden sind sie weg.":"Solo gli ospiti vedono le foto. Dopo 24 ore spariscono.",
   "Die Fotos dieser Party sind gelöscht – so war's abgemacht.":"Le foto di questa festa sono state cancellate – come promesso.",
   "Bevor du Fotos teilst":"Prima di condividere foto",
   "Nur mit Einverständnis":"Solo con il consenso",
   "Frag kurz, bevor du jemanden fotografierst und hochlädst.":"Chiedi prima di fotografare qualcuno e caricare la foto.",
   "Nichts Nacktes, nichts Fieses":"Niente nudo, niente cattiverie",
   "Solche Fotos fliegen raus – und wer es übertreibt, gleich mit.":"Foto così vengono rimosse – e chi esagera pure.",
-  "Nur für Gäste, 27 Stunden lang":"Solo per gli ospiti, per 27 ore",
+  "Nur für Gäste, 24 Stunden lang":"Solo per gli ospiti, per 24 ore",
   "Wer drauf ist, kann ein Foto sofort entfernen. Danach löschen wir alles.":"Chi è nella foto può rimuoverla subito. Poi cancelliamo tutto.",
   "Mehr als 10 Fotos gehen nicht – die ersten werden genommen":"Non più di 10 foto – vengono prese le prime",
   "Du hast schon 10 Fotos hochgeladen.":"Hai già caricato 10 foto.",
   "Dieses Bildformat geht leider nicht.":"Purtroppo questo formato non funziona.",
   "Das Foto ist zu gross.":"La foto è troppo grande.",
-  "Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.":"Le foto sono solo per gli ospiti, dall'inizio della festa per 27 ore.",
+  "Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.":"Le foto sono solo per gli ospiti, dall'inizio della festa per 24 ore.",
   "Hochladen hat nicht geklappt. Versuch es nochmal.":"Il caricamento non è riuscito. Riprova.",
   "Das Foto konnte nicht gespeichert werden.":"Non è stato possibile salvare la foto.",
   "Foto ist drin":"Foto aggiunta",
@@ -19464,6 +20053,167 @@ async function nativePushAnmelden(erzwingen){
 
 function nativeHaptik(art){ if(istApp())nativeCall('haptik',{art},3000); }
 
+/* ══════════ ABZEICHEN ══════════
+   Verdient, nicht gekauft: der Server zaehlt beim Archivieren einer Party,
+   bei Fotos und Followern mit und vergibt sie selbst. Hier wird nur gezeigt. */
+const ABZEICHEN=[
+  {k:'neu_dabei',    n:'Neu dabei',    s:'Deine erste Party besucht',     f:'besucht',     z:1,  i:'funken'},
+  {k:'partymaus',    n:'Partymaus',    s:'5 Partys besucht',              f:'besucht',     z:5,  i:'feuer'},
+  {k:'partylegende', n:'Partylegende', s:'20 Partys besucht',             f:'besucht',     z:20, i:'stern'},
+  {k:'mitbringer',   n:'Mitbringer',   s:'3-mal etwas mitgebracht',       f:'mitgebracht', z:3,  i:'drink'},
+  {k:'gastgeber',    n:'Gastgeber',    s:'Deine erste eigene Party',      f:'gehostet',    z:1,  i:'home'},
+  {k:'superhost',    n:'Superhost',    s:'3 Partys mit 10 oder mehr Gästen', f:'superhost', z:3,  i:'ticket'},
+  {k:'fotograf',     n:'Fotograf',     s:'10 Party-Fotos geteilt',        f:'fotos',       z:10, i:'kamera'},
+  {k:'nachteule',    n:'Nachteule',    s:'3 Partys bis nach 2 Uhr',       f:'nachteule',   z:3,  i:'blitz'},
+  {k:'beliebt',      n:'Beliebt',      s:'25 Follower',                   f:'follower',    z:25, i:'gaeste'},
+];
+let abzCache={eigene:[],stand:{}};
+function abzeichenReihe(schluessel,eigen){
+  const hat=ABZEICHEN.filter(a=>(schluessel||[]).includes(a.k));
+  if(!hat.length){
+    return eigen
+      ? '<button class="abz-reihe abz-leer" onclick="abzeichenOeffnen()">'+pikto('stern',13)+'<span>Abzeichen sammeln</span></button>'
+      : '';
+  }
+  return '<div class="abz-reihe"'+(eigen?' role="button" onclick="abzeichenOeffnen()"':'')+'>'
+    +hat.map(a=>'<span class="abz-chip">'+pikto(a.i,13)+'<span>'+a.n+'</span></span>').join('')
+    +'</div>';
+}
+function abzeichenPlatz(uid){
+  queueMicrotask(()=>abzeichenFremdLaden(uid));
+  return '<div class="abz-platz" data-uid="'+uid+'"></div>';
+}
+async function abzeichenFremdLaden(uid){
+  const{data}=await sb.from('abzeichen').select('schluessel').eq('user_id',uid);
+  const box=document.querySelector('.abz-platz[data-uid="'+uid+'"]');
+  if(box)box.innerHTML=abzeichenReihe((data||[]).map(a=>a.schluessel),false);
+}
+async function abzeichenOeffnen(){
+  if(!cUser){kontoNoetig();return;}
+  const ov=document.getElementById('abzeichenOverlay');
+  const box=document.getElementById('abzeichenListe');
+  if(!ov||!box)return;
+  ov.classList.add('open');
+  if(!abzCache.stand||!Object.keys(abzCache.stand).length){
+    box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
+    const [{data:abz},{data:stand}]=await Promise.all([
+      sb.from('abzeichen').select('schluessel').eq('user_id',cUser.id),
+      sb.from('abzeichen_stand').select('*').eq('user_id',cUser.id).maybeSingle(),
+    ]);
+    abzCache={eigene:(abz||[]).map(a=>a.schluessel),stand:stand||{}};
+  }
+  let follower=0;
+  try{ follower=(await loadMyFollowStats()).followers||0; }catch(e){}
+  const stand={...abzCache.stand,follower};
+  const zahl=abzCache.eigene.length;
+  box.innerHTML='<div class="abz-kopf"><b>'+zahl+' von '+ABZEICHEN.length+'</b><span>Abzeichen bekommst du, indem du SPOTOUT nutzt – an Partys gehen, mitbringen, selbst feiern.</span></div>'
+    +'<div class="abz-raster">'+ABZEICHEN.map(a=>{
+      const hat=abzCache.eigene.includes(a.k);
+      const ist=Math.min(a.z,Number(stand[a.f]||0));
+      return '<div class="abz-karte'+(hat?' hat':'')+'">'
+        +'<div class="abz-ic">'+pikto(a.i,22)+'</div>'
+        +'<b>'+a.n+'</b><span>'+a.s+'</span>'
+        +(hat?'<em>'+pikto('ok',12)+'Geschafft</em>'
+             :'<div class="abz-balken"><i style="width:'+Math.round(ist/a.z*100)+'%"></i></div><small>'+ist+' / '+a.z+'</small>')
+        +'</div>';
+    }).join('')+'</div>';
+}
+
+/* ── Benachrichtigungen einzeln abschalten ─────────────────────────
+   Wie auf TikTok: ein Schalter fuer alles, darunter Gruppen. Der Server
+   liest profiles.push_aus und schickt dann keine Push-Nachricht – in der
+   Liste im App steht die Meldung trotzdem. Verwarnungen und Sperren
+   kommen immer an. */
+const PUSH_GRUPPEN=[
+  {k:'nachrichten', t:'Nachrichten',        s:'Wenn dir jemand schreibt'},
+  {k:'follower',    t:'Follower',           s:'Neue Follower, Anfragen und Zusagen'},
+  {k:'einladungen', t:'Einladungen',        s:'Einladungen und ob du dabei sein darfst'},
+  {k:'gaeste',      t:'Deine Gäste',        s:'Wer zu deiner Party möchte oder jemanden mitbringt'},
+  {k:'partys',      t:'Änderungen an Partys', s:'Neue Zeit, neuer Ort oder abgesagt'},
+  {k:'freunde',     t:'Freunde unterwegs',  s:'Wenn deine Leute zu einer Party gehen'},
+  {k:'abzeichen',   t:'Abzeichen',          s:'Wenn du ein neues Abzeichen bekommst'},
+];
+function pushAus(){ return Array.isArray(cProfile?.push_aus)?cProfile.push_aus:[]; }
+function pushWertText(){
+  const aus=pushAus();
+  if(istApp()&&pushZustand!=='an')return 'Aus';
+  if(aus.includes('alle'))return 'Pausiert';
+  const an=PUSH_GRUPPEN.filter(g=>!aus.includes(g.k)).length;
+  return an===PUSH_GRUPPEN.length?'An':an+' von '+PUSH_GRUPPEN.length;
+}
+function pushWertZeigen(){
+  const el=document.getElementById('setPushWert');
+  if(el)el.textContent=cUser?pushWertText():'';
+}
+function schalter(an,klick,gesperrt){
+  return '<button class="sw'+(an?' an':'')+'" role="switch" aria-checked="'+(an?'true':'false')+'"'
+    +(gesperrt?' disabled':'')+' onclick="'+klick+'"><span></span></button>';
+}
+async function pushEinstOeffnen(){
+  if(!cUser){kontoNoetig();return;}
+  document.getElementById('pushOverlay').classList.add('open');
+  pushEinstZeichnen();
+  // Stand am Telefon frisch holen – jemand kann es in den iPhone-Einstellungen geaendert haben
+  if(istApp()){ await nativePushAnmelden(false); pushEinstZeichnen(); }
+}
+function pushEinstZeichnen(){
+  const st=document.getElementById('pushStatus');
+  const li=document.getElementById('pushListe');
+  if(!st||!li)return;
+  const aus=pushAus();
+  const alle=aus.includes('alle');
+  let status='';
+  if(istApp()){
+    if(pushZustand==='aus'){
+      status='<div class="push-karte warn"><b>Im iPhone ausgeschaltet</b>'
+        +'<span>SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.</span>'
+        +'<button class="nt-knopf haupt" onclick="pushSystemEinst()">iPhone-Einstellungen öffnen</button></div>';
+    }else if(pushZustand!=='an'){
+      status='<div class="push-karte"><b>Mitteilungen einschalten</b>'
+        +'<span>Damit du Nachrichten und Einladungen auch bei gesperrtem Bildschirm siehst.</span>'
+        +'<button class="nt-knopf haupt" onclick="pushErlaubenHier(this)">Erlauben</button></div>';
+    }
+  }else{
+    status='<div class="push-karte"><b>Push gibt es in der App</b>'
+      +'<span>Im Browser siehst du Meldungen im Glöckchen. Deine Auswahl hier gilt auch für die iPhone-App.</span></div>';
+  }
+  st.innerHTML=status;
+  li.innerHTML=
+    '<div class="push-zeile haupt"><div><b>Alle pausieren</b><span>Keine Push-Nachrichten, bis du es wieder einschaltest</span></div>'
+      +schalter(alle,"pushSetzen('alle')")+'</div>'
+    +'<div class="set-frage">Was du bekommst</div>'
+    +'<div class="push-gruppe'+(alle?' ruhig':'')+'">'
+    +PUSH_GRUPPEN.map(g=>'<div class="push-zeile"><div><b>'+g.t+'</b><span>'+g.s+'</span></div>'
+        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"')",alle)+'</div>').join('')
+    +'</div>'
+    +'<div class="push-zeile fix"><div><b>Konto & Sicherheit</b><span>Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.</span></div>'
+      +schalter(true,'',true)+'</div>';
+  pushWertZeigen();
+}
+async function pushSetzen(k){
+  if(!cUser||!cProfile)return;
+  const vorher=pushAus();
+  const neu=vorher.includes(k)?vorher.filter(x=>x!==k):[...vorher,k];
+  cProfile.push_aus=neu;
+  pushEinstZeichnen();
+  nativeHaptik('leicht');
+  const{error}=await sb.from('profiles').update({push_aus:neu}).eq('id',cUser.id);
+  if(error){
+    cProfile.push_aus=vorher;
+    pushEinstZeichnen();
+    toast(fehlerText(error),'error');
+  }
+}
+async function pushErlaubenHier(btn){
+  if(btn){btn.disabled=true;btn.textContent='Moment…';}
+  await pushErlauben();
+  pushEinstZeichnen();
+}
+async function pushSystemEinst(){
+  const a=await nativeCall('einstellungen_oeffnen',{},4000);
+  if(a&&a.fehler)toast('Öffne die iPhone-Einstellungen › Mitteilungen › Spotout','info');
+}
+
 /* ── Party-Gebühr: in der App über Apple, im Browser über Stripe ──── */
 
 // Dieselbe Staffel wie in der Datenbank, nur als Apple-Produktnummern
@@ -19777,7 +20527,10 @@ async function sendReport(){
     antwort_gewuenscht:repAntwort,kontakt_email:repAntwort?mail:null});
   if(error&&error.code!=='23505'){
     // Kein roher Datenbanktext – damit kann niemand etwas anfangen.
-    repFehler('Das hat nicht geklappt. Versuch es nochmals.');
+    const em=String(error.message||'');
+    repFehler(/SELBST_MELDEN/.test(em)?'Du kannst dich nicht selbst melden.'
+      :/ZU_VIELE_MELDUNGEN/.test(em)?'Du hast heute schon sehr viele Meldungen gesendet. Versuch es morgen wieder.'
+      :'Das hat nicht geklappt. Versuch es nochmals.');
     if(btn){btn.disabled=false;btn.classList.remove('is-busy');btn.textContent='Meldung senden';}
     return;
   }
@@ -19787,6 +20540,146 @@ async function sendReport(){
 /* Die Bestaetigung steht im Fenster selbst, nicht als Zettel, der nach
    zwei Sekunden weg ist. Wer eine Person gemeldet hat, bekommt hier
    gleich den Weg, sie auch loszuwerden. */
+/* ══════════ VERWARNUNG & SPERRE ══════════
+   Die Datenbank vergibt Verwarnungen und Sperren selbst (siehe Migration
+   beitritt_und_moderation). Hier nur: beim Oeffnen der App zeigen, worum
+   es geht – Inhalt, Gruende, Datum. Wer gemeldet hat, steht nirgends. */
+let sanktionZuletzt=0, sanktionAktuell=null;
+async function sanktionPruefen(sofort){
+  if(!cUser)return;
+  if(!sofort&&Date.now()-sanktionZuletzt<60000)return;
+  sanktionZuletzt=Date.now();
+  const{data,error}=await sb.rpc('meine_sanktion');
+  if(error){ console.warn('[sanktion]',error.message); return; }
+  const seite=document.getElementById('sperrSeite');
+  if(!data){
+    if(seite)seite.hidden=true;
+    document.body.classList.remove('gesperrt');
+    return;
+  }
+  sanktionAktuell=data;
+  if(data.gesperrt){ sperrSeiteZeigen(data); return; }
+  if(seite)seite.hidden=true;
+  document.body.classList.remove('gesperrt');
+  verwarnungZeigen(data);
+}
+
+function sanktionDetails(s){
+  const liste=Array.isArray(s.details)?s.details:[];
+  return '<div class="sk-liste">'+liste.map(d=>'<div class="sk-punkt">'
+      +'<div class="sk-titel">'+esc(d.titel||'')+'</div>'
+      +'<div class="sk-gruende">'+(Array.isArray(d.gruende)?d.gruende.map(g=>'<span>'+esc(g)+'</span>').join(''):'')+'</div>'
+      +'<div class="sk-datum">Gemeldet am '+esc(d.datum||'')+'</div>'
+    +'</div>').join('')+'</div>'
+    +'<div class="sk-anonym">'+pikto('datenschutz',16)
+    +'<span>Wer gemeldet hat, bleibt anonym. Es zählen nur Meldungen von verschiedenen Personen.</span></div>';
+}
+
+function sanktionStufen(aktiv){
+  const t=['Verwarnung','7 Tage gesperrt','Dauerhaft gesperrt'];
+  return '<div class="sk-stufen">'+t.map((x,i)=>'<div class="sk-stufe'+(i+1<=aktiv?' an':'')+'"><b>'+(i+1)+'</b><span>'+x+'</span></div>').join('')+'</div>';
+}
+
+function verwarnungZeigen(s){
+  const ov=document.getElementById('sanktionOverlay');
+  const body=document.getElementById('sanktionBody');
+  if(!ov||!body)return;
+  ov.querySelector('.modal-title').textContent='Verwarnung';
+  body.innerHTML='<div class="sk-kopf">'+pikto('gefahr',28)+'</div>'
+    +'<p class="sk-text">Mehrere Personen haben Inhalte von dir gemeldet. Das ist eine Verwarnung – dein Konto bleibt aktiv.</p>'
+    +sanktionDetails(s)
+    +sanktionStufen(1)
+    +'<p class="sk-klein">Bei weiteren Meldungen wird dein Konto 7 Tage gesperrt. Stimmt etwas nicht? Schreib an '
+    +'<a href="mailto:support@spotoutapp.ch">support@spotoutapp.ch</a>.</p>'
+    +'<button class="auth-submit-btn sk-ok" onclick="verwarnungVerstanden()">Verstanden</button>';
+  ov.classList.add('open');
+}
+
+async function verwarnungVerstanden(){
+  const s=sanktionAktuell;
+  closeOverlay('sanktionOverlay');
+  if(s?.id){ try{ await sb.rpc('sanktion_gesehen',{p_id:s.id}); }catch(e){} }
+}
+
+function sperrSeiteZeigen(s){
+  const seite=document.getElementById('sperrSeite');
+  const inh=document.getElementById('sperrInhalt');
+  if(!seite||!inh)return;
+  try{ alleFensterZu(); }catch(e){}
+  const bis=s.dauerhaft||!s.gesperrt_bis?null:new Date(s.gesperrt_bis);
+  const bisText=bis?bis.toLocaleString(locale(),{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
+  inh.innerHTML='<div class="sk-kopf gross">'+pikto('blockiert',34)+'</div>'
+    +'<h2 class="sk-h">'+(s.dauerhaft?'Dein Konto ist gesperrt':'Dein Konto ist 7 Tage gesperrt')+'</h2>'
+    +(bis?'<p class="sk-text">Wieder frei am <b>'+esc(bisText)+'</b>.</p>'
+         :'<p class="sk-text">Die Sperre gilt dauerhaft.</p>')
+    +'<p class="sk-text">So lange kannst du keine Partys erstellen, dich nicht anmelden, nicht schreiben und niemandem folgen.</p>'
+    +sanktionDetails(s)
+    +sanktionStufen(s.dauerhaft?3:2)
+    +'<p class="sk-klein">Ein Fehler? Schreib an <a href="mailto:support@spotoutapp.ch">support@spotoutapp.ch</a> – wir prüfen es.</p>'
+    +'<button class="auth-zweit" onclick="doLogout()">Abmelden</button>';
+  seite.hidden=false;
+  document.body.classList.add('gesperrt');
+}
+
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&cUser)sanktionPruefen(false); });
+
+/* ══════════ MODERATION (nur Betreiber) ══════════ */
+async function moderationOeffnen(){
+  const ov=document.getElementById('moderationOverlay');
+  const box=document.getElementById('moderationListe');
+  if(!ov||!box)return;
+  ov.classList.add('open');
+  box.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  const{data,error}=await sb.rpc('moderation_uebersicht');
+  if(error){ box.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>'; return; }
+  const m=data?.meldungen||[], sk=data?.sanktionen||[];
+  const artText={event:'Party',photo:'Foto',message:'Nachricht',user:'Profil'};
+  const statusText={offen:'Offen',geprueft:'Gezählt',entfernt:'Entfernt',abgelehnt:'Abgewiesen'};
+  const sanktText={verwarnung:'Verwarnung',sperre_7_tage:'7 Tage gesperrt',sperre_dauerhaft:'Dauerhaft gesperrt'};
+  const zeit=t=>new Date(t).toLocaleString(locale(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  const knopf=(aktion,id,text)=>'<button class="nt-knopf" onclick="moderationAktion(this,\''+aktion+'\',\''+id+'\')">'+text+'</button>';
+
+  const teilS=sk.length?'<div class="mg-sec">Verwarnungen &amp; Sperren</div>'+sk.map(x=>
+    '<div class="mod-karte'+(x.aufgehoben?' weg':'')+'">'
+      +'<div class="mod-kopf"><b>'+esc(x.wer||'?')+'</b><span class="mod-pill">'+esc(sanktText[x.art]||x.art)+'</span></div>'
+      +'<div class="mod-zeit">'+zeit(x.created_at)+(x.aufgehoben?' · aufgehoben':'')+'</div>'
+      +(x.aufgehoben?'':'<div class="mod-akt">'+knopf('aufheben',x.id,'Aufheben')+'</div>')
+    +'</div>').join(''):'';
+
+  const teilM=m.length?'<div class="mg-sec">Meldungen</div>'+m.map(x=>
+    '<div class="mod-karte">'
+      +'<div class="mod-kopf"><b>'+esc(artText[x.art]||x.art)+(x.titel?': '+esc(String(x.titel).slice(0,80)):'')+'</b>'
+        +'<span class="mod-pill">'+esc(statusText[x.status]||x.status)+(x.ausgeblendet?' · ausgeblendet':'')+'</span></div>'
+      +'<div class="mod-zeit">'+esc(x.ziel||'?')+' · gemeldet von @'+esc(x.melder||'?')+' · '+zeit(x.created_at)+'</div>'
+      +'<div class="sk-gruende">'+(x.gruende||[]).map(g=>'<span>'+esc(g)+'</span>').join('')+'</div>'
+      +(x.notiz?'<div class="mod-notiz">„'+esc(x.notiz)+'“</div>':'')
+      +'<div class="mod-akt">'
+        +(x.ausgeblendet?knopf('einblenden',x.id,'Wieder einblenden'):'')
+        +(x.art!=='user'&&x.status!=='entfernt'?knopf('entfernen',x.id,'Inhalt entfernen'):'')
+        +(x.status==='offen'?knopf('abweisen',x.id,'Abweisen'):'')
+      +'</div>'
+    +'</div>').join(''):'';
+
+  box.innerHTML=(teilS+teilM)||'<div class="up-empty">Keine Meldungen in den letzten 60 Tagen.</div>';
+}
+
+async function moderationAktion(btn,aktion,id){
+  if(!btn)return;
+  // Entfernen und Aufheben wirken sofort – darum ein zweiter Tipp
+  if((aktion==='entfernen'||aktion==='aufheben')&&!btn.classList.contains('armed')){
+    btn.dataset.text=btn.textContent; btn.classList.add('armed'); btn.textContent='Wirklich?';
+    setTimeout(()=>{ if(btn.isConnected){ btn.classList.remove('armed'); btn.textContent=btn.dataset.text; } },4000);
+    return;
+  }
+  btn.closest('.mod-akt')?.querySelectorAll('button').forEach(k=>k.disabled=true);
+  const{data,error}=aktion==='aufheben'
+    ?await sb.rpc('sanktion_aufheben',{p_id:id})
+    :await sb.rpc('meldung_erledigen',{p_report:id,p_aktion:aktion});
+  if(error)toast(fehlerText(error),'error');
+  else toast({aufgehoben:'Aufgehoben',eingeblendet:'Wieder eingeblendet',abgewiesen:'Abgewiesen',entfernt:'Entfernt'}[data]||'Erledigt','success');
+  moderationOeffnen();
+}
+
 function repFertig(schonGemeldet){
   const body=document.getElementById('reportBody');
   if(!body||!repZiel)return;
@@ -19799,6 +20692,7 @@ function repFertig(schonGemeldet){
         : repAntwort
           ? 'Wir schauen es uns innerhalb von 24 Stunden an und melden uns per E-Mail.'
           : 'Wir schauen es uns innerhalb von 24 Stunden an.')+'</span>'
+    +'<span class="rep-anonym">'+pikto('datenschutz',14)+'Die Person erfährt nie, wer gemeldet hat.</span>'
     +'</div>'
     +'<button class="sub-btn sub-public" onclick="closeReport()">Fertig</button>'
     +(art==='user'&&!istBlockiert(id)
@@ -19914,10 +20808,18 @@ const NT_ICON={
   day_one:{cls:'ok',svg:'<path d="M3 18.5h18"/><path d="M6.5 18.5a5.5 5.5 0 0 1 11 0"/><path d="M12 4.5v3M5 8l2 2M19 8l-2 2"/>'},
   foto_entfernt:{cls:'no',svg:'<path d="M3 8a2 2 0 0 1 2-2h2.5L9 4h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m9.5 10.5 5 5M14.5 10.5l-5 5"/>'},
   neuer_follower:{cls:'ein',svg:''},
+  beitritt_anfrage:{cls:'frage',svg:''},
+  beitritt_ok:{cls:'ok',svg:''},
+  beitritt_nein:{cls:'no',svg:''},
+  sanktion:{cls:'no',svg:''},
+  sanktion_aufgehoben:{cls:'ok',svg:''},
+  meldung_schwer:{cls:'no',svg:''},
+  abzeichen:{cls:'ein',svg:''},
   folge_zusage:{cls:'ok',svg:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>'},
 };
 
-const NT_PK={neuer_follower:'gast_anfrage',guest_request:'gast_anfrage',guest_ok:'ok',guest_no:'nein',invite:'einladung',
+const NT_PK={beitritt_anfrage:'gast_anfrage',beitritt_ok:'ok',beitritt_nein:'nein',sanktion:'gefahr',
+  sanktion_aufgehoben:'ok',meldung_schwer:'gefahr',abzeichen:'stern',neuer_follower:'gast_anfrage',guest_request:'gast_anfrage',guest_ok:'ok',guest_no:'nein',invite:'einladung',
   event_changed:'zeit',event_gone:'event_weg',verein_bestaetigt:'verein',verein_abgelehnt:'nein',
   verein_pruefen:'verein',nachricht:'chat',freund_dabei:'freund_dabei',folge_anfrage:'gast_anfrage',
   folge_zusage:'folge_ok',day_one:'day_one',foto_entfernt:'foto_weg'};
@@ -19975,6 +20877,7 @@ async function loadNotifs(){
   list.forEach(n=>notifSeen.add(n.id));
   notifFirst=false;
   loadUnread();                            // der Chat-Punkt lebt jetzt mit
+  if((window.__notifs||[]).some(x=>(x.art==='sanktion'||x.art==='sanktion_aufgehoben')&&!x.gelesen))sanktionPruefen(false);
 
   if(document.getElementById('notifOverlay').classList.contains('open'))renderNotifs();
 }
@@ -20059,11 +20962,24 @@ let ntFolge=new Map(), ntFolgeLaeuft=false;
 function ntAktionen(n){
   const halt='event.stopPropagation();';
   if(n.art==='folge_anfrage'&&n.actor_id){
-    if(ntErledigt.has(n.actor_id))
-      return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'+esc(ntErledigt.get(n.actor_id))+'</span></div>';
+    if(ntErledigt.has(n.actor_id)){
+      const was=ntErledigt.get(n.actor_id), st=ntFolge.get(n.actor_id);
+      const zurueck=(was==='Bestätigt'&&st)
+        ? flKnopf(n.actor_id,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true) : '';
+      return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'
+        +(was==='Bestätigt'?'✓ ':'')+esc(was)+'</span>'+zurueck+'</div>';
+    }
     return '<div class="nt-akt nt-akt-unten">'
       +'<button class="nt-knopf haupt" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',true)">Bestätigen</button>'
       +'<button class="nt-knopf" onclick="'+halt+'ntAnfrage(this,\''+n.actor_id+'\',false)">Löschen</button></div>';
+  }
+  if(n.art==='beitritt_anfrage'&&n.actor_id&&n.event_id){
+    const k='b:'+n.event_id+':'+n.actor_id;
+    if(ntErledigt.has(k))
+      return '<div class="nt-akt nt-akt-unten"><span class="nt-fertig">'+esc(ntErledigt.get(k))+'</span></div>';
+    return '<div class="nt-akt nt-akt-unten">'
+      +'<button class="nt-knopf haupt" onclick="'+halt+'ntBeitritt(this,\''+n.event_id+'\',\''+n.actor_id+'\',true)">Bestätigen</button>'
+      +'<button class="nt-knopf" onclick="'+halt+'ntBeitritt(this,\''+n.event_id+'\',\''+n.actor_id+'\',false)">Ablehnen</button></div>';
   }
   if(n.art==='neuer_follower'&&n.actor_id){
     const st=ntFolge.get(n.actor_id);
@@ -20073,6 +20989,24 @@ function ntAktionen(n){
   }
   return '';
 }
+async function ntBeitritt(btn,eventId,uid,ja){
+  const akt=btn?.closest('.nt-akt');
+  akt?.querySelectorAll('button').forEach(k=>k.disabled=true);
+  const k='b:'+eventId+':'+uid;
+  const{data:a}=await sb.from('event_beitritt_anfragen').select('id,status')
+    .eq('event_id',eventId).eq('user_id',uid).maybeSingle();
+  if(!a||a.status!=='offen'){
+    ntErledigt.set(k,a?.status==='angenommen'?'Bestätigt':a?.status==='abgelehnt'?'Abgelehnt':'Schon erledigt');
+    renderNotifs(); return;
+  }
+  const{data,error}=await sb.rpc('beitritt_entscheiden',{p_anfrage:a.id,p_ja:!!ja});
+  if(error){ toast(fehlerText(error),'error'); akt?.querySelectorAll('button').forEach(x=>x.disabled=false); return; }
+  if(data==='voll'){ toast('Die Party ist voll','warn'); }
+  ntErledigt.set(k,data==='angenommen'?'Bestätigt':data==='abgelehnt'?'Abgelehnt':data==='voll'?'Party ist voll':'Schon erledigt');
+  renderNotifs();
+  loadEvts();
+}
+
 async function ntFolgeLaden(){
   if(ntFolgeLaeuft||!cUser)return;
   const ids=[...new Set((window.__notifs||[]).filter(n=>n.art==='neuer_follower'&&n.actor_id&&!ntFolge.has(n.actor_id)).map(n=>n.actor_id))];
@@ -20110,7 +21044,7 @@ function renderNotifs(){
            ? 'Meldungen sind für SPOTOUT gesperrt. In den iPhone-Einstellungen unter Mitteilungen wieder einschalten.'
            : 'Auch auf dem gesperrten Bildschirm – bei neuen Nachrichten, Einladungen und Änderungen.')
         +'</span>'
-        +(pushZustand==='aus'?'':'<button onclick="pushErlauben()">Erlauben</button>')
+        +(pushZustand==='aus'?'<button onclick="pushSystemEinst()">Öffnen</button>':'<button onclick="pushErlauben()">Erlauben</button>')
         +'</div>';
   }else{
     const erlaubnis=(typeof Notification!=='undefined')?Notification.permission:'unsupported';
@@ -20195,10 +21129,11 @@ async function ntAnfrage(btn,von,ja){
     akt?.querySelectorAll('button').forEach(b=>b.disabled=false);
     return;
   }
-  ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Angenommen':'Abgelehnt'));
+  ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Gelöscht'));
+  if(ja&&data==='angenommen')await anfrageFolgeStand(von);
   renderNotifs();
-  try{ renderFolgeAnfragen(); }catch(e){}
-  if(ja&&document.getElementById('page-profile')?.classList.contains('active'))renderProf();
+  // Das Profil dahinter nur an der Stelle nachfuehren, nicht neu aufbauen
+  anfrageErledigtZeigen(von,ja&&data==='angenommen',data==='keine_anfrage');
 }
 
 async function oeffneNotif(id){
@@ -20223,6 +21158,14 @@ async function oeffneNotif(id){
   if(n.art==='verein_bestaetigt'||n.art==='verein_abgelehnt'){
     closeNotifs(); await loadProf(); showPage('main'); return;
   }
+  if(n.art==='sanktion'||n.art==='sanktion_aufgehoben'){ closeNotifs(); sanktionPruefen(true); return; }
+  if(n.art==='meldung_schwer'&&cProfile?.ist_admin){ closeNotifs(); moderationOeffnen(); return; }
+  if(n.art==='abzeichen'){
+    closeNotifs(); showPage('profile');
+    setTimeout(()=>{ try{ abzeichenOeffnen(); }catch(e){} },400);
+    return;
+  }
+  if(n.art==='beitritt_anfrage'&&n.event_id){ closeNotifs(); openManage(n.event_id); return; }
   if(!n.event_id){renderNotifs();return;}
   closeNotifs();
   const eigene=evts.find(e=>e.id===n.event_id&&e.created_by===cUser?.id);
@@ -20532,6 +21475,9 @@ function closeManage(){
   delArm=null;
   // Liegt die Partyseite noch darunter, ist sie weiterhin die offene Party
   if(!document.getElementById('detailOverlay')?.classList.contains('open'))window.__offenePartyId=null;
+  // Hat der Host Gaeste bestaetigt, zeigt die Partyseite darunter den neuen Stand
+  else if(mgGeaendert&&window.__offenePartyId)openDetail(window.__offenePartyId);
+  mgGeaendert=false;
   merkeOrt();
 }
 
@@ -20543,11 +21489,13 @@ async function openManage(eventId){
   ov.classList.add('open');
   body.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
 
-  const[{data:ev},{data:atts},{data:reqs},{data:items}]=await Promise.all([
+  const[{data:ev},{data:atts},{data:reqs},{data:items},{data:beitritte}]=await Promise.all([
     sb.from('events').select('*').eq('id',eventId).maybeSingle(),
     sb.from('event_attendees').select('*,profiles(id,username,full_name,avatar_url,is_pro)').eq('event_id',eventId),
     sb.from('event_guest_requests').select('*,profiles(id,username,full_name,avatar_url)').eq('event_id',eventId),
     sb.from('event_items').select('id,claimed_by').eq('event_id',eventId),
+    sb.from('event_beitritt_anfragen').select('id,user_id,created_at,profiles(id,username,full_name,avatar_url)')
+      .eq('event_id',eventId).eq('status','offen').order('created_at',{ascending:true}),
   ]);
 
   if(!ev){body.innerHTML='<div class="up-empty">Party nicht gefunden.</div>';return;}
@@ -20575,6 +21523,23 @@ async function openManage(eventId){
     +(priv?'<div><b>'+vergeben+'/'+teile.length+'</b><span>Mitbringen</span></div>':'')
     +'</div>';
 
+  /* Wer ueber einen Einladungslink kommt, ist erst dabei, wenn der Host
+     bestaetigt – sonst reicht ein weitergeleiteter Link fuer die Adresse. */
+  const beitrittHTML=(beitritte||[]).length
+    ?'<div class="mg-sec">Möchten dabei sein</div>'
+      +beitritte.map(b=>{
+        const nm=b.profiles?.full_name||b.profiles?.username||'Jemand';
+        const av=b.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(b.profiles.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+        return '<div class="mg-req">'
+          +'<div class="av-sm">'+av+'</div>'
+          +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
+          +'<div class="mg-req-s">über deinen Einladungslink</div></div>'
+          +'<button class="mg-yes" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',true)" aria-label="Bestätigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
+          +'<button class="mg-no" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',false)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+          +'</div>';
+      }).join('')
+    :'';
+
   const anfragen=offen.length
     ?'<div class="mg-sec">Offene Anfragen</div>'
       +offen.map(r=>{
@@ -20584,9 +21549,9 @@ async function openManage(eventId){
           +'<div class="av-sm">'+av+'</div>'
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+' möchte +'+r.extra_count+' mitbringen</div>'
           +begleiterZeile(r)+'</div>'
-          +'<button class="mg-yes" onclick="decideRequest(\''+r.id+'\',\''+ev.id+'\',true)" aria-label="Zusagen">'
+          +'<button class="mg-yes" onclick="decideRequest(\''+r.id+'\',\''+ev.id+'\',true,this)" aria-label="Zusagen">'
             +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
-          +'<button class="mg-no" onclick="decideRequest(\''+r.id+'\',\''+ev.id+'\',false)" aria-label="Absagen">'
+          +'<button class="mg-no" onclick="decideRequest(\''+r.id+'\',\''+ev.id+'\',false,this)" aria-label="Absagen">'
             +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
           +'</div>';
       }).join('')
@@ -20651,7 +21616,7 @@ async function openManage(eventId){
     +'</div>';
 
   body.innerHTML=kopf+zahlen+reiter
-    +'<div class="mg-blatt on" data-blatt="gaeste">'+anfragen+gaeste+'</div>'
+    +'<div class="mg-blatt on" data-blatt="gaeste">'+beitrittHTML+anfragen+gaeste+'</div>'
     +(priv?'<div class="mg-blatt" data-blatt="einladen">'+einladung+'</div>':'')
     +'<div class="mg-blatt" data-blatt="aendern">'+bearbeiten+loeschen+'</div>';
   if(priv)renderInviteCard(eventId);
@@ -20667,10 +21632,30 @@ function mgBlatt(name,btn){
   const m=body.closest('.modal'); if(m)m.scrollTop=0;
 }
 
-async function decideRequest(reqId,eventId,ok){
+async function beitrittEntscheiden_(btn,id,eventId,ja){
+  btn?.closest('.mg-req')?.querySelectorAll('button').forEach(k=>k.disabled=true);
+  const{data,error}=await sb.rpc('beitritt_entscheiden',{p_anfrage:id,p_ja:!!ja});
+  if(error){ toast(fehlerText(error),'error'); }
+  else{
+    const text={angenommen:'Bestätigt – ist jetzt dabei',abgelehnt:'Abgelehnt',voll:'Die Party ist voll',
+      schon_entschieden:'Schon entschieden'}[data]||'Erledigt';
+    toast(text,data==='angenommen'?'success':(data==='voll'?'warn':'info'));
+  }
+  if(document.getElementById('manageOverlay')?.classList.contains('open'))openManage(eventId);
+  loadEvts();
+}
+
+let mgGeaendert=false;
+async function beitrittEntscheiden(...a){ mgGeaendert=true; return beitrittEntscheiden_(...a); }
+async function decideRequest(reqId,eventId,ok,btn){
+  const zeile=btn?.closest('.mg-req')||btn?.parentElement;
+  const knoepfe=zeile?[...zeile.querySelectorAll('button')]:[];
+  if(knoepfe.some(k=>k.disabled))return;
+  knoepfe.forEach(k=>k.disabled=true);
   const{error}=await sb.from('event_guest_requests')
     .update({status:ok?'approved':'declined'}).eq('id',reqId);
-  if(error){toast('Hat nicht geklappt: '+error.message,'error');return;}
+  if(error){toast(fehlerText(error),'error');knoepfe.forEach(k=>k.disabled=false);return;}
+  mgGeaendert=true;
   toast(ok?'Bestätigt':'Abgelehnt','info');
   openManage(eventId);
   loadEvts();
@@ -20686,6 +21671,9 @@ async function saveManage(){
   if(!name){toast('Der Name darf nicht leer sein','warn');return;}
   if(!date){toast('Bitte ein Datum wählen','warn');return;}
   if(!addr){toast('Bitte eine Adresse eintragen','warn');return;}
+  // Eine Party in die Vergangenheit schieben loescht sie beim naechsten Aufraeumen
+  const zeitNeu=(date!==mgEvent.date||time!==String(mgEvent.time||'').slice(0,5));
+  if(zeitNeu&&new Date(date+'T'+time)<Date.now()-5*6e4){toast('Das Datum liegt in der Vergangenheit','warn');return;}
   const plEl=document.getElementById('mg-spotify');
   const pl=plEl?spotifyLink(plEl.value):null;
   if(pl===false){toast('Das ist kein Spotify-Link','warn');return;}
@@ -20699,7 +21687,11 @@ async function saveManage(){
       description:document.getElementById('mg-desc').value.trim()||null};
     if(plEl)patch.spotify_url=pl;
     const capEl=document.getElementById('mg-cap');
-    if(capEl)patch.capacity=parseInt(capEl.value)||null;
+    if(capEl){
+      const roh=capEl.value.trim(), cap=parseInt(roh,10);
+      if(roh&&!(cap>=1)){toast('Die Gästezahl muss mindestens 1 sein','warn');return;}
+      patch.capacity=roh?cap:null;
+    }
 
     // Adresse geändert? Dann neue Koordinaten holen, sonst steht der Pin falsch
     if(addr!==(mgEvent.address||'')){
@@ -20708,7 +21700,7 @@ async function saveManage(){
       else toast('Adresse nicht gefunden – der Kartenpin bleibt, wo er war','warn');
     }
     const{data:gespeichert,error}=await sb.from('events').update(patch).eq('id',mgEvent.id).select('id');
-    if(error){toast('Speichern fehlgeschlagen: '+error.message,'error');return;}
+    if(error){toast(fehlerText(error),'error');return;}
     if(!(gespeichert||[]).length){
       toast('Diese Party ist nicht mehr verfügbar','warn');
       closeManage(); await loadEvts(); return;
@@ -20770,7 +21762,7 @@ function renderGastgeber(e){
 
 /* ══════════ PARTY-FOTOS ══════════
    Abgemacht ist: nur Gäste laden hoch (10 pro Person, ab Partybeginn),
-   nur Gäste sehen und sichern, und 27 Stunden nach Beginn ist alles weg.
+   nur Gäste sehen und sichern, und 24 Stunden nach Beginn ist alles weg.
    Das alles entscheidet die Datenbank – diese Ansicht zeigt nur an.
    Die Bilder liegen privat; hier gibt es sie nur als Adressen, die
    nach einer halben Stunde ungültig werden. */
@@ -20836,7 +21828,7 @@ function fotoZeichnen(){
 
   if(st.phase==='vorher'){
     box.innerHTML='<div class="foto-sec">'+kopf()
-      +'<div class="foto-leer">Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 27 Stunden lang.</div></div>';
+      +'<div class="foto-leer">Ab Partybeginn teilt ihr hier Fotos – nur für Gäste, 24 Stunden lang.</div></div>';
     return;
   }
   if(st.phase==='vorbei'){
@@ -20856,7 +21848,7 @@ function fotoZeichnen(){
   box.innerHTML='<div class="foto-sec">'+kopf(uhr)
     +(neu||kacheln?'<div class="foto-raster">'+neu+kacheln+'</div>':'')
     +(!st.fotos.length?'<div class="foto-leer" style="margin-top:10px">Noch keine Fotos. Mach den Anfang!</div>':'')
-    +'<div class="foto-hinweis">Nur Gäste sehen die Fotos. Nach 27 Stunden sind sie weg.</div>'
+    +'<div class="foto-hinweis">Nur Gäste sehen die Fotos. Nach 24 Stunden sind sie weg.</div>'
     +'<input type="file" id="fotoDatei" accept="image/*" multiple hidden onchange="fotoHochladen(this.files)"/>'
     +'</div>';
 }
@@ -20889,7 +21881,7 @@ function fotoMasse(blob){
 function fotoFehlerText(err){
   const m=String(err?.message||err?.error||'').toLowerCase();
   if(m.includes('row-level')||m.includes('policy')||m.includes('unauthorized'))
-    return 'Fotos gehen nur für Gäste, ab Partybeginn und 27 Stunden lang.';
+    return 'Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.';
   if(m.includes('size')||m.includes('too large')||m.includes('exceeded'))return 'Das Foto ist zu gross.';
   if(m.includes('mime')||m.includes('type'))return 'Dieses Bildformat geht leider nicht.';
   return 'Hochladen hat nicht geklappt. Versuch es nochmal.';
@@ -21185,32 +22177,36 @@ async function renderBringList(eventId,isHost){
     +'</div>';
 }
 
+let bringBusy=false;
 async function addBring(eventId,preset){
   const inp=document.getElementById('bringInput');
   const t=(preset||inp?.value||'').trim();
-  if(!t)return;
+  if(!t||bringBusy)return;                // Enter und Knopf zugleich = zweimal "Bier"
+  bringBusy=true;
   if(!preset&&inp)inp.value='';
-  const{error}=await sb.from('event_items')
-    .insert({event_id:eventId,title:t,menge:1,sort_order:Math.floor(Date.now()/1000)%1000000});
-  if(error){
-    toast('Hat nicht geklappt: '+error.message,'error');
-    if(!preset&&inp)inp.value=t;
-    return;
-  }
-  renderBringList(eventId,true);
+  try{
+    const{error}=await sb.from('event_items')
+      .insert({event_id:eventId,title:t,menge:1,sort_order:Math.floor(Date.now()/1000)%1000000});
+    if(error){
+      toast(fehlerText(error),'error');
+      if(!preset&&inp)inp.value=t;
+      return;
+    }
+    renderBringList(eventId,true);
+  }finally{ bringBusy=false; }
 }
 
 async function bringMengeAendern(itemId,eventId,jetzt,richtung){
   const neu=mengeSauber((Number(jetzt)||1)+richtung);
   if(neu===Number(jetzt))return;
   const{error}=await sb.from('event_items').update({menge:neu}).eq('id',itemId);
-  if(error){toast('Hat nicht geklappt: '+error.message,'error');return;}
+  if(error){toast(fehlerText(error),'error');return;}
   renderBringList(eventId,true);
 }
 
 async function delBring(itemId,eventId){
   const{error}=await sb.from('event_items').delete().eq('id',itemId);
-  if(error){toast('Hat nicht geklappt: '+error.message,'error');return;}
+  if(error){toast(fehlerText(error),'error');return;}
   renderBringList(eventId,true);
 }
 
@@ -21219,8 +22215,14 @@ async function toggleBring(itemId,eventId,mine,isHost){
   const patch=mine
     ? {claimed_by:null,claimed_at:null}
     : {claimed_by:cUser.id,claimed_at:new Date().toISOString()};
-  const{error}=await sb.from('event_items').update(patch).eq('id',itemId);
+  let q=sb.from('event_items').update(patch).eq('id',itemId);
+  if(!mine)q=q.is('claimed_by',null);
+  const{data:getroffen,error}=await q.select('id');
   if(error){toast(fehlerText(error),'error');return;}
+  if(!mine&&!(getroffen||[]).length){
+    toast('Das hat gerade jemand anderes übernommen','info');
+    renderBringList(eventId,isHost); return;
+  }
   toast(mine?'Wieder freigegeben':'Du bringst das mit','info');
   renderBringList(eventId,isHost);
 }
@@ -22172,6 +23174,7 @@ function showSettingsModal(){
   const pt=document.getElementById('setProTour');
   if(pt)pt.hidden=!cProfile?.is_pro;
   setKartenApp(kartenAppGespeichert());
+  pushWertZeigen();
   rausWahlAnzeigen();
   schenkenAnzeigen();
   setProfilUI(!!cProfile?.privat);
