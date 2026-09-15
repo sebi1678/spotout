@@ -498,7 +498,7 @@
       font-size:.76rem;line-height:1.45;color:#FFE1AE;
     }
     .tb-hinweis svg{width:13px;height:13px;flex:none;margin-top:2px;color:#FFC24B}
-    /* Schnell raus in der Tour: die obere Leiste in klein, der Knopf
+    /* Doomscroll-Knopf in der Tour: die obere Leiste in klein, der Knopf
        darin leuchtet. Darunter dieselben Chips wie in den Einstellungen. */
     .tb-leiste{
       display:flex;align-items:center;gap:7px;margin-bottom:14px;
@@ -926,9 +926,6 @@
     /* Gold, aber ruhig: es soll nach Auszeichnung aussehen, nicht nach
        Werbung. Dieselbe Sprache wie die Host-Marke. */
     .addr-item-eigen{border-left:3px solid var(--pink)}
-    /* Bewusst nicht im SPOTOUT-Stil: Schwarz, weisse Ziffern, orange
-       Rechenzeichen. Wer darauf schaut, soll einen Taschenrechner
-       sehen und nicht weiterfragen. */
     .crop-hilfe{font-size:.8rem;color:var(--muted);line-height:1.5;margin:0 0 14px}
     .crop-buehne{
       position:relative;width:100%;max-width:320px;margin:0 auto 16px;
@@ -5016,6 +5013,9 @@
 
     /* Anfragen im eigenen Profil */
     .fa-box{margin-bottom:18px}
+    /* Ohne Anfragen ist der Kasten leer – sein Abstand stand dann als
+       dunkler Streifen zwischen Kopfleiste und Profil. */
+    .fa-box:empty{display:none}
     .fa-zeile{
       display:flex;align-items:center;gap:11px;padding:11px 13px;margin-bottom:8px;
       background:rgba(124,92,252,.09);border:1px solid rgba(124,92,252,.26);
@@ -5669,7 +5669,7 @@
     /* ══════════ KOPFLEISTE: EINE FORM ══════════
        Vorher vier Knoepfe, drei Gestalten: die Suche im pinken Hauptknopf-
        Stil, obwohl sie keine Hauptaktion ist, das Zahnrad rund, der Rest
-       eckig. Und "Schnell raus" trug einen Pfeil, der wie "Anmelden"
+       eckig. Und der Doomscroll-Knopf trug einen Pfeil, der wie "Anmelden"
        aussah. Jetzt dieselbe Glasflaeche fuer alle, das Pink bleibt dem
        Erstellen-Knopf unten. */
     .nav-raus,.nav-bell,.nav-suche,.nav-icon-btn{
@@ -5691,7 +5691,7 @@
     .nav-raus::after,.nav-suche::after{
       content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);
     }
-    /* Der Knopf stand auch dann da, wenn "Schnell raus" aus war: display:flex
+    /* Der Knopf stand auch dann da, wenn der Doomscroll-Knopf aus war: display:flex
        schlug das hidden-Attribut. Selbst Gaeste sahen ihn. */
     .nav-raus[hidden]{display:none!important}
     @media (max-width:360px){
@@ -7725,7 +7725,7 @@ async function loadProf(){
     if(Object.keys(updates).length)await sb.from('profiles').update(updates).eq('id',cUser.id);
   }
   const{data:updated}=await sb.from('profiles').select('*').eq('id',cUser.id).single();
-  /* Die Wahl "Schnell raus" aus der Registrierung gilt auch, wenn man
+  /* Die Wahl des Doomscroll-Knopfs aus der Registrierung gilt auch, wenn man
      sich zum ersten Mal auf einem anderen Geraet anmeldet – etwa weil
      der Bestaetigungslink im Browser statt in der App aufging. Aber nur
      einmal pro Geraet: wer den Knopf spaeter ausschaltet, bekommt ihn
@@ -7743,7 +7743,7 @@ async function loadProf(){
 /* Das Bildchen oben rechts steht inzwischen in mehreren Kopfzeilen –
    frueher gab es genau eines mit fester Kennung. */
 function updNavAv(){
-  // Der Knopf "Schnell raus" haengt an keiner Anmeldung, aber die
+  // Der Doomscroll-Knopf haengt an keiner Anmeldung, aber die
   // Leiste wird hier ohnehin frisch gezeichnet – also hier mit.
   try{ rausKnopfZeigen(); }catch(e){}
   // Der Name in der Profil-Kopfzeile haengt am selben Profil wie das
@@ -8611,7 +8611,7 @@ function setKontoart(art){
    registriereVerein() merken davon nichts. */
 let rSchritt=1;
 /* Ein privates Konto hat fuenf Schritte, ein Verein vier: den Knopf
-   "Schnell raus" braucht nur, wer selbst auf Partys geht. E-Mail und
+   Den Doomscroll-Knopf braucht nur, wer selbst auf Partys geht. E-Mail und
    Passwort stehen darum auf keiner festen Nummer, sondern immer am
    Schluss (data-rs="zugang"). */
 function rMax(){ return regArt==='verein' ? 4 : 5; }
@@ -21659,10 +21659,8 @@ function alleFensterZu(){
     setTimeout(()=>tour.classList.remove('open'),320);
   }
   /* Die Karte ist ebenfalls kein .overlay – sie liegt fest ueber der
-     Startseite. Beim Notausgang war das ein Leck: Fenster gingen zu,
-     die Karte mit dem eigenen Standort und allen Partys blieb offen
-     stehen. Wer ueber die Schulter schaut, sieht dann genau das, was
-     er nicht sehen soll. */
+     Startseite. Beim Doomscroll-Knopf blieb sie sonst offen stehen:
+     wer zurueckkommt, soll aufgeraeumt auf der Startseite landen. */
   try{ if(mapVis)toggleMap(); }catch(_){}
 
   const offen=document.querySelectorAll('.overlay.open');
