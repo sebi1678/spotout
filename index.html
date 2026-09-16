@@ -6115,6 +6115,40 @@
       background:rgba(255,255,255,.06);color:var(--text2);font-family:var(--font);font-size:.74rem;font-weight:700;cursor:pointer}
     .mg-raus.armed{border-color:rgba(255,69,86,.55);background:rgba(255,69,86,.14);color:#FF8A92}
     .mg-guest{transition:opacity .25s ease}
+
+    /* ══════════ GRUPPEN ══════════ */
+    .grp-karte{display:flex;align-items:center;gap:12px;padding:12px 13px;margin-bottom:10px;
+      border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);cursor:pointer}
+    .grp-ic{flex:none;width:42px;height:42px;border-radius:13px;display:flex;align-items:center;
+      justify-content:center;background:rgba(255,45,118,.13);color:#FF7FA5}
+    .grp-ic svg{width:21px;height:21px}
+    .grp-txt{flex:1;min-width:0}
+    .grp-name{font-size:.92rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .grp-unter{font-size:.75rem;color:var(--muted);margin-top:2px}
+    .grp-punkt{flex:none;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--pink);
+      color:#fff;font-size:.68rem;font-weight:900;display:inline-flex;align-items:center;justify-content:center}
+    .grp-bilder{display:flex;flex:none}
+    .grp-bilder .av-sm{margin-left:-9px;border:2px solid #10142f}
+    .grp-bilder .av-sm:first-child{margin-left:0}
+    /* Eine Party in der Gruppe: wer schon zugesagt hat, steht darunter */
+    .grp-party{padding:12px 13px;margin-bottom:10px;border-radius:16px;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09)}
+    .grp-party-kopf{display:flex;align-items:center;gap:11px;cursor:pointer}
+    .grp-party-n{font-size:.88rem;font-weight:800;color:#fff;line-height:1.3}
+    .grp-party-w{font-size:.74rem;color:var(--muted);margin-top:2px}
+    /* Text, Pille und Knopf drueckten sich in eine Zeile, der Text brach
+       um und stiess an die Nachbarn. Jetzt darf die Zeile umbrechen. */
+    .grp-dabei{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;
+      border-top:1px solid rgba(255,255,255,.07)}
+    .grp-dabei-t{font-size:.74rem;color:var(--text2);flex:1 1 130px;min-width:0}
+    .grp-dabei .pill{flex:none}
+    .grp-dabei .mg-raus{margin-left:auto}
+    .grp-code{display:flex;align-items:center;gap:10px;margin-top:10px;padding:11px 13px;border-radius:13px;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09)}
+    .grp-code code{flex:1;min-width:0;font-size:.82rem;font-weight:700;color:#fff;letter-spacing:.08em;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    /* Der Name über der ersten fremden Blase – nur im Gruppenchat */
+    .bub-wer{font-size:.7rem;font-weight:800;color:#FF7FA5;margin:8px 0 3px 13px}
     .mg-guest.weg{opacity:.35}
     .wl-stand{display:flex;flex-direction:column;gap:8px}
     .wl-raus{align-self:center;background:none;border:none;color:var(--muted);font-family:var(--font);font-size:.8rem;font-weight:700;
@@ -7836,6 +7870,53 @@
   </div>
 </div>
 
+<!-- ════ GRUPPEN ════ -->
+<div class="overlay" id="gruppeOverlay" onclick="closeIfOutside(event,'gruppeOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title" id="gruppeTitel">Gruppe</div>
+      <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('gruppeOverlay')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="gruppeBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="gruppeNeuOverlay" onclick="closeIfOutside(event,'gruppeNeuOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Gruppe gründen</div>
+      <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('gruppeNeuOverlay')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label>Name</label>
+        <input type="text" id="grpNeuName" maxlength="40" placeholder="Wohnung 3b, Handballteam, Freitagsrunde"/></div>
+      <div class="fg"><label>Worum geht es? (freiwillig)</label>
+        <input type="text" id="grpNeuText" maxlength="80" placeholder="Wir gehen zusammen aus"/></div>
+      <button class="sub-btn sub-public" id="grpNeuBtn" onclick="gruppeGruenden()">Gründen</button>
+      <div class="ep-help">Danach bekommst du einen Link. Wer ihn benutzt, fragt an – du entscheidest.</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="gruppeJoinOverlay" onclick="closeIfOutside(event,'gruppeJoinOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Einladung</div>
+      <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('gruppeJoinOverlay')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="gruppeJoinBody"></div>
+  </div>
+</div>
+
 <!-- ════ PARTY VERWALTEN (nur der Host) ════ -->
 <div class="overlay" id="manageOverlay" onclick="closeIfOutside(event,'manageOverlay')">
   <div class="modal no-swipe">
@@ -9142,6 +9223,8 @@ function enterApp(){
   try{
     const pend=localStorage.getItem('spotout_join');
     if(pend){localStorage.removeItem('spotout_join');setTimeout(()=>openJoinOverlay(pend),600);}
+    const pendG=localStorage.getItem('spotout_gruppe');
+    if(pendG){localStorage.removeItem('spotout_gruppe');setTimeout(()=>gruppeBeitrittOeffnen(pendG),600);}
   }catch(err){}
   // Verify pro status on every app load
   setTimeout(verifyProStatus,1000);
@@ -12360,6 +12443,10 @@ async function renderProf(){
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           Besucht
         </button>
+        <button class="insta-tab" id="tab-gruppen" onclick="switchProfTab('gruppen')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Gruppen
+        </button>
       </div>
 
       <!-- GRIDS -->
@@ -12375,6 +12462,7 @@ async function renderProf(){
           return '<div class="insta-tile'+(a.archiv?' archiv':'')+'"'+(a.archiv?'':' onclick="openDetail(\''+a.events.id+'\')"')+'>'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(a.events.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(a.events.date)+'</div></div></div>';
         }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Noch keine Events besucht</div>'}
       </div>
+      <div id="prof-panel-gruppen" style="display:none;padding:4px 2px 0"></div>
       <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
     </div>`;
   if(warBesucht)switchProfTab('visited');
@@ -12387,6 +12475,8 @@ function switchProfTab(tab){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('prof-panel-mine').style.display=tab==='mine'?'grid':'none';
   document.getElementById('prof-panel-visited').style.display=tab==='visited'?'grid':'none';
+  const gp=document.getElementById('prof-panel-gruppen');
+  if(gp){ gp.style.display=tab==='gruppen'?'block':'none'; if(tab==='gruppen')gruppenLaden(); }
   // Follower-Zähler nachladen, ohne das Rendern zu blockieren
   loadMyFollowStats().then(st=>{
     const a=document.getElementById('myFollowers');
@@ -12880,6 +12970,8 @@ async function saveProfileEdit(){
    Gut zweihundertfuenfzig Zeilen, die nichts taten, aber bei jeder
    Aenderung mitgelesen werden mussten. */
 
+let convGruppe=false;              // sitzt man gerade in einem Gruppenchat?
+const convLeute=new Map();         // Absender darin, fuer Namen an den Blasen
 let chatStartLaeuft=false;
 async function startChat(uid,name,un){
   if(chatStartLaeuft)return;
@@ -13358,7 +13450,15 @@ async function loadChats(){
   chatSperreZeigen();
   renderChatPro();
   await loadMsgRequests();
-  const{data}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id}`).order('created_at',{ascending:false});
+  const{data}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id},group_id.not.is.null`).order('created_at',{ascending:false});
+  /* Im Gruppenchat kann "gelesen" nicht an der Nachricht haengen – es
+     gibt nur eine Spalte fuer alle. Wer zuerst reinschaut, haette allen
+     anderen den Punkt geloescht. Der Ungelesen-Zustand kommt darum aus
+     den Benachrichtigungen; die gibt es ohnehin pro Person. */
+  const{data:offeneNt}=await sb.from('notifications')
+    .select('conversation_id').eq('user_id',cUser.id).eq('gelesen',false)
+    .not('conversation_id','is',null);
+  const grpOffenNt=new Set((offeneNt||[]).map(n=>n.conversation_id));
   /* Sortiert war bisher nach dem Tag, an dem das Gespräch angelegt
      wurde. Wer heute Morgen geschrieben hat, stand deshalb ganz unten,
      und ein Gespräch ohne einzige Nachricht ganz oben. Jetzt zählt die
@@ -13373,6 +13473,14 @@ async function loadChats(){
   };
   const gespraeche=(data||[]).slice().sort((a,b)=>zuletzt(b)-zuletzt(a));
 
+  // Die Namen der Gruppen in einer Abfrage – nicht eine je Zeile
+  const grpNamen=new Map();
+  const grpIds=[...new Set((data||[]).map(c=>c.group_id).filter(Boolean))];
+  if(grpIds.length){
+    const{data:gr}=await sb.from('groups').select('id,name').in('id',grpIds);
+    (gr||[]).forEach(g=>grpNamen.set(g.id,g.name));
+  }
+
   const list=document.getElementById('chatList');
   if(!data?.length){
     list.innerHTML='<div class="chat-leer">Noch keine Nachrichten.<br>'
@@ -13382,6 +13490,21 @@ async function loadChats(){
     return;
   }
   list.innerHTML=gespraeche.map(c=>{
+    // Eine Gruppe hat kein Gegenueber – sie traegt ihren eigenen Namen
+    if(c.group_id){
+      const gname=grpNamen.get(c.group_id)||'Gruppe';
+      const lastG=c.messages?.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
+      const unreadG=grpOffenNt.has(c.id);
+      return '<div class="chat-item'+(unreadG?' unread':'')+'" onclick="gruppeChat(\''+c.group_id+'\')">'
+        +'<div class="chat-av">'+pikto('gaeste',18)+'</div>'
+        +'<div class="chat-info"><div class="chat-name">'+esc(gname)+'</div>'
+        +'<div class="chat-preview">'+(lastG
+            ?((lastG.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')
+              +(lastG.image_url&&!lastG.content?'Bild':esc(lastG.content||'')))
+            :'Noch keine Nachrichten')+'</div></div>'
+        +'<div class="chat-meta"><div class="chat-time">'+(lastG?fmtT(lastG.created_at):'')+'</div>'
+        +(unreadG?'<div class="unread-dot"></div>':'')+'</div></div>';
+    }
     const o=(c.user1_id===cUser.id?c.user2:c.user1)||null;
     // Ohne Gegenueber bleibt die Zeile stehen, aber ohne Ziel – sonst
     // reisst eine einzelne Luecke die ganze Liste mit.
@@ -13461,6 +13584,11 @@ async function gespraechOeffnen(cid){
   try{
     const{data:g}=await sb.from('conversations').select('*').eq('id',cid).maybeSingle();
     if(!g){toast('Dieses Gespräch gibt es nicht mehr','info');return;}
+    if(g.group_id){
+      const{data:gr}=await sb.from('groups').select('id,name').eq('id',g.group_id).maybeSingle();
+      await openConv(cid,{gruppe:true,id:g.group_id,name:gr?.name||'Gruppe'});
+      return;
+    }
     const anderer=(g.user1_id===cUser.id)?g.user2_id:g.user1_id;
     const{data:prof}=await sb.from('profiles')
       .select('id,username,full_name,avatar_url').eq('id',anderer).maybeSingle();
@@ -13497,22 +13625,29 @@ async function openConv(cid,other){
   const vorher=document.querySelector('.page.active')?.id?.replace('page-','');
   if(vorher&&vorher!=='conv'){ seitenVorher.push(vorher); if(seitenVorher.length>10)seitenVorher.shift(); }
   convId=cid;convUser=other;
-  const av=other?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(other.avatar_url)+'"/>'):esc((other?.full_name||other?.username||'?').charAt(0).toUpperCase());
+  convGruppe=!!other?.gruppe;
+  convLeute.clear();
+  const av=convGruppe
+    ? pikto('gaeste',18)
+    : (other?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(other.avatar_url)+'"/>'):esc((other?.full_name||other?.username||'?').charAt(0).toUpperCase()));
   const elAv=document.getElementById('convAv');
   const elNm=document.getElementById('convName');
   const elSub=document.getElementById('convSub');
   if(elAv)elAv.innerHTML=av;
-  if(elNm)elNm.textContent=other?.full_name||other?.username||'Unbekannt';
-  if(elSub)elSub.textContent='@'+(other?.username||'');
+  if(elNm)elNm.textContent=convGruppe?(other?.name||'Gruppe'):(other?.full_name||other?.username||'Unbekannt');
+  if(elSub)elSub.textContent=convGruppe?'Gruppenchat':('@'+(other?.username||''));
   showOnly('conv');await loadMsgs();
-  await sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser.id);
+  /* Nur im Zweiergespraech: "read" ist eine Spalte fuer alle, in einer
+     Gruppe waere das Lesen des Ersten das Lesen aller. Dort zaehlen die
+     Benachrichtigungen, die ntGespraechGelesen() gleich abraeumt. */
+  if(!convGruppe)await sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser.id);
   loadUnread();
   try{ if(convSub_)await sb.removeChannel(convSub_); }catch(e){console.warn('[chat] unsubscribe',e);}
   ntGespraechGelesen(cid);
   convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},()=>{
     loadMsgs();
     // Wer im Gespraech sitzt, hat die neue Nachricht gesehen
-    sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
+    if(!convGruppe)sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
     ntGespraechGelesen(cid);
   }).subscribe();
 }
@@ -13522,6 +13657,15 @@ async function loadMsgs(){
     .order('created_at',{ascending:true});
   const c=document.getElementById('convMsgs');
   const msgs=data||[];
+  /* "Nicht von mir" hiess bisher zwingend "vom einen Gegenueber". In der
+     Gruppe muss der Name dabeistehen – sonst weiss niemand, wer spricht. */
+  if(convGruppe){
+    const fehlen=[...new Set(msgs.map(m=>m.sender_id).filter(id=>id&&id!==cUser.id&&!convLeute.has(id)))];
+    if(fehlen.length){
+      const{data:ppl}=await sb.from('profiles').select('id,username,full_name,avatar_url').in('id',fehlen);
+      (ppl||[]).forEach(x=>convLeute.set(x.id,x));
+    }
+  }
 
   if(!msgs.length){
     c.innerHTML='<div class="conv-empty">'
@@ -13569,7 +13713,14 @@ async function loadMsgs(){
        nicht mehr, aber die Blase soll nicht leer dastehen. */
     const bild=m.image_url?'<span class="msg-weg">Bild entfernt</span>':'';
     const text=m.content?esc(m.content).replace(/\n/g,'<br>'):'';
-    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+'"'+(mine?'':' data-mid="'+m.id+'"')+' data-x="'
+    if(convGruppe&&!mine&&!grouped){
+      const wr=convLeute.get(m.sender_id);
+      html+='<div class="bub-wer">'+esc(wr?.full_name||wr?.username||'Jemand')+'</div>';
+    }
+    const werAttr=(convGruppe&&!mine)
+      ? ' data-wer="'+escAttr(String(convLeute.get(m.sender_id)?.full_name
+          ||convLeute.get(m.sender_id)?.username||'').replace(/['"\\<>&]/g,''))+'"' : '';
+    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+'"'+(mine?'':' data-mid="'+m.id+'"')+werAttr+' data-x="'
       +(grouped?'':' bub-grp')+'">'
       +bild+text
       +(showMeta?'<div class="bub-meta">'+fmtT(m.created_at)+(mine?tick(m.read):'')+'</div>':'')
@@ -13679,6 +13830,13 @@ function plusZeigen(meine){
     +'<span class="plus-ic">'+plus+'</span>'
     +'<span><span class="plus-t">'+(entw?'Neue Party anfangen':'Neue Party')+'</span>'
     +'<span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span>'
+    +'</button>'
+    /* Gruppen stehen hier, weil die untere Leiste voll ist – und weil
+       man hier ohnehin ist, wenn man etwas mit Leuten vorhat. */
+    +'<button class="plus-gross" style="margin-top:10px" onclick="closeOverlay(\'plusOverlay\');gruppeNeuOeffnen()">'
+    +'<span class="plus-ic">'+leute+'</span>'
+    +'<span><span class="plus-t">Gruppe gründen</span>'
+    +'<span class="plus-s">Gemeinsam hingehen, eigener Chat</span></span>'
     +'</button>'
     +'<div class="mg-sec">Freunde einladen</div>'
     +meine.map(e=>'<button class="plus-party" onclick="plusEinladen(\''+e.id+'\')">'
@@ -14456,6 +14614,7 @@ function fehlerText(error){
   if(m.includes('SPOTOUT_KEINE_NACHRICHTEN'))return 'Diese Person nimmt keine Nachrichten an.';
   if(m.includes('SPOTOUT_NUR_ANFRAGEN'))return 'Diese Person nimmt nur Anfragen an.';
   if(m.includes('SPOTOUT_PRO_ZUM_ANFANGEN'))return 'Ein Gespräch anfangen können nur Pro-Nutzer.';
+  if(m.includes('SPOTOUT_NICHT_IN_GRUPPE'))return 'Du bist nicht mehr in dieser Gruppe.';
   if(m.includes('SPOTOUT_VEREIN_MELDET_SICH_NICHT_AN'))return 'Vereinskonten melden sich nicht bei Partys an.';
   if(m.includes('SPOTOUT_VEREIN'))return 'Mit einem Vereinskonto geht das nicht.';
   if(m.includes('SPOTOUT_GESPERRT'))return 'Dein Konto ist gerade gesperrt.';
@@ -15893,11 +16052,330 @@ function inviteText(e,code,label,ohneLink){
 }
 
 
+/* ══════════ GRUPPEN ══════════
+   Eine Gruppe verwaltet nichts Eigenes. Wer zu einer Party kommt, steht
+   in event_attendees – wie bei jeder anderen Anmeldung auch. Die Gruppe
+   zeigt das nur gebuendelt an. Ein Wert, ein Ort. */
+
+function grpUrl(code){
+  return location.origin+location.pathname+'?gruppe='+encodeURIComponent(code);
+}
+
+// Die Rueckgaben der Server-Funktionen in Klartext. Nichts scheitert stumm.
+const GRP_TEXT={
+  nicht_angemeldet:'Dafür brauchst du ein Konto.',
+  gesperrt:'Dein Konto ist gerade gesperrt.',
+  verein:'Vereinskonten gründen keine Gruppen.',
+  kein_name:'Gib der Gruppe einen Namen.',
+  zu_viele:'Mehr als zehn eigene Gruppen gehen nicht.',
+  unbekannt:'Diesen Einladungslink gibt es nicht.',
+  blockiert:'Das geht nicht – ihr habt euch blockiert.',
+  voll:'Diese Gruppe ist voll (50 Leute).',
+  schon_drin:'Du bist schon in dieser Gruppe.',
+  nicht_drin:'Du bist nicht in dieser Gruppe.',
+  nicht_gruender:'Das kann nur, wer die Gruppe gegründet hat.',
+  keine_anfrage:'Diese Anfrage gibt es nicht mehr.',
+  party_unbekannt:'Diese Party finden wir nicht.',
+  vorbei:'Diese Party ist vorbei.',
+  privat_nur_host:'Eine private Party stellt nur der Gastgeber in eine Gruppe.',
+  nicht_erlaubt:'Das darfst du hier nicht.',
+};
+const grpSagen=(st)=>GRP_TEXT[st]||'Das hat gerade nicht geklappt.';
+
+function gruppeNeuOeffnen(){
+  if(!cUser){kontoNoetig('Gruppen gibt es mit Konto – gemeinsam hingehen, eigener Chat.');return;}
+  const n=document.getElementById('grpNeuName'); if(n)n.value='';
+  const t=document.getElementById('grpNeuText'); if(t)t.value='';
+  document.getElementById('gruppeNeuOverlay').classList.add('open');
+  setTimeout(()=>n&&n.focus(),260);
+}
+
+async function gruppeGruenden(){
+  const btn=document.getElementById('grpNeuBtn');
+  const name=(document.getElementById('grpNeuName')?.value||'').trim();
+  const text=(document.getElementById('grpNeuText')?.value||'').trim();
+  if(!name){toast('Gib der Gruppe einen Namen','warn');return;}
+  if(btn){btn.disabled=true;btn.dataset.t=btn.textContent;btn.innerHTML='<span class="btn-spin"></span>Einen Moment…';}
+  const{data,error}=await sb.rpc('gruppe_gruenden',{p_name:name,p_text:text||null});
+  if(btn){btn.disabled=false;btn.textContent=btn.dataset.t||'Gründen';}
+  if(error){toast(fehlerText(error),'error');return;}
+  if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');return;}
+  closeOverlay('gruppeNeuOverlay');
+  toast('Gruppe steht','success');
+  gruppenLaden();
+  gruppeOeffnen(data.id);
+}
+
+async function gruppenLaden(){
+  const box=document.getElementById('prof-panel-gruppen');
+  if(!box||!cUser)return;
+  box.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  const{data,error}=await sb.rpc('meine_gruppen');
+  if(error){box.innerHTML='<div class="insta-empty">Konnte nicht geladen werden.</div>';return;}
+  const liste=Array.isArray(data)?data:[];
+  if(!liste.length){
+    /* Eine leere Liste verliert jeden sofort – hier steht darum, was es
+       bringt, und ein Knopf, nicht bloss "Noch keine Gruppen". */
+    box.innerHTML='<div class="insta-empty" style="gap:12px">'
+      +pikto('gaeste',34)
+      +'<span>Mit einer Gruppe seht ihr auf einen Blick, wer wohin mitkommt – und habt einen eigenen Chat.</span>'
+      +'<button class="prof-action-btn" style="margin-top:4px" onclick="gruppeNeuOeffnen()">Gruppe gründen</button>'
+      +'</div>';
+    return;
+  }
+  box.innerHTML=liste.map(g=>{
+    const bilder=(g.bilder||[]).slice(0,4).map(u=>'<div class="av-sm"><img loading="lazy" decoding="async" src="'+escAttr(u)+'"/></div>').join('');
+    const offen=Number(g.anfragen||0);
+    const teile=[(g.mitglieder||0)+(g.mitglieder===1?' Person':' Leute')];
+    if(g.partys)teile.push(g.partys+(g.partys===1?' Party':' Partys'));
+    return '<div class="grp-karte" onclick="gruppeOeffnen(\''+g.id+'\')">'
+      +'<div class="grp-ic">'+pikto('gaeste',21)+'</div>'
+      +'<div class="grp-txt"><div class="grp-name">'+esc(g.name||'')+'</div>'
+      +'<div class="grp-unter">'+teile.join(' · ')+'</div></div>'
+      +(bilder?'<div class="grp-bilder">'+bilder+'</div>':'')
+      +(offen?'<span class="grp-punkt">'+offen+'</span>':'')
+      +'</div>';
+  }).join('')
+  +'<button class="prof-action-btn" style="width:100%;margin-top:4px" onclick="gruppeNeuOeffnen()">Weitere Gruppe gründen</button>';
+}
+
+let grpOffen=null;
+async function gruppeOeffnen(id){
+  if(!cUser){kontoNoetig('Gruppen gibt es mit Konto.');return;}
+  grpOffen=id;
+  const ov=document.getElementById('gruppeOverlay');
+  const body=document.getElementById('gruppeBody');
+  ov.classList.add('open');
+  body.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  const{data,error}=await sb.rpc('gruppe_ansehen',{p_group:id});
+  if(error){body.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>';return;}
+  if(data?.status!=='ok'){body.innerHTML='<div class="up-empty">'+esc(grpSagen(data?.status))+'</div>';return;}
+  gruppeZeichnen(data);
+}
+
+function gruppeZeichnen(g){
+  const t=document.getElementById('gruppeTitel');
+  if(t)t.textContent=g.name||'Gruppe';
+  const body=document.getElementById('gruppeBody');
+
+  const anfragen=(g.anfragen||[]).length
+    ? '<div class="mg-sec">Möchten dazu</div>'
+      +g.anfragen.map(a=>{
+        const nm=a.full_name||a.username||'Jemand';
+        const av=a.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+        return '<div class="mg-req" id="grpanf-'+a.id+'"><div class="av-sm">'+av+'</div>'
+          +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
+          +'<div class="mg-req-s">@'+esc(a.username||'')+'</div></div>'
+          +'<button class="mg-yes" aria-label="Aufnehmen" onclick="gruppeEntscheiden(this,\''+g.id+'\',\''+a.id+'\',true)">'
+            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
+          +'<button class="mg-no" aria-label="Ablehnen" onclick="gruppeEntscheiden(this,\''+g.id+'\',\''+a.id+'\',false)">'
+            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+          +'</div>';
+      }).join('')
+    : '';
+
+  const partys=(g.partys||[]).length
+    ? g.partys.map(e=>{
+        const dabei=(e.dabei||[]);
+        const bilder=dabei.slice(0,5).map(d=>{
+          const av=d.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(d.avatar_url)+'"/>')
+                               :esc((d.full_name||d.username||'?').charAt(0).toUpperCase());
+          return '<div class="av-sm">'+av+'</div>';
+        }).join('');
+        const wer=dabei.length
+          ? (dabei.length===1?'1 aus der Gruppe kommt':dabei.length+' aus der Gruppe kommen')
+          : 'Noch niemand aus der Gruppe';
+        return '<div class="grp-party">'
+          +'<div class="grp-party-kopf" onclick="closeOverlay(\'gruppeOverlay\');openDetail(\''+e.id+'\')">'
+          +'<div class="grp-ic">'+iconSvg(evIconKey(e),20)+'</div>'
+          +'<div style="flex:1;min-width:0"><div class="grp-party-n">'+esc(e.name||'')+'</div>'
+          +'<div class="grp-party-w">'+fmtD(e.date)+' · '+zeitText(e.time)+'</div></div>'
+          +'</div>'
+          +'<div class="grp-dabei">'
+          +(bilder?'<div class="grp-bilder">'+bilder+'</div>':'')
+          +'<span class="grp-dabei-t">'+wer+'</span>'
+          +(e.ich_dabei?'<span class="pill pill-dark" style="font-size:.64rem">Du bist dabei</span>':'')
+          +(e.von_id===cUser.id||g.gruender
+              ?'<button class="mg-raus" onclick="gruppePartyEntfernen(this,\''+g.id+'\',\''+e.id+'\')">Entfernen</button>':'')
+          +'</div></div>';
+      }).join('')
+    : '<div class="mg-empty">Noch keine Party in dieser Gruppe. Stell eine hinein – die anderen sehen sie sofort.</div>';
+
+  const leute=(g.mitglieder||[]).map(m=>{
+    const nm=m.full_name||m.username||'Jemand';
+    const av=m.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(m.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+    return '<div class="mg-guest"'+(m.blockiert?'':' onclick="closeOverlay(\'gruppeOverlay\');openUserProf(\''+m.id+'\')" style="cursor:pointer"')+'>'
+      +'<div class="av-sm">'+av+'</div>'
+      +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+(m.gruender?' <span class="mg-pill">Gründer</span>':'')+'</div>'
+      +'<div class="mg-req-s">'+(m.blockiert?'blockiert':'@'+esc(m.username||''))+'</div></div>'
+      +'</div>';
+  }).join('');
+
+  body.innerHTML=
+    '<div class="mg-head"><div class="mg-name">'+esc(g.name||'')+'</div>'
+    +(g.text?'<div class="mg-when">'+esc(g.text)+'</div>':'')
+    +'<div class="mg-where">'+(g.mitglieder||[]).length+' dabei</div></div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:4px">'
+      +'<button class="sub-btn sub-public" style="flex:1;margin:0" onclick="gruppeChat(\''+g.id+'\')">Gruppenchat</button>'
+      +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppePartyWaehlen(\''+g.id+'\')">Party hineinstellen</button>'
+    +'</div>'
+    +anfragen
+    +'<div class="mg-sec">Partys</div>'+partys
+    +'<div class="mg-sec">Wer dabei ist</div>'+leute
+    +(g.code
+      ? '<div class="mg-sec">Einladen</div>'
+        +'<div class="ein-leer">Wer den Link benutzt, fragt an – du entscheidest, wer dazukommt.</div>'
+        +'<div class="grp-code"><code>'+esc(grpUrl(g.code))+'</code>'
+        +'<button class="copy-btn" onclick="gruppeTeilen(\''+g.code+'\',\''+escAttr(String(g.name||'').replace(/[\'\\"<>&]/g,''))+'\')">Teilen</button></div>'
+      : '')
+    +'<div class="danger-zone"><div class="danger-lbl">Gruppe verlassen</div>'
+      +'<button class="danger-btn" onclick="gruppeVerlassen(\''+g.id+'\')">Verlassen</button>'
+      +'<div class="danger-hint">'+(g.gruender
+          ? 'Bist du die letzte Person, löst sich die Gruppe auf. Sonst übernimmt das älteste Mitglied.'
+          : 'Du siehst die Gruppe und ihren Chat danach nicht mehr.')+'</div></div>';
+}
+
+async function gruppeEntscheiden(btn,gid,uid,ja){
+  if(btn){btn.disabled=true;}
+  const{data,error}=await sb.rpc('gruppe_entscheiden',{p_group:gid,p_user:uid,p_ja:ja});
+  if(error){toast(fehlerText(error),'error');if(btn)btn.disabled=false;return;}
+  if(data?.status!=='angenommen'&&data?.status!=='abgelehnt'){
+    toast(grpSagen(data?.status),'warn');if(btn)btn.disabled=false;return;
+  }
+  /* Nicht die ganze Ansicht neu zeichnen – die Zeile an Ort und Stelle
+     ersetzen. Sonst springt man aus der Liste heraus. */
+  const zeile=document.getElementById('grpanf-'+uid);
+  if(zeile){
+    zeile.innerHTML='<div class="mg-req-s" style="padding:2px 0">'
+      +(ja?'Aufgenommen':'Abgelehnt')+'</div>';
+    zeile.style.opacity='.6';
+    setTimeout(()=>{ try{ zeile.remove(); }catch(e){} },1400);
+  }
+  gruppenLaden();
+}
+
+async function gruppeVerlassen(gid){
+  const{data,error}=await sb.rpc('gruppe_verlassen',{p_group:gid});
+  if(error){toast(fehlerText(error),'error');return;}
+  if(data?.status!=='ok'&&data?.status!=='aufgeloest'){toast(grpSagen(data?.status),'warn');return;}
+  closeOverlay('gruppeOverlay');
+  toast(data.status==='aufgeloest'?'Gruppe aufgelöst':'Du bist raus','info');
+  gruppenLaden();
+}
+
+async function gruppeChat(gid){
+  const{data,error}=await sb.rpc('gruppe_chat_oeffnen',{p_group:gid});
+  if(error){toast(fehlerText(error),'error');return;}
+  if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');return;}
+  const titel=document.getElementById('gruppeTitel')?.textContent||'Gruppe';
+  closeOverlay('gruppeOverlay');
+  await openConv(data.id,{gruppe:true,id:gid,name:titel});
+}
+
+/* Hineinstellen darf man nur, was man selbst sieht – die Auswahl zeigt
+   deshalb die eigenen und die zugesagten Partys, nicht alles. */
+async function gruppePartyWaehlen(gid){
+  const body=document.getElementById('gruppeBody');
+  const heute=new Date().toISOString().slice(0,10);
+  const[{data:meine},{data:zusagen}]=await Promise.all([
+    sb.from('events').select('id,name,date,time,type,category,emoji').eq('created_by',cUser.id).gte('date',heute).order('date').limit(20),
+    sb.from('event_attendees').select('events(id,name,date,time,type,category,emoji)').eq('user_id',cUser.id).limit(40),
+  ]);
+  const alle=[...(meine||[]),...((zusagen||[]).map(z=>z.events).filter(e=>e&&e.date>=heute))]
+    .filter((e,i,l)=>l.findIndex(x=>x.id===e.id)===i)
+    .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  if(!alle.length){toast('Du hast gerade keine kommende Party','info');return;}
+  body.innerHTML='<div class="mg-sec">Welche Party?</div>'
+    +alle.map(e=>'<div class="mg-guest" style="cursor:pointer" onclick="gruppePartyStellen(\''+gid+'\',\''+e.id+'\')">'
+      +'<div class="grp-ic">'+iconSvg(evIconKey(e),20)+'</div>'
+      +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(e.name||'')+'</div>'
+      +'<div class="mg-req-s">'+fmtD(e.date)+' · '+zeitText(e.time)+'</div></div></div>').join('')
+    +'<button class="prof-action-btn" style="width:100%;margin-top:10px" onclick="gruppeOeffnen(\''+gid+'\')">Zurück</button>';
+}
+
+async function gruppePartyStellen(gid,eid){
+  const{data,error}=await sb.rpc('gruppe_party_stellen',{p_group:gid,p_event:eid});
+  if(error){toast(fehlerText(error),'error');return;}
+  if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');gruppeOeffnen(gid);return;}
+  toast('Steht in der Gruppe','success');
+  gruppeOeffnen(gid);
+}
+
+async function gruppePartyEntfernen(btn,gid,eid){
+  if(btn)btn.disabled=true;
+  const{data,error}=await sb.rpc('gruppe_party_entfernen',{p_group:gid,p_event:eid});
+  if(error){toast(fehlerText(error),'error');if(btn)btn.disabled=false;return;}
+  if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');if(btn)btn.disabled=false;return;}
+  gruppeOeffnen(gid);
+}
+
+async function gruppeTeilen(code,name){
+  const url=grpUrl(code);
+  const txt='Komm in die Gruppe „'+name+'“ auf SPOTOUT';
+  if(navigator.share){
+    try{ await navigator.share({title:'SPOTOUT',text:txt,url}); return; }catch(ex){ if(ex&&ex.name==='AbortError')return; }
+  }
+  try{ await navigator.clipboard.writeText(url); toast('Link kopiert','success'); }
+  catch(e){ toast('Link: '+url,'info'); }
+}
+
+async function gruppeBeitrittOeffnen(code){
+  const ov=document.getElementById('gruppeJoinOverlay');
+  const body=document.getElementById('gruppeJoinBody');
+  ov.classList.add('open');
+  body.innerHTML='<div class="loading"><div class="spinner"></div> Einladung wird geprüft…</div>';
+  if(!cUser){
+    /* Kein Konto: keine Absage, sondern der Grund. Der Code wartet
+       solange – nach dem Anmelden geht es von selbst weiter. */
+    try{ localStorage.setItem('spotout_gruppe',code); }catch(e){}
+    body.innerHTML='<div style="text-align:center;padding:6px 0">'
+      +'<div class="grp-ic" style="width:60px;height:60px;border-radius:18px;margin:0 auto 14px">'+pikto('gaeste',28)+'</div>'
+      +'<div class="d-title" style="margin-bottom:6px">Du bist eingeladen</div>'
+      +'<div style="color:var(--muted);font-size:.86rem;margin-bottom:18px">In einer Gruppe seht ihr, wer wohin mitkommt – mit eigenem Chat. Dafür brauchst du ein Konto.</div>'
+      +'<button class="sub-btn sub-public" onclick="closeOverlay(\'gruppeJoinOverlay\');zurAnmeldung(\'register\')">Konto erstellen</button>'
+      +'<button class="prof-action-btn" style="width:100%;margin-top:8px" onclick="closeOverlay(\'gruppeJoinOverlay\')">Später</button>'
+      +'</div>';
+    return;
+  }
+  const{data,error}=await sb.rpc('gruppe_vorschau',{p_code:code});
+  if(error){body.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>';return;}
+  if(data?.status!=='ok'){body.innerHTML='<div class="up-empty">'+esc(grpSagen(data?.status))+'</div>';return;}
+  window.__grpCode=code;
+  const knopf=data.drin
+    ? '<button class="sub-btn sub-public" onclick="closeOverlay(\'gruppeJoinOverlay\');gruppeOeffnen(\''+data.id+'\')">Zur Gruppe</button>'
+    : data.angefragt
+      ? '<div class="ein-leer" style="text-align:center">Deine Anfrage läuft – der Gründer entscheidet.</div>'
+      : '<button class="sub-btn sub-public" id="grpJoinBtn" onclick="gruppeBeitreten()">Anfragen</button>';
+  body.innerHTML='<div style="text-align:center;padding:6px 0">'
+    +'<div class="grp-ic" style="width:60px;height:60px;border-radius:18px;margin:0 auto 14px">'+pikto('gaeste',28)+'</div>'
+    +'<div class="d-title" style="margin-bottom:6px">'+esc(data.name||'Gruppe')+'</div>'
+    +'<div style="color:var(--muted);font-size:.86rem;margin-bottom:6px">'+esc(data.text||'Du wurdest in diese Gruppe eingeladen.')+'</div>'
+    +'<div style="color:var(--muted);font-size:.78rem;margin-bottom:18px">'+(data.mitglieder||0)+' dabei</div>'
+    +knopf+'</div>';
+}
+
+async function gruppeBeitreten(){
+  const btn=document.getElementById('grpJoinBtn');
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Einen Moment…';}
+  const{data,error}=await sb.rpc('gruppe_anfragen',{p_code:window.__grpCode});
+  if(error){toast(fehlerText(error),'error');if(btn){btn.disabled=false;btn.textContent='Anfragen';}return;}
+  if(data?.status==='schon_drin'){closeOverlay('gruppeJoinOverlay');gruppeOeffnen(data.id);return;}
+  if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');if(btn){btn.disabled=false;btn.textContent='Anfragen';}return;}
+  closeOverlay('gruppeJoinOverlay');
+  toast('Angefragt – der Gründer entscheidet','success');
+}
+
 /* ── Beitritt über den Link ── */
 async function checkJoinLink(){
   const params=new URLSearchParams(location.search);
   // ?join= ist der Link, den man verschickt. ?j= setzt die
   // Einladungsseite, die WhatsApp die Vorschau liefert.
+  const gcode=params.get('gruppe');
+  if(gcode){
+    history.replaceState({},'',location.pathname);
+    await gruppeBeitrittOeffnen(gcode);
+    return;
+  }
   const code=params.get('join')||params.get('j');
   if(!code)return;
   history.replaceState({},'',location.pathname);
@@ -22487,6 +22965,9 @@ const NT_ICON={
   nachricht_anfrage:{cls:'ntmsg',svg:''},
   warteliste_frei:{cls:'ok',svg:''},
   meldung_neu:{cls:'frage',svg:''},
+  gruppe_anfrage:{cls:'frage',svg:''},
+  gruppe_ok:{cls:'ok',svg:''},
+  gruppe_party:{cls:'ein',svg:''},
 };
 
 const NT_PK={beitritt_anfrage:'gast_anfrage',beitritt_ok:'ok',beitritt_nein:'nein',sanktion:'gefahr',
@@ -22494,7 +22975,8 @@ const NT_PK={beitritt_anfrage:'gast_anfrage',beitritt_ok:'ok',beitritt_nein:'nei
   event_changed:'zeit',event_gone:'event_weg',verein_bestaetigt:'verein',verein_abgelehnt:'nein',
   verein_pruefen:'verein',nachricht:'chat',freund_dabei:'freund_dabei',folge_anfrage:'gast_anfrage',
   folge_zusage:'folge_ok',day_one:'day_one',foto_entfernt:'foto_weg',
-  nachricht_anfrage:'chat',warteliste_frei:'ok',meldung_neu:'gefahr'};
+  nachricht_anfrage:'chat',warteliste_frei:'ok',meldung_neu:'gefahr',
+  gruppe_anfrage:'gast_anfrage',gruppe_ok:'ok',gruppe_party:'gaeste'};
 function ntIcon(art){
   const d=NT_ICON[art]||NT_ICON.event_changed;
   return '<div class="nt-ic '+d.cls+'">'+pikto(NT_PK[art]||'glocke',20)+'</div>';
@@ -24487,7 +24969,10 @@ function convMelden(){
     nativeHaptik('mittel');
     bub.classList.add('bub-markiert');
     setTimeout(()=>bub.classList.remove('bub-markiert'),600);
-    openReport('message',bub.dataset.mid,convUser?.full_name||convUser?.username||'');
+    /* Im Zweiergespraech stimmte "das Gegenueber" zufaellig. In einer
+       Gruppe waere damit die falsche Person gemeldet worden. */
+    openReport('message',bub.dataset.mid,
+      bub.dataset.wer||convUser?.full_name||convUser?.username||'');
   };
   box.addEventListener('touchstart',e=>{
     const bub=e.target.closest('.bub[data-mid]'); if(!bub)return;
@@ -24998,6 +25483,13 @@ async function loadUnread(){
   try{
     const{data}=await sb.from('messages').select('id,read,sender_id,conversations!inner(user1_id,user2_id)').eq('read',false).neq('sender_id',cUser.id).limit(50);
     const unread=(data||[]).filter(m=>m.conversations?.user1_id===cUser.id||m.conversations?.user2_id===cUser.id);
+    // Gruppen: "gelesen" gilt dort pro Person, also aus den Meldungen
+    if(!unread.length){
+      const{data:gnt}=await sb.from('notifications').select('id')
+        .eq('user_id',cUser.id).eq('gelesen',false).eq('art','nachricht')
+        .not('conversation_id','is',null).limit(1);
+      if((gnt||[]).length)unread.push({id:'gruppe'});
+    }
     const badge=document.getElementById('unreadBadge');
     if(badge)badge.style.display=unread.length>0?'block':'none';
   }catch(e){}
