@@ -5831,8 +5831,11 @@
     .vp-urteil.frage{background:rgba(255,176,32,.14);color:#FFB020}
     .vp-urteil.no{background:rgba(255,69,86,.14);color:#FF6B7A}
     .vp-text{font-size:.8rem;line-height:1.5;color:var(--text2);margin-top:8px}
-    .vp-quellen{display:flex;flex-direction:column;gap:4px;margin-top:8px}
-    .vp-quelle{font-size:.75rem;color:#FF7FA5;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+    .vp-zeile{display:flex;align-items:baseline;gap:8px;margin-top:8px;font-size:.8rem;line-height:1.45}
+    .vp-zeile>span{flex:none;min-width:82px;color:var(--muted);font-size:.74rem}
+    .vp-zeile>b{color:#fff;font-weight:700;overflow-wrap:anywhere}
+    .vp-zeile>a{color:#FF7FA5;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+    .vp-zeile>em{font-style:normal;color:#FFB020;font-size:.74rem}
     .vp-knoepfe{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
     .sec-btn.vp-nein{color:#FF6B7A;border-color:rgba(255,69,86,.3)}
     .sec-btn.vp-nein.armed{background:#FF4556;border-color:#FF4556;color:#fff}
@@ -10801,9 +10804,13 @@ async function renderVereinHome(){
     status+='<div class="vh-status warten">'+V_SVG.uhr
       +'<span><b>Bestätige noch deine E-Mail.</b> Danach kannst du Anlässe veröffentlichen.</span></div>';
   }else if(cProfile.verein_status==='handpruefung'){
+    /* Frueher stand hier "meist nur wenige Minuten" – das galt fuer die
+       automatische Pruefung. Jetzt schaut ein Mensch drauf, und dann ist
+       so ein Satz ein Versprechen, das niemand halten kann. */
     status+='<div class="vh-status warten">'+V_SVG.uhr
-      +'<span><b>Wir prüfen deinen Verein.</b> Meist dauert das nur wenige Minuten – '
-      +'du bekommst eine Nachricht, sobald er bestätigt ist.</span></div>';
+      +'<span><b>Wir schauen uns deinen Verein an.</b> Das macht ein Mensch, '
+      +'darum kann es bis zu einem Tag dauern – du bekommst eine Nachricht, '
+      +'sobald er bestätigt ist.</span></div>';
   }else if(cProfile.verein_status==='abgelehnt'){
     status+='<div class="vh-status fehlt">'+V_SVG.warn
       +'<span><b>Dieses Vereinskonto wurde nicht freigegeben.</b> '
@@ -25522,14 +25529,16 @@ function schenkenAnzeigen(){
 }
 
 /* ── Vereine prüfen (nur Betreiber) ────────────────────────────────
-   Die KI hat recherchiert, hier entscheidet ein Mensch. Ob der Aufrufer
-   Betreiber ist, prueft die Datenbank selbst (verein_entscheiden) und die
-   Tabelle verein_pruefungen ist fuer alle anderen gar nicht lesbar. */
-const V_URTEIL={
-  echt:['ok','Wirkt echt'], unklar:['frage','Unklar'],
-  verdaechtig:['no','Verdächtig'], fehler:['frage','Prüfung fehlgeschlagen'],
-};
-// Quellen kommen aus dem Netz – nur echte Webadressen werden zu Links.
+   Hier entscheidet ein Mensch – seit dem 16.09. ohne KI davor. Die
+   Datenbank trennt schon vorher: passt die E-Mail-Domain zur Website
+   (domain_passt) und ist es keine Freemail-Adresse (ist_freimail), gilt
+   der Verein nach der Mail-Bestaetigung als bestaetigt. Nur der Rest
+   landet hier.
+
+   Ob der Aufrufer Betreiber ist, pruefen die Funktionen selbst:
+   vereine_offen() gibt Fremden eine leere Liste, verein_entscheiden()
+   weist sie ab. Die Oberflaeche entscheidet nichts. */
+// Nur echte Webadressen werden zu Links.
 function sichereUrl(u){ return /^https?:\/\//i.test(String(u||''))?String(u):''; }
 
 async function vereinZahlLaden(){
@@ -25547,33 +25556,36 @@ async function vereinePruefenOeffnen(){
   if(!ov||!box)return;
   box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
   ov.classList.add('open');
-  const{data,error}=await sb.from('profiles')
-    .select('id,full_name,username,verein_ort,website,created_at,verein_pruefungen(urteil,sicherheit,begruendung,quellen,fehler,created_at)')
-    .eq('kontoart','verein').eq('verein_status','handpruefung')
-    .order('created_at',{ascending:false}).limit(50);
+  /* Ueber eine Funktion, nicht direkt auf profiles: die E-Mail steht in
+     auth.users und gehoert nur dem Betreiber. vereine_offen() prueft das
+     selbst und gibt Fremden eine leere Liste. */
+  const{data,error}=await sb.rpc('vereine_offen');
   if(error){box.innerHTML='<div class="up-empty">Das hat nicht geklappt. Versuch es nochmals.</div>';return;}
-  if(!data?.length){box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';return;}
-  box.innerHTML=data.map(v=>{
-    const pr=(v.verein_pruefungen||[]).slice()
-      .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
-    const [kl,txt]=V_URTEIL[pr?.urteil]||['frage','Noch nicht geprüft'];
+  const liste=Array.isArray(data)?data:[];
+  if(!liste.length){box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';return;}
+  box.innerHTML=liste.map(v=>{
     const web=sichereUrl(v.website);
-    const quellen=(pr?.quellen||[]).slice(0,4).map(q=>{
-      const u=sichereUrl(q.url);
-      return u?'<a class="vp-quelle" href="'+escAttr(u)+'" target="_blank" rel="noopener">'+esc(q.beleg||u)+'</a>':'';
-    }).join('');
+    const wann=v.seit?new Date(v.seit).toLocaleDateString(locale(),
+      {day:'numeric',month:'long',year:'numeric'}):'';
+    /* Statt eines Maschinen-Urteils die zwei Tatsachen, auf die es
+       ankommt: Kommt die Adresse von der eigenen Domain, oder ist es
+       eine Freemail-Adresse? Entscheiden tust du. */
+    const grund=v.domain_passt
+      ? ['ok','E-Mail gehört zur Website']
+      : (v.freimail ? ['frage','Freemail-Adresse'] : ['frage','E-Mail passt nicht zur Website']);
     return '<div class="vp-karte">'
-      +'<div class="vp-name"><b>'+esc(v.full_name||v.username||'Verein')+'</b>'
-        +'<span>'+esc(v.verein_ort||'')+(web?' · <a href="'+escAttr(web)+'" target="_blank" rel="noopener">'
-          +esc(web.replace(/^https?:\/\//,''))+'</a>':'')+'</span></div>'
-      +'<div class="vp-urteil '+kl+'">'+txt+(pr&&pr.urteil!=='fehler'?' · '+Number(pr.sicherheit||0)+' %':'')+'</div>'
-      +(pr?.begruendung?'<div class="vp-text">'+esc(pr.begruendung)+'</div>':'')
-      +(pr?.fehler?'<div class="vp-text">'+esc(pr.fehler)+'</div>':'')
-      +(quellen?'<div class="vp-quellen">'+quellen+'</div>':'')
+      +'<div class="vp-name"><b>'+esc(v.name||'Verein')+'</b>'
+        +'<span>@'+esc(v.username||'')+(v.ort?' · '+esc(v.ort):'')+'</span></div>'
+      +'<div class="vp-urteil '+grund[0]+'">'+grund[1]+'</div>'
+      +'<div class="vp-zeile"><span>E-Mail</span><b>'+esc(v.email||'—')+'</b>'
+        +(v.mail_bestaetigt?'':' <em>unbestätigt</em>')+'</div>'
+      +(web?'<div class="vp-zeile"><span>Website</span>'
+        +'<a href="'+escAttr(web)+'" target="_blank" rel="noopener">'
+        +esc(web.replace(/^https?:\/\//,'').replace(/\/$/,''))+'</a></div>':'')
+      +(wann?'<div class="vp-zeile"><span>Angemeldet</span><b>'+esc(wann)+'</b></div>':'')
       +'<div class="vp-knoepfe">'
-        +'<button class="sec-btn" onclick="vereinEntscheiden(this,\''+v.id+'\',true)">Bestätigen</button>'
+        +'<button class="sec-btn" onclick="vereinEntscheiden(this,\''+v.id+'\',true)">Verifizieren</button>'
         +'<button class="sec-btn vp-nein" onclick="vereinEntscheiden(this,\''+v.id+'\',false)">Ablehnen</button>'
-        +'<button class="sec-btn" onclick="vereinNochmalsPruefen(this,\''+v.id+'\')">Nochmals prüfen</button>'
       +'</div></div>';
   }).join('');
 }
@@ -25599,25 +25611,6 @@ async function vereinEntscheiden(btn,id,ja){
   karte?.remove();
   const box=document.getElementById('vereinePruefenListe');
   if(box&&!box.querySelector('.vp-karte'))box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';
-  vereinZahlLaden();
-}
-
-async function vereinNochmalsPruefen(btn,id){
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Prüft…';}
-  try{
-    const{data:{session}}=await sb.auth.getSession();
-    const res=await fetch(SB_URL+'/functions/v1/verein-pruefen',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(session?.access_token||'')},
-      body:JSON.stringify({profil_id:id})
-    });
-    const j=await res.json().catch(()=>({}));
-    if(!res.ok)toast(j.error||'Das hat nicht geklappt. Versuch es nochmals.','error');
-    else toast(j.entscheidung==='bestaetigt'?'Verein bestätigt':'Prüfung aktualisiert','success');
-  }catch(e){
-    toast('Das hat nicht geklappt. Versuch es nochmals.','error');
-  }
-  vereinePruefenOeffnen();
   vereinZahlLaden();
 }
 
