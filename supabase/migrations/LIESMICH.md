@@ -46,3 +46,11 @@ nicht hochgeladen.
 | `gruppen_tabellenrechte` | **Fund beim Gegenprüfen:** `groups`, `group_members`, `group_suggestions` hatten nur `service_role`. Ohne Tabellenrecht greift keine Zeilenregel – die alte Gruppenfunktion konnte nie über die App laufen. `anon` hat auf Gruppen jetzt gar nichts |
 
 Ausführlich: Obsidian-Notiz **Gruppen**.
+
+## Angewendet am 16. September 2026 (Gruppen, Teil 2)
+
+| Name | Was |
+|---|---|
+| `gruppen_bearbeiten` | `gruppe_aendern` (Name und Zweck), `gruppe_mitglied_entfernen`; `gruppe_ansehen` liefert neu `gruender_name` und `erstellt_am` |
+| `gruppen_einladungen` | Tabelle `gruppen_einladungen` (getrennt von `gruppen_anfragen`: „ich will rein" gegen „komm rein"), dazu `gruppe_einladen`, `gruppe_einladung_beantworten`, `gruppe_kontakte`, `meine_gruppen_einladungen`. **Niemand wird still Mitglied** – der Eingeladene entscheidet |
+
