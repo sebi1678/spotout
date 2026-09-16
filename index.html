@@ -843,6 +843,10 @@
     .modal-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:12px auto 0}
     /* Der Kopf bleibt oben kleben, auch wenn der Rest scrollt. Sonst
        ist das Kreuz genau dann weg, wenn man es braucht. */
+    /* Der Fensterkopf ist 16 + 34 (das Kreuz) + 12 = 62 px hoch. Wer sich
+       darunter festkleben will, nimmt diesen Wert. Im Verwalten-Fenster
+       standen 49 px – die Reiter verschwanden 13 px hinter dem Kopf. */
+    :root{--modal-kopf:62px}
     .modal-hdr{
       display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;
       position:sticky;top:0;z-index:6;
@@ -2229,7 +2233,7 @@
     .mg-tabs{
       display:flex;gap:4px;margin:0 0 14px;padding:4px;
       background:#1b2043;border-radius:14px;
-      position:sticky;top:49px;z-index:5;
+      position:sticky;top:var(--modal-kopf);z-index:5;
       box-shadow:0 0 0 10px #0e1330;
     }
     .mg-tab{
@@ -2248,7 +2252,7 @@
     .mg-blatt{display:none}
     .mg-blatt.on{display:block;animation:mgRein var(--takt) var(--kurve)}
     @keyframes mgRein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-    .mg-stats{display:flex;gap:9px;margin-bottom:6px}
+    .mg-stats{display:flex;gap:12px;margin-bottom:6px}
     .mg-stats>div{
       flex:1;text-align:center;padding:12px 8px;border-radius:15px;
       background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
@@ -4795,7 +4799,7 @@
     .sk-gruende span{font-size:.72rem;font-weight:700;padding:4px 9px;border-radius:999px;color:#FFC9D6;background:rgba(255,45,118,.12)}
     .sk-datum{font-size:.72rem;color:var(--muted);margin-top:8px}
     .sk-anonym{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--text2);margin:4px 0 14px}
-    .sk-stufen{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 14px}
+    .sk-stufen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 14px}
     .sk-stufe{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:12px;
       background:rgba(255,255,255,.04);color:var(--muted);font-size:.68rem;text-align:center}
     .sk-stufe b{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -6103,7 +6107,9 @@
     .up-blockiert{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:48px 24px}
     .up-blockiert b{font-size:1rem;color:#fff}
     .up-blockiert span{font-size:.82rem;line-height:1.5;color:var(--muted);max-width:300px}
-    .mg-raus{flex:none;margin-left:auto;padding:6px 11px;border-radius:var(--knopf-r-klein);border:1px solid rgba(255,255,255,.14);
+    /* Gleiche Hoehe wie die Ja/Nein-Knoepfe eine Zeile weiter oben (34 px) */
+    .mg-raus{flex:none;margin-left:auto;display:inline-flex;align-items:center;justify-content:center;
+      min-height:34px;padding:0 13px;border-radius:var(--knopf-r-klein);border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.06);color:var(--text2);font-family:var(--font);font-size:.74rem;font-weight:700;cursor:pointer}
     .mg-raus.armed{border-color:rgba(255,69,86,.55);background:rgba(255,69,86,.14);color:#FF8A92}
     .mg-guest{transition:opacity .25s ease}
