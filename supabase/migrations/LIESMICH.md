@@ -34,3 +34,15 @@ Korrekturen liegen nur in der Datenbank.
 Offen: zwei Verbesserungen an den Zahlungs-Webhooks (Zahlungen bei Fehlern nicht als
 erledigt vermerken, Kündigung als „gekündigt“ anzeigen) sind vorbereitet, aber noch
 nicht hochgeladen.
+
+## Angewendet am 16. September 2026 (Gruppen)
+
+| Name | Was |
+|---|---|
+| `gruppen_fundament` | `groups.beitritt_code`, Rollen statt `status`, Tabelle `gruppen_anfragen`, `group_suggestion_votes` gelöscht; Regeln neu: eine Gruppe sieht nur, wer drin ist (vorher jeder Angemeldete) |
+| `gruppen_ablauf` | `gruppe_gruenden`, `gruppe_vorschau`, `gruppe_anfragen`, `gruppe_entscheiden`, `gruppe_verlassen`, `meine_gruppen` |
+| `gruppen_chat` | `conversations.group_id`; die vier Wächter (`guard_gespraech_pro`, `guard_verein_gespraech`, `guard_blocked_message`, `melde_nachricht`) bekommen einen Gruppenzweig; `gruppe_chat_oeffnen` |
+| `gruppen_ansicht` | `gruppe_ansehen`, `gruppe_party_stellen`, `gruppe_party_entfernen`, `darf_party_sehen` |
+| `gruppen_tabellenrechte` | **Fund beim Gegenprüfen:** `groups`, `group_members`, `group_suggestions` hatten nur `service_role`. Ohne Tabellenrecht greift keine Zeilenregel – die alte Gruppenfunktion konnte nie über die App laufen. `anon` hat auf Gruppen jetzt gar nichts |
+
+Ausführlich: Obsidian-Notiz **Gruppen**.
