@@ -852,7 +852,8 @@
       position:sticky;top:0;z-index:6;
       background:linear-gradient(180deg,rgba(15,20,50,.99) 60%,rgba(15,20,50,.94));
     }
-    .modal-title{font-size:1.1rem;font-weight:700;color:#fff}
+    .modal-title{font-size:1.1rem;font-weight:700;color:#fff;
+      display:flex;align-items:center;min-height:34px}
     /* Safari gibt einem <svg> ohne width/height im Flex-Container die Breite 0.
        Genau daran war das Schliessen-Kreuz im Profil-Fenster unsichtbar.
        Diese Zeile steht bewusst weit oben, damit jede spätere Regel gewinnt. */
@@ -2574,7 +2575,7 @@
    relative}` sicher schlaegt. Mit nur einer Klasse gewann die andere,
    und das Kreuz rutschte aus dem Bild. */
     .modal-x.modal-x-float{
-      position:absolute;top:14px;right:14px;z-index:20;
+      position:absolute;top:32px;right:20px;z-index:20;
       background:rgba(0,0,0,.62);
     }
 
@@ -2878,11 +2879,12 @@
     .create-foot button{margin-top:0}
     /* "Entwurf" steht in jedem Schritt oben links, gegenueber dem Kreuz */
     .entwurf-knopf{
-      position:absolute;top:14px;left:14px;z-index:20;
+      position:absolute;top:32px;left:20px;z-index:20;
+      display:inline-flex;align-items:center;min-height:34px;
       border:1px solid rgba(255,255,255,.14);border-radius:980px;cursor:pointer;
       background:rgba(0,0,0,.62);
       color:rgba(255,255,255,.86);font-family:var(--font);
-      font-size:.76rem;font-weight:800;padding:8px 14px;
+      font-size:.76rem;font-weight:800;padding:0 14px;
       -webkit-tap-highlight-color:transparent;
     }
     .entwurf-knopf:active{background:rgba(0,0,0,.6)}
@@ -6005,10 +6007,10 @@
     }
     #userProfOverlay.open .modal{transform:none}
     .up-kopf{flex:none;display:flex;align-items:center;gap:8px;
-      padding:calc(env(safe-area-inset-top) + 10px) 14px 10px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
-    .up-zurueck{width:38px;height:38px;flex:none;border-radius:50%;border:none;background:none;color:#fff;
+      padding:calc(var(--safe-top) + 14px) 20px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .up-zurueck{width:34px;height:34px;flex:none;border-radius:50%;border:none;background:none;color:#fff;
       display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .up-zurueck svg{width:22px;height:22px}
+    .up-zurueck svg{width:20px;height:20px}
     .up-zurueck:active{background:rgba(255,255,255,.1)}
     .up-kopf-titel{flex:1;min-width:0;font-size:1rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .up-rolle{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
