@@ -118,28 +118,13 @@
       /* Deckend, sonst sieht man beim Schieben durch die Seite hindurch */
       background:var(--bg);
     }
-    /* ── Seitenwechsel wie in einer App ───────────────────────────
-       Vorher wurde hart von display:none auf display:flex geschaltet.
-       Genau daran erkennt der Daumen eine Website. Jetzt schiebt die
-       neue Seite herein und die alte ein Stueck heraus – vorwaerts von
-       rechts, rueckwaerts von links. Wer das System auf "Bewegung
-       reduzieren" gestellt hat, bekommt weiterhin ein Umschalten. */
-    .page.faehrt{display:flex}
-    .page.rein-vor{animation:seiteReinVor var(--takt-lang) var(--kurve) both}
-    .page.raus-vor{animation:seiteRausVor var(--takt-lang) var(--kurve) both;pointer-events:none}
-    .page.rein-zur{animation:seiteReinZur var(--takt-lang) var(--kurve) both}
-    .page.raus-zur{animation:seiteRausZur var(--takt-lang) var(--kurve) both;pointer-events:none}
-    @keyframes seiteReinVor{from{transform:translateX(100%)}to{transform:translateX(0)}}
-    @keyframes seiteRausVor{from{transform:translateX(0)}to{transform:translateX(-24%);opacity:.55}}
-    @keyframes seiteReinZur{from{transform:translateX(-24%);opacity:.55}to{transform:translateX(0);opacity:1}}
-    @keyframes seiteRausZur{from{transform:translateX(0)}to{transform:translateX(100%)}}
-    /* Waehrend man mit dem Finger zieht, folgt die Seite ohne Uebergang */
-    .page.zieht{display:flex;animation:none;will-change:transform}
-    @media(prefers-reduced-motion:reduce){
-      .page.rein-vor,.page.raus-vor,.page.rein-zur,.page.raus-zur{animation:none}
-    }
-    /* Der Schatten an der Kante macht aus zwei Flaechen zwei Ebenen */
-    .page.zieht.oben,.page.rein-vor,.page.rein-zur{box-shadow:-14px 0 34px rgba(0,0,0,.5)}
+    /* Seitenwechsel schalten um, ohne Bewegung – wie vor dem 16.09.
+       Der Versuch, sie schieben zu lassen, sah schlecht aus und ist
+       wieder draussen. Was bleibt, ist das Ziehen mit dem Finger beim
+       Zurueckwischen aus dem Gespraech: dafuer – und nur dafuer –
+       braucht es die drei Regeln hier. */
+    .page.zieht{display:flex;will-change:transform}
+    .page.zieht.oben{box-shadow:-14px 0 34px rgba(0,0,0,.5)}
     /* Ohne das quetscht der Flex-Container die Filter-Chips zusammen,
        sobald der Inhalt höher ist als der Viewport → Überlappung. */
     .page>*{flex-shrink:0}
@@ -2145,19 +2130,27 @@
     .plus-gross{
       display:flex;align-items:center;gap:13px;width:100%;
       border:none;border-radius:17px;cursor:pointer;
-      background:var(--grad-cta);color:#fff;padding:16px 18px;
+      /* Dunklere Fassung des CTA-Verlaufs, nur hier. Auf dem hellen
+         Pink war die zweite Zeile kaum zu lesen – und --grad-cta selbst
+         steckt an 66 anderen Stellen, den faerbt man nicht mit um. */
+      background:linear-gradient(135deg,#C4144F,#C43A24);
+      color:#fff;padding:16px 18px;
       font-family:var(--font);text-align:left;
-      box-shadow:0 8px 26px rgba(255,45,118,0.14);transition:transform var(--takt-kurz);
+      box-shadow:0 8px 26px rgba(196,20,79,0.20);transition:transform var(--takt-kurz);
     }
     .plus-gross:active{transform:scale(var(--druck-gross))}
     .plus-ic{
       width:38px;height:38px;border-radius:13px;flex:none;
-      background:rgba(255,255,255,.20);
+      background:rgba(255,255,255,.24);
       display:flex;align-items:center;justify-content:center;
     }
     .plus-ic svg{width:19px;height:19px}
     .plus-t{display:block;font-size:.98rem;font-weight:800;line-height:1.25}
-    .plus-s{display:block;font-size:.77rem;opacity:.82;margin-top:2px;line-height:1.35}
+    .plus-s{display:block;font-size:.77rem;margin-top:2px;line-height:1.35}
+    /* Auf dem farbigen Balken: fast weiss. Sonst gewinnt weiter unten
+       die graue Fassung fuer .plus-card – die dort auch richtig ist. */
+    .plus-gross .plus-s{color:rgba(255,255,255,.92)}
+    .plus-gross .plus-t{color:#fff}
     .plus-party{
       display:flex;align-items:center;gap:12px;width:100%;
       background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
@@ -10149,10 +10142,10 @@ function zurueckGesteStarten(){
       setTimeout(()=>aufraeumen(true),200);
     }
   };
-  /* Wer die Klasse "active" setzt, muss sie auch wieder wegnehmen –
-     sonst bleiben zwei Seiten stehen. Bei Erfolg uebernimmt showOnly
-     das Aufraeumen (es sichert "genau eine"), beim Abbruch nehme ich
-     der unteren Seite das "active" wieder weg, das ich ihr gegeben habe. */
+  /* Wer die Klasse "active" setzt, muss sie auch wieder wegnehmen.
+     Seit die Uebergaenge draussen sind, raeumt showOnly nicht mehr
+     hinterher – die Geste beseitigt ihre Spuren darum vollstaendig
+     selbst, sonst lagen wieder zwei Seiten uebereinander. */
   function aufraeumen(abgebrochen){
     [oben,unten].forEach(el=>{
       if(!el)return;
@@ -10160,6 +10153,7 @@ function zurueckGesteStarten(){
       el.classList.remove('zieht','oben');
     });
     if(abgebrochen&&unten)unten.classList.remove('active');
+    if(!abgebrochen&&oben)oben.classList.remove('active');
     oben=unten=ziel=null;dx=0;entschieden=false;
   }
   document.addEventListener('touchend',los,{passive:true});
@@ -10176,66 +10170,35 @@ function zurueck(){
   merkeOrt();
 }
 
-/* Seiten, die uebereinander liegen: die Startseite ist die Wurzel, alles
-   andere liegt darueber. Daran haengt die Richtung der Bewegung. */
-const SEITEN_TIEFE={auth:0,main:1,search:2,calendar:2,chat:2,profile:2,pro:3,conv:3};
+/* Bleibt als Sperre fuer die Wisch-Geste: waehrend eines Wechsels faengt
+   keine neue Geste an. Die Tiefenordnung fuer die Richtung der Bewegung
+   ist mit den Uebergaengen weggefallen. */
 let seitenWechselLaeuft=false;
 
-function showOnly(name,richtung){
-  const alt=document.querySelector('.page.active');
-  const neu=document.getElementById('page-'+name);
-  if(!neu){ return; }
+/* Umschalten ohne Bewegung, wie vor dem 16.09. Die zweite Angabe
+   (Richtung) nehmen die Aufrufer weiterhin mit – sie wird hier
+   absichtlich nicht mehr benutzt, damit convZurueck() und zurueck()
+   unveraendert bleiben koennen.
 
+   Dass am Ende genau EINE Seite aktiv ist, ergibt sich hier von
+   selbst: "active" wird allen genommen und nur einer gegeben. Die
+   Spuren der Wisch-Geste (transform, opacity) werden mit abgeraeumt,
+   falls sie eine hinterlassen hat. */
+function showOnly(name){
+  const neu=document.getElementById('page-'+name);
+  if(!neu)return;
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.remove('active','zieht','oben');
+    if(p.style.transform||p.style.opacity||p.style.transition){
+      p.style.transform='';p.style.opacity='';p.style.transition='';
+    }
+  });
+  neu.classList.add('active');
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('bnav-'+name)?.classList.add('active');
   // In der Unterhaltung sitzt das Schreibfeld ganz unten – dort darf
   // die Menueleiste nicht daraufliegen.
   document.getElementById('bnav')?.classList.toggle('nav-weg', name==='conv');
-
-  /* Eine Zusage, die an jedem Ausgang gilt: am Ende ist genau eine
-     Seite aktiv. Vorher konnte die Wisch-Geste eine zweite stehen
-     lassen – dann lagen zwei Seiten uebereinander. */
-  const nurDiese=(el)=>document.querySelectorAll('.page').forEach(x=>{
-    if(x!==el)x.classList.remove('active','zieht','oben','faehrt','rein-vor','raus-vor','rein-zur','raus-zur');
-  });
-
-  if(alt===neu){ neu.classList.add('active'); nurDiese(neu); return; }
-
-  const ruhig=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  /* Ohne Vorgaenger, beim Anmeldebildschirm oder bei "Bewegung
-     reduzieren" wird geschaltet statt geschoben. */
-  if(!alt||ruhig||name==='auth'||alt.id==='page-auth'||seitenWechselLaeuft){
-    document.querySelectorAll('.page').forEach(p=>{
-      p.classList.remove('active','rein-vor','raus-vor','rein-zur','raus-zur','zieht','oben','faehrt');
-      p.style.transform='';p.style.opacity='';p.style.transition='';
-    });
-    neu.classList.add('active');
-    return;
-  }
-
-  const von=SEITEN_TIEFE[alt.id.replace('page-','')] ?? 1;
-  const zu =SEITEN_TIEFE[name] ?? 1;
-  const zurueckwaerts = richtung==='zurueck' || (richtung!=='vor' && zu < von);
-
-  seitenWechselLaeuft=true;
-  const rein=zurueckwaerts?'rein-zur':'rein-vor';
-  const raus=zurueckwaerts?'raus-zur':'raus-vor';
-
-  neu.classList.add('active',rein);
-  alt.classList.add('faehrt',raus);
-
-  const fertig=()=>{
-    alt.classList.remove('active','faehrt',raus,'oben');
-    neu.classList.remove(rein,'oben');
-    neu.classList.add('active');
-    nurDiese(neu);          // die Zusage: genau eine
-    seitenWechselLaeuft=false;
-  };
-  let erledigt=false;
-  const einmal=()=>{ if(erledigt)return; erledigt=true; fertig(); };
-  neu.addEventListener('animationend',einmal,{once:true});
-  // Sicherheitsnetz: bleibt die Bewegung aus, darf die Seite nicht haengen
-  setTimeout(einmal,420);
 }
 
 function showPage(name,richtung){
