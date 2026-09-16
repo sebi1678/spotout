@@ -407,8 +407,8 @@
        nicht zwei. Eine Frage pro Karte, alles ueberspringbar: keine
        dieser Einstellungen ist eine, die man falsch machen kann. */
     #einsBuehne{
-      display:flex;align-items:center;justify-content:center;
-      padding:0 18px;overflow-y:auto;
+      display:flex;align-items:flex-start;justify-content:center;
+      padding:8px 18px 0;overflow-y:auto;
     }
     .eins-karte{
       width:100%;max-width:340px;display:flex;flex-direction:column;gap:11px;
@@ -9173,7 +9173,11 @@ function einstiegStarten(){
   if(!el)return;
   einsIndex=0;
   einsWahl={
-    raus: (()=>{ try{ return schnellRausWahl()||''; }catch(e){ return ''; } })(),
+    /* null heisst "noch nicht getippt" und wird nirgends markiert.
+       '' waere eine Wahl – naemlich "Brauch ich nicht" – und stuende
+       sofort angehakt da, obwohl niemand sie getroffen hat. Wer nur
+       durchtippt, soll nichts einschalten und nichts ausschalten. */
+    raus: (()=>{ try{ return schnellRausWahl()||null; }catch(e){ return null; } })(),
     schreiben: cProfile?.allow_messages||'everyone',
     privat: !!cProfile?.privat,
   };
@@ -9236,7 +9240,11 @@ async function einstiegFertig(){
   }
   try{ localStorage.setItem(EINSTIEG_SCHLUESSEL,'1'); }catch(e){}
 
-  try{ schnellRausSpeichern(einsWahl.raus); rausKnopfZeigen(); }catch(e){}
+  /* Nur speichern, wenn wirklich getippt wurde. Sonst bleibt es beim
+     bisherigen Stand – "Später" darf nichts abschalten. */
+  if(einsWahl.raus!==null){
+    try{ schnellRausSpeichern(einsWahl.raus); rausKnopfZeigen(); }catch(e){}
+  }
 
   if(!cUser)return;
   /* Beide Felder in einem Zug – zwei getrennte Aufrufe waeren zwei
