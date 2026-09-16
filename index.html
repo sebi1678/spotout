@@ -177,20 +177,15 @@
       0%{opacity:0;transform:translateY(10px) scale(.96);filter:blur(8px)}
       100%{opacity:1;transform:none;filter:blur(0)}
     }
-    /* Der Strich kommt erst nach 350 ms – wer schneller fertig ist, sieht
-       gar keinen Ladeanzeiger aufblitzen. */
-    .sp-lauf{
-      position:relative;width:136px;height:3px;border-radius:99px;overflow:hidden;
-      background:rgba(255,255,255,.08);opacity:0;animation:spAuf 400ms ease 350ms forwards;
-    }
-    .sp-lauf i{
-      position:absolute;top:0;bottom:0;left:0;width:45%;border-radius:inherit;
-      background:linear-gradient(90deg,transparent,#FF2D76 35%,#FFB020 70%,transparent);
-      animation:spLauf 1.25s cubic-bezier(.45,0,.2,1) infinite;
-    }
+    /* Frueher stand hier ein Ladebalken: ein pink-oranger Strich direkt
+       unter dem Schriftzug. Er sah nicht nach Ladeanzeige aus, sondern
+       nach einem Fleck in einer fremden Farbe – die Marke ist weiss,
+       der Grund dunkelblau, und dazwischen leuchtete etwas Drittes.
+       Weg damit. Dass etwas laeuft, sagen der atmende Schein hinter dem
+       Logo und die Saetze darunter; dauert es zu lange, kommt nach
+       fuenf Sekunden der Notfall-Text. Das genuegt. */
     @keyframes spAuf{to{opacity:1}}
-    @keyframes spLauf{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
-    .sp-saetze{height:20px;position:relative;width:100%;margin-top:-12px}
+    .sp-saetze{height:20px;position:relative;width:100%}
     .sp-satz{
       position:absolute;inset:0;text-align:center;
       font-size:.84rem;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.5);
@@ -216,9 +211,8 @@
       font-family:var(--font);font-size:.9rem;font-weight:800;padding:12px 26px;
     }
     @media(prefers-reduced-motion:reduce){
-      .sp-licht span,.sp-halo,.sp-lauf i{animation:none}
+      .sp-licht span,.sp-halo{animation:none}
       .sp-halo{opacity:1}
-      .sp-lauf{display:none}
       .splash-logo{animation:none;opacity:1}
       .sp-satz{animation:none}
       .sp-satz:first-child{opacity:1}
@@ -408,6 +402,37 @@
     }
     .tour-btn:active{transform:scale(var(--druck))}
 
+    /* ── Die drei Fragen nach dem Tutorial ──
+       Gleiche Buehne wie die Tour, damit es ein Ablauf bleibt und
+       nicht zwei. Eine Frage pro Karte, alles ueberspringbar: keine
+       dieser Einstellungen ist eine, die man falsch machen kann. */
+    #einsBuehne{
+      display:flex;align-items:center;justify-content:center;
+      padding:0 18px;overflow-y:auto;
+    }
+    .eins-karte{
+      width:100%;max-width:340px;display:flex;flex-direction:column;gap:11px;
+      animation:rein var(--takt-lang) var(--kurve);
+    }
+    .eins-frage{
+      font-size:1.32rem;font-weight:900;letter-spacing:-.02em;color:#fff;
+      line-height:1.2;margin-bottom:2px;text-align:left;
+    }
+    .eins-hilfe{
+      font-size:.86rem;color:rgba(255,255,255,.58);line-height:1.5;
+      margin:-6px 0 6px;text-align:left;
+    }
+    .eins-karte .msg-setting-opt{text-align:left}
+    .eins-karte .set-opt-t{font-size:.94rem;font-weight:800;color:#fff}
+    .eins-karte .set-opt-s{font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.4;margin-top:2px}
+    .eins-ic{
+      width:34px;height:34px;flex:none;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.07);
+    }
+    .eins-ic svg{width:19px;height:19px}
+    .eins-karte .msg-setting-opt.active .eins-ic{background:rgba(255,45,118,.2)}
+
     /* ── Beispiele in der Tour ──
        Nachgebaute Ausschnitte der echten App, nicht abstrakte Kaesten:
        wer die Tour gesehen hat, erkennt die Sache wieder. */
@@ -507,7 +532,7 @@
       font-size:.76rem;line-height:1.45;color:#FFE1AE;
     }
     .tb-hinweis svg{width:13px;height:13px;flex:none;margin-top:2px;color:#FFC24B}
-    /* Doomscroll-Knopf in der Tour: die obere Leiste in klein, der Knopf
+    /* Fluchtknopf in der Tour: die obere Leiste in klein, der Knopf
        darin leuchtet. Darunter dieselben Chips wie in den Einstellungen. */
     .tb-leiste{
       display:flex;align-items:center;gap:7px;margin-bottom:14px;
@@ -583,18 +608,40 @@
     /* ── Ziehen zum Aktualisieren ──
        Der Kreis folgt dem Finger und dreht mit. Ab der Schwelle faerbt
        er sich – dann weiss man vor dem Loslassen, dass es ausloest. */
+    /* Frueher: ein Pfeil, der sich beim Ziehen mitdrehte – dreimal so
+       schnell wie der Finger, und beim Loslassen sprang er auf eine
+       andere Drehung um. Das sah aus wie ein Zufall, nicht wie eine
+       Anzeige. Jetzt fuellt sich ein Ring genau im Mass des Zuges:
+       halb gezogen ist er halb voll. Voll heisst, dass es ausloest –
+       das sieht man, bevor man loslaesst, und spuert es zusaetzlich.
+       Beim Laden wird aus dem Ring ein kurzer Bogen, der kreist. */
     .ptr{
       position:fixed;left:50%;top:calc(var(--safe-top) + 6px);z-index:90;
-      width:34px;height:34px;margin-left:-17px;border-radius:50%;
+      width:32px;height:32px;margin-left:-16px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;
-      background:rgba(9,13,36,.92);border:1px solid rgba(255,255,255,.14);
-      color:rgba(255,255,255,.7);opacity:0;pointer-events:none;
-      transform:translateY(-10px);
+      background:rgba(9,13,36,.94);border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 6px 18px rgba(0,0,0,.35);
+      opacity:0;pointer-events:none;
+      transform:translateY(-8px);
     }
-    .ptr svg{width:17px;height:17px}
-    .ptr.bereit{color:#fff;border-color:rgba(255,45,118,.55);background:rgba(255,45,118,.22)}
-    .ptr.laeuft svg{animation:ptrDreht .9s linear infinite}
+    .ptr svg{width:32px;height:32px;display:block;transform:rotate(-90deg)}
+    /* Der zurueckgelegte Anteil steckt in --ptr-anteil (0 bis 1). */
+    .ptr .ptr-spur{stroke:rgba(255,255,255,.14)}
+    .ptr .ptr-voll{
+      stroke:rgba(255,255,255,.55);
+      stroke-dasharray:69.115;
+      stroke-dashoffset:calc(69.115 * (1 - var(--ptr-anteil,0)));
+    }
+    .ptr.bereit{border-color:rgba(255,45,118,.5);background:rgba(255,45,118,.16)}
+    .ptr.bereit .ptr-voll{stroke:#FF2D76}
+    /* Beim Laden: ein Viertelbogen, der kreist. Der Ring bleibt stehen,
+       nur die Zeichnung dreht – so springt nichts. */
+    .ptr.laeuft .ptr-voll{
+      stroke:#FF2D76;stroke-dasharray:17.3 51.8;stroke-dashoffset:0;
+      transform-origin:50% 50%;animation:ptrDreht .85s linear infinite;
+    }
     @keyframes ptrDreht{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){ .ptr.laeuft .ptr-voll{animation:none} }
 
     /* ── Platzhalter statt Kreisel ──
        Ein drehender Kreis ist die Geste einer Website. Eine App zeigt
@@ -846,7 +893,7 @@
       position:fixed;inset:0;z-index:200;
       background:rgba(0,0,0,.7);
       display:flex;align-items:flex-end;justify-content:center;
-      opacity:0;pointer-events:none;transition:opacity var(--takt);
+      opacity:0;pointer-events:none;transition:opacity 260ms var(--kurve);
     }
     .overlay.open{opacity:1;pointer-events:all}
     /* Tippen in einem Fenster: das Fenster endet genau ueber der Tastatur.
@@ -866,7 +913,11 @@
       border:1px solid rgba(255,255,255,.10);
       border-radius:28px 28px 0 0;
       max-height:90vh;max-height:90dvh;overflow-y:auto;
-      transform:translateY(100%);transition:transform var(--takt-lang) var(--kurve);
+      /* Grund und Blatt liefen frueher verschieden lang: der dunkle
+         Grund war nach 220 ms weg, das Blatt rutschte noch 100 ms
+         weiter – sichtbar ueber der nackten Seite. Beide jetzt auf
+         260 ms mit derselben Kurve; dann endet es zusammen. */
+      transform:translateY(100%);transition:transform 260ms var(--kurve);
       -webkit-overflow-scrolling:touch;
     }
     .overlay.open .modal{transform:translateY(0)}
@@ -1505,6 +1556,17 @@
       content:'';width:8px;height:8px;border-radius:50%;background:#fff;
     }
     .search-user-row:last-child{border-bottom:none}
+    /* Der Einladen-Weg im Leerzustand der Suche. */
+    .such-einladen{
+      display:flex;align-items:center;justify-content:center;gap:9px;
+      width:calc(100% - 40px);margin:2px 20px 0;padding:14px;
+      border-radius:16px;cursor:pointer;
+      background:rgba(255,45,118,.10);border:1px solid rgba(255,45,118,.26);
+      color:#fff;font-family:var(--font);font-size:.9rem;font-weight:800;
+      -webkit-tap-highlight-color:transparent;transition:transform var(--takt-kurz);
+    }
+    .such-einladen svg{width:18px;height:18px;flex:none;color:#FF7FA5}
+    .such-einladen:active{transform:scale(var(--druck))}
 
     /* ── PRO PROFILE HEADER ── */
 /* Der Verlauf laeuft jetzt nach unten aus, statt an einer Kante
@@ -2572,11 +2634,18 @@
       display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;
     }
     .nav-bell svg{width:19px;height:19px}
+    /* Ein Punkt, keine Zahl. Die Zahl war eine Aufgabenliste: 7 stand
+       da, bis man sieben Zeilen abgearbeitet hatte. Ob es sieben oder
+       zwei sind, aendert aber nichts an dem, was man tut – man schaut
+       so oder so nach. Der Punkt sagt "da ist etwas" und sonst nichts.
+       Die Zahl am App-Symbol auf dem Startbildschirm bleibt: dort
+       sieht man die Glocke ja nicht. */
     .nav-bell-dot{
-      position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;
-      border-radius:980px;background:#FF2D76;color:#fff;
-      font-size:.6rem;font-weight:900;line-height:18px;text-align:center;
+      position:absolute;top:-2px;right:-2px;width:10px;height:10px;padding:0;
+      border-radius:50%;background:#FF2D76;
+      font-size:0;line-height:0;
       border:2px solid #090d24;
+      box-shadow:0 0 0 1px rgba(255,45,118,.35);
     }
     .nt-row{
       display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
@@ -5454,14 +5523,6 @@
     }
     .rwahl.on .rwahl-haken{opacity:1}
     .rwahl-haken svg{width:12px;height:12px}
-    /* Doomscroll-Knopf bei der Registrierung: vier Moeglichkeiten sollen
-       auf einem kleinen Handy ohne Scrollen Platz haben – darum eine
-       Spur flacher als die Wahl der Kontoart. */
-    .rwahl.rwahl-klein{padding:10px 13px;margin-bottom:8px;gap:12px}
-    .rwahl-klein .rwahl-ic{width:32px;height:32px;border-radius:10px}
-    .rwahl-klein .rwahl-ic svg{width:17px;height:17px}
-    .rwahl-klein .rwahl-txt{gap:1px}
-    .rwahl-klein .rwahl-txt b{font-size:.9rem}
 
     /* Fehler direkt über dem Knopf, nicht als Zuruf, der wegfliegt. */
     .rfehler{
@@ -5583,7 +5644,7 @@
        oder wandert. Die Uebergaenge unter dem Finger bleiben – ohne
        sie springt es, und Springen ist schlimmer als Bewegung. */
     @media (prefers-reduced-motion: reduce){
-      .fy-title .fy-spark,.fy-skel,.mpin-ring,.tz-puls,.sp-licht span,.sp-halo,.sp-lauf i,
+      .fy-title .fy-spark,.fy-skel,.mpin-ring,.tz-puls,.sp-licht span,.sp-halo,
       .pz-mit,.pz-ohne,.pz-n,.pz-t,.sp-satz{
         animation:none!important;
       }
@@ -5953,7 +6014,7 @@
     /* ══════════ KOPFLEISTE: EINE FORM ══════════
        Vorher vier Knoepfe, drei Gestalten: die Suche im pinken Hauptknopf-
        Stil, obwohl sie keine Hauptaktion ist, das Zahnrad rund, der Rest
-       eckig. Und der Doomscroll-Knopf trug einen Pfeil, der wie "Anmelden"
+       eckig. Und der Fluchtknopf trug einen Pfeil, der wie "Anmelden"
        aussah. Jetzt dieselbe Glasflaeche fuer alle, das Pink bleibt dem
        Erstellen-Knopf unten. */
     .nav-raus,.nav-bell,.nav-suche,.nav-icon-btn{
@@ -5975,7 +6036,7 @@
     .nav-raus::after,.nav-suche::after{
       content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);
     }
-    /* Der Knopf stand auch dann da, wenn der Doomscroll-Knopf aus war: display:flex
+    /* Der Knopf stand auch dann da, wenn der Fluchtknopf aus war: display:flex
        schlug das hidden-Attribut. Selbst Gaeste sahen ihn. */
     .nav-raus[hidden]{display:none!important}
     @media (max-width:360px){
@@ -6198,7 +6259,19 @@
     .grp-kopf{display:flex;flex-direction:column;align-items:center;text-align:center;
       gap:4px;padding:6px 8px 18px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:16px}
     .grp-kopf-ic{width:76px;height:76px;border-radius:24px;display:flex;align-items:center;
-      justify-content:center;background:rgba(255,45,118,.13);color:#FF7FA5;margin-bottom:6px}
+      justify-content:center;background:rgba(255,45,118,.13);color:#FF7FA5;margin-bottom:6px;
+      overflow:hidden;position:relative}
+    .grp-kopf-ic img{width:100%;height:100%;object-fit:cover;display:block}
+    /* Nur der Gruender sieht ihn – und die Ablage laesst auch nur ihn
+       schreiben, die Oberflaeche entscheidet das nicht allein. */
+    .grp-bild-aendern{
+      position:absolute;left:0;right:0;bottom:0;height:24px;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+      background:rgba(0,0,0,.55);color:#fff;border:none;padding:0;
+    }
+    .grp-bild-aendern svg{width:13px;height:13px}
+    .grp-ic{overflow:hidden}
+    .grp-ic img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
     .grp-kopf-n{font-size:1.3rem;font-weight:900;color:#fff;letter-spacing:-.02em;line-height:1.2}
     .grp-kopf-z{font-size:.88rem;color:var(--text2);line-height:1.4;max-width:280px}
     .grp-kopf-m{font-size:.78rem;color:var(--muted);margin-top:2px}
@@ -6237,8 +6310,6 @@
   <div class="splash-logo"><img src="data:image/png;base64,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" style="height:44px;width:auto" alt="Spotout"/></div>
   </div>
 
-  <div class="sp-lauf" aria-hidden="true"><i></i></div>
-
   <div class="sp-saetze">
     <div class="sp-satz">Wir schauen, was in deiner Nähe läuft…</div>
     <div class="sp-satz">Partys, Feste und Openairs</div>
@@ -6266,8 +6337,6 @@
     if(n)n.classList.add('da');
     var s=sp.querySelector('.sp-saetze');
     if(s)s.style.display='none';
-    var l=sp.querySelector('.sp-lauf');
-    if(l)l.style.display='none';
   }
   /* Neun Sekunden waren zu lang. Googles Referenzwert fuer mobile Seiten
      liegt bei drei Sekunden, ab denen ein grosser Teil abspringt – wer
@@ -6316,9 +6385,13 @@
       <div id="auth-register" class="auth-section" style="display:none">
 
         <!-- Ein Balken statt einer Zahl: man sieht auf einen Blick, wie
-             viel noch kommt. Fünf Schritte (Verein: vier), nie mehr als zwei Fragen. -->
+             viel noch kommt. Vier Schritte, nie mehr als zwei Fragen.
+             Frueher waren es fuenf: der Fluchtknopf wurde hier gewaehlt.
+             Er steht jetzt nach dem Tutorial – wer sich anmeldet, will
+             hinein und nicht Einstellungen treffen fuer eine App, die
+             er noch nie gesehen hat. -->
         <div class="rprog"><div class="rprog-bar" id="rprogBar"></div></div>
-        <div class="rprog-txt" id="rprogTxt">Schritt 1 von 5</div>
+        <div class="rprog-txt" id="rprogTxt">Schritt 1 von 4</div>
 
         <!-- ── 1 · Wofür ── -->
         <div class="rstep on" data-rs="1">
@@ -6386,46 +6459,6 @@
             <input type="text" id="reg-vo" placeholder="z.B. Rohr AG" autocomplete="address-level2"/>
           </div>
           <div class="rhinweis">Mit einer E-Mail auf dieser Website ist der Verein sofort bestätigt.</div>
-        </div>
-
-        <!-- ── 4 · privat: Doomscroll-Knopf ──
-             Party langweilig? Ein Tipp, und man scrollt in der eigenen App
-             weiter. Nur fuer private Konten – ein Verein geht nicht selbst
-             auf Partys. "Brauche ich nicht" zaehlt als Wahl. -->
-        <div class="rstep" data-rs="4" data-art="privat">
-          <div class="rfrage">Party langweilig? Wo scrollst du weiter?</div>
-          <div id="regRausWahl">
-          <button type="button" class="rwahl rwahl-klein" data-raus="instagram" onclick="regRausWaehlen('instagram')">
-            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01" stroke-width="2.6"/></svg></span>
-            <span class="rwahl-txt">
-              <b>Instagram Reels</b>
-            </span>
-            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
-          </button>
-          <button type="button" class="rwahl rwahl-klein" data-raus="tiktok" onclick="regRausWaehlen('tiktok')">
-            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.3 4.4 5 4.6"/></svg></span>
-            <span class="rwahl-txt">
-              <b>TikTok</b>
-            </span>
-            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
-          </button>
-          <button type="button" class="rwahl rwahl-klein" data-raus="youtube" onclick="regRausWaehlen('youtube')">
-            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9.2 5 2.8-5 2.8z"/></svg></span>
-            <span class="rwahl-txt">
-              <b>YouTube Shorts</b>
-            </span>
-            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
-          </button>
-          <button type="button" class="rwahl rwahl-klein" data-raus="" onclick="regRausWaehlen('')">
-            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/></svg></span>
-            <span class="rwahl-txt">
-              <b>Brauche ich nicht</b>
-              <span>Kein Knopf in der Leiste</span>
-            </span>
-            <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
-          </button>
-          </div>
-          <div class="rhinweis">Ändern kannst du das jederzeit in den Einstellungen.</div>
         </div>
 
         <!-- ── letzter Schritt · Zugang ── -->
@@ -6521,7 +6554,7 @@
   <div class="top-nav">
     <img src="data:image/png;base64,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" style="height:28px;width:auto" alt="Spotout"/>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
         <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen">
@@ -6690,7 +6723,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
         <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
@@ -6708,7 +6741,7 @@
   <div class="top-nav">
     <div class="nav-titel">Nachrichten</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
         <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
@@ -6756,7 +6789,7 @@
   <div class="top-nav">
     <div class="nav-titel">Meine Partys</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
         <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
@@ -6794,7 +6827,7 @@
   <div class="top-nav">
     <div class="nav-titel">SPOTOUT Pro</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Doomscrollen">
+      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
         <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
@@ -6809,8 +6842,9 @@
 <!-- Ziehen zum Aktualisieren: liegt fest ueber der Seite, damit es
      nicht mitscrollt. Sichtbar nur waehrend der Geste. -->
 <div class="ptr" id="ptr" aria-hidden="true">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
-    <path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 4 21 10 15 10"/>
+  <svg viewBox="0 0 32 32" fill="none" stroke-width="2.4" stroke-linecap="round">
+    <circle class="ptr-spur" cx="16" cy="16" r="11"/>
+    <circle class="ptr-voll" cx="16" cy="16" r="11"/>
   </svg>
 </div>
 
@@ -6823,7 +6857,7 @@
     <svg class="pk pk-bunt" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/><path d="M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z" fill="url(#pkViolett)"/><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3v3.5M16 3v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/><circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/></svg>
     Kalender
   </button>
-  <button class="bnav-btn bnav-create" id="bnav-create" onclick="plusMenue()" aria-label="Party erstellen oder Freunde einladen">
+  <button class="bnav-btn bnav-create" id="bnav-create" onclick="plusMenue()" aria-label="Party erstellen oder Gruppe gründen">
     <span class="bnav-plus">
       <svg class="pk pk-bunt" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path transform="translate(18.6 5.2) scale(1.1)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
     </span>
@@ -6840,6 +6874,30 @@
   </button>
 </div>
 
+
+<!-- Liegt ausserhalb des Gruppenfensters: das Fenster wird beim
+     Zeichnen komplett neu gebaut, ein Feld darin waere mitsamt der
+     offenen Dateiauswahl weg. -->
+<input type="file" id="grpBildDatei" accept="image/*" hidden onchange="grpBildWaehlen(event)"/>
+
+<!-- ════ DREI FRAGEN NACH DEM TUTORIAL ════
+     Frueher stand der Fluchtknopf mitten in der Anmeldung – man sollte
+     etwas einstellen fuer eine App, die man noch nie gesehen hatte.
+     Jetzt kommt alles zusammen und danach: erst hineinschauen, dann
+     entscheiden. -->
+<div class="tour" id="einstieg">
+  <div class="tour-kopf">
+    <div class="tour-schritt" id="einsSchritt">1 von 3</div>
+    <button class="tour-skip" onclick="einstiegFertig()">Später</button>
+  </div>
+  <div class="tour-buehne" id="einsBuehne"></div>
+  <div class="tour-fuss">
+    <div class="tour-punkte" id="einsPunkte"></div>
+    <div class="tour-reihe">
+      <button class="tour-btn" id="einsBtn" onclick="einstiegWeiter()">Weiter</button>
+    </div>
+  </div>
+</div>
 
 <!-- ════ TOUR ════ -->
 
@@ -7502,8 +7560,8 @@
           <button class="lang-opt" data-lang="it" onclick="setLang('it')"><b>IT</b><span>Italiano</span></button>
         </div>
         <div id="setRausBox">
-          <div class="set-frage">Doomscroll-Knopf</div>
-        <div class="set-hilfe">Party gerade langweilig? Ein Tipp auf den Knopf oben, und du scrollst direkt in deiner App weiter.</div>
+          <div class="set-frage">Fluchtknopf</div>
+        <div class="set-hilfe">Die Party ist zäh, aber du willst nicht als Erster gehen? Ein Tipp oben rechts – und du bist mitten im Scrollen. SPOTOUT wartet hier auf dich.</div>
         <div class="chipset" id="setRausWahl">
           <button class="cset" data-raus="" onclick="setSchnellRaus('')">Aus</button>
           <button class="cset" data-raus="tiktok" onclick="setSchnellRaus('tiktok')">TikTok</button>
@@ -8549,8 +8607,7 @@ async function kontoWegLoeschen(){
       try{ kontenSchreiben(kontenLesen().filter(k=>k.id!==uid)); }catch(e){}
       zurueckZurAnmeldung();
       try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
-      toast('Konto gelöscht','success');
-      setTimeout(()=>location.reload(),800);
+          setTimeout(()=>location.reload(),800);
       return;
     }
     if(weg?.fehler==='abo'){
@@ -8585,7 +8642,6 @@ async function clearSearchHistory(){
   if(!cUser)return;
   await sb.from("search_history").delete().eq("user_id",cUser.id);
   document.getElementById("userSearchResults").innerHTML="";
-  toast("Verlauf gelöscht","success");
 }
 
 async function init(){
@@ -8638,26 +8694,37 @@ async function loadProf(){
   // Das eigene kommt vollstaendig ueber mein_profil.
   const{data:eigen}=await sb.rpc('mein_profil');
   const data=Array.isArray(eigen)?eigen[0]:eigen;
-  // If gender/birthdate missing but in user metadata, update profile
+  /* Geschlecht und Geburtsdatum stehen beim allerersten Anmelden nur
+     im Konto, noch nicht im Profil – dann werden sie nachgetragen.
+     Frueher wurde das Profil danach *immer* ein zweites Mal geholt,
+     auch wenn gar nichts nachzutragen war: ein ganzer Rundweg bei
+     jedem einzelnen Start, fuer nichts. Jetzt nur noch dann, wenn
+     wirklich geschrieben wurde. */
+  let nachgetragen=false;
   if(data&&data.kontoart!=='verein'&&(!data.gender||!data.birthdate)){
     const meta=cUser.user_metadata||{};
     const updates={};
     if(!data.gender&&meta.gender)updates.gender=meta.gender;
     if(!data.birthdate&&meta.birthdate)updates.birthdate=meta.birthdate;
-    if(Object.keys(updates).length)await sb.from('profiles').update(updates).eq('id',cUser.id);
+    if(Object.keys(updates).length){
+      await sb.from('profiles').update(updates).eq('id',cUser.id);
+      nachgetragen=true;
+    }
   }
-  const{data:eigen2}=await sb.rpc('mein_profil');
-  const updated=Array.isArray(eigen2)?eigen2[0]:eigen2;
-  /* Die Wahl des Doomscroll-Knopfs aus der Registrierung gilt auch, wenn man
-     sich zum ersten Mal auf einem anderen Geraet anmeldet – etwa weil
-     der Bestaetigungslink im Browser statt in der App aufging. Aber nur
-     einmal pro Geraet: wer den Knopf spaeter ausschaltet, bekommt ihn
-     beim naechsten Anmelden nicht ungefragt zurueck. */
-  try{
-    const m=cUser.user_metadata?.schnell_raus;
-    if(typeof m==='string'&&localStorage.getItem('spotout_raus_gewaehlt')!=='1')
-      schnellRausSpeichern(m);
-  }catch(e){}
+  let updated=data;
+  if(nachgetragen){
+    const{data:eigen2}=await sb.rpc('mein_profil');
+    updated=Array.isArray(eigen2)?eigen2[0]:eigen2;
+  }
+  /* Hier stand ein Pfad, der die Wahl des Fluchtknopfs aus dem Konto
+     nachtrug: die Anmeldung legte sie in die Konto-Angaben, und beim
+     ersten Start auf einem zweiten Geraet wurde sie uebernommen.
+     Seit dem 17.09. wird der Fluchtknopf nicht mehr bei der Anmeldung
+     gewaehlt, sondern nach dem Tutorial – geschrieben wird dort also
+     nichts mehr, und der Pfad haette nie wieder ausgeloest. Weg damit:
+     toter Code, der eine Einstellung setzen koennte, ist schlimmer als
+     gar keiner. Der Preis ist ehrlich benannt – wer sich auf einem
+     zweiten Geraet anmeldet, waehlt den Knopf dort neu. */
   cProfile=updated;updNavAv();
   navFuerKontoart();          // Verein sieht eine andere Leiste
   vereinHomeUmschalten();
@@ -8666,7 +8733,7 @@ async function loadProf(){
 /* Das Bildchen oben rechts steht inzwischen in mehreren Kopfzeilen –
    frueher gab es genau eines mit fester Kennung. */
 function updNavAv(){
-  // Der Doomscroll-Knopf haengt an keiner Anmeldung, aber die
+  // Der Fluchtknopf haengt an keiner Anmeldung, aber die
   // Leiste wird hier ohnehin frisch gezeichnet – also hier mit.
   try{ rausKnopfZeigen(); }catch(e){}
   // Der Name in der Profil-Kopfzeile haengt am selben Profil wie das
@@ -8773,10 +8840,10 @@ const TOUREN={
         +'</div>',
     },
     {
-      t:'Party langweilig?',
-      s:'Ein Tipp auf den Knopf oben, und du scrollst direkt in TikTok, Reels oder Shorts weiter.',
-      /* Die eigene Wahl aus der Registrierung ist markiert – so sieht man
-         gleich, was der Knopf bei einem selbst tut. */
+      t:'Der Fluchtknopf',
+      s:'Die Party ist zäh, gehen willst du noch nicht. Ein Tipp oben rechts – und du bist in TikTok, Reels oder Shorts. Gleich nachher wählst du, wohin.',
+      /* Gewaehlt wird erst nach dieser Tour. Ist hier schon etwas
+         markiert, hat jemand die Tour spaeter nochmals aufgerufen. */
       b:()=>{
         const w=schnellRausWahl();
         const chip=(k,n)=>'<span class="cset'+(w===k?' on':'')+'">'+n+'</span>';
@@ -9016,6 +9083,178 @@ function tourFertig(){
   if(!t)return;
   t.classList.remove('sichtbar');
   setTimeout(()=>t.classList.remove('open'),320);
+  /* Nach der Einfuehrung die drei Fragen – jetzt weiss man, wovon sie
+     handeln. Nur nach der Start-Tour, nicht nach der Pro-Tour. */
+  if(tourSatz==='start'&&einstiegNoetig())setTimeout(einstiegStarten,360);
+}
+
+/* ══════════ DIE DREI FRAGEN NACH DEM TUTORIAL ══════════
+   Vorher stand der Fluchtknopf auf Schritt 4 der Anmeldung. Wer sich
+   registriert, hat die App aber noch nie gesehen – die Frage "wohin
+   scrollst du weiter" ergibt dort keinen Sinn, und "wer darf dir
+   schreiben" stand ueberhaupt nur in den Einstellungen, wo sie nie
+   jemand aufsuchte.
+
+   Jetzt kommt alles an einer Stelle und zum richtigen Zeitpunkt:
+   angemeldet, Einfuehrung gesehen, und nun drei Fragen, von denen
+   keine falsch zu beantworten ist. Alle drei stehen danach weiter in
+   den Einstellungen.
+
+   Ein Verein bekommt sie nicht: er hat keinen Fluchtknopf, keine
+   Gespraeche, und privat ist er nie. */
+
+const EINSTIEG_SCHLUESSEL='spotout_einstieg_v1';
+
+function einstiegGelaufen(){
+  try{ return localStorage.getItem(EINSTIEG_SCHLUESSEL)==='1'; }catch(e){ return true; }
+}
+
+function einstiegNoetig(){
+  if(!cUser)return false;
+  try{ if(istVerein())return false; }catch(e){}
+  return !einstiegGelaufen();
+}
+
+/* Was gerade gilt. Wird beim Oeffnen aus dem Profil gefuellt, damit
+   niemand eine Einstellung ueberschreibt, die er frueher schon
+   bewusst gesetzt hat. */
+let einsWahl={raus:'',schreiben:'everyone',privat:false};
+let einsIndex=0;
+
+const EINS_IC={
+  tiktok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.3 4.4 5 4.6"/></svg>',
+  instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01" stroke-width="2.6"/></svg>',
+  youtube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9.2 5 2.8-5 2.8z"/></svg>',
+  keiner:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/></svg>',
+  alle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>',
+  frage:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-3.3A8.4 8.4 0 1 1 21 11.5z"/></svg>',
+  niemand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6.3 6.3A6 6 0 0 0 6 8c0 7-3 9-3 9h13"/><path d="m3 3 18 18"/></svg>',
+  offen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>',
+  schloss:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.4"/><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5"/></svg>',
+};
+
+function einstiegKarten(){
+  return [
+    {
+      feld:'raus',
+      frage:'Party zäh? Wohin fliehst du?',
+      hilfe:'Dann steht oben rechts ein Knopf. Ein Tipp – und du bist mitten im Scrollen, ohne dass jemand merkt, dass du dich langweilst.',
+      wahl:[
+        {wert:'tiktok',    ic:'tiktok',    t:'TikTok',          s:''},
+        {wert:'instagram', ic:'instagram', t:'Instagram Reels', s:''},
+        {wert:'youtube',   ic:'youtube',   t:'YouTube Shorts',  s:''},
+        {wert:'',          ic:'keiner',    t:'Brauch ich nicht', s:'Kein Knopf in der Leiste'},
+      ],
+    },
+    {
+      feld:'schreiben',
+      frage:'Wer darf dir schreiben?',
+      hilfe:'Kannst du jederzeit ändern – und einzelne Leute blockieren geht sowieso immer.',
+      wahl:[
+        {wert:'everyone', ic:'alle',    t:'Jeder',        s:'Nachrichten kommen direkt an'},
+        {wert:'requests', ic:'frage',   t:'Nur Anfragen', s:'Du entscheidest, wer durchkommt'},
+        {wert:'nobody',   ic:'niemand', t:'Niemand',      s:'Gar keine Nachrichten'},
+      ],
+    },
+    {
+      feld:'privat',
+      frage:'Dein Profil',
+      hilfe:'Offen findet man dich leichter, privat entscheidest du bei jedem einzeln.',
+      wahl:[
+        {wert:false, ic:'offen',   t:'Öffentlich', s:'Jeder kann dir folgen und dich zu Partys einladen'},
+        {wert:true,  ic:'schloss', t:'Privat',     s:'Wer folgen will, fragt an'},
+      ],
+    },
+  ];
+}
+
+function einstiegStarten(){
+  const el=document.getElementById('einstieg');
+  if(!el)return;
+  einsIndex=0;
+  einsWahl={
+    raus: (()=>{ try{ return schnellRausWahl()||''; }catch(e){ return ''; } })(),
+    schreiben: cProfile?.allow_messages||'everyone',
+    privat: !!cProfile?.privat,
+  };
+  el.classList.add('open');
+  einstiegZeichnen();
+  requestAnimationFrame(()=>el.classList.add('sichtbar'));
+}
+
+function einstiegZeichnen(){
+  const karten=einstiegKarten();
+  const k=karten[einsIndex];
+  const buehne=document.getElementById('einsBuehne');
+  if(!buehne||!k)return;
+
+  const jetzt=einsWahl[k.feld];
+  buehne.innerHTML='<div class="eins-karte">'
+    +'<div class="eins-frage">'+esc(k.frage)+'</div>'
+    +'<div class="eins-hilfe">'+esc(k.hilfe)+'</div>'
+    +k.wahl.map((w,i)=>{
+        const an=String(w.wert)===String(jetzt);
+        return '<label class="msg-setting-opt'+(an?' active':'')+'" '
+          +'onclick="einstiegWaehlen(\''+k.feld+'\','+JSON.stringify(w.wert).replace(/"/g,'&quot;')+')">'
+          +'<span class="eins-ic">'+(EINS_IC[w.ic]||'')+'</span>'
+          +'<div><div class="set-opt-t">'+esc(w.t)+'</div>'
+          +(w.s?'<div class="set-opt-s">'+esc(w.s)+'</div>':'')+'</div>'
+          +'</label>';
+      }).join('')
+    +'</div>';
+
+  const punkte=document.getElementById('einsPunkte');
+  if(punkte)punkte.innerHTML=karten.map((_,i)=>
+    '<div class="tour-punkt'+(i===einsIndex?' an':'')+'"></div>').join('');
+  const schritt=document.getElementById('einsSchritt');
+  if(schritt)schritt.textContent=(einsIndex+1)+' von '+karten.length;
+  const btn=document.getElementById('einsBtn');
+  if(btn)btn.textContent=einsIndex>=karten.length-1?'Fertig':'Weiter';
+}
+
+function einstiegWaehlen(feld,wert){
+  einsWahl[feld]=wert;
+  nativeHaptik('leicht');
+  einstiegZeichnen();
+}
+
+function einstiegWeiter(){
+  if(einsIndex>=einstiegKarten().length-1){ einstiegFertig(); return; }
+  einsIndex++;
+  einstiegZeichnen();
+}
+
+/* Auch "Später" merkt sich, dass es gelaufen ist – sonst steht es bei
+   jedem Start wieder da, und das waere genau die Sorte Fenster, die
+   man wegtippt, ohne zu lesen. Was schon gewaehlt wurde, wird
+   trotzdem gespeichert; der Rest bleibt auf dem, was ohnehin galt. */
+async function einstiegFertig(){
+  const el=document.getElementById('einstieg');
+  if(el){
+    el.classList.remove('sichtbar');
+    setTimeout(()=>el.classList.remove('open'),320);
+  }
+  try{ localStorage.setItem(EINSTIEG_SCHLUESSEL,'1'); }catch(e){}
+
+  try{ schnellRausSpeichern(einsWahl.raus); rausKnopfZeigen(); }catch(e){}
+
+  if(!cUser)return;
+  /* Beide Felder in einem Zug – zwei getrennte Aufrufe waeren zwei
+     Rundwege fuer dieselbe Sache. */
+  const patch={};
+  if((cProfile?.allow_messages||'everyone')!==einsWahl.schreiben)patch.allow_messages=einsWahl.schreiben;
+  if(!!cProfile?.privat!==!!einsWahl.privat)patch.privat=!!einsWahl.privat;
+  if(!Object.keys(patch).length)return;
+
+  const{error}=await sb.from('profiles').update(patch).eq('id',cUser.id);
+  if(error){
+    /* Hier darf es sich melden: die Einstellung sieht sonst gesetzt
+       aus und ist es nicht. */
+    toast('Die Einstellungen liessen sich nicht sichern – du findest sie in den Einstellungen','warn');
+    return;
+  }
+  cProfile={...cProfile,...patch};
+  try{ setMsgSettingUI(cProfile.allow_messages||'everyone'); setProfilUI(!!cProfile.privat); }catch(e){}
 }
 
 /* Aus den Einstellungen heraus laesst sie sich jederzeit wieder
@@ -9095,9 +9334,9 @@ async function profilTeilen(){
   }
   try{
     await navigator.clipboard.writeText(adresse);
-    toast('Link zu deinem Profil kopiert','success');
+    amKnopfMelden('Link kopiert');
   }catch(err){
-    toast('Link: '+adresse,'info');
+    toast('Link: '+adresse,'warn');
   }
 }
 
@@ -9146,7 +9385,6 @@ async function kontoWechseln(id){
   const k=kontenLesen().find(x=>x.id===id);
   if(!k)return;
   closeOverlay('kontenOverlay');
-  toast('Wird gewechselt…','info');
   kontoWechselLaeuft=true;
   alleFensterZu();
   seitenVorher.length=0;
@@ -9163,8 +9401,7 @@ async function kontoWechseln(id){
     await loadProf();
     await kontoMerken();
     enterApp();
-    toast('Angemeldet als '+(cProfile?.full_name||cProfile?.username||'Konto'),'success');
-  }catch(err){
+    }catch(err){
     console.warn('[konten]',err);
     // Sitzungen laufen ab. Dann nicht meckern, sondern den Weg zeigen.
     const liste=kontenLesen().filter(x=>x.id!==id);
@@ -9174,7 +9411,7 @@ async function kontoWechseln(id){
       const{data:noch}=await sb.auth.getSession();
       if(noch?.session&&cUser&&noch.session.user.id===cUser.id){
         nativePushAnmelden();
-        toast('Bitte melde dich für dieses Konto neu an','info');
+        toast('Bitte melde dich für dieses Konto neu an','warn');
         return;
       }
     }catch(e){}
@@ -9183,7 +9420,7 @@ async function kontoWechseln(id){
     zurAnmeldung('login');
     const feld=document.getElementById('login-email');
     if(feld&&k.email)feld.value=k.email;
-    toast('Bitte melde dich für dieses Konto neu an','info');
+    toast('Bitte melde dich für dieses Konto neu an','warn');
   }finally{
     kontoWechselLaeuft=false;
   }
@@ -9442,7 +9679,6 @@ async function pwSpeichern(){
   pwAnsichtWeg();
   if(data?.user)cUser=data.user;
   await loadProf(); kontoMerken(); enterApp();
-  toast('Passwort geändert – willkommen zurück','success');
 }
 
 /* Aus den Einstellungen: derselbe Link an die eigene Adresse. Ein
@@ -9555,13 +9791,10 @@ function setKontoart(art){
    Die Feld-IDs sind dieselben geblieben: doRegister() und
    registriereVerein() merken davon nichts. */
 let rSchritt=1;
-/* Ein privates Konto hat fuenf Schritte, ein Verein vier: den Knopf
-   Den Doomscroll-Knopf braucht nur, wer selbst auf Partys geht. E-Mail und
-   Passwort stehen darum auf keiner festen Nummer, sondern immer am
-   Schluss (data-rs="zugang"). */
-function rMax(){ return regArt==='verein' ? 4 : 5; }
-/* null heisst: noch nicht gewaehlt. '' ist eine Wahl – "Brauche ich nicht". */
-let regRaus=null;
+/* Vier Schritte, fuer beide Kontoarten gleich. E-Mail und Passwort
+   stehen auf keiner festen Nummer, sondern immer am Schluss
+   (data-rs="zugang") – darum rechnet rMax() und nicht das Markup. */
+function rMax(){ return 4; }
 
 function rWert(id){ return (document.getElementById(id)?.value||'').trim(); }
 
@@ -9639,11 +9872,6 @@ function regPruefen(){
     return '';
   }
 
-  if(rSchritt===4&&regArt==='privat'){
-    return regRaus===null
-      ? 'Wähl kurz aus, wohin der Knopf führt – oder „Brauche ich nicht".'
-      : '';
-  }
   return '';
 }
 
@@ -9666,16 +9894,7 @@ function regZurueck(){
 function regZuruecksetzen(){
   rSchritt=1;
   nameBestaetigt=false;
-  regRaus=null;
-  document.querySelectorAll('#regRausWahl .rwahl').forEach(b=>b.classList.remove('on'));
   regZeigen();
-}
-
-function regRausWaehlen(k){
-  regRaus=k||'';
-  document.querySelectorAll('#regRausWahl .rwahl').forEach(b=>
-    b.classList.toggle('on',(b.dataset.raus||'')===regRaus));
-  regFehler('');
 }
 
 // Freimail-Adressen sind kein Nachweis für einen Verein.
@@ -9786,9 +10005,8 @@ async function doRegister(){
   const un=fullName.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20)+'_'+Math.floor(Math.random()*999);
   const{data,error}=await sb.auth.signUp({
     email:em,password:pw,
-    options:{emailRedirectTo:'https://spotoutapp.ch/?bestaetigt=1',data:{full_name:fullName,username:un,birthdate:bd||null,kontoart:'privat',
-      // reist im Konto mit – siehe loadProf
-      schnell_raus:regRaus===null?null:regRaus}}
+    options:{emailRedirectTo:'https://spotoutapp.ch/?bestaetigt=1',
+      data:{full_name:fullName,username:un,birthdate:bd||null,kontoart:'privat'}}
   });
   if(btn){btn.textContent='Konto erstellen';btn.disabled=false;}
   if(error){
@@ -9801,8 +10019,6 @@ async function doRegister(){
     toast('Diese E-Mail-Adresse ist schon registriert','error');
     switchAuthTab('login',document.getElementById('tog-login'));return;
   }
-  // Die Wahl gilt sofort auf diesem Geraet – wie in den Einstellungen.
-  if(regRaus!==null)schnellRausSpeichern(regRaus);
   showEmailConfirmScreen(em);
 }
 
@@ -9873,7 +10089,6 @@ async function doLogout(){
   try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
   // Die Sitzung ist damit ungueltig; in der Kontoliste bliebe ein toter Eintrag
   try{ if(warId)kontenSchreiben(kontenLesen().filter(k=>k.id!==warId)); }catch(e){}
-  toast('Abgemeldet','info');
 }
 
 /* Alles zu, Verlauf leer, Anmeldemaske im Ausgangszustand. Wird sowohl
@@ -10005,14 +10220,22 @@ function ziehAktualisieren(){
   const seite=document.getElementById('page-main');
   const anzeige=document.getElementById('ptr');
   if(!seite||!anzeige)return;
-  let y0=0,dy=0,zieht=false,entschieden=false,laeuft=false;
+  let y0=0,dy=0,zieht=false,entschieden=false,laeuft=false,warBereit=false;
+  /* Ab hier loest es aus. Derselbe Wert steuert den Ring: bei 70 px
+     ist er voll. Eine Zahl, zwei Aufgaben – so koennen sie nicht
+     auseinanderlaufen. */
+  const ZIEH_AB=70;
 
   const weg=()=>{
-    anzeige.style.transition='opacity .2s ease,transform .2s ease';
+    anzeige.style.transition='opacity .2s ease,transform .24s var(--kurve)';
     anzeige.style.opacity='0';
-    anzeige.style.transform='translateY(-10px)';
+    anzeige.style.transform='translateY(-8px)';
     anzeige.classList.remove('bereit','laeuft');
-    setTimeout(()=>{anzeige.style.transition='';},220);
+    warBereit=false;
+    setTimeout(()=>{
+      anzeige.style.transition='';
+      anzeige.style.setProperty('--ptr-anteil','0');
+    },260);
   };
 
   seite.addEventListener('touchstart',e=>{
@@ -10036,22 +10259,33 @@ function ziehAktualisieren(){
     }
     if(y<=0){dy=0;anzeige.style.opacity='0';return;}
     if(e.cancelable)e.preventDefault();
+    /* Je weiter gezogen, desto zaeher – wie bei einem Gummiband.
+       Ohne das laeuft die Anzeige dem Finger davon. */
     dy=Math.min(y*0.55,110);
-    anzeige.style.transform='translateY('+dy+'px) rotate('+Math.round(dy*3)+'deg)';
-    anzeige.style.opacity=String(Math.min(dy/70,1));
-    anzeige.classList.toggle('bereit',dy>70);
+    const anteil=Math.min(dy/ZIEH_AB,1);
+    anzeige.style.transform='translateY('+dy.toFixed(1)+'px)';
+    anzeige.style.opacity=String(Math.min(dy/28,1));
+    anzeige.style.setProperty('--ptr-anteil',anteil.toFixed(3));
+    const bereit=anteil>=1;
+    /* Einmal fuehlbar, wenn die Schwelle faellt – nicht bei jedem
+       Pixel darueber. */
+    if(bereit!==warBereit){ warBereit=bereit; if(bereit)nativeHaptik('leicht'); }
+    anzeige.classList.toggle('bereit',bereit);
   },{passive:false});
 
   const los=async()=>{
     if(!zieht)return;
-    zieht=false;
-    if(dy<=70){weg();dy=0;return;}
+    zieht=false;warBereit=false;
+    if(dy<ZIEH_AB){weg();dy=0;return;}
     laeuft=true;dy=0;
     anzeige.classList.remove('bereit');
     anzeige.classList.add('laeuft');
-    anzeige.style.transform='translateY(52px)';
+    /* Der Ring rueckt an seinen Platz und bleibt dort, solange es
+       laedt. Gleitend, damit es nicht springt. */
+    anzeige.style.transition='transform .22s var(--kurve)';
+    anzeige.style.transform='translateY(46px)';
     anzeige.style.opacity='1';
-    nativeHaptik('leicht');
+    const begonnen=Date.now();
     try{
       await loadEvts();
       if(typeof filterAll==='function')filterAll();
@@ -10059,6 +10293,10 @@ function ziehAktualisieren(){
       console.warn('[ziehen]',err);
       toast('Konnte gerade nicht aktualisieren','warn');
     }
+    /* Unter einer halben Sekunde sieht man nur ein Zucken und fragt
+       sich, ob ueberhaupt etwas passiert ist. */
+    const rest=450-(Date.now()-begonnen);
+    if(rest>0)await new Promise(r=>setTimeout(r,rest));
     laeuft=false;
     weg();
   };
@@ -10294,9 +10532,16 @@ async function loadEvts(){
        Der Rueckfall auf die Zeilenzahl ist nur fuer Partys da, die vor
        der Umstellung angelegt und seither nicht angefasst wurden. */
     .map(e=>({...e,attending:e.gaeste_zahl ?? (e.event_attendees?.[0]?.count||0)}));
-  await ladeFreunde();
+  /* Zuerst zeichnen, dann die Freunde nachtragen. Vorher wartete die
+     ganze Liste auf eine zweite Abfrage, die nur eine Zeile pro Karte
+     ergaenzt ("Lena ist dabei") – die Partys standen also einen
+     vollen Rundweg spaeter da, als sie koennten. Wer keine Freunde
+     auf der Party hat, merkte davon nie etwas ausser der Wartezeit. */
   filterAll(false);
   if(istVerein())renderVereinHome();
+  ladeFreunde().then(()=>{
+    if(typeof filterAll==='function')filterAll(false);
+  }).catch(err=>console.warn('[freunde]',err));
 }
 
 /* ══════════ WENN DAS NETZ WEG IST ══════════
@@ -10372,7 +10617,6 @@ function netzWaechterAn(){
     // .onLine sagt nur, dass ein Kabel dranhaengt, nicht dass es geht.
     try{ if(typeof loadEvts==='function')loadEvts(); }catch(e){}
     try{ if(typeof loadNotifs==='function')loadNotifs(); }catch(e){}
-    toast('Wieder verbunden','success');
   });
   if(!netzDa()){ netzWarWeg=true; netzStreifen(true); }
 }
@@ -10486,7 +10730,6 @@ function suchOrtSetzen(name,lat,lng){
       updMarkers();
     }
   }
-  toast('Karte und Liste zeigen jetzt '+name,'success');
 }
 
 function suchOrtLoeschen(){
@@ -11000,7 +11243,6 @@ function renderFeed(){
 function fyRefresh(){
   renderFeed();
   document.getElementById('fySection')?.scrollIntoView({behavior:'smooth',block:'nearest'});
-  toast('Empfehlungen aktualisiert','info');
 }
 
 // Kleine HTML-Escaper – verhindern kaputtes Markup bei Anführungszeichen in Namen
@@ -11072,7 +11314,7 @@ function setOeFilter(art, wert, el){
       // suchen. Beides anbieten statt bloss abzusagen.
       standortHolen(true).then(ok=>{
         if(ok)setOeFilter('km',wert,el);
-        else toast('Gib oben einen Ort ein – dann rechnet der Umkreis von dort','info');
+        else toast('Gib oben einen Ort ein – dann rechnet der Umkreis von dort','warn');
       });
       return;
     }
@@ -11844,7 +12086,6 @@ async function deleteEvent(id){
     if(btn){btn.disabled=false;btn.classList.remove('armed');btn.textContent='Party löschen';}
     return;
   }
-  toast('Party gelöscht','success');
   closeDetail();
   // Geloescht wird auch aus "Verwalten" – das Fenster darf nicht offen bleiben
   if(document.getElementById('manageOverlay')?.classList.contains('open'))closeManage();
@@ -11888,13 +12129,11 @@ async function toggleAtt(id,isAtt){
     if(isAtt){
       const{error}=await sb.from('event_attendees').delete().eq('event_id',id).eq('user_id',cUser.id);
       if(error)throw error;
-      toast('Du bist ausgetragen','info');
     }else{
       const{error}=await sb.from('event_attendees').insert({event_id:id,user_id:cUser.id});
       // 23505 = bereits angemeldet, das ist kein Fehler für den Nutzer
       if(error&&error.code!=='23505')throw error;
-      toast('Du bist dabei!','success');
-    }
+        }
     await loadEvts();
     await openDetail(id);
     if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
@@ -11924,14 +12163,13 @@ async function joinWaitlist(eventId){
   try{
     const{error}=await sb.from('event_waitlist').insert({event_id:eventId,user_id:cUser.id});
     if(error&&error.code==='23505'){
-      toast('Du stehst schon auf der Warteliste','info');
+      toast('Du stehst schon auf der Warteliste','warn');
     }else if(error){
       toast(fehlerText(error),'error');
       if(btn)btn.disabled=false;
       return;
     }else{
-      toast('Du stehst auf der Warteliste','success');
-    }
+        }
     openDetail(eventId);
   }finally{
     wartelisteLaeuft=false;
@@ -12098,7 +12336,18 @@ async function runUserSearch(q){
   if(error){box.innerHTML=searchHint('Die Suche hat nicht geklappt. Versuch es nochmals.');return;}
   const list=(data||[]).filter(u=>u.id!==cUser?.id&&!istBlockiert(u.id));
   if(!list.length){
-    box.innerHTML=searchHint('Niemand gefunden, der zu „'+esc(q)+'“ passt.');
+    /* Niemanden gefunden ist der richtige Moment fuer eine Einladung:
+       genau jetzt sucht jemand eine bestimmte Person, die es hier noch
+       nicht gibt. Frueher stand dieser Weg im Plus-Menue unten – dort
+       sucht ihn niemand, und zwischen "Neue Party" und "Gruppe
+       gruenden" gehoert er auch nicht hin. */
+    box.innerHTML=searchHint('Niemand gefunden, der zu „'+esc(q)+'“ passt.')
+      +'<button class="such-einladen" onclick="spotoutEinladen()">'
+      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
+      +'stroke-linecap="round" stroke-linejoin="round">'
+      +'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>'
+      +'<path d="M19 8v6M22 11h-6"/></svg>'
+      +'<span>Jemanden zu SPOTOUT einladen</span></button>';
     return;
   }
   // Wer den Suchbegriff vorne im Namen trägt, steht oben
@@ -12587,7 +12836,6 @@ async function leaveFromCal(id){
       if(btn){ btn.disabled=false; btn.textContent=btn.dataset.text||'Absagen'; btn.classList.remove('armed'); }
       return;
     }
-    toast('Du bist ausgetragen','info');
     await loadEvts();
     renderCalendar();
   }finally{
@@ -12999,7 +13247,6 @@ async function upAv(e){
 async function avHochladen(f){
   if(!f||avLaeuft)return;
   avLaeuft=true;
-  toast('Bild wird hochgeladen…','info');
   try{
     const klein=await bildVerkleinern(f,'avatar');
     /* Immer dieselbe Endung: sonst bleiben bei jedem Formatwechsel alte
@@ -13015,7 +13262,6 @@ async function avHochladen(f){
     const{error:pErr}=await sb.from('profiles').update({avatar_url:url}).eq('id',cUser.id);
     if(pErr){toast('Das Bild liegt bereit, das Profil liess sich nicht ändern','error');return;}
     cProfile.avatar_url=url;updNavAv();renderProf();epAvZeichnen();
-    toast('Profilbild aktualisiert','success');
   }finally{ avLaeuft=false; }
 }
 
@@ -13223,8 +13469,7 @@ async function saveProfileEdit(){
     cProfile={...cProfile,...updates};
     updNavAv();renderProf();
     closeEditProfile();
-    toast('Profil gespeichert','success');
-  }finally{
+    }finally{
     epBusy=false;
     if(btn){btn.disabled=false;btn.innerHTML=label;}
   }
@@ -13248,7 +13493,7 @@ async function startChat(uid,name,un){
 async function startChatInnen(uid,name,un){
   if(!cUser){kontoNoetig();return;}
   if(uid===cUser.id)return;
-  if(!cProfile?.is_pro){showPage('pro');toast('Nur Pro-Nutzer können ein Gespräch beginnen','info');return;}
+  if(!cProfile?.is_pro){showPage('pro');toast('Nur Pro-Nutzer können ein Gespräch beginnen','warn');return;}
   closeDetail();
   // Check target user's message setting
   // Gibt es das Gespraech schon, geht es direkt hinein – auch bei "Nur Anfragen"
@@ -13257,16 +13502,15 @@ async function startChatInnen(uid,name,un){
     .maybeSingle();
   if(schon){ await openConv(schon.id,{id:uid,full_name:name,username:un}); return; }
   const{data:target}=await sb.from('profiles').select('allow_messages').eq('id',uid).single();
-  if(target?.allow_messages==='nobody'){toast('Diese Person nimmt keine Nachrichten an','info');return;}
+  if(target?.allow_messages==='nobody'){toast('Diese Person nimmt keine Nachrichten an','warn');return;}
   const{data:alt}=target?.allow_messages==='requests'
     ? await sb.from('message_requests').select('id,status').eq('from_user_id',cUser.id).eq('to_user_id',uid).maybeSingle()
     : {data:null};
   if(target?.allow_messages==='requests'&&alt?.status!=='accepted'){
-    if(alt?.status==='pending'){toast('Deine Anfrage läuft schon','info');return;}
-    if(alt?.status==='declined'){toast('Diese Person möchte gerade keine Nachrichten','info');return;}
+    if(alt?.status==='pending'){toast('Deine Anfrage läuft schon','warn');return;}
+    if(alt?.status==='declined'){toast('Diese Person möchte gerade keine Nachrichten','warn');return;}
     const{error}=await sb.from('message_requests').insert({from_user_id:cUser.id,to_user_id:uid,message:'Möchte dir schreiben',status:'pending'});
-    if(!error)toast('Anfrage gesendet! '+name+' wird benachrichtigt.','success');
-    else toast(fehlerText(error),'error');
+    if(error)toast(fehlerText(error),'error');
     return;
   }
   // allow_messages === 'everyone' — Unterhaltung direkt öffnen
@@ -13525,7 +13769,6 @@ async function checkProSuccess(){
     if(data?.is_pro){
       cProfile={...cProfile,...data};
       await loadProf();
-      toast('Du bist jetzt Pro','success');
       showPage('pro');renderProPage();
       return;
     }
@@ -13545,7 +13788,6 @@ async function checkFeeSuccess(){
     const{data}=await sb.from('events').select('status').eq('id',id).maybeSingle();
     if(data?.status==='live'){
       await loadEvts();
-      toast('Party ist jetzt öffentlich sichtbar','success');
       openDetail(id);
       return;
     }
@@ -13576,7 +13818,7 @@ async function verifyProStatus(){
       try{ renderChatPro(); }catch(_){}
       const id=window.__offenePartyId;
       if(id&&document.getElementById('detailOverlay')?.classList.contains('open'))openDetail(id);
-      toast('Dein Pro-Abo ist beendet. Die Pro-Funktionen sind wieder gesperrt.','info');
+      toast('Dein Pro-Abo ist beendet. Die Pro-Funktionen sind wieder gesperrt.','warn');
     }
   }
 }
@@ -13836,11 +14078,9 @@ async function answerMsgReq(reqId,fromId,accept,btn){
       conv=nc;
     }
     const{data:p}=await sb.from('profiles').select('id,username,full_name,avatar_url').eq('id',fromId).maybeSingle();
-    toast('Anfrage angenommen','success');
     await openConv(conv.id,p||{id:fromId});
     return;
   }
-  toast('Anfrage abgelehnt','info');
   loadChats();
 }
 
@@ -13850,7 +14090,7 @@ async function gespraechOeffnen(cid){
   if(!cUser)return;
   try{
     const{data:g}=await sb.from('conversations').select('*').eq('id',cid).maybeSingle();
-    if(!g){toast('Dieses Gespräch gibt es nicht mehr','info');return;}
+    if(!g){toast('Dieses Gespräch gibt es nicht mehr','warn');return;}
     if(g.group_id){
       const{data:gr}=await sb.from('groups').select('id,name').eq('id',g.group_id).maybeSingle();
       await openConv(cid,{gruppe:true,id:g.group_id,name:gr?.name||'Gruppe'});
@@ -14105,12 +14345,6 @@ function plusZeigen(meine){
     +'<span><span class="plus-t">Gruppe gründen</span>'
     +'<span class="plus-s">Gemeinsam hingehen, eigener Chat</span></span>'
     +'</button>'
-    /* Den Weg gab es schon, versteckt im Profil. Hier sucht man ihn. */
-    +'<button class="plus-gross" style="margin-top:10px" onclick="closeOverlay(\'plusOverlay\');spotoutEinladen()">'
-    +'<span class="plus-ic">'+plus+'</span>'
-    +'<span><span class="plus-t">Freunde zu SPOTOUT holen</span>'
-    +'<span class="plus-s">Link schicken – ohne Konto sieht man schon mal alles Öffentliche</span></span>'
-    +'</button>'
     +'<div class="mg-sec">Freunde einladen</div>'
     +meine.map(e=>'<button class="plus-party" onclick="plusEinladen(\''+e.id+'\')">'
       +'<span class="plus-emo">'+(e.type==='private'?schloss:leute)+'</span>'
@@ -14235,8 +14469,7 @@ function entwurfStillSichern(){
   if(!name||typeof cStep==='undefined'||cStep<2)return;
   try{
     localStorage.setItem(ENTWURF_SCHLUESSEL,JSON.stringify(entwurfSammeln()));
-    toast('Entwurf gesichert – du findest ihn unter Erstellen','success');
-  }catch(err){}
+    }catch(err){}
 }
 (function entwurfBeimSchliessen(){
   const ov=document.getElementById('createOverlay');
@@ -14311,7 +14544,6 @@ function entwurfLesen(){
 
 function entwurfWeg(still){
   try{ localStorage.removeItem(ENTWURF_SCHLUESSEL); }catch(e){}
-  if(!still)toast('Entwurf gelöscht','info');
 }
 
 function entwurfVerwerfen(ev){
@@ -14323,7 +14555,7 @@ function entwurfVerwerfen(ev){
 /* Alles zuruecklegen und dorthin springen, wo aufgehoert wurde. */
 function entwurfFortsetzen(){
   const e=entwurfLesen();
-  if(!e){ toast('Kein Entwurf da','info'); return; }
+  if(!e){ toast('Kein Entwurf da','warn'); return; }
   closeOverlay('plusOverlay');
   openCreate(e.typ);
   setTimeout(()=>{
@@ -14345,7 +14577,7 @@ function entwurfFortsetzen(){
     try{ renderBringDraft&&renderBringDraft(); }catch(err){}
     try{ if(selLat!=null)setAddrHint('ok','Adresse bestätigt'); }catch(err){}
     goCreateStep(Math.min(Math.max(e.schritt||1,1),CTOTAL),true);
-    if(e.bildFehlt)toast('Das Titelbild musst du neu wählen','info');
+    if(e.bildFehlt)toast('Das Titelbild musst du neu wählen','warn');
   },260);
 }
 
@@ -15048,7 +15280,7 @@ function addBringDraft(preset){
   const t=(preset||inp?.value||'').trim();
   if(!t)return;
   if(bringDraft.length>=30){toast('Mehr als 30 Einträge sind zu viel','warn');return;}
-  if(bringDraft.some(x=>x.title.toLowerCase()===t.toLowerCase())){toast('Steht schon auf der Liste','info');return;}
+  if(bringDraft.some(x=>x.title.toLowerCase()===t.toLowerCase())){toast('Steht schon auf der Liste','warn');return;}
   // Menge immer 1 – wer mehr will, tippt danach auf das Plus.
   bringDraft.push({title:t,menge:1});
   if(!preset&&inp)inp.value='';
@@ -15151,7 +15383,7 @@ function setDeadline(tage,el){
   if(!berechneFrist(tage)){
     dlTage=0;
     csetOn('dlPresets',document.querySelector('#dlPresets .cset'));
-    toast('So früh geht nicht mehr – Frist steht auf Partystart','info');
+    toast('So früh geht nicht mehr – Frist steht auf Partystart','warn');
   }
   updateDeadlineBox();
 }
@@ -15358,7 +15590,6 @@ async function submitEventInner(){
     startFeeCheckout(data.id,Number(data.fee_amount||0));
     return;
   }
-  toast(currentType==='events'?'Event veröffentlicht!':'Party veröffentlicht!','success');
   // Letzter, freiwilliger Schritt: Leute einladen
   setTimeout(()=>openShare(data.id,{afterCreate:true}),300);
 }
@@ -15728,7 +15959,6 @@ async function setProfilPrivat(privat){
   const{error}=await sb.from('profiles').update({privat}).eq('id',cUser.id);
   if(error){toast(fehlerText(error),'error');setProfilUI(!privat);return;}
   cProfile.privat=privat;
-  toast(privat?'Dein Profil ist jetzt privat':'Dein Profil ist jetzt öffentlich','success');
 }
 
 /* ── Offene Anfragen im eigenen Profil ─────────────────────────── */
@@ -15839,8 +16069,7 @@ async function folgenOderAnfragen(userId, btn){
     btn.disabled=false;
     if(error){toast(fehlerText(error),'error');return;}
     btn.classList.remove('following');
-    toast('Anfrage zurückgezogen','info');
-    return;
+      return;
   }
   // Kreisel an, Beschriftung bleibt stehen – kein harter Textwechsel mehr
   if(btn){btn.disabled=true;btn.classList.add('busy');}
@@ -15854,8 +16083,7 @@ async function folgenOderAnfragen(userId, btn){
       btn.classList.remove('pulse');void btn.offsetWidth;btn.classList.add('pulse');
       btn.disabled=false;
     }
-    toast('Anfrage ist unterwegs','success');
-  }else if(data==='folgt'||data==='folgst_schon'){
+    }else if(data==='folgt'||data==='folgst_schon'){
     await openUserProf(userId,true);
   }else{
     toast('Hat nicht geklappt','warn');
@@ -16233,7 +16461,7 @@ async function einladungsartWechseln(eventId,persoenlich){
 async function offenenLinkErneuern(eventId){
   const{error}=await sb.rpc('offenen_link_erneuern',{p_event:eventId});
   if(error){toast(fehlerText(error),'error');return;}
-  toast('Neuer Link erzeugt – der alte gilt nicht mehr','success');
+  toast('Neuer Link erzeugt – der alte gilt nicht mehr','warn');
   renderInviteCard(eventId);
 }
 
@@ -16271,19 +16499,18 @@ async function einladungTeilen(code,eventId,label){
   // Kein Teilen-Blatt (Desktop): dann kommt der Link in den Text.
   try{
     await navigator.clipboard.writeText(txt+'\n'+url);
-    toast('Einladung kopiert – jetzt einfügen und senden','success');
+    amKnopfMelden('Kopiert');
   }catch(err){ einladungKopieren(code); }
 }
 
 async function einladungKopieren(code){
-  try{ await navigator.clipboard.writeText(einladungUrl(code)); toast('Link kopiert','success'); }
+  try{ await navigator.clipboard.writeText(einladungUrl(code)); amKnopfMelden('Kopiert'); }
   catch(err){ toast('Kopieren nicht möglich','warn'); }
 }
 
 async function einladungLoeschen(id,eventId){
   const{error}=await sb.from('event_invite_links').delete().eq('id',id);
   if(error){toast(fehlerText(error),'error');return;}
-  toast('Einladung gelöscht','info');
   renderInviteCard(eventId);
 }
 
@@ -16384,7 +16611,6 @@ async function gruppeGruenden(){
   if(error){toast(fehlerText(error),'error');return;}
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');return;}
   closeOverlay('gruppeNeuOverlay');
-  toast('Gruppe steht','success');
   gruppenLaden();
   gruppeOeffnen(data.id);
 }
@@ -16431,7 +16657,10 @@ async function gruppenLaden(){
     const teile=[(g.mitglieder||0)+(g.mitglieder===1?' Person':' Leute')];
     if(g.partys)teile.push(g.partys+(g.partys===1?' Party':' Partys'));
     return '<div class="grp-karte" onclick="gruppeOeffnen(\''+g.id+'\')">'
-      +'<div class="grp-ic">'+pikto('gaeste',21)+'</div>'
+      +'<div class="grp-ic">'
+        +(g.bild_url?'<img loading="lazy" decoding="async" src="'+escAttr(g.bild_url)+'" alt=""/>'
+                    :pikto('gaeste',21))
+      +'</div>'
       +'<div class="grp-txt"><div class="grp-name">'+esc(g.name||'')+'</div>'
       +'<div class="grp-unter">'+teile.join(' · ')+'</div></div>'
       +(bilder?'<div class="grp-bilder">'+bilder+'</div>':'')
@@ -16550,7 +16779,19 @@ function gruppeZeichnen(g){
     /* Der Kopf wie in einer Gruppeninfo: gross, mit Zweck und Herkunft.
        Vorher stand hier dieselbe kleine Kachel wie beim Verwalten. */
     '<div class="grp-kopf">'
-      +'<div class="grp-kopf-ic">'+pikto('gaeste',34)+'</div>'
+      +'<div class="grp-kopf-ic">'
+        +(g.bild_url
+            ? '<img loading="lazy" decoding="async" src="'+escAttr(g.bild_url)+'" alt=""/>'
+            : pikto('gaeste',34))
+        +(g.gruender
+            ? '<button class="grp-bild-aendern" aria-label="Gruppenbild ändern" '
+              +'onclick="event.stopPropagation();grpBildWaehlenStarten()">'
+              +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+              +'stroke-linecap="round" stroke-linejoin="round">'
+              +'<path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z"/>'
+              +'<circle cx="12" cy="12.5" r="3.2"/></svg></button>'
+            : '')
+      +'</div>'
       +'<div class="grp-kopf-n">'+esc(g.name||'')+'</div>'
       +(g.text?'<div class="grp-kopf-z">'+esc(g.text)+'</div>':'')
       +'<div class="grp-kopf-m">Gruppe · '+(g.mitglieder||[]).length+' Mitglieder</div>'
@@ -16580,9 +16821,58 @@ function gruppeZeichnen(g){
           : 'Du siehst die Gruppe und ihren Chat danach nicht mehr.')+'</div></div>';
 }
 
-/* Bearbeiten heisst hier: Name und Zweck. Mehr gibt es an einer Gruppe
-   nicht zu aendern – kein Bild (es gibt in SPOTOUT nur Party- und
-   Profilbilder) und keine Rollen ausser Gruender. */
+/* ── Das Gruppenbild ──────────────────────────────────────────────
+   Seit dem 17.09. hat eine Gruppe ein Bild, und nur der Gruender darf
+   es setzen. Durchgesetzt wird das nicht hier, sondern zweifach in der
+   Datenbank: die Ablageregel fragt ist_gruppen_gruender(), und
+   gruppe_bild_setzen() fragt nochmals. Der Knopf ist nur die Tuer.
+
+   Zugeschnitten wird mit demselben Werkzeug wie ein Profilbild – ein
+   zweiter Zuschneider daneben waere Unsinn. */
+let grpBildLaeuft=false;
+
+function grpBildWaehlenStarten(){
+  if(!grpDaten||!grpDaten.gruender||grpBildLaeuft)return;
+  const feld=document.getElementById('grpBildDatei');
+  if(feld)feld.click();
+}
+
+function grpBildWaehlen(ev){
+  const f=ev.target.files&&ev.target.files[0];
+  ev.target.value='';                    // dieselbe Datei nochmals waehlen koennen
+  if(!f||grpBildLaeuft)return;
+  if(!/^image\//.test(f.type||'')){ toast('Das ist kein Bild','warn'); return; }
+  avCropAn();
+  avCropOeffnen(f,(zugeschnitten)=>grpBildHochladen(zugeschnitten));
+}
+
+async function grpBildHochladen(datei){
+  if(!datei||!grpDaten||grpBildLaeuft)return;
+  const gid=grpDaten.id;
+  grpBildLaeuft=true;
+  try{
+    const klein=await bildVerkleinern(datei,'avatar');
+    /* Immer derselbe Name im Ordner der Gruppe: sonst bleiben bei
+       jedem Formatwechsel alte Dateien liegen. */
+    const pfad=gid+'/bild.jpg';
+    const{error}=await sb.storage.from('gruppen-bilder')
+      .upload(pfad,klein,{upsert:true,contentType:klein.type||'image/jpeg'});
+    if(error){ toast(bildFehlerText(error,klein),'error'); return; }
+    const{data:u}=sb.storage.from('gruppen-bilder').getPublicUrl(pfad);
+    // Zeitstempel dran, sonst zeigt der Browser das alte Bild
+    const url=u.publicUrl+'?v='+Date.now();
+    const{data,error:rErr}=await sb.rpc('gruppe_bild_setzen',{p_group:gid,p_url:url});
+    if(rErr){ toast(fehlerText(rErr),'error'); return; }
+    if(data?.status!=='ok'){ toast(grpSagen(data?.status),'warn'); return; }
+    nativeHaptik('leicht');
+    gruppeOeffnen(gid);
+    gruppenLaden();
+  }finally{ grpBildLaeuft=false; }
+}
+
+/* Bearbeiten heisst hier: Name und Zweck. Das Bild hat einen eigenen
+   Weg (oben), weil es fertig hochgeladen sein muss, bevor gespeichert
+   wird – ein halb ausgefuelltes Formular soll es nicht mitreissen. */
 function gruppeBearbeiten(){
   if(!grpDaten)return;
   const n=document.getElementById('grpNeuName');
@@ -16610,7 +16900,6 @@ async function gruppeSpeichern(){
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');return;}
   closeOverlay('gruppeNeuOverlay');
   nativeHaptik('leicht');
-  toast('Gespeichert','success');
   gruppeOeffnen(grpDaten.id);
   gruppenLaden();
 }
@@ -16636,7 +16925,6 @@ async function gruppeRauswerfen(btn,gid,uid,name){
   const zeile=document.getElementById('grpm-'+uid);
   if(zeile){ zeile.style.opacity='.35'; setTimeout(()=>{ try{zeile.remove();}catch(e){} },400); }
   nativeHaptik('mittel');
-  toast((name||'Die Person')+' ist nicht mehr dabei','info');
   gruppenLaden();
 }
 
@@ -16664,7 +16952,6 @@ async function gruppeVerlassen(gid){
   if(error){toast(fehlerText(error),'error');return;}
   if(data?.status!=='ok'&&data?.status!=='aufgeloest'){toast(grpSagen(data?.status),'warn');return;}
   closeOverlay('gruppeOverlay');
-  toast(data.status==='aufgeloest'?'Gruppe aufgelöst':'Du bist raus','info');
   gruppenLaden();
 }
 
@@ -16769,8 +17056,8 @@ async function spotoutEinladen(){
     try{ await navigator.share({title:'SPOTOUT',text:text,url:adresse}); return; }
     catch(err){ if(err&&err.name==='AbortError')return; }
   }
-  try{ await navigator.clipboard.writeText(adresse); toast('Einladungslink kopiert','success'); }
-  catch(err){ toast('Link: '+adresse,'info'); }
+  try{ await navigator.clipboard.writeText(adresse); amKnopfMelden('Link kopiert'); }
+  catch(err){ toast('Link: '+adresse,'warn'); }
 }
 
 /* Hineinstellen darf man nur, was man selbst sieht – die Auswahl zeigt
@@ -16785,7 +17072,7 @@ async function gruppePartyWaehlen(gid){
   const alle=[...(meine||[]),...((zusagen||[]).map(z=>z.events).filter(e=>e&&e.date>=heute))]
     .filter((e,i,l)=>l.findIndex(x=>x.id===e.id)===i)
     .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
-  if(!alle.length){toast('Du hast gerade keine kommende Party','info');return;}
+  if(!alle.length){toast('Du hast gerade keine kommende Party','warn');return;}
   body.innerHTML='<div class="mg-sec">Welche Party?</div>'
     +alle.map(e=>'<div class="mg-guest" style="cursor:pointer" onclick="gruppePartyStellen(\''+gid+'\',\''+e.id+'\')">'
       +'<div class="grp-ic">'+iconSvg(evIconKey(e),20)+'</div>'
@@ -16798,7 +17085,6 @@ async function gruppePartyStellen(gid,eid){
   const{data,error}=await sb.rpc('gruppe_party_stellen',{p_group:gid,p_event:eid});
   if(error){toast(fehlerText(error),'error');return;}
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');gruppeOeffnen(gid);return;}
-  toast('Steht in der Gruppe','success');
   gruppeOeffnen(gid);
 }
 
@@ -16816,8 +17102,8 @@ async function gruppeTeilen(code,name){
   if(navigator.share){
     try{ await navigator.share({title:'SPOTOUT',text:txt,url}); return; }catch(ex){ if(ex&&ex.name==='AbortError')return; }
   }
-  try{ await navigator.clipboard.writeText(url); toast('Link kopiert','success'); }
-  catch(e){ toast('Link: '+url,'info'); }
+  try{ await navigator.clipboard.writeText(url); amKnopfMelden('Link kopiert'); }
+  catch(e){ toast('Link: '+url,'warn'); }
 }
 
 async function gruppeBeitrittOeffnen(code){
@@ -16863,7 +17149,6 @@ async function gruppeBeitreten(){
   if(data?.status==='schon_drin'){closeOverlay('gruppeJoinOverlay');gruppeOeffnen(data.id);return;}
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');if(btn){btn.disabled=false;btn.textContent='Anfragen';}return;}
   closeOverlay('gruppeJoinOverlay');
-  toast('Angefragt – der Gründer entscheidet','success');
 }
 
 /* ── Beitritt über den Link ── */
@@ -16965,8 +17250,7 @@ async function doJoin(){
   if(error||!r){toast('Das hat nicht geklappt. Versuch es nochmals.','error');if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Dabei sein';}return;}
   if(r.ergebnis==='angefragt'){
     closeJoin();
-    toast('Anfrage gesendet – der Host bestätigt dich','success');
-    return;
+      return;
   }
   const meldung={
     beigetreten:'Du bist dabei!',
@@ -17055,7 +17339,7 @@ async function claimFromSheet(itemId,eventId,mine){
   if(!mine)q=q.is('claimed_by',null);
   const{data:getroffen,error}=await q.select('id');
   if(error){toast(fehlerText(error),'error');return;}
-  if(!mine&&!(getroffen||[]).length)toast('Das hat gerade jemand anderes übernommen','info');
+  if(!mine&&!(getroffen||[]).length)toast('Das hat gerade jemand anderes übernommen','warn');
   await renderBringSheet(eventId);
   renderBringList(eventId,false);
 }
@@ -17252,7 +17536,7 @@ async function shareAnAlle(){
   const btn=document.getElementById('shAlle');
   const offen=[...document.querySelectorAll('#shRows .mg-guest:not(.weg) .sh-send')]
     .filter(b=>!b.disabled);
-  if(!offen.length){toast('Schon alle dran','info');return;}
+  if(!offen.length){toast('Schon alle dran','warn');return;}
   if(btn){btn.disabled=true;btn.textContent='…';}
   let fehler=0;
   for(const b of offen){
@@ -17260,7 +17544,6 @@ async function shareAnAlle(){
     await new Promise(r=>setTimeout(r,220));
   }
   if(btn){btn.textContent='Fertig';}
-  if(!fehler)toast(offen.length+(offen.length===1?' Person':' Personen')+' benachrichtigt','success');
 }
 
 // Echte Einladung: schaltet die private Party für die Person frei und
@@ -17330,8 +17613,8 @@ async function shareVia(art){
     }
     art='copy';
   }
-  try{ await navigator.clipboard.writeText(url); toast('Link kopiert','success'); }
-  catch(err){ toast('Kopieren nicht möglich','info'); }
+  try{ await navigator.clipboard.writeText(url); amKnopfMelden('Link kopiert'); }
+  catch(err){ toast('Kopieren nicht möglich','warn'); }
 }
 
 // Link auf eine öffentliche Party oder ein Event
@@ -17356,7 +17639,7 @@ async function checkProfilLink(){
     // Erst als Benutzername, sonst als Kennung
     let{data}=await sb.from('profiles').select('id').eq('username',wer).maybeSingle();
     if(!data&&/^[0-9a-f-]{36}$/i.test(wer))data={id:wer};
-    if(!data){ toast('Dieses Profil gibt es nicht','info'); return; }
+    if(!data){ toast('Dieses Profil gibt es nicht','warn'); return; }
     if(data.id===cUser?.id){ showPage('profile'); return; }
     openUserProf(data.id);
   }catch(err){ console.warn('[profil]',err); }
@@ -18146,7 +18429,18 @@ en:{
   "Das Bild liess sich nicht öffnen":"The picture could not be opened",
   "Der Zuschnitt hat nicht geklappt":"The crop did not work",
   "Moment…":"One moment…",
-  "Doomscroll-Knopf":"Doomscroll button",
+  "Fluchtknopf":"Escape button",
+  "Die Party ist zäh, aber du willst nicht als Erster gehen? Ein Tipp oben rechts – und du bist mitten im Scrollen. SPOTOUT wartet hier auf dich.":"Party dragging but you don\u2019t want to be the first to leave? One tap top right and you\u2019re scrolling. SPOTOUT waits for you here.",
+  "Der Fluchtknopf":"The escape button",
+  "Party zäh? Wohin fliehst du?":"Party dragging? Where do you escape to?",
+  "Wer darf dir schreiben?":"Who can message you?",
+  "Dein Profil":"Your profile",
+  "Brauch ich nicht":"Don\u2019t need it",
+  "Jeder":"Anyone",
+  "Nur Anfragen":"Requests only",
+  "Niemand":"Nobody",
+  "Später":"Later",
+  "Fertig":"Done",
   "Aus":"Off",
   "Wetter":"Weather",
   "Der Knopf steht jetzt oben in der Leiste":"The button is now in the top bar",
@@ -18277,7 +18571,6 @@ en:{
   "Kauf gerade nicht möglich. Versuch es gleich nochmals.":"Purchase isn’t possible right now. Try again in a moment.",
   "Das dauert länger als sonst":"This is taking longer than usual",
   "Prüf kurz deine Verbindung – dann nochmals versuchen.":"Check your connection, then try again.",
-  "Doomscrollen":"Doomscroll",
   "Suche löschen":"Clear search",
   "Ort entfernen":"Remove location",
   "Karte schliessen":"Close map",
@@ -19732,7 +20025,18 @@ fr:{
   "Das Bild liess sich nicht öffnen":"Impossible d’ouvrir la photo",
   "Der Zuschnitt hat nicht geklappt":"Le recadrage n’a pas fonctionné",
   "Moment…":"Un instant…",
-  "Doomscroll-Knopf":"Bouton doomscroll",
+  "Fluchtknopf":"Bouton d\u2019évasion",
+  "Die Party ist zäh, aber du willst nicht als Erster gehen? Ein Tipp oben rechts – und du bist mitten im Scrollen. SPOTOUT wartet hier auf dich.":"La soirée traîne mais tu ne veux pas partir le premier ? Un appui en haut à droite et tu scrolles. SPOTOUT t\u2019attend ici.",
+  "Der Fluchtknopf":"Le bouton d\u2019évasion",
+  "Party zäh? Wohin fliehst du?":"Soirée molle ? Tu t\u2019évades où ?",
+  "Wer darf dir schreiben?":"Qui peut t\u2019écrire ?",
+  "Dein Profil":"Ton profil",
+  "Brauch ich nicht":"Pas besoin",
+  "Jeder":"Tout le monde",
+  "Nur Anfragen":"Demandes seulement",
+  "Niemand":"Personne",
+  "Später":"Plus tard",
+  "Fertig":"Terminé",
   "Aus":"Désactivé",
   "Wetter":"Météo",
   "Der Knopf steht jetzt oben in der Leiste":"Le bouton est maintenant en haut",
@@ -20277,7 +20581,6 @@ fr:{
   "Datenschutz":"Confidentialité",
   "Das dauert länger als sonst":"Ça prend plus de temps que d’habitude",
   "Prüf kurz deine Verbindung – dann nochmals versuchen.":"Vérifie ta connexion, puis réessaie.",
-  "Doomscrollen":"Doomscroll",
   "Suche löschen":"Effacer la recherche",
   "Ort entfernen":"Retirer le lieu",
   "Karte schliessen":"Fermer la carte",
@@ -21316,7 +21619,18 @@ it:{
   "Das Bild liess sich nicht öffnen":"Impossibile aprire la foto",
   "Der Zuschnitt hat nicht geklappt":"Il ritaglio non ha funzionato",
   "Moment…":"Un momento…",
-  "Doomscroll-Knopf":"Pulsante doomscroll",
+  "Fluchtknopf":"Pulsante di fuga",
+  "Die Party ist zäh, aber du willst nicht als Erster gehen? Ein Tipp oben rechts – und du bist mitten im Scrollen. SPOTOUT wartet hier auf dich.":"La festa è fiacca ma non vuoi essere il primo ad andartene? Un tocco in alto a destra e stai già scrollando. SPOTOUT ti aspetta qui.",
+  "Der Fluchtknopf":"Il pulsante di fuga",
+  "Party zäh? Wohin fliehst du?":"Festa fiacca? Dove scappi?",
+  "Wer darf dir schreiben?":"Chi può scriverti?",
+  "Dein Profil":"Il tuo profilo",
+  "Brauch ich nicht":"Non mi serve",
+  "Jeder":"Chiunque",
+  "Nur Anfragen":"Solo richieste",
+  "Niemand":"Nessuno",
+  "Später":"Più tardi",
+  "Fertig":"Fatto",
   "Aus":"Spento",
   "Wetter":"Meteo",
   "Der Knopf steht jetzt oben in der Leiste":"Il pulsante è ora in alto",
@@ -21862,7 +22176,6 @@ it:{
   "Datenschutz":"Privacy",
   "Das dauert länger als sonst":"Ci vuole più del solito",
   "Prüf kurz deine Verbindung – dann nochmals versuchen.":"Controlla la connessione, poi riprova.",
-  "Doomscrollen":"Doomscroll",
   "Suche löschen":"Cancella la ricerca",
   "Ort entfernen":"Togli il luogo",
   "Karte schliessen":"Chiudi la mappa",
@@ -22449,7 +22762,7 @@ async function pushErlauben(){
     pushZustand='an';
     const{error}=await sb.rpc('push_token_setzen',{p_token:a.token});
     if(error){console.error('[push]',error);toast('Benachrichtigungen sind an, konnten aber nicht gespeichert werden. Versuch es nochmals.','warn');}
-    else{ if(cProfile)cProfile.push_token=a.token; toast('Benachrichtigungen sind an','success'); }
+    else if(cProfile)cProfile.push_token=a.token;
   }else{
     // Kein stilles Scheitern mehr: sagen, woran es lag.
     const grund=(a&&a.fehler)||'unbekannt';
@@ -22505,7 +22818,7 @@ document.addEventListener('click',ev=>{
   if(h.startsWith('mailto:')){
     const adr=h.slice(7).split('?')[0];
     try{ navigator.clipboard.writeText(adr); }catch(e){}
-    toast('Adresse kopiert: '+adr,'info');
+    amKnopfMelden('Adresse kopiert');
   }
 },true);
 
@@ -22521,7 +22834,6 @@ async function gastEntfernen(btn,eventId,uid){
   if(error){ toast(fehlerText(error),'error'); btn.disabled=false; return; }
   mgGeaendert=true;
   btn.closest('.mg-guest')?.classList.add('weg');
-  toast('Entfernt – der Link bringt die Person nicht mehr hinein','info');
   setTimeout(()=>openManage(eventId),350);
   loadEvts();
 }
@@ -22531,7 +22843,6 @@ async function wartelisteVerlassen(eventId,btn){
   if(btn)btn.disabled=true;
   const{error}=await sb.from('event_waitlist').delete().eq('event_id',eventId).eq('user_id',cUser.id);
   if(error){ toast(fehlerText(error),'error'); if(btn)btn.disabled=false; return; }
-  toast('Du bist nicht mehr auf der Warteliste','info');
   openDetail(eventId);
 }
 
@@ -22670,7 +22981,6 @@ async function besucheSetzen(btn,an){
     if(btn){btn.classList.toggle('an',vorher);btn.setAttribute('aria-checked',vorher?'true':'false');}
     toast(fehlerText(error),'error'); return;
   }
-  toast(neu?'Profilbesuche sind an':'Profilbesuche sind aus','info');
 }
 
 /* ══════════ ABZEICHEN ══════════
@@ -22908,7 +23218,6 @@ async function warteAufFreischaltung(eventId){
     const{data}=await sb.from('events').select('status').eq('id',eventId).maybeSingle();
     if(data?.status==='live'){
       await loadEvts();
-      toast('Party ist jetzt öffentlich sichtbar','success');
       await openDetail(eventId);
       return;
     }
@@ -22939,8 +23248,8 @@ async function proKaufenApple(){
 
 async function proWiederherstellen(){
   const a=await nativeCall('pro_wiederherstellen',null,60000);
-  if(a.pro){toast('Pro wiederhergestellt','success');await warteAufPro();}
-  else toast('Kein früherer Kauf gefunden','info');
+  if(a.pro){await warteAufPro();}
+  else toast('Kein früherer Kauf gefunden','warn');
 }
 
 // RevenueCat meldet den Kauf an unseren Server; von dort kommt is_pro zurück
@@ -22960,7 +23269,6 @@ async function warteAufPro(){
     if(data?.is_pro){
       cProfile={...cProfile,...data};
       await loadProf();
-      toast('Du bist jetzt Pro','success');
       renderProPage();
       // Einmal zeigen, was jetzt anders ist – sonst merkt kaum
       // jemand, wofuer er bezahlt hat.
@@ -23323,7 +23631,6 @@ async function moderationAktion(btn,aktion,id){
     ?await sb.rpc('sanktion_aufheben',{p_id:id})
     :await sb.rpc('meldung_erledigen',{p_report:id,p_aktion:aktion});
   if(error)toast(fehlerText(error),'error');
-  else toast({aufgehoben:'Aufgehoben',eingeblendet:'Wieder eingeblendet',abgewiesen:'Abgewiesen',entfernt:'Entfernt'}[data]||'Erledigt','success');
   moderationOeffnen();
 }
 
@@ -23367,7 +23674,6 @@ async function blockUser(id){
   closeUserProf(true);
   // Wer mitten im Gespraech blockiert, soll nicht darin sitzen bleiben.
   if(convUser?.id===id&&document.getElementById('page-conv')?.classList.contains('active'))showPage('chat');
-  toast('Blockiert – ihr seht euch gegenseitig nicht mehr','success');
   await loadEvts();
   if(document.getElementById('page-chat')?.classList.contains('active'))loadChats();
 }
@@ -23376,7 +23682,6 @@ async function unblockUser(id){
   const{error}=await sb.from('blocks').delete().eq('blocker_id',cUser.id).eq('blocked_id',id);
   if(error){toast('Das hat nicht geklappt. Versuch es nochmals.','error');return false;}
   window.__blocked.delete(id);
-  toast('Blockierung aufgehoben','info');
   loadEvts();
   return true;
 }
@@ -23526,10 +23831,9 @@ async function loadNotifs(){
     });
   }
   ntVorher=offen.length;
-  const text=offen.length>9?'9+':String(offen.length);
+  /* Nur sichtbar oder nicht – die Zahl stand frueher hier drin. */
   document.querySelectorAll('.js-notif-dot').forEach(dot=>{
     dot.style.display=offen.length?'block':'none';
-    dot.textContent=text;
   });
   // Die Zahl am App-Symbol soll dasselbe sagen wie das Glöckchen –
   // sonst steht auf dem Startbildschirm eine Zahl, die niemand mehr
@@ -23561,8 +23865,7 @@ async function bitteUmErlaubnis(){
   if(typeof Notification==='undefined'){toast('Dein Browser kann das nicht','warn');return;}
   try{
     const antwort=await Notification.requestPermission();
-    if(antwort==='granted')toast('Systemmeldungen sind an','success');
-    else toast('Bleibt aus – du siehst alles im Glöckchen','info');
+    if(antwort!=='granted')toast('Bleibt aus – du siehst alles im Glöckchen','warn');
   }catch(err){}
   renderNotifs();
 }
@@ -24156,7 +24459,6 @@ async function sendPlusRequest(eventId){
     if(btn){btn.disabled=false;btn.textContent='Anfrage senden';}
     return;
   }
-  toast('Anfrage ist beim Host','success');
   renderPlusCard(eventId);
 }
 
@@ -24374,7 +24676,6 @@ async function decideRequest(reqId,eventId,ok,btn){
     .update({status:ok?'approved':'declined'}).eq('id',reqId);
   if(error){toast(fehlerText(error),'error');knoepfe.forEach(k=>k.disabled=false);return;}
   mgGeaendert=true;
-  toast(ok?'Bestätigt':'Abgelehnt','info');
   openManage(eventId);
   loadEvts();
 }
@@ -24432,7 +24733,6 @@ async function saveManage(){
       toast('Diese Party ist nicht mehr verfügbar','warn');
       closeManage(); await loadEvts(); return;
     }
-    toast('Gespeichert','success');
     mgEvent={...mgEvent,...patch};
     await loadEvts();
     if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
@@ -24622,7 +24922,7 @@ async function fotoHochladen(auswahl){
   if(!st||!cUser||!liste.length)return;
   const frei=Math.max(0,FOTO_MAX-(Number(st.status.eigene)||0));
   if(!frei){ toast('Du hast schon 10 Fotos hochgeladen.','warn'); return; }
-  if(liste.length>frei)toast('Mehr als 10 Fotos gehen nicht – die ersten werden genommen','info');
+  if(liste.length>frei)toast('Mehr als 10 Fotos gehen nicht – die ersten werden genommen','warn');
   const dateien=liste.slice(0,frei);
 
   const knopf=document.getElementById('fotoNeuBtn');
@@ -24650,7 +24950,6 @@ async function fotoHochladen(auswahl){
     if(k)k.innerHTML='<div class="spinner"></div><em>'+drin+'/'+dateien.length+'</em>';
   }
   if(fehler)toast(fehler,'warn');
-  if(drin)toast(drin===1?'Foto ist drin':'Fotos sind drin','success');
   if(window.__offenePartyId===st.eventId)renderFotos(st.e,st.isHost,st.isAtt);
 }
 
@@ -24730,7 +25029,6 @@ async function fotoEntfernen(){
   if(f.uploader===cUser?.id)st.status.eigene=Math.max(0,(Number(st.status.eigene)||0)-1);
   st.fotos.splice(st.index,1);
   fotoScharf=null;
-  toast('Foto ist weg','success');
   fotoZeichnen();
   if(!st.fotos.length){ fotoZu(); return; }
   st.index=Math.min(st.index,st.fotos.length-1);
@@ -24948,10 +25246,9 @@ async function toggleBring(itemId,eventId,mine,isHost){
   const{data:getroffen,error}=await q.select('id');
   if(error){toast(fehlerText(error),'error');return;}
   if(!mine&&!(getroffen||[]).length){
-    toast('Das hat gerade jemand anderes übernommen','info');
+    toast('Das hat gerade jemand anderes übernommen','warn');
     renderBringList(eventId,isHost); return;
   }
-  toast(mine?'Wieder freigegeben':'Du bringst das mit','info');
   renderBringList(eventId,isHost);
 }
 
@@ -25163,7 +25460,6 @@ function toggleMapTheme(){
   mapTheme=mapTheme==='dark'?'light':'dark';
   try{ localStorage.setItem('spotout_map',mapTheme); }catch(err){}
   applyMapTheme();
-  toast(mapTheme==='light'?'Helle Karte':'Dunkle Karte','info');
 }
 
 // Läuft die Party gerade? (Start bis 6 h danach)
@@ -25359,7 +25655,7 @@ function standortHolen(aufFrage){
     const stand=await ortErlaubnis();
 
     if(stand==='nichts'){
-      if(aufFrage)toast('Dein Gerät gibt den Standort nicht her','info');
+      if(aufFrage)toast('Dein Gerät gibt den Standort nicht her','warn');
       return false;
     }
     if(stand==='denied'){
@@ -25373,7 +25669,7 @@ function standortHolen(aufFrage){
       ortAntwortSetzen('ja');
       const pos=await ortPosition();
       if(!pos){
-        if(aufFrage)toast('Standort nicht freigegeben','info');
+        if(aufFrage)toast('Standort nicht freigegeben','warn');
         return false;
       }
       const ok=ortUebernehmen(pos.lat,pos.lng);
@@ -25402,7 +25698,6 @@ async function ortErlauben(){
   ortAntwortSetzen('ja');
   closeOverlay('ortOverlay');
   const ok=await standortHolen(true);
-  if(ok)toast('Standort erkannt','success');
 }
 
 // Beim Start: holen, wenn wir duerfen. Fragen nur, wenn wir noch nie
@@ -25607,7 +25902,6 @@ async function vereinEntscheiden(btn,id,ja){
     karte?.querySelectorAll('button').forEach(b=>b.disabled=false);
     return;
   }
-  toast(ja?'Verein bestätigt':'Verein abgelehnt','success');
   karte?.remove();
   const box=document.getElementById('vereinePruefenListe');
   if(box&&!box.querySelector('.vp-karte'))box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';
@@ -25631,7 +25925,6 @@ async function proVerschenken(){
     if(!r?.ok){toast(r?.meldung||'Hat nicht geklappt','warn');return;}
     const bis=r.bis?new Date(r.bis).toLocaleDateString(locale(),
       {day:'numeric',month:'long',year:'numeric'}):null;
-    toast(r.meldung,'success');
     if(stand){stand.hidden=false;stand.textContent=r.meldung+(bis?(' – läuft bis '+bis):'');}
     const feld=document.getElementById('schenkName'); if(feld)feld.value='';
   }finally{
@@ -25720,10 +26013,15 @@ function proMarke(nurZeichen){
     : '<span class="pro-marke">'+PRO_STERN+'Pro</span>';
 }
 
-/* ── Doomscroll-Knopf ──────────────────────────────────────────────
-   Party langweilig? Ein Tipp, und man scrollt in der eigenen App weiter.
-   Ein Gag mit Ernst dahinter: es geht sofort, ohne Rueckfrage, und beim
-   Zurueckkommen steht SPOTOUT aufgeraeumt auf der Startseite. */
+/* ── Der Fluchtknopf ───────────────────────────────────────────────
+   Die Party ist zaeh, gehen will man noch nicht. Ein Tipp, und man
+   scrollt in der eigenen App weiter. Ein Gag mit Ernst dahinter: es
+   geht sofort, ohne Rueckfrage, und beim Zurueckkommen steht SPOTOUT
+   aufgeraeumt auf der Startseite.
+
+   Er hiess bis zum 17.09. "Doomscroll-Knopf". Das Wort kennt, wer es
+   ohnehin schon kennt – die Funktionsnamen (schnellRaus…) bleiben,
+   nur die sichtbaren Texte sagen es jetzt auf Deutsch. */
 
 const RAUS_ZIELE = {
   /* Direkt ins Scrollen, nicht auf eine Startseite. */
@@ -25741,15 +26039,19 @@ function schnellRausWahl(){
   }catch(e){ return ''; }
 }
 
-/* Nur speichern, ohne Rueckmeldung – die Registrierung ruft das auf,
-   waehrend noch gar keine Leiste zu sehen ist. Der zweite Schluessel
-   merkt sich, dass auf diesem Geraet schon gewaehlt wurde (siehe
-   loadProf). */
+/* Nur speichern, ohne Rueckmeldung – die drei Fragen nach dem Tutorial
+   rufen das auf, waehrend die Leiste noch gar nicht zu sehen ist.
+
+   Hier stand ein zweiter Schluessel (spotout_raus_gewaehlt), der sich
+   merkte, dass auf diesem Geraet schon gewaehlt wurde. Gelesen hat ihn
+   nur der Pfad in loadProf, der die Wahl aus den Konto-Angaben
+   nachtrug – und den gibt es seit dem 17.09. nicht mehr. Geschrieben
+   und nie gelesen ist schlimmer als gar nicht da: beim naechsten Lesen
+   haelt man ihn fuer eine Bedingung, die irgendwo greift. */
 function schnellRausSpeichern(k){
   try{
     if(k)localStorage.setItem('spotout_raus',k);
     else localStorage.removeItem('spotout_raus');
-    localStorage.setItem('spotout_raus_gewaehlt','1');
   }catch(e){}
 }
 
@@ -25758,7 +26060,6 @@ function setSchnellRaus(k){
   document.querySelectorAll('#setRausWahl .cset').forEach(b=>
     b.classList.toggle('on',(b.dataset.raus||'')===(k||'')));
   rausKnopfZeigen();
-  if(k)toast('Der Knopf steht jetzt oben in der Leiste','success');
 }
 
 function rausKnopfZeigen(){
@@ -25840,13 +26141,14 @@ function alleFensterZu(){
   /* Das Tutorial ist kein .overlay, sondern eine eigene Ebene. Es blieb
      darum liegen, wenn man von unten auf eine andere Seite wechselte –
      und lag dann ueber allem, ohne dass man es noch schliessen konnte. */
-  const tour=document.getElementById('tour');
-  if(tour&&tour.classList.contains('open')){
-    tour.classList.remove('sichtbar');
-    setTimeout(()=>tour.classList.remove('open'),320);
-  }
+  ['tour','einstieg'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el||!el.classList.contains('open'))return;
+    el.classList.remove('sichtbar');
+    setTimeout(()=>el.classList.remove('open'),320);
+  });
   /* Die Karte ist ebenfalls kein .overlay – sie liegt fest ueber der
-     Startseite. Beim Doomscroll-Knopf blieb sie sonst offen stehen:
+     Startseite. Beim Fluchtknopf blieb sie sonst offen stehen:
      wer zurueckkommt, soll aufgeraeumt auf der Startseite landen. */
   try{ if(mapVis)toggleMap(); }catch(_){}
 
@@ -25856,7 +26158,52 @@ function alleFensterZu(){
   try{ delArm=null; }catch(_){}
   window.__offenePartyId=null;
 }
-function copyCode(code){navigator.clipboard.writeText(code).catch(()=>{});toast('Code kopiert!','success');}
+/* ── Rueckmeldung am Knopf statt im Fenster ───────────────────────
+   Kopieren ist die einzige Handlung, die man sonst nirgends sieht:
+   die Zwischenablage ist unsichtbar. Frueher kam dafuer ein Fenster
+   von unten – wie nach jeder anderen Handlung auch, und genau das
+   sollte weg. Jetzt sagt es der Knopf, den man gerade gedrueckt hat,
+   und zwar dort, wo der Finger schon ist.
+
+   Welcher Knopf das war, merkt sich ein einziger Zuhoerer beim
+   Einfangen. Das ist noetig, weil fast jede Kopierfunktion erst nach
+   einem await beim Kopieren ankommt – dann ist das Ereignis laengst
+   vorbei und event.currentTarget leer. Ist kein Knopf bekannt,
+   passiert nichts: lieber gar keine Meldung als wieder ein Fenster. */
+let letzterKnopf=null;
+document.addEventListener('click',ev=>{
+  const b=ev.target&&ev.target.closest&&ev.target.closest('button,a');
+  letzterKnopf=b||null;
+},true);
+
+const HAKEN_KLEIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+  +'stroke-width="3" stroke-linecap="round" stroke-linejoin="round" '
+  +'style="width:14px;height:14px;vertical-align:-2px;margin-right:5px">'
+  +'<path d="m5 12.5 5 5 9-10"/></svg>';
+
+function amKnopfMelden(text){
+  const b=letzterKnopf;
+  if(!b||!b.isConnected)return false;
+  /* Manche Knoepfe tragen Symbol und Beschriftung getrennt. Dann nur
+     die Beschriftung tauschen – sonst verschwindet das Symbol kurz
+     und der Knopf springt in der Breite. */
+  const ziel=b.querySelector('.s-label')||b;
+  if(ziel.dataset.zurueck!=null)return true;
+  ziel.dataset.zurueck=ziel.innerHTML;
+  ziel.innerHTML=HAKEN_KLEIN+text;
+  setTimeout(()=>{
+    if(ziel.dataset.zurueck==null)return;
+    ziel.innerHTML=ziel.dataset.zurueck;
+    delete ziel.dataset.zurueck;
+  },1500);
+  nativeHaptik('leicht');
+  return true;
+}
+
+function copyCode(code){
+  navigator.clipboard.writeText(code).catch(()=>{});
+  amKnopfMelden('Kopiert');
+}
 let toastUhr=null;
 const TOAST_SYM={
   info:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.01"/></svg>',
@@ -25982,7 +26329,6 @@ async function setMsgSetting(val){
   const{error}=await sb.from('profiles').update({allow_messages:val}).eq('id',cUser.id);
   if(error){ setMsgSettingUI(vorher); toast(fehlerText(error),'error'); return; }
   cProfile={...cProfile,allow_messages:val};
-  toast({everyone:'Jeder kann dir schreiben',requests:'Nur Anfragen aktiviert',nobody:'Nachrichten deaktiviert'}[val],'success');
 }
 
 // ── UNREAD BADGE ──
@@ -26171,13 +26517,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   mapWischEinrichten();
   setTimeout(initSwipeToClose,500);
   /* Frueher stand der Ladeschirm stur 2,5 Sekunden – auch wenn die App
-     nach 600 ms fertig war. Jetzt geht er, sobald init() durch ist; eine
-     halbe Sekunde Mindestdauer verhindert nur das Aufblitzen, und nach
-     sechs Sekunden faellt er zur Not von selbst weg. */
+     nach 600 ms fertig war. Dann eine halbe Sekunde Mindestdauer; auch
+     die ist zu viel, wenn init() nach 200 ms durch ist. 250 ms reichen,
+     damit es nicht aufblitzt, und nach sechs Sekunden faellt er zur Not
+     von selbst weg. */
   try{ window.dispatchEvent(new Event('spotout-bereit')); }catch(e){}
   splashAb(6000);
   init()
-    .then(()=>splashAb(500))
+    .then(()=>splashAb(250))
     .catch(e=>{console.error('Init error:',e);splashAb(0);});
 });
 

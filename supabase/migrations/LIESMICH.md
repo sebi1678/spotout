@@ -68,3 +68,23 @@ Sonst → `handpruefung`, und dann entscheidet ein Mensch.
 
 **Offen:** die Edge Function `verein-pruefen` im Dashboard löschen – sie ruft
 niemand mehr, steht aber noch offen im Netz.
+
+## Angewendet am 17. September 2026 (Politur)
+
+| Name | Was |
+|---|---|
+| `gruppen_bild` | `groups.bild_url`; neuer Ablage-Eimer `gruppen-bilder` (öffentlich, 3 MB). Die Regeln fragen `gruppen_bild_pfad_gruender()` – der erste Ordner im Pfad ist die Gruppen-Kennung, und nur ihr Gründer darf dort schreiben. Dazu `gruppe_bild_setzen()`, das nochmals selbst prüft **und** nur Adressen aus dem eigenen Eimer annimmt |
+| `gruppen_bild_ausliefern` | `meine_gruppen()` und `gruppe_ansehen()` liefern `bild_url` mit |
+| `fehlende_fremdschluessel_indexe` | Acht Fremdschlüssel hatten keinen Index, sechs davon auf den tags zuvor gebauten Gruppentabellen. Ohne Index liest Postgres die ganze Tabelle – heute unmerklich, spürbar genau dann, wenn viele gleichzeitig dieselbe Gruppe öffnen |
+
+**Warum ein eigener Eimer und nicht `avatars`:** dessen Regel knüpft den
+Dateinamen an `auth.uid()` (`split_part(filename,'.',1) = uid`). Ein
+Gruppenbild heisst aber nach der **Gruppe**, nicht nach der Person – in
+`avatars` wäre es entweder unmöglich oder die Regel müsste aufgeweicht werden.
+
+> **Zweifach abgesichert, mit Absicht:** die Ablageregel *und*
+> `gruppe_bild_setzen()` fragen beide `ist_gruppen_gruender()`. Der Knopf in
+> der App ist nur die Tür – wer den Aufruf nachbaut, kommt trotzdem nicht durch.
+
+**Offen (unverändert):** die Edge Function `verein-pruefen` im Dashboard löschen,
+und die beiden Zahlungs-Webhooks einspielen.
