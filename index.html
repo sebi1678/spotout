@@ -10070,23 +10070,29 @@ function ziehAktualisieren(){
   seite.addEventListener('touchcancel',()=>{if(zieht){zieht=false;weg();}},{passive:true});
 }
 
-/* ── Von der linken Kante zurückwischen ───────────────────────────
+/* ── Aus dem Gespräch zurückwischen ───────────────────────────────
+   NUR im Chat. Anderswo navigiert man ueber die Leiste und die
+   Knoepfe – dort ist jede Seite eine eigene Karte, und ein waagrechter
+   Wisch tut nichts. So gewuenscht am 16.09.
+
    Gespiegelt aus dem Wegwischen der Fenster: 6 px entscheiden die
    Richtung, unter der Schwelle federt es zurueck. Die Geste ruft
-   dieselben Rueckwege wie die Knoepfe – keinen dritten daneben.
+   denselben Rueckweg wie der Pfeil oben links – keinen zweiten daneben.
 
    Sie beginnt nur an der linken Kante (28 px). Sonst wuerde jeder
-   waagrechte Wisch in einer Chip-Leiste die Seite mitnehmen. */
+   waagrechte Wisch im Schreibfeld die Seite mitnehmen. */
 const KANTE=28, ZURUECK_AB=70;
 function zurueckGesteStarten(){
   let x0=0,y0=0,dx=0,zieht=false,entschieden=false,oben=null,unten=null,ziel=null;
 
+  /* Nur im Gespraech. Ueberall sonst bleibt die App wie vorher: jede
+     Seite ist eine eigene Karte, man wechselt ueber die Leiste und die
+     Knoepfe. Die Seiten schieben weiterhin - nur zieht sie niemand
+     mehr mit dem Daumen. */
   const wohin=()=>{
     const jetzt=document.querySelector('.page.active')?.id?.replace('page-','');
-    if(!jetzt||jetzt==='auth'||jetzt==='main')return null;
-    if(jetzt==='conv')return {fn:convZurueck,name:(seitenVorher[seitenVorher.length-1]||'chat')};
-    const v=seitenVorher[seitenVorher.length-1];
-    return {fn:zurueck,name:(v&&v!==jetzt)?v:'main'};
+    if(jetzt!=='conv')return null;
+    return {fn:convZurueck,name:(seitenVorher[seitenVorher.length-1]||'chat')};
   };
 
   document.addEventListener('touchstart',e=>{
