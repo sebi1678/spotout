@@ -115,7 +115,31 @@
       position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
       display:none;flex-direction:column;
       -webkit-overflow-scrolling:touch;
+      /* Deckend, sonst sieht man beim Schieben durch die Seite hindurch */
+      background:var(--bg);
     }
+    /* ── Seitenwechsel wie in einer App ───────────────────────────
+       Vorher wurde hart von display:none auf display:flex geschaltet.
+       Genau daran erkennt der Daumen eine Website. Jetzt schiebt die
+       neue Seite herein und die alte ein Stueck heraus – vorwaerts von
+       rechts, rueckwaerts von links. Wer das System auf "Bewegung
+       reduzieren" gestellt hat, bekommt weiterhin ein Umschalten. */
+    .page.faehrt{display:flex}
+    .page.rein-vor{animation:seiteReinVor var(--takt-lang) var(--kurve) both}
+    .page.raus-vor{animation:seiteRausVor var(--takt-lang) var(--kurve) both;pointer-events:none}
+    .page.rein-zur{animation:seiteReinZur var(--takt-lang) var(--kurve) both}
+    .page.raus-zur{animation:seiteRausZur var(--takt-lang) var(--kurve) both;pointer-events:none}
+    @keyframes seiteReinVor{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    @keyframes seiteRausVor{from{transform:translateX(0)}to{transform:translateX(-24%);opacity:.55}}
+    @keyframes seiteReinZur{from{transform:translateX(-24%);opacity:.55}to{transform:translateX(0);opacity:1}}
+    @keyframes seiteRausZur{from{transform:translateX(0)}to{transform:translateX(100%)}}
+    /* Waehrend man mit dem Finger zieht, folgt die Seite ohne Uebergang */
+    .page.zieht{display:flex;animation:none;will-change:transform}
+    @media(prefers-reduced-motion:reduce){
+      .page.rein-vor,.page.raus-vor,.page.rein-zur,.page.raus-zur{animation:none}
+    }
+    /* Der Schatten an der Kante macht aus zwei Flaechen zwei Ebenen */
+    .page.zieht.oben,.page.rein-vor,.page.rein-zur{box-shadow:-14px 0 34px rgba(0,0,0,.5)}
     /* Ohne das quetscht der Flex-Container die Filter-Chips zusammen,
        sobald der Inhalt höher ist als der Viewport → Überlappung. */
     .page>*{flex-shrink:0}
@@ -571,6 +595,33 @@
    nach App. Der Sicherheitsabstand steckt im Innenabstand, damit die
    Leiste bis an den Bildschirmrand reicht und trotzdem kein Knopf
    unter dem Home-Indikator liegt. */
+    /* ── Ziehen zum Aktualisieren ──
+       Der Kreis folgt dem Finger und dreht mit. Ab der Schwelle faerbt
+       er sich – dann weiss man vor dem Loslassen, dass es ausloest. */
+    .ptr{
+      position:fixed;left:50%;top:calc(var(--safe-top) + 6px);z-index:90;
+      width:34px;height:34px;margin-left:-17px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(9,13,36,.92);border:1px solid rgba(255,255,255,.14);
+      color:rgba(255,255,255,.7);opacity:0;pointer-events:none;
+      transform:translateY(-10px);
+    }
+    .ptr svg{width:17px;height:17px}
+    .ptr.bereit{color:#fff;border-color:rgba(255,45,118,.55);background:rgba(255,45,118,.22)}
+    .ptr.laeuft svg{animation:ptrDreht .9s linear infinite}
+    @keyframes ptrDreht{to{transform:rotate(360deg)}}
+
+    /* ── Platzhalter statt Kreisel ──
+       Ein drehender Kreis ist die Geste einer Website. Eine App zeigt
+       schon die Form dessen, was gleich kommt. */
+    .skelett{border-radius:16px;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.07);margin-bottom:10px;overflow:hidden;position:relative}
+    .skelett::after{content:'';position:absolute;inset:0;transform:translateX(-100%);
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);
+      animation:skelettWelle 1.3s infinite}
+    @keyframes skelettWelle{to{transform:translateX(100%)}}
+    @media(prefers-reduced-motion:reduce){.skelett::after{animation:none}}
+
     .bnav{
       position:fixed;bottom:0;left:0;right:0;
       z-index:100;
@@ -6759,6 +6810,14 @@
 </div>
 
 <!-- ════ FLOATING BOTTOM NAV ════ -->
+<!-- Ziehen zum Aktualisieren: liegt fest ueber der Seite, damit es
+     nicht mitscrollt. Sichtbar nur waehrend der Geste. -->
+<div class="ptr" id="ptr" aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+    <path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 4 21 10 15 10"/>
+  </svg>
+</div>
+
 <div class="bnav hidden" id="bnav">
   <button class="bnav-btn active" id="bnav-main" onclick="showPage('main')">
     <svg class="pk pk-bunt" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 10.6 12 4.8l6.8 5.8V19a1.6 1.6 0 0 1-1.6 1.6H6.8A1.6 1.6 0 0 1 5.2 19z" fill="url(#pkPink)"/><path d="M3.4 11.3 12 4l8.6 7.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.2 10v9a1.6 1.6 0 0 0 1.6 1.6h10.4a1.6 1.6 0 0 0 1.6-1.6v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20.6v-3.8a2 2 0 0 1 4 0v3.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -9936,27 +9995,244 @@ async function stelleOrtHer(){
   return true;
 }
 
+/* Platzhalter in der Form dessen, was gleich kommt. */
+function skelett(n,hoehe){
+  let h='';
+  for(let i=0;i<(n||3);i++)h+='<div class="skelett" style="height:'+(hoehe||62)+'px"></div>';
+  return h;
+}
+
+/* ── Ziehen zum Aktualisieren ─────────────────────────────────────
+   Haengt an loadEvts() – derselben Funktion, die die Startseite sonst
+   auch fuellt. Kein zweiter Ladeweg daneben. */
+function ziehAktualisieren(){
+  const seite=document.getElementById('page-main');
+  const anzeige=document.getElementById('ptr');
+  if(!seite||!anzeige)return;
+  let y0=0,dy=0,zieht=false,entschieden=false,laeuft=false;
+
+  const weg=()=>{
+    anzeige.style.transition='opacity .2s ease,transform .2s ease';
+    anzeige.style.opacity='0';
+    anzeige.style.transform='translateY(-10px)';
+    anzeige.classList.remove('bereit','laeuft');
+    setTimeout(()=>{anzeige.style.transition='';},220);
+  };
+
+  seite.addEventListener('touchstart',e=>{
+    zieht=false;entschieden=false;dy=0;
+    if(laeuft||seitenWechselLaeuft||e.touches.length!==1)return;
+    if(seite.scrollTop>0)return;
+    if(document.querySelector('.overlay.open'))return;
+    // Die Kante gehoert der Zurueck-Geste
+    if(e.touches[0].clientX<=KANTE)return;
+    y0=e.touches[0].clientY;zieht=true;
+    anzeige.style.transition='';
+  },{passive:true});
+
+  seite.addEventListener('touchmove',e=>{
+    if(!zieht)return;
+    const y=e.touches[0].clientY-y0;
+    if(!entschieden){
+      if(Math.abs(y)<6)return;
+      entschieden=true;
+      if(y<0){zieht=false;return;}
+    }
+    if(y<=0){dy=0;anzeige.style.opacity='0';return;}
+    if(e.cancelable)e.preventDefault();
+    dy=Math.min(y*0.55,110);
+    anzeige.style.transform='translateY('+dy+'px) rotate('+Math.round(dy*3)+'deg)';
+    anzeige.style.opacity=String(Math.min(dy/70,1));
+    anzeige.classList.toggle('bereit',dy>70);
+  },{passive:false});
+
+  const los=async()=>{
+    if(!zieht)return;
+    zieht=false;
+    if(dy<=70){weg();dy=0;return;}
+    laeuft=true;dy=0;
+    anzeige.classList.remove('bereit');
+    anzeige.classList.add('laeuft');
+    anzeige.style.transform='translateY(52px)';
+    anzeige.style.opacity='1';
+    nativeHaptik('leicht');
+    try{
+      await loadEvts();
+      if(typeof filterAll==='function')filterAll();
+    }catch(err){
+      console.warn('[ziehen]',err);
+      toast('Konnte gerade nicht aktualisieren','warn');
+    }
+    laeuft=false;
+    weg();
+  };
+  seite.addEventListener('touchend',los,{passive:true});
+  seite.addEventListener('touchcancel',()=>{if(zieht){zieht=false;weg();}},{passive:true});
+}
+
+/* ── Von der linken Kante zurückwischen ───────────────────────────
+   Gespiegelt aus dem Wegwischen der Fenster: 6 px entscheiden die
+   Richtung, unter der Schwelle federt es zurueck. Die Geste ruft
+   dieselben Rueckwege wie die Knoepfe – keinen dritten daneben.
+
+   Sie beginnt nur an der linken Kante (28 px). Sonst wuerde jeder
+   waagrechte Wisch in einer Chip-Leiste die Seite mitnehmen. */
+const KANTE=28, ZURUECK_AB=70;
+function zurueckGesteStarten(){
+  let x0=0,y0=0,dx=0,zieht=false,entschieden=false,oben=null,unten=null,ziel=null;
+
+  const wohin=()=>{
+    const jetzt=document.querySelector('.page.active')?.id?.replace('page-','');
+    if(!jetzt||jetzt==='auth'||jetzt==='main')return null;
+    if(jetzt==='conv')return {fn:convZurueck,name:(seitenVorher[seitenVorher.length-1]||'chat')};
+    const v=seitenVorher[seitenVorher.length-1];
+    return {fn:zurueck,name:(v&&v!==jetzt)?v:'main'};
+  };
+
+  document.addEventListener('touchstart',e=>{
+    zieht=false;entschieden=false;dx=0;
+    if(seitenWechselLaeuft)return;
+    if(e.touches.length!==1)return;
+    const t=e.touches[0];
+    if(t.clientX>KANTE)return;                    // nur an der Kante
+    if(document.querySelector('.overlay.open'))return;  // Fenster haben ihre eigene Geste
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]'))return;
+    ziel=wohin();
+    if(!ziel)return;
+    oben=document.querySelector('.page.active');
+    unten=document.getElementById('page-'+ziel.name);
+    if(!oben||!unten||oben===unten){ziel=null;return;}
+    x0=t.clientX;y0=t.clientY;zieht=true;
+  },{passive:true});
+
+  document.addEventListener('touchmove',e=>{
+    if(!zieht)return;
+    const t=e.touches[0];
+    const x=t.clientX-x0, y=t.clientY-y0;
+    if(!entschieden){
+      if(Math.abs(x)<6&&Math.abs(y)<6)return;
+      entschieden=true;
+      if(Math.abs(y)>Math.abs(x)||x<0){zieht=false;return;}  // senkrecht oder nach links: nicht unsere Geste
+      oben.classList.add('zieht','oben');
+      unten.classList.add('zieht','active');
+    }
+    if(x<=0)return;
+    if(e.cancelable)e.preventDefault();
+    dx=x;
+    const br=window.innerWidth||390;
+    oben.style.transform='translateX('+dx+'px)';
+    unten.style.transform='translateX('+(-24+24*Math.min(dx/br,1))+'%)';
+    unten.style.opacity=String(.55+.45*Math.min(dx/br,1));
+  },{passive:false});
+
+  const los=()=>{
+    if(!zieht){ziel=null;return;}
+    zieht=false;
+    if(!entschieden||!oben||!unten){aufraeumen(true);return;}
+    const schafft=dx>ZURUECK_AB;
+    oben.style.transition='transform var(--takt-lang) var(--kurve)';
+    unten.style.transition='transform var(--takt-lang) var(--kurve),opacity var(--takt-lang) var(--kurve)';
+    if(schafft){
+      oben.style.transform='translateX(100%)';
+      unten.style.transform='translateX(0)';unten.style.opacity='1';
+      nativeHaptik('leicht');
+      setTimeout(()=>{ const f=ziel&&ziel.fn; aufraeumen(false); if(f)f(); },200);
+    }else{
+      oben.style.transform='';
+      unten.style.transform='translateX(-24%)';unten.style.opacity='.55';
+      setTimeout(()=>aufraeumen(true),200);
+    }
+  };
+  /* Wer die Klasse "active" setzt, muss sie auch wieder wegnehmen –
+     sonst bleiben zwei Seiten stehen. Bei Erfolg uebernimmt showOnly
+     das Aufraeumen (es sichert "genau eine"), beim Abbruch nehme ich
+     der unteren Seite das "active" wieder weg, das ich ihr gegeben habe. */
+  function aufraeumen(abgebrochen){
+    [oben,unten].forEach(el=>{
+      if(!el)return;
+      el.style.transition='';el.style.transform='';el.style.opacity='';
+      el.classList.remove('zieht','oben');
+    });
+    if(abgebrochen&&unten)unten.classList.remove('active');
+    oben=unten=ziel=null;dx=0;entschieden=false;
+  }
+  document.addEventListener('touchend',los,{passive:true});
+  document.addEventListener('touchcancel',los,{passive:true});
+}
+
 /* ── Ein Schritt zurück statt immer nach Hause ─────────────────────
    Das Kreuz auf der Pro-Seite und in der Suche warf einen bisher auf die
    Startseite, egal woher man kam. */
 function zurueck(){
   const vorher=seitenVorher.pop();
   const jetzt=document.querySelector('.page.active')?.id?.replace('page-','');
-  showOnly(vorher&&vorher!==jetzt ? vorher : 'main');
+  showOnly(vorher&&vorher!==jetzt ? vorher : 'main','zurueck');
   merkeOrt();
 }
 
-function showOnly(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name)?.classList.add('active');
+/* Seiten, die uebereinander liegen: die Startseite ist die Wurzel, alles
+   andere liegt darueber. Daran haengt die Richtung der Bewegung. */
+const SEITEN_TIEFE={auth:0,main:1,search:2,calendar:2,chat:2,profile:2,pro:3,conv:3};
+let seitenWechselLaeuft=false;
+
+function showOnly(name,richtung){
+  const alt=document.querySelector('.page.active');
+  const neu=document.getElementById('page-'+name);
+  if(!neu){ return; }
+
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('bnav-'+name)?.classList.add('active');
   // In der Unterhaltung sitzt das Schreibfeld ganz unten – dort darf
   // die Menueleiste nicht daraufliegen.
   document.getElementById('bnav')?.classList.toggle('nav-weg', name==='conv');
+
+  /* Eine Zusage, die an jedem Ausgang gilt: am Ende ist genau eine
+     Seite aktiv. Vorher konnte die Wisch-Geste eine zweite stehen
+     lassen – dann lagen zwei Seiten uebereinander. */
+  const nurDiese=(el)=>document.querySelectorAll('.page').forEach(x=>{
+    if(x!==el)x.classList.remove('active','zieht','oben','faehrt','rein-vor','raus-vor','rein-zur','raus-zur');
+  });
+
+  if(alt===neu){ neu.classList.add('active'); nurDiese(neu); return; }
+
+  const ruhig=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  /* Ohne Vorgaenger, beim Anmeldebildschirm oder bei "Bewegung
+     reduzieren" wird geschaltet statt geschoben. */
+  if(!alt||ruhig||name==='auth'||alt.id==='page-auth'||seitenWechselLaeuft){
+    document.querySelectorAll('.page').forEach(p=>{
+      p.classList.remove('active','rein-vor','raus-vor','rein-zur','raus-zur','zieht','oben','faehrt');
+      p.style.transform='';p.style.opacity='';p.style.transition='';
+    });
+    neu.classList.add('active');
+    return;
+  }
+
+  const von=SEITEN_TIEFE[alt.id.replace('page-','')] ?? 1;
+  const zu =SEITEN_TIEFE[name] ?? 1;
+  const zurueckwaerts = richtung==='zurueck' || (richtung!=='vor' && zu < von);
+
+  seitenWechselLaeuft=true;
+  const rein=zurueckwaerts?'rein-zur':'rein-vor';
+  const raus=zurueckwaerts?'raus-zur':'raus-vor';
+
+  neu.classList.add('active',rein);
+  alt.classList.add('faehrt',raus);
+
+  const fertig=()=>{
+    alt.classList.remove('active','faehrt',raus,'oben');
+    neu.classList.remove(rein,'oben');
+    neu.classList.add('active');
+    nurDiese(neu);          // die Zusage: genau eine
+    seitenWechselLaeuft=false;
+  };
+  let erledigt=false;
+  const einmal=()=>{ if(erledigt)return; erledigt=true; fertig(); };
+  neu.addEventListener('animationend',einmal,{once:true});
+  // Sicherheitsnetz: bleibt die Bewegung aus, darf die Seite nicht haengen
+  setTimeout(einmal,420);
 }
 
-function showPage(name){
+function showPage(name,richtung){
   // Ohne Konto haetten diese Seiten nichts zu zeigen ausser Leere.
   // Die Pro-Seite bleibt offen – sie erklaert ja gerade, warum sich ein
   // Konto lohnt.
@@ -9985,7 +10261,7 @@ function showPage(name){
      aus, als haette er nichts getan – genau so war es beim Schloss
      „Pro werden“ in den Party-Details. */
   alleFensterZu();
-  showOnly(name);
+  showOnly(name,richtung);
   if(name==='profile')renderProf();
   if(name==='chat')loadChats();
   if(name==='main'){ loadEvts(); vereinHomeUmschalten(); }
@@ -13616,7 +13892,7 @@ async function gespraechOeffnen(cid){
 
 function convZurueck(){
   const z=seitenVorher.pop();
-  showPage(z&&!['conv','auth'].includes(z)?z:'chat');
+  showPage(z&&!['conv','auth'].includes(z)?z:'chat','zurueck');
   if(seitenVorher[seitenVorher.length-1]==='conv')seitenVorher.pop();
 }
 
@@ -16130,7 +16406,7 @@ async function gruppeGruenden(){
 async function gruppenLaden(){
   const box=document.getElementById('prof-panel-gruppen');
   if(!box||!cUser)return;
-  box.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  box.innerHTML=skelett(3,66);
   const{data,error}=await sb.rpc('meine_gruppen');
   if(error){box.innerHTML='<div class="insta-empty">Konnte nicht geladen werden.</div>';return;}
   const liste=Array.isArray(data)?data:[];
@@ -16167,7 +16443,7 @@ async function gruppeOeffnen(id){
   const ov=document.getElementById('gruppeOverlay');
   const body=document.getElementById('gruppeBody');
   ov.classList.add('open');
-  body.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  body.innerHTML=skelett(4,64);
   const{data,error}=await sb.rpc('gruppe_ansehen',{p_group:id});
   if(error){body.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>';return;}
   if(data?.status!=='ok'){body.innerHTML='<div class="up-empty">'+esc(grpSagen(data?.status))+'</div>';return;}
@@ -25768,6 +26044,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   initLang();
   tastaturBeobachten();
   initSwipeToClose();
+  zurueckGesteStarten();
+  ziehAktualisieren();
+  /* Die untere Leiste ist der meistgetippte Ort der App – dort fuehlt
+     man den Unterschied zwischen Website und App am deutlichsten. */
+  document.addEventListener('click',ev=>{
+    if(ev.target.closest&&ev.target.closest('.bnav-btn'))nativeHaptik('leicht');
+  },true);
   mapWischEinrichten();
   setTimeout(initSwipeToClose,500);
   /* Frueher stand der Ladeschirm stur 2,5 Sekunden – auch wenn die App
