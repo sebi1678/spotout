@@ -54,3 +54,17 @@ Ausführlich: Obsidian-Notiz **Gruppen**.
 | `gruppen_bearbeiten` | `gruppe_aendern` (Name und Zweck), `gruppe_mitglied_entfernen`; `gruppe_ansehen` liefert neu `gruender_name` und `erstellt_am` |
 | `gruppen_einladungen` | Tabelle `gruppen_einladungen` (getrennt von `gruppen_anfragen`: „ich will rein" gegen „komm rein"), dazu `gruppe_einladen`, `gruppe_einladung_beantworten`, `gruppe_kontakte`, `meine_gruppen_einladungen`. **Niemand wird still Mitglied** – der Eingeladene entscheidet |
 
+
+## Angewendet am 16. September 2026 (Vereine ohne KI)
+
+| Name | Was |
+|---|---|
+| `verein_pruefung_ohne_ki` | Trigger `verein_pruefung_starten_trg` und `verein_pruefung_geheimnis` **gelöscht** (riefen per `pg_net` die Edge Function `verein-pruefen` / Claude). Neu `zz_verein_meldet_sich_trg`: die Betreiber bekommen eine Meldung, sobald ein Verein wartet. Neu `vereine_offen()` – liefert dem Betreiber die wartenden Vereine samt E-Mail aus `auth.users`, Fremden eine leere Liste. Tabelle `verein_pruefungen` gelöscht (war leer) |
+
+**Unverändert und weiterhin die Grundlage:** `handle_new_user()` vergleicht die
+E-Mail-Domain mit der Website (`domain_passt`) und fängt Freemail-Adressen ab
+(`ist_freimail`). Passt sie → `neu` → nach der Mail-Bestätigung `bestaetigt`.
+Sonst → `handpruefung`, und dann entscheidet ein Mensch.
+
+**Offen:** die Edge Function `verein-pruefen` im Dashboard löschen – sie ruft
+niemand mehr, steht aber noch offen im Netz.
