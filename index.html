@@ -14129,6 +14129,12 @@ function plusZeigen(meine){
     +'<span><span class="plus-t">Gruppe gründen</span>'
     +'<span class="plus-s">Gemeinsam hingehen, eigener Chat</span></span>'
     +'</button>'
+    /* Den Weg gab es schon, versteckt im Profil. Hier sucht man ihn. */
+    +'<button class="plus-gross" style="margin-top:10px" onclick="closeOverlay(\'plusOverlay\');spotoutEinladen()">'
+    +'<span class="plus-ic">'+plus+'</span>'
+    +'<span><span class="plus-t">Freunde zu SPOTOUT holen</span>'
+    +'<span class="plus-s">Link schicken – ohne Konto sieht man schon mal alles Öffentliche</span></span>'
+    +'</button>'
     +'<div class="mg-sec">Freunde einladen</div>'
     +meine.map(e=>'<button class="plus-party" onclick="plusEinladen(\''+e.id+'\')">'
       +'<span class="plus-emo">'+(e.type==='private'?schloss:leute)+'</span>'
@@ -16370,6 +16376,10 @@ const GRP_TEXT={
   vorbei:'Diese Party ist vorbei.',
   privat_nur_host:'Eine private Party stellt nur der Gastgeber in eine Gruppe.',
   nicht_erlaubt:'Das darfst du hier nicht.',
+  schon_dabei:'Die Person ist schon in der Gruppe.',
+  nicht_sich_selbst:'Dich selbst brauchst du nicht einzuladen.',
+  nicht_gruender_entfernen:'Den Gründer kannst du nicht entfernen.',
+  keine_einladung:'Diese Einladung gibt es nicht mehr.',
 };
 const grpSagen=(st)=>GRP_TEXT[st]||'Das hat gerade nicht geklappt.';
 
@@ -16407,20 +16417,39 @@ async function gruppenLaden(){
   const box=document.getElementById('prof-panel-gruppen');
   if(!box||!cUser)return;
   box.innerHTML=skelett(3,66);
-  const{data,error}=await sb.rpc('meine_gruppen');
+  const[{data,error},{data:einl}]=await Promise.all([
+    sb.rpc('meine_gruppen'),
+    sb.rpc('meine_gruppen_einladungen'),
+  ]);
   if(error){box.innerHTML='<div class="insta-empty">Konnte nicht geladen werden.</div>';return;}
   const liste=Array.isArray(data)?data:[];
+  const offene=Array.isArray(einl)?einl:[];
+
+  /* Einladungen stehen oben – sie sind das Einzige hier, was auf eine
+     Antwort wartet. */
+  const einladungen=offene.length
+    ? '<div class="mg-sec">Einladungen</div>'
+      +offene.map(e=>'<div class="mg-req" id="grpein-'+e.id+'">'
+        +'<div class="grp-ic">'+pikto('gaeste',19)+'</div>'
+        +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(e.name||'Gruppe')+'</div>'
+        +'<div class="mg-req-s">von '+esc(e.von||'jemandem')+' · '+(e.mitglieder||0)+' dabei</div></div>'
+        +'<button class="mg-yes" aria-label="Annehmen" onclick="gruppeEinladungAntwort(this,\''+e.id+'\',true)">'
+          +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
+        +'<button class="mg-no" aria-label="Ablehnen" onclick="gruppeEinladungAntwort(this,\''+e.id+'\',false)">'
+          +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+        +'</div>').join('')
+    : '';
   if(!liste.length){
     /* Eine leere Liste verliert jeden sofort – hier steht darum, was es
        bringt, und ein Knopf, nicht bloss "Noch keine Gruppen". */
-    box.innerHTML='<div class="insta-empty" style="gap:12px">'
+    box.innerHTML=einladungen+'<div class="insta-empty" style="gap:12px">'
       +pikto('gaeste',34)
       +'<span>Mit einer Gruppe seht ihr auf einen Blick, wer wohin mitkommt – und habt einen eigenen Chat.</span>'
       +'<button class="prof-action-btn" style="margin-top:4px" onclick="gruppeNeuOeffnen()">Gruppe gründen</button>'
       +'</div>';
     return;
   }
-  box.innerHTML=liste.map(g=>{
+  box.innerHTML=einladungen+liste.map(g=>{
     const bilder=(g.bilder||[]).slice(0,4).map(u=>'<div class="av-sm"><img loading="lazy" decoding="async" src="'+escAttr(u)+'"/></div>').join('');
     const offen=Number(g.anfragen||0);
     const teile=[(g.mitglieder||0)+(g.mitglieder===1?' Person':' Leute')];
@@ -16433,7 +16462,26 @@ async function gruppenLaden(){
       +(offen?'<span class="grp-punkt">'+offen+'</span>':'')
       +'</div>';
   }).join('')
-  +'<button class="prof-action-btn" style="width:100%;margin-top:4px" onclick="gruppeNeuOeffnen()">Weitere Gruppe gründen</button>';
+  +'<button class="prof-action-btn" style="width:100%;margin-top:4px" onclick="gruppeNeuOeffnen()">Weitere Gruppe gründen</button>'
+  +'<button class="prof-action-btn" style="width:100%;margin-top:8px" onclick="spotoutEinladen()">Freunde zu SPOTOUT einladen</button>';
+}
+
+async function gruppeEinladungAntwort(btn,gid,ja){
+  if(btn)btn.disabled=true;
+  const{data,error}=await sb.rpc('gruppe_einladung_beantworten',{p_group:gid,p_ja:ja});
+  if(error){toast(fehlerText(error),'error');if(btn)btn.disabled=false;return;}
+  if(data?.status!=='angenommen'&&data?.status!=='abgelehnt'){
+    toast(grpSagen(data?.status),'warn');if(btn)btn.disabled=false;return;
+  }
+  const zeile=document.getElementById('grpein-'+gid);
+  if(zeile){
+    zeile.innerHTML='<div class="mg-req-s" style="padding:2px 0">'+(ja?'Du bist dabei':'Abgelehnt')+'</div>';
+    zeile.style.opacity='.6';
+    setTimeout(()=>{ try{zeile.remove();}catch(e){} },1200);
+  }
+  nativeHaptik('leicht');
+  gruppenLaden();
+  if(ja&&data?.id)setTimeout(()=>gruppeOeffnen(data.id),600);
 }
 
 let grpOffen=null;
@@ -16535,8 +16583,9 @@ function gruppeZeichnen(g){
         +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
         +'Bearbeiten</button>':'')
     +'</div>'
+    +'<button class="sub-btn sub-public" style="margin:0 0 8px" onclick="gruppeChat(\''+g.id+'\')">Gruppenchat</button>'
     +'<div style="display:flex;gap:8px;margin-bottom:4px">'
-      +'<button class="sub-btn sub-public" style="flex:1;margin:0" onclick="gruppeChat(\''+g.id+'\')">Gruppenchat</button>'
+      +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppeKontakteWaehlen(\''+g.id+'\')">Leute holen</button>'
       +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppePartyWaehlen(\''+g.id+'\')">Party hineinstellen</button>'
     +'</div>'
     +anfragen
@@ -16650,6 +16699,102 @@ async function gruppeChat(gid){
   const titel=document.getElementById('gruppeTitel')?.textContent||'Gruppe';
   closeOverlay('gruppeOverlay');
   await openConv(data.id,{gruppe:true,id:gid,name:titel});
+}
+
+/* Leute in die Gruppe holen. Derselbe Waehler wie beim Einladen zu
+   einer Party – gleiche Kennungen (shRows, shNichts, .sh-send), damit
+   shareFiltern() und shareAnAlle() unveraendert mitarbeiten. Ein
+   zweiter Waehler daneben waere dieselbe Sache zweimal. */
+let grpEinladenId=null;
+async function gruppeKontakteWaehlen(gid){
+  grpEinladenId=gid;
+  const body=document.getElementById('gruppeBody');
+  body.innerHTML='<div class="mg-sec">Wen holst du dazu?</div>'+skelett(3,58);
+  const{data,error}=await sb.rpc('gruppe_kontakte',{p_group:gid});
+  if(error){body.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>';return;}
+  const leute=Array.isArray(data)?data:[];
+
+  const zurueckKnopf='<button class="prof-action-btn" style="width:100%;margin-top:12px" '
+    +'onclick="gruppeOeffnen(\''+gid+'\')">Zurück zur Gruppe</button>';
+
+  if(!leute.length){
+    /* Keine Kontakte ist kein Fehler, sondern eine Gelegenheit: hier
+       fuehrt der Weg zum Einladungslink und zu SPOTOUT selbst. */
+    body.innerHTML='<div class="mg-sec">Wen holst du dazu?</div>'
+      +'<div class="mg-empty">Du hast noch niemanden, dem du folgst. '
+      +'Teil den Einladungslink der Gruppe – oder hol jemanden ganz neu zu SPOTOUT.</div>'
+      +(grpDaten&&grpDaten.code
+        ? '<button class="sub-btn sub-public" style="margin-top:10px" onclick="gruppeTeilen(\''+grpDaten.code+'\',\''
+          +escAttr(String(grpDaten.name||'').replace(/['\"\\<>&]/g,''))+'\')">Einladungslink teilen</button>' : '')
+      +'<button class="prof-action-btn" style="width:100%;margin-top:8px" onclick="spotoutEinladen()">Jemanden zu SPOTOUT einladen</button>'
+      +zurueckKnopf;
+    return;
+  }
+
+  const reihen=leute.map(u=>{
+    const nm=u.full_name||u.username||'Unbekannt';
+    const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+    return '<div class="mg-guest" id="sh-'+u.id+'" data-such="'
+      +escAttr((nm+' '+(u.username||'')).toLowerCase())+'">'
+      +'<div class="av-sm">'+av+'</div>'
+      +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
+      +'<div class="mg-req-s">@'+esc(u.username||'')+'</div></div>'
+      +(u.eingeladen
+        ? '<button class="sh-send done" disabled>Eingeladen</button>'
+        : '<button class="sh-send" onclick="gruppeEinladen(\''+u.id+'\')">Einladen</button>')
+      +'</div>';
+  }).join('');
+
+  const werkzeug=leute.length>5
+    ? '<div class="sh-tools">'
+      +'<input class="sh-suche" id="shSuche" placeholder="Name suchen…" oninput="shareFiltern(this.value)" autocomplete="off"/>'
+      +'<button class="sh-alle" id="shAlle" onclick="shareAnAlle()">Alle</button>'
+      +'</div>' : '';
+
+  body.innerHTML='<div class="mg-sec">Wen holst du dazu?</div>'
+    +'<div class="ein-leer">Wer eingeladen wird, entscheidet selbst – niemand landet ungefragt in der Gruppe.</div>'
+    +werkzeug+'<div class="sh-rows" id="shRows">'+reihen+'</div>'
+    +'<div class="mg-empty" id="shNichts" style="display:none">Niemand mit diesem Namen.</div>'
+    +'<button class="prof-action-btn" style="width:100%;margin-top:12px" onclick="spotoutEinladen()">Jemanden zu SPOTOUT einladen</button>'
+    +zurueckKnopf;
+}
+
+async function gruppeEinladen(uid){
+  if(!grpEinladenId)return;
+  const btn=document.querySelector('#sh-'+uid+' .sh-send');
+  if(btn){btn.disabled=true;btn.textContent='…';}
+  const{data,error}=await sb.rpc('gruppe_einladen',{p_group:grpEinladenId,p_user:uid});
+  if(error){
+    toast(fehlerText(error),'error');
+    if(btn){btn.disabled=false;btn.textContent='Einladen';}
+    return;
+  }
+  if(data?.status!=='ok'&&data?.status!=='angenommen'){
+    toast(grpSagen(data?.status),'warn');
+    if(btn){btn.disabled=false;btn.textContent='Einladen';}
+    return;
+  }
+  if(btn){btn.textContent='Eingeladen';btn.classList.add('done');}
+}
+
+/* Jemanden ganz neu zu SPOTOUT holen. Den Weg gab es schon – er war nur
+   im Profil versteckt, wo ihn niemand sucht. */
+async function spotoutEinladen(){
+  if(!cUser){kontoNoetig();return;}
+  const adresse=location.origin+location.pathname
+    +(cProfile?.username?('?u='+encodeURIComponent(cProfile.username)):'');
+  const text='Komm auf SPOTOUT – da siehst du, welche Partys und Feste in der Schweiz laufen und wer hingeht.';
+  if(istApp()){
+    const a=await nativeCall('teilen',{text:text,url:adresse},20000);
+    if(a&&a.fehler&&a.fehler!=='abgebrochen')toast('Teilen ging nicht','warn');
+    return;
+  }
+  if(navigator.share){
+    try{ await navigator.share({title:'SPOTOUT',text:text,url:adresse}); return; }
+    catch(err){ if(err&&err.name==='AbortError')return; }
+  }
+  try{ await navigator.clipboard.writeText(adresse); toast('Einladungslink kopiert','success'); }
+  catch(err){ toast('Link: '+adresse,'info'); }
 }
 
 /* Hineinstellen darf man nur, was man selbst sieht – die Auswahl zeigt
@@ -23349,6 +23494,7 @@ const NT_ICON={
   gruppe_ok:{cls:'ok',svg:''},
   gruppe_party:{cls:'ein',svg:''},
   gruppe_weg:{cls:'no',svg:''},
+  gruppe_einladung:{cls:'ein',svg:''},
 };
 
 const NT_PK={beitritt_anfrage:'gast_anfrage',beitritt_ok:'ok',beitritt_nein:'nein',sanktion:'gefahr',
@@ -23357,7 +23503,8 @@ const NT_PK={beitritt_anfrage:'gast_anfrage',beitritt_ok:'ok',beitritt_nein:'nei
   verein_pruefen:'verein',nachricht:'chat',freund_dabei:'freund_dabei',folge_anfrage:'gast_anfrage',
   folge_zusage:'folge_ok',day_one:'day_one',foto_entfernt:'foto_weg',
   nachricht_anfrage:'chat',warteliste_frei:'ok',meldung_neu:'gefahr',
-  gruppe_anfrage:'gast_anfrage',gruppe_ok:'ok',gruppe_party:'gaeste',gruppe_weg:'nein'};
+  gruppe_anfrage:'gast_anfrage',gruppe_ok:'ok',gruppe_party:'gaeste',gruppe_weg:'nein',
+  gruppe_einladung:'einladung'};
 function ntIcon(art){
   const d=NT_ICON[art]||NT_ICON.event_changed;
   return '<div class="nt-ic '+d.cls+'">'+pikto(NT_PK[art]||'glocke',20)+'</div>';
@@ -23744,6 +23891,14 @@ async function oeffneNotif(id){
   }
   if(n.art==='sanktion'||n.art==='sanktion_aufgehoben'){ closeNotifs(); sanktionPruefen(true); return; }
   if((n.art==='meldung_schwer'||n.art==='meldung_neu')&&cProfile?.ist_admin){ closeNotifs(); moderationOeffnen(); return; }
+  /* Gruppen-Meldungen fuehren dorthin, wo man etwas tun kann. Ohne das
+     endeten sie im Nichts: sie haben kein event_id, und der Weg unten
+     zeichnet dann nur die Liste neu. */
+  if(n.art==='gruppe_einladung'||n.art==='gruppe_anfrage'||n.art==='gruppe_ok'||n.art==='gruppe_weg'){
+    closeNotifs(); showPage('profile');
+    setTimeout(()=>{ try{ switchProfTab('gruppen'); }catch(e){} },420);
+    return;
+  }
   if(n.art==='day_one'){ closeNotifs(); showPage('profile'); return; }
   if(n.art==='nachricht_anfrage'){ closeNotifs(); showPage('chat'); return; }
   if(n.art==='abzeichen'){
