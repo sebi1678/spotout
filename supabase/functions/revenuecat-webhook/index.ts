@@ -1,5 +1,13 @@
 // SPOTOUT — RevenueCat Webhook (Apple In-App-Käufe)
 //
+// WICHTIG: Diese Funktion MUSS mit verify_jwt = false laufen.
+// RevenueCat schickt keinen Supabase-JWT, sondern das selbst gesetzte
+// REVENUECAT_SECRET im Authorization-Header (weiter unten geprueft).
+// Steht verify_jwt auf true, weist Supabase jede Zustellung mit 401 ab,
+// bevor auch nur eine Zeile hier laeuft — Kaeufe laufen dann ins Leere.
+// (Genau das ist am 17.09.2026 beim Stripe-Webhook passiert, weil ein
+// Deploy den Schalter still auf den Standard zurueckgesetzt hat.)
+//
 // Apple verlangt für alles, was in der App Funktionen freischaltet, den Kauf
 // über den App Store. Das betrifft zwei Dinge:
 //
