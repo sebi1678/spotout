@@ -1164,19 +1164,16 @@
     /* Die Knoepfe schwebten frei im Titelbild, jeder auf einer anderen Hoehe.
        Jetzt eine Leiste: gleiche Knopfhoehe wie ueberall, gleicher Randabstand
        wie auf den Party-Karten, sanfter Verlauf darunter fuer die Lesbarkeit. */
-    .d-hero-btns{
-      position:absolute;top:0;left:0;right:0;z-index:3;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:calc(var(--safe-top) + 12px) 12px 14px;
-      background:linear-gradient(to bottom,rgba(9,13,36,.55),rgba(9,13,36,0));
-      pointer-events:none;
-    }
-    .d-hero-btns>*{pointer-events:auto}
-    .d-hero-rechts{display:flex;align-items:center;gap:8px}
-    .d-hero-btn.breit{
+    /* Die Knoepfe stehen jetzt im Fensterkopf, nicht mehr im Bild. */
+    .d-kopf-rechts{display:flex;align-items:center;gap:8px;flex:none}
+    .d-kopf-breit{
       flex:none;width:auto;height:34px;padding:0 14px;border-radius:999px;
-      gap:7px;font-size:.76rem;font-weight:800;white-space:nowrap;
+      display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+      border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);
+      color:#fff;font-family:var(--font);font-size:.76rem;font-weight:800;white-space:nowrap;
     }
+    .d-kopf-breit:active{background:rgba(255,255,255,.14)}
+    #detailKopf .modal-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     /* Kennzeichnungen sitzen jetzt in der freien Flaeche unten im Bild */
     .d-hero-marken{
       position:absolute;left:12px;right:12px;bottom:12px;z-index:3;
@@ -6107,7 +6104,10 @@
     a.settings-btn,.msg-setting-opt,.push-zeile,.fl-row,.abz-karte{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
     /* ══════════ FREMDES PROFIL: eine ganze Seite wie das eigene ══════════ */
-    #userProfOverlay{align-items:stretch;justify-content:stretch;background:rgba(0,0,0,.35)}
+    /* Das Profil ist eine Vollseite und liegt UNTER den normalen
+       Fenstern: oeffnet man von dort eine Party, legt sie sich darueber,
+       und Zurueck fuehrt wieder ins Profil - eine Ebene, nicht zwei. */
+    #userProfOverlay{align-items:stretch;justify-content:stretch;background:rgba(0,0,0,.35);z-index:190}
     #userProfOverlay .modal{
       position:fixed;inset:0;width:100%;max-width:none;height:100%;max-height:none!important;margin:0;
       border-radius:0;border:none;padding:0;background:#090D24;display:flex;flex-direction:column;
@@ -6921,7 +6921,12 @@
 
 <!-- ════ DETAIL MODAL ════ -->
 <div class="overlay" id="detailOverlay" onclick="closeIfOutside(event,'detailOverlay')">
-  <div class="modal"><div class="modal-handle"></div><div class="modal-body" id="detailContent" style="padding:0"></div></div>
+  <div class="modal"><div class="modal-handle"></div>
+    <!-- Dieselbe Kopfleiste wie jedes andere Fenster (.modal-hdr, 62 px).
+         Frueher schwebten Schliessen, Teilen und Verwalten frei im
+         Titelbild - auf einer anderen Hoehe als ueberall sonst. -->
+    <div class="modal-hdr" id="detailKopf"></div>
+    <div class="modal-body" id="detailContent" style="padding:0"></div></div>
 </div>
 
 <!-- ════ EDIT PROFILE ════ -->
@@ -10312,6 +10317,72 @@ function ziehAktualisieren(){
   seite.addEventListener('touchcancel',()=>{if(zieht){zieht=false;weg();}},{passive:true});
 }
 
+/* ── Aus einem Vollseiten-Fenster zurückwischen ───────────────────
+   Das fremde Profil sieht aus wie eine Seite, ist aber ein Fenster
+   (.overlay.up-vollseite). Damit greift zweierlei nicht: die
+   Seiten-Geste unten prueft `.page.active` und findet dort nie etwas,
+   und initSwipeToClose kennt nur den Wisch nach unten.
+
+   Auf dem iPhone erwartet man an dieser Stelle die Kantengeste. Also
+   bekommt sie genau diese Fenster - dieselben Masse wie im Chat, und
+   sie ruft denselben Rueckweg wie der Pfeil oben links. */
+function vollseitenGesteStarten(){
+  document.querySelectorAll('.overlay.up-vollseite .modal').forEach(blatt=>{
+    if(blatt.dataset.kante)return;
+    blatt.dataset.kante='1';
+    let x0=0,y0=0,dx=0,zieht=false,entschieden=false;
+
+    blatt.addEventListener('touchstart',e=>{
+      zieht=false;entschieden=false;dx=0;
+      if(e.touches.length!==1)return;
+      const t=e.touches[0];
+      if(t.clientX>KANTE)return;             // nur an der linken Kante
+      x0=t.clientX;y0=t.clientY;zieht=true;
+      blatt.style.transition='none';
+    },{passive:true});
+
+    blatt.addEventListener('touchmove',e=>{
+      if(!zieht)return;
+      const x=e.touches[0].clientX-x0, y=e.touches[0].clientY-y0;
+      if(!entschieden){
+        if(Math.abs(x)<6&&Math.abs(y)<6)return;
+        entschieden=true;
+        if(Math.abs(y)>Math.abs(x)){zieht=false;return;}   // das ist Scrollen
+      }
+      if(x<=0){dx=0;blatt.style.transform='';return;}
+      if(e.cancelable)e.preventDefault();
+      dx=x;
+      blatt.style.transform='translateX('+dx.toFixed(1)+'px)';
+      blatt.style.opacity=String(Math.max(.4,1-dx/600));
+    },{passive:false});
+
+    const los=()=>{
+      if(!zieht)return;
+      zieht=false;
+      blatt.style.transition='transform .22s var(--kurve),opacity .22s ease';
+      if(dx>ZURUECK_AB){
+        nativeHaptik('leicht');
+        blatt.style.transform='translateX(100%)';
+        blatt.style.opacity='0';
+        setTimeout(()=>{
+          blatt.style.transition='';blatt.style.transform='';blatt.style.opacity='';
+          closeUserProf();
+        },200);
+      }else{
+        blatt.style.transform='';blatt.style.opacity='';
+        setTimeout(()=>{blatt.style.transition='';},240);
+      }
+      dx=0;
+    };
+    blatt.addEventListener('touchend',los,{passive:true});
+    blatt.addEventListener('touchcancel',()=>{
+      if(!zieht)return;
+      zieht=false;dx=0;
+      blatt.style.transition='';blatt.style.transform='';blatt.style.opacity='';
+    },{passive:true});
+  });
+}
+
 /* ── Aus dem Gespräch zurückwischen ───────────────────────────────
    NUR im Chat. Anderswo navigiert man ueber die Leiste und die
    Knoepfe – dort ist jede Seite eine eigene Karte, und ein waagrechter
@@ -11971,14 +12042,6 @@ async function openDetail(id){
       <div class="glow-spot glow-1" style="background:radial-gradient(circle,${w.glow1},transparent 70%)"></div>
       <div class="glow-spot glow-2" style="background:radial-gradient(circle,${w.glow2},transparent 70%)"></div>
       ${e.image_url?('<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'"/><div class="d-hero-overlay"></div>'):('<div class="d-hero-overlay" style="opacity:.6"></div>')}
-      <div class="d-hero-btns">
-        <button class="d-hero-btn" onclick="closeDetail()" aria-label="Schliessen">${pikto('schliessen',18)}</button>
-        <div class="d-hero-rechts">
-        ${!isHost?'<button class="d-hero-btn" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\\\"<>&]/g,'')+'\')" aria-label="Party melden">'+pikto('melden',19)+'</button>':''}
-        ${(!isPrivEv||isHost)?'<button class="d-hero-btn" onclick="openShare(\''+e.id+'\')" aria-label="Teilen">'+pikto('teilen',19)+'</button>':''}
-        ${isHost?'<button class="d-hero-btn breit" onclick="openManage(\''+e.id+'\')">'+pikto('zahnrad',15)+'Verwalten</button>':''}
-        </div>
-      </div>
       ${!e.image_url?('<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.18;color:#fff">'+iconSvg(evIconKey(e),80)+'</div>'):''}
       <div class="d-hero-marken">
         ${typePill}
@@ -12032,6 +12095,18 @@ async function openDetail(id){
       ${albumHTML}
     </div>
     <div style="height:32px"></div>`;
+  /* Der Kopf wird getrennt gefuellt: er steht ueber dem Bild und klebt
+     beim Scrollen oben, genau wie in jedem anderen Fenster. */
+  const kopfRechts=
+     (!isHost?'<button class="modal-x" onclick="openReport(\'event\',\''+e.id+'\',\''+String(e.name||'').replace(/[\'\\"<>&]/g,'')+'\')" aria-label="Party melden">'+pikto('melden',18)+'</button>':'')
+    +((!isPrivEv||isHost)?'<button class="modal-x" onclick="openShare(\''+e.id+'\')" aria-label="Teilen">'+pikto('teilen',18)+'</button>':'')
+    +(isHost?'<button class="d-kopf-breit" onclick="openManage(\''+e.id+'\')">'+pikto('zahnrad',15)+'Verwalten</button>':'');
+  document.getElementById('detailKopf').innerHTML=
+     '<div class="modal-title">'+esc(e.name||'Party')+'</div>'
+    +'<div class="d-kopf-rechts">'+kopfRechts
+    +'<button class="modal-x" onclick="closeDetail()" aria-label="Schliessen">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">'
+    +'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>';
   document.getElementById('detailOverlay').classList.add('open');
   merkeOrt();
   zaehleAufruf(e.id,e.type);
@@ -12893,8 +12968,13 @@ async function renderProf(){
   // Vorher verschwand alles nach 24 Stunden, dann war der Reiter leer.
   const archivBesucht=(archiv||[]).filter(r=>!r.war_host);
   const archivGehostet=(archiv||[]).filter(r=>r.war_host).length;
+  /* Ab dem Startzeitpunkt, nicht erst nach dem Ende. istVorbei() greift
+     erst am Schluss (Endzeit oder Start + 6 h) - bis dahin stand eine
+     Party, auf der man laengst war, noch unter "Kommend" und "Besucht"
+     war leer. Wer um zwei Uhr nachts nachschaut, war da. */
+  const hatBegonnen=(ev)=>{ const st=evStart(ev); return !!st && Date.now()>=st.getTime(); };
   const visitedEvts=[
-    ...(atts||[]).filter(a=>a.events&&istVorbei(a.events)&&a.events.created_by!==cUser.id),
+    ...(atts||[]).filter(a=>a.events&&hatBegonnen(a.events)&&a.events.created_by!==cUser.id),
     ...archivBesucht.map(r=>({archiv:true,events:{id:r.event_id,name:r.name,image_url:r.image_url,
         type:r.type,category:r.category,emoji:r.emoji,date:r.datum,time:r.zeit,address:r.ort}})),
   ].filter((a,i,l)=>l.findIndex(b=>b.events.id===a.events.id)===i)
@@ -15879,7 +15959,7 @@ async function openUserProf(userId,zurueck){
   const evHTML=(evs||[]).length
     ? evs.map(e=>{
         const w=worldVars(e.type);
-        return '<div class="up-ev" onclick="closeUserProf();openDetail(\''+e.id+'\')">'
+        return '<div class="up-ev" onclick="openDetail(\''+e.id+'\')">'
           +'<div class="up-ev-ic" style="background:'+w.pill+';color:'+w.accent+'">'+iconSvg(evIconKey(e),19)+'</div>'
           +'<div style="min-width:0;flex:1"><div class="up-ev-name">'+esc(e.name||'Party')+'</div>'
           +'<div class="up-ev-meta">'+fmtD(e.date)+' · '+zeitText(e.time)+'</div></div></div>';
@@ -15912,7 +15992,7 @@ async function openUserProf(userId,zurueck){
         const img=e.image_url
           ? '<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
           : '<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>';
-        return '<div class="insta-tile" onclick="closeUserProf(true);openDetail(\''+e.id+'\')">'+img
+        return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img
           +'<div class="insta-tile-overlay"><div class="up-kachel-n">'+esc(e.name||'Party')+'</div>'
           +'<div class="up-kachel-d">'+fmtD(e.date)+'</div></div></div>';
       }).join('')+'</div>'
@@ -26530,6 +26610,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   tastaturBeobachten();
   initSwipeToClose();
   zurueckGesteStarten();
+  vollseitenGesteStarten();
   ziehAktualisieren();
   /* Die untere Leiste ist der meistgetippte Ort der App – dort fuehlt
      man den Unterschied zwischen Website und App am deutlichsten. */
