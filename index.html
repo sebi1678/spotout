@@ -15685,7 +15685,21 @@ function addrZeile(r){
   const art=ortArt(r);
   const ort=[a.postcode,a.city||a.town||a.village||a.municipality].filter(Boolean).join(' ');
   const sub=[art, (eigenName&&road)?road:'', ort].filter(Boolean).join(' · ')||'Schweiz';
-  return '<div class="addr-item" data-lat="'+r.lat+'" data-lng="'+r.lon+'" data-name="'+escAttr(r.display_name||main)+'">'
+  /* ── Was gespeichert wird, nicht was Nominatim liefert ──────────
+     Frueher stand hier display_name. Das beginnt bei einer Hausadresse
+     mit der Hausnummer und manchmal mit dem Ortsteil:
+
+       "1, Bahnhofstrasse, Damm, Aarau, …"   ->  gespeichert: "1, Bahnhofstrasse, Damm"
+       "Suhr, 1, Bahnhofstrasse, …"          ->  gespeichert: "Suhr, 1, Bahnhofstrasse"
+
+     Und weil die Kacheln, der Kalender, die Vorschau und der Kartenpunkt
+     alle `address.split(',')[0]` anzeigen, stand als Ort einer Party
+     dann "1" oder "Suhr" statt der Strasse. Ein Fehler, vier Symptome.
+
+     Jetzt wird dieselbe aufgeraeumte Form gespeichert, die oben schon
+     angezeigt wird: Strasse mit Hausnummer, dann Postleitzahl und Ort. */
+  const sauber=[main, ort].filter(Boolean).join(', ')||main||'';
+  return '<div class="addr-item" data-lat="'+r.lat+'" data-lng="'+r.lon+'" data-name="'+escAttr(sauber)+'">'
         +'<div class="a-main">'+esc(main)+'</div><div class="a-sub">'+esc(sub)+'</div></div>';
 }
 
