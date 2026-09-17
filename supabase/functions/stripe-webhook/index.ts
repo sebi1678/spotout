@@ -1,5 +1,13 @@
 // SPOTOUT — Stripe Webhook
 //
+// WICHTIG: Diese Funktion MUSS mit verify_jwt = false laufen.
+// Stripe schickt keinen Supabase-JWT, sondern signiert den Rumpf mit
+// STRIPE_WEBHOOK_SECRET. Steht verify_jwt auf true, weist Supabase jede
+// Zustellung mit 401 ab, bevor auch nur eine Zeile hier ausgefuehrt wird
+// — und Zahlungen laufen ins Leere. (Genau das ist am 17.09.2026 bei
+// einem Deploy passiert, der den Schalter still zuruecksetzte.)
+// Die Echtheitspruefung passiert weiter unten in verifyStripeSignature().
+//
 // Einzige Stelle, an der Pro vergeben oder entzogen wird, und die einzige
 // Stelle, an der eine bezahlte Party freigeschaltet wird. Der Client kann
 // beides nicht selbst (Trigger guard_pro_columns bzw. guard_event_fee_columns).
