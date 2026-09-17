@@ -7,6 +7,11 @@
        zu schieben. Wo es unterstuetzt wird, ist das Problem damit
        erledigt; sonst greift die Absicherung im Skript. -->
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"/>
+  <!-- Steht vor allem anderen: bis das grosse Stylesheet gelesen ist,
+       waere die Seite sonst weiss. Und ob der Fluchtknopf an ist, soll
+       feststehen, bevor die Leiste zum ersten Mal erscheint. -->
+  <style>html,body{background:#090D24}</style>
+  <script>try{if(localStorage.getItem('spotout_raus'))document.documentElement.classList.add('raus-an')}catch(e){}</script>
   <title>SPOTOUT – Partys in deiner Nähe</title>
   <meta name="description" content="Finde Partys, Feste und Openairs in der Schweiz – und sieh, wer von deinen Leuten hingeht."/>
 
@@ -430,7 +435,7 @@
       display:flex;align-items:center;justify-content:center;
       background:rgba(255,255,255,.07);
     }
-    .eins-ic svg{width:19px;height:19px}
+    .eins-ic svg{width:20px;height:20px;display:block}
     .eins-karte .msg-setting-opt.active .eins-ic{background:rgba(255,45,118,.2)}
 
     /* ── Beispiele in der Tour ──
@@ -6036,6 +6041,9 @@
     /* Der Knopf stand auch dann da, wenn der Fluchtknopf aus war: display:flex
        schlug das hidden-Attribut. Selbst Gaeste sahen ihn. */
     .nav-raus[hidden]{display:none!important}
+    /* Zweite Sicherung: haengt an der Wahl selbst, nicht am Attribut.
+       Greift schon beim ersten Zeichnen, bevor ein Skript gelaufen ist. */
+    html:not(.raus-an) .nav-raus{display:none!important}
     @media (max-width:360px){
       .nav-raus,.nav-bell,.nav-suche,.nav-icon-btn{width:32px;height:32px;flex-basis:32px}
       .nav-raus svg,.nav-bell svg,.nav-suche svg,.nav-icon-btn svg{width:16px;height:16px}
@@ -9131,9 +9139,13 @@ const EINS_IC={
   instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01" stroke-width="2.6"/></svg>',
   youtube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9.2 5 2.8-5 2.8z"/></svg>',
   keiner:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/></svg>',
-  alle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>',
-  frage:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-3.3A8.4 8.4 0 1 1 21 11.5z"/></svg>',
-  niemand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="M6.3 6.3A6 6 0 0 0 6 8c0 7-3 9-3 9h13"/><path d="m3 3 18 18"/></svg>',
+  /* Alle drei auf demselben Raster, nichts beruehrt den Rand.
+     Frueher: Personen am Rand abgeschnitten, eine schiefe Blase und
+     fuer "Niemand" eine durchgestrichene Glocke – die meint Ruhe,
+     nicht "keine Nachrichten". */
+  alle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M3 19.5c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M15.5 4.9a3.4 3.4 0 0 1 0 6.2"/><path d="M17.8 14.4c1.9.7 3.2 2.6 3.2 5.1"/></svg>',
+  frage:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5a2 2 0 0 1-2 2H8.5L4 20V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/><path d="m8.8 10.3 2.2 2.2 4.2-4.2"/></svg>',
+  niemand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5V6a2 2 0 0 0-2-2H9.5"/><path d="M5.2 4.4A2 2 0 0 0 4 6v14l4.5-3.5h8"/><path d="m3.5 3.5 17 17"/></svg>',
   offen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>',
   schloss:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.4"/><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5"/></svg>',
 };
@@ -18368,6 +18380,8 @@ en:{
   "Die Freischaltung dauert noch einen Moment. Schau gleich nochmals.":"Unlocking takes a moment. Check again shortly.",
   "Kauf wiederherstellen":"Restore purchase",
   "Apple wird geöffnet…":"Opening Apple…",
+  "Google Play wird geöffnet…":"Opening Google Play…",
+  "Käufe sind in dieser App-Version noch nicht möglich. Das kommt mit dem nächsten Update.":"Purchases aren’t available in this app version yet. They’re coming with the next update.",
   "Kein früherer Kauf gefunden":"No earlier purchase found",
   "Pro wiederhergestellt":"Pro restored",
   "Danke – Pro wird freigeschaltet…":"Thanks — unlocking Pro…",
@@ -19964,6 +19978,8 @@ fr:{
   "Die Freischaltung dauert noch einen Moment. Schau gleich nochmals.":"L’activation prend un instant. Reviens dans un moment.",
   "Kauf wiederherstellen":"Restaurer l’achat",
   "Apple wird geöffnet…":"Ouverture d’Apple…",
+  "Google Play wird geöffnet…":"Ouverture de Google Play…",
+  "Käufe sind in dieser App-Version noch nicht möglich. Das kommt mit dem nächsten Update.":"Les achats ne sont pas encore possibles dans cette version. Ils arrivent avec la prochaine mise à jour.",
   "Kein früherer Kauf gefunden":"Aucun achat précédent trouvé",
   "Pro wiederhergestellt":"Pro restauré",
   "Danke – Pro wird freigeschaltet…":"Merci — activation de Pro…",
@@ -21558,6 +21574,8 @@ it:{
   "Die Freischaltung dauert noch einen Moment. Schau gleich nochmals.":"Lo sblocco richiede ancora un momento. Ricontrolla tra poco.",
   "Kauf wiederherstellen":"Ripristina l’acquisto",
   "Apple wird geöffnet…":"Apertura di Apple…",
+  "Google Play wird geöffnet…":"Apertura di Google Play…",
+  "Käufe sind in dieser App-Version noch nicht möglich. Das kommt mit dem nächsten Update.":"Gli acquisti non sono ancora disponibili in questa versione. Arrivano con il prossimo aggiornamento.",
   "Kein früherer Kauf gefunden":"Nessun acquisto precedente trovato",
   "Pro wiederhergestellt":"Pro ripristinato",
   "Danke – Pro wird freigeschaltet…":"Grazie – stiamo sbloccando Pro…",
@@ -23273,12 +23291,24 @@ function feeProdukt(betrag){
   return tabelle[String(Number(betrag))]||null;
 }
 
+/* Wie heisst der Laden, der gleich aufgeht? Und geht Kaufen hier ueberhaupt?
+   Die Huelle meldet kauf:false, solange auf Android der Schluessel fehlt. */
+const storeName=()=>NATIV?.plattform==='android'?'Google Play':'Apple';
+function kaufGesperrt(){
+  if(NATIV&&NATIV.kauf===false){
+    toast('Käufe sind in dieser App-Version noch nicht möglich. Das kommt mit dem nächsten Update.','info');
+    return true;
+  }
+  return false;
+}
+
 async function gebuehrKaufenApple(eventId,betrag){
+  if(kaufGesperrt())return;
   const produkt=feeProdukt(betrag);
   if(!produkt){toast('Dieser Betrag ist in der App nicht hinterlegt','error');return;}
 
   const btn=document.getElementById('feePayBtn');
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Apple wird geöffnet…';}
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>'+storeName()+' wird geöffnet…';}
 
   /* Der Beleg von Apple weiss nicht, welche Party gemeint ist — darum
      vorher am Profil hinterlegen. Der Server prüft danach, dass die Party
@@ -23332,9 +23362,10 @@ async function warteAufFreischaltung(eventId){
 /* ── Pro: in der App über Apple, im Browser über Stripe ────────────── */
 
 async function proKaufenApple(){
+  if(kaufGesperrt())return;
   const btn=document.querySelector('.pro2-cta');
   const beschriftung=btn?.textContent||'Pro holen';
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Apple wird geöffnet…';}
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>'+storeName()+' wird geöffnet…';}
   const a=await nativeCall('pro_kaufen',{userId:cUser?.id},180000);
   if(btn){btn.disabled=false;btn.textContent=beschriftung;}
   if(a.fehler){
@@ -26127,7 +26158,7 @@ function proMarke(nurZeichen){
 
 const RAUS_ZIELE = {
   /* Direkt ins Scrollen, nicht auf eine Startseite. */
-  tiktok:    {app:'snssdk1233://',                     netz:'https://www.tiktok.com/'},
+  tiktok:    {app:'snssdk1233://',                     netz:'https://www.tiktok.com/foryou'},
   instagram: {app:'instagram://reels',                 netz:'https://www.instagram.com/reels/'},
   youtube:   {app:'youtube://www.youtube.com/shorts',  netz:'https://www.youtube.com/shorts'},
 };
@@ -26166,8 +26197,15 @@ function setSchnellRaus(k){
 
 function rausKnopfZeigen(){
   const zeigen=!!schnellRausWahl();
+  document.documentElement.classList.toggle('raus-an',zeigen);
   document.querySelectorAll('.nav-raus').forEach(b=>{ b.hidden=!zeigen; });
 }
+/* Kommt die Seite aus dem Hintergrund zurueck (z. B. nach TikTok),
+   gilt wieder, was gespeichert ist. */
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){ try{ rausKnopfZeigen(); }catch(e){} }
+});
+window.addEventListener('pageshow',()=>{ try{ rausKnopfZeigen(); }catch(e){} });
 
 function schnellRaus(){
   const wahl=schnellRausWahl();
