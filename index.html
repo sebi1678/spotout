@@ -1432,6 +1432,15 @@
       border:1px solid rgba(255,255,255,.10);color:#fff;
       border-radius:18px 18px 18px 4px;
     }
+    /* ── Auswahl-Blatt der Einstellungen ── */
+    .wz-hilfe{font-size:.79rem;line-height:1.5;color:rgba(255,255,255,.55);padding:0 4px 12px}
+    .wz-zeile{align-items:center}
+    .wz-zeile b{font-size:.92rem}
+    .wz-aktiv b{color:#FF2D76}
+    .wz-haken{flex:none;width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:#FF2D76}
+    .wz-haken svg{width:17px;height:17px}
+    .cm-zeile>span:first-child{flex:1;min-width:0}
+
     /* ── Umschalter in den Benachrichtigungen ── */
     .nt-schieber{
       position:relative;display:flex;gap:4px;margin:0 20px 6px;padding:4px;
@@ -7635,38 +7644,22 @@
       <div class="set-gruppe">
         <div class="set-lbl">Privatsphäre</div>
         <div id="setProfilBox">
-          <div class="set-frage">Dein Profil</div>
-          <div id="profSettingWrap" class="set-optionen">
-          <label class="msg-setting-opt" onclick="setProfilPrivat(false)">
-            <div class="msg-setting-radio" id="psr-offen"></div>
-            <div><div class="set-opt-t">Öffentlich</div><div class="set-opt-s">Jeder kann dir folgen und dich zu Partys einladen</div></div>
-          </label>
-          <label class="msg-setting-opt" onclick="setProfilPrivat(true)">
-            <div class="msg-setting-radio" id="psr-privat"></div>
-            <div><div class="set-opt-t">Privat</div><div class="set-opt-s">Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.</div></div>
-          </label>
-          </div>
+        <button class="settings-btn" onclick="wahlProfil()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.4" r="3.6"/><path d="M4.8 19.6c0-3.3 3.2-5.6 7.2-5.6s7.2 2.3 7.2 5.6"/></svg>
+          <span class="s-label">Dein Profil</span><span class="s-wert" id="setProfilWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         </div>
         <div class="push-zeile set-besuche">
           <div><b>Profilbesuche</b><span>An: Wer Pro hat, sieht, dass du sein Profil angesehen hast – und mit Pro siehst du, wer bei dir war. Aus: beides nicht.</span></div>
           <span id="setBesucheSchalter"></span>
         </div>
         <div id="setNachrichtenBox">
-          <div class="set-frage">Wer darf dir schreiben?</div>
-          <div id="msgSettingWrap" class="set-optionen">
-          <label class="msg-setting-opt" onclick="setMsgSetting('everyone')">
-            <div class="msg-setting-radio" id="msr-everyone"></div>
-            <div><div class="set-opt-t">Jeder kann schreiben</div><div class="set-opt-s">Alle Nachrichten direkt erhalten</div></div>
-          </label>
-          <label class="msg-setting-opt" onclick="setMsgSetting('requests')">
-            <div class="msg-setting-radio" id="msr-requests"></div>
-            <div><div class="set-opt-t">Nur Anfragen</div><div class="set-opt-s">Du entscheidest, wer dir schreiben darf</div></div>
-          </label>
-          <label class="msg-setting-opt" onclick="setMsgSetting('nobody')">
-            <div class="msg-setting-radio" id="msr-nobody"></div>
-            <div><div class="set-opt-t">Niemand</div><div class="set-opt-s">Keine Nachrichten empfangen</div></div>
-          </label>
-          </div>
+        <button class="settings-btn" onclick="wahlNachrichten()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.8a2 2 0 0 1-2 2H8.4L4 20.4V5.6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>
+          <span class="s-label">Wer darf dir schreiben</span><span class="s-wert" id="setMsgWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         </div>
         <button class="settings-btn set-abstand" onclick="blockiertOeffnen()">
           <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="url(#pkPink)"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.3 6.3l11.4 11.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
@@ -7682,36 +7675,28 @@
           <span class="s-label">Benachrichtigungen</span><span class="s-wert" id="setPushWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
-        <div class="set-frage">Sprache</div>
-        <div class="lang-row" id="langRow">
-          <button class="lang-opt" data-lang="de" onclick="setLang('de')"><b>DE</b><span>Deutsch</span></button>
-          <button class="lang-opt" data-lang="en" onclick="setLang('en')"><b>EN</b><span>English</span></button>
-          <button class="lang-opt" data-lang="fr" onclick="setLang('fr')"><b>FR</b><span>Français</span></button>
-          <button class="lang-opt" data-lang="it" onclick="setLang('it')"><b>IT</b><span>Italiano</span></button>
-        </div>
+        <button class="settings-btn" onclick="wahlSprache()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M3.8 12h16.4"/><path d="M12 3.6c2.2 2.3 3.3 5.2 3.3 8.4s-1.1 6.1-3.3 8.4c-2.2-2.3-3.3-5.2-3.3-8.4S9.8 5.9 12 3.6z"/></svg>
+          <span class="s-label">Sprache</span><span class="s-wert" id="setSpracheWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <div id="setRausBox">
-          <div class="set-frage">Fluchtknopf</div>
-        <div class="set-hilfe">Die Party ist zäh, aber du willst nicht als Erster gehen? Ein Tipp oben rechts – und du bist mitten im Scrollen. SPOTOUT wartet hier auf dich.</div>
-        <div class="chipset" id="setRausWahl">
-          <button class="cset" data-raus="" onclick="setSchnellRaus('')">Aus</button>
-          <button class="cset" data-raus="tiktok" onclick="setSchnellRaus('tiktok')">TikTok</button>
-          <button class="cset" data-raus="instagram" onclick="setSchnellRaus('instagram')">Instagram Reels</button>
-          <button class="cset" data-raus="youtube" onclick="setSchnellRaus('youtube')">YouTube Shorts</button>
+        <button class="settings-btn" onclick="wahlRaus()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3 6 13.2h5l-1 7.8 7.5-10.2h-5z"/></svg>
+          <span class="s-label">Fluchtknopf</span><span class="s-wert" id="setRausWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         </div>
-        </div>
-        <div class="set-frage">Standort</div>
-        <div class="set-hilfe">Mit Standort sortiert SPOTOUT nach Nähe und zeigt, wie weit es zu einer Party ist. Aus heisst: sortiert nach Zeit, und niemand erfährt, wo du bist.</div>
-        <div class="chipset" id="setOrtWahl">
-          <button class="cset" data-ort="an" onclick="setOrtNutzung(true)">An</button>
-          <button class="cset" data-ort="aus" onclick="setOrtNutzung(false)">Aus</button>
-        </div>
-
-        <div class="set-frage">Karten-App</div>
-        <div class="chipset" id="setKartenWahl">
-          <button class="cset" data-app="" onclick="setKartenApp('')">Jedes Mal fragen</button>
-          <button class="cset" data-app="apple" onclick="setKartenApp('apple')">Apple Karten</button>
-          <button class="cset" data-app="google" onclick="setKartenApp('google')">Google Maps</button>
-        </div>
+        <button class="settings-btn" onclick="wahlOrt()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.4-5.3 6.4-10.2A6.4 6.4 0 0 0 5.6 10.8C5.6 15.7 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.4"/></svg>
+          <span class="s-label">Standort</span><span class="s-wert" id="setOrtWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="settings-btn" onclick="wahlKarten()">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.4 3.8 6.6v13l5.2-2.2 6 2.2 5.2-2.2v-13L15 6.6z"/><path d="M9 4.4v13M15 6.6v13"/></svg>
+          <span class="s-label">Karten-App</span><span class="s-wert" id="setKartenWert"></span>
+          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
 
       <div class="set-gruppe">
@@ -8041,6 +8026,20 @@
 </div>
 
 <!-- ════ KONTO WECHSELN ════ -->
+<!-- ════ AUSWAHL-BLATT (Einstellungen) ════ -->
+<div class="overlay" id="wahlOverlay" onclick="closeIfOutside(event,'wahlOverlay')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title" id="wahlTitel"></div>
+      <button class="modal-x" onclick="closeOverlay('wahlOverlay')" aria-label="Schliessen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="wahlBody"></div>
+  </div>
+</div>
+
 <!-- ════ CHAT-MENUE ════ -->
 <div class="overlay" id="convMenueOverlay" onclick="closeIfOutside(event,'convMenueOverlay')">
   <div class="modal">
@@ -12799,16 +12798,111 @@ function kartenAppGespeichert(){
 }
 
 function setKartenApp(k){
-  // Leer heisst: jedes Mal fragen
-  try{
-    if(k)localStorage.setItem('spotout_karten',k);
-    else localStorage.removeItem('spotout_karten');
-  }catch(e){}
-  document.querySelectorAll('#setKartenWahl .cset').forEach(b=>
-    b.classList.toggle('on', (b.dataset.app||'')===(k||'')));
+  try{ localStorage.setItem('spotout_karten',k||''); }catch(e){}
+  try{ setEinstellungWerte(); }catch(e){}
 }
 
 /* Beim Oeffnen der Einstellungen muessen beide Reihen zeigen, was gilt. */
+/* ══════════ EINSTELLUNGEN: EINE ZEILE, EIN BLATT ══════════
+   Bis zum 22.09. standen Chip-Reihen und Auswahlkreise mitten in den
+   Einstellungen: vier Sprachen, vier Fluchtknopf-Ziele, drei
+   Karten-Apps, zwei mal Auswahlkreise. Das Fenster war lang, bunt und
+   man musste lesen, um zu sehen, was gerade gilt.
+
+   Jetzt steht in jeder Zeile links, worum es geht, und rechts, was
+   gilt. Wer es aendern will, tippt und bekommt ein Blatt mit den
+   Moeglichkeiten - mit einem Satz je Moeglichkeit, nicht nur einem
+   Wort. Dasselbe Muster wie im Chat-Menue. */
+function wahlSheet(cfg){
+  const kasten=document.getElementById('wahlBody');
+  const titel=document.getElementById('wahlTitel');
+  if(!kasten)return;
+  if(titel)titel.textContent=cfg.titel||'';
+  const haken='<span class="wz-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></span>';
+  window.__wahlTun=cfg.waehlen;
+  kasten.innerHTML=(cfg.hilfe?'<div class="wz-hilfe">'+esc(cfg.hilfe)+'</div>':'')
+    +cfg.optionen.map((o,i)=>
+      '<button class="cm-zeile wz-zeile'+(o.wert===cfg.aktuell?' wz-aktiv':'')+'" onclick="wahlTippen('+i+')">'
+      +'<span><b>'+esc(o.titel)+'</b>'+(o.text?'<small>'+esc(o.text)+'</small>':'')+'</span>'
+      +(o.wert===cfg.aktuell?haken:'')+'</button>').join('');
+  window.__wahlOptionen=cfg.optionen;
+  document.getElementById('wahlOverlay')?.classList.add('open');
+}
+function wahlTippen(i){
+  const o=(window.__wahlOptionen||[])[i];
+  const tun=window.__wahlTun;
+  closeOverlay('wahlOverlay');
+  if(o&&typeof tun==='function')tun(o.wert);
+  setTimeout(setEinstellungWerte,60);
+}
+
+const WERT_MSG={everyone:'Jeder',requests:'Nur Anfragen',nobody:'Niemand'};
+const WERT_RAUS={'':'Aus',tiktok:'TikTok',instagram:'Instagram Reels',youtube:'YouTube Shorts'};
+const WERT_KARTE={'':'Jedes Mal fragen',apple:'Apple Karten',google:'Google Maps'};
+const WERT_SPRACHE={de:'Deutsch',en:'English',fr:'Français',it:'Italiano'};
+
+/* Alle Werte rechts in den Zeilen auf den neuesten Stand bringen. */
+function setEinstellungWerte(){
+  const setz=(id,text)=>{ const el=document.getElementById(id); if(el)el.textContent=text||''; };
+  setz('setProfilWert', cProfile?.privat?'Privat':'Öffentlich');
+  setz('setMsgWert', WERT_MSG[cProfile?.allow_messages||'everyone']||'Jeder');
+  setz('setSpracheWert', WERT_SPRACHE[typeof LANG!=='undefined'?LANG:'de']||'Deutsch');
+  try{ setz('setRausWert', WERT_RAUS[schnellRausWahl()||'']||'Aus'); }catch(e){}
+  try{ setz('setOrtWert', ortNutzungAus()?'Aus':(userLat!=null?'An':'Noch nicht freigegeben')); }catch(e){}
+  try{ setz('setKartenWert', WERT_KARTE[kartenAppGespeichert()||'']||'Jedes Mal fragen'); }catch(e){}
+}
+
+function wahlProfil(){
+  wahlSheet({titel:'Dein Profil', aktuell:!!cProfile?.privat,
+    optionen:[
+      {wert:false,titel:'Öffentlich',text:'Jeder kann dir folgen und dich zu Partys einladen'},
+      {wert:true, titel:'Privat',    text:'Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.'},
+    ], waehlen:(w)=>setProfilPrivat(w)});
+}
+function wahlNachrichten(){
+  wahlSheet({titel:'Wer darf dir schreiben', aktuell:cProfile?.allow_messages||'everyone',
+    optionen:[
+      {wert:'everyone',titel:'Jeder',       text:'Nachrichten kommen direkt an'},
+      {wert:'requests',titel:'Nur Anfragen',text:'Du entscheidest, wer durchkommt'},
+      {wert:'nobody',  titel:'Niemand',     text:'Gar keine Nachrichten'},
+    ], waehlen:(w)=>setMsgSetting(w)});
+}
+function wahlSprache(){
+  wahlSheet({titel:'Sprache', aktuell:(typeof LANG!=='undefined'?LANG:'de'),
+    optionen:[
+      {wert:'de',titel:'Deutsch'},{wert:'en',titel:'English'},
+      {wert:'fr',titel:'Français'},{wert:'it',titel:'Italiano'},
+    ], waehlen:(w)=>setLang(w)});
+}
+function wahlRaus(){
+  wahlSheet({titel:'Fluchtknopf',
+    hilfe:'Die Party ist zäh, aber du willst nicht als Erster gehen? Ein Tipp oben rechts – und du bist mitten im Scrollen.',
+    aktuell:(()=>{ try{ return schnellRausWahl()||''; }catch(e){ return ''; } })(),
+    optionen:[
+      {wert:'',         titel:'Aus',             text:'Kein Knopf in der Leiste'},
+      {wert:'tiktok',   titel:'TikTok',          text:'Öffnet direkt „Für dich“'},
+      {wert:'instagram',titel:'Instagram Reels', text:'Öffnet direkt die Reels'},
+      {wert:'youtube',  titel:'YouTube Shorts',  text:'Öffnet direkt die Shorts'},
+    ], waehlen:(w)=>setSchnellRaus(w)});
+}
+function wahlOrt(){
+  wahlSheet({titel:'Standort',
+    hilfe:'Die Erlaubnis im Gerät selbst kann nur iOS zurücknehmen – hier geht es darum, ob SPOTOUT sie benutzt.',
+    aktuell:(()=>{ try{ return ortNutzungAus()?false:true; }catch(e){ return true; } })(),
+    optionen:[
+      {wert:true, titel:'An',  text:'Sortiert nach Nähe und zeigt, wie weit es zu einer Party ist'},
+      {wert:false,titel:'Aus', text:'Sortiert nach Zeit. Niemand erfährt, wo du bist.'},
+    ], waehlen:(w)=>setOrtNutzung(w)});
+}
+function wahlKarten(){
+  wahlSheet({titel:'Karten-App', aktuell:(()=>{ try{ return kartenAppGespeichert()||''; }catch(e){ return ''; } })(),
+    optionen:[
+      {wert:'',      titel:'Jedes Mal fragen',text:'Bei jeder Route neu entscheiden'},
+      {wert:'apple', titel:'Apple Karten'},
+      {wert:'google',titel:'Google Maps'},
+    ], waehlen:(w)=>setKartenApp(w)});
+}
+
 /* ── Standort an oder aus ──────────────────────────────────────────
    Bisher gab es nur einen Weg hinein: einmal freigeben. Wieder
    abschalten ging nur ueber die Einstellungen des Geraets - in der App
@@ -12836,17 +12930,9 @@ function setOrtNutzung(an){
   ortWahlAnzeigen();
 }
 
-function ortWahlAnzeigen(){
-  const an=!ortNutzungAus();
-  document.querySelectorAll('#setOrtWahl .cset').forEach(b=>
-    b.classList.toggle('on',(b.dataset.ort==='an')===an));
-}
+function ortWahlAnzeigen(){ try{ setEinstellungWerte(); }catch(e){} }
 
-function rausWahlAnzeigen(){
-  const k=schnellRausWahl();
-  document.querySelectorAll('#setRausWahl .cset').forEach(b=>
-    b.classList.toggle('on',(b.dataset.raus||'')===k));
-}
+function rausWahlAnzeigen(){ try{ setEinstellungWerte(); }catch(e){} }
 
 function routeZiel(e){
   return e?.lat!=null ? (e.lat+','+e.lng) : encodeURIComponent(e?.address||'');
@@ -16264,11 +16350,9 @@ async function openUserProf(userId,zurueck){
    Ein Vereinskonto ist nie privat – es lebt davon, gefunden zu werden. */
 
 function setProfilUI(privat){
-  const wrap=document.getElementById('profSettingWrap');
-  if(!wrap)return;
-  const opts=wrap.querySelectorAll('.msg-setting-opt');
-  opts[0]?.classList.toggle('active', !privat);
-  opts[1]?.classList.toggle('active', !!privat);
+  /* Frueher wurden hier zwei Auswahlkreise ueber ihren Index markiert.
+     Seit dem 22.09. steht der Wert rechts in der Zeile. */
+  try{ setEinstellungWerte(); }catch(e){}
 }
 
 async function setProfilPrivat(privat){
@@ -26652,9 +26736,8 @@ function schnellRausSpeichern(k){
 
 function setSchnellRaus(k){
   schnellRausSpeichern(k);
-  document.querySelectorAll('#setRausWahl .cset').forEach(b=>
-    b.classList.toggle('on',(b.dataset.raus||'')===(k||'')));
   rausKnopfZeigen();
+  try{ setEinstellungWerte(); }catch(e){}
 }
 
 function rausKnopfZeigen(){
@@ -26885,6 +26968,7 @@ function showSettingsModal(){
   besucheSchalterZeigen();
   rausWahlAnzeigen();
   ortWahlAnzeigen();
+  setEinstellungWerte();
   schenkenAnzeigen();
   setProfilUI(!!cProfile?.privat);
   // Ein Verein ist nie privat – der Schalter ergibt dort keinen Sinn
@@ -26915,12 +26999,7 @@ function showSettingsModal(){
 }
 
 function setMsgSettingUI(val){
-  const wrap=document.getElementById('msgSettingWrap');
-  if(!wrap)return;
-  const opts=wrap.querySelectorAll('.msg-setting-opt');
-  ['everyone','requests','nobody'].forEach((k,i)=>{
-    opts[i]?.classList.toggle('active',k===val);
-  });
+  try{ setEinstellungWerte(); }catch(e){}
 }
 
 async function setMsgSetting(val){
