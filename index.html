@@ -1432,6 +1432,19 @@
       border:1px solid rgba(255,255,255,.10);color:#fff;
       border-radius:18px 18px 18px 4px;
     }
+    /* ── Pro am Ende des Einstiegs ── */
+    .pro-ang{text-align:center;padding:8px 22px 26px}
+    .pro-ang-ic{width:56px;height:56px;margin:6px auto 16px;border-radius:18px;
+      display:flex;align-items:center;justify-content:center;color:#fff;
+      background:linear-gradient(135deg,#7C3AED,#FF2D76)}
+    .pro-ang-ic svg{width:27px;height:27px}
+    .pro-ang-t{font-size:1.25rem;font-weight:800;color:#fff;margin-bottom:8px}
+    .pro-ang-s{font-size:.88rem;line-height:1.55;color:rgba(255,255,255,.62);margin-bottom:14px}
+    .pro-ang-preis{font-size:.8rem;font-weight:700;color:#fff;margin-bottom:18px}
+    .pro-ang-nein{display:block;width:100%;margin-top:12px;padding:12px;background:none;border:none;
+      color:rgba(255,255,255,.55);font-family:var(--font);font-size:.86rem;font-weight:600;cursor:pointer}
+    .pro-ang-nein:active{color:#fff}
+
     /* ── Auswahl-Blatt der Einstellungen ── */
     .wz-hilfe{font-size:.79rem;line-height:1.5;color:rgba(255,255,255,.55);padding:0 4px 12px}
     .wz-zeile{align-items:center}
@@ -6568,7 +6581,8 @@
           <div class="rfrage">Wann hast du Geburtstag?</div>
           <div class="auth-field">
             <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <input type="date" id="reg-bd" autocomplete="bday"/>
+            <input type="text" id="reg-bd" inputmode="numeric" autocomplete="bday"
+                   placeholder="TT.MM.JJJJ" maxlength="10" oninput="bdTippen(this)"/>
           </div>
           <div class="rhinweis">SPOTOUT ist ab 16. Öffentlich steht nur dein Alter.</div>
         </div>
@@ -8026,6 +8040,23 @@
 </div>
 
 <!-- ════ KONTO WECHSELN ════ -->
+<!-- ════ PRO AM ENDE DES EINSTIEGS ════ -->
+<div class="overlay" id="proAngebotOverlay">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-body pro-ang">
+      <div class="pro-ang-ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>
+      </div>
+      <div class="pro-ang-t">Noch eine Sache</div>
+      <div class="pro-ang-s">Mit Pro schreibst du zuerst, siehst wer kommt und wer dein Profil besucht hat – und deine Partys stehen weiter oben.</div>
+      <div class="pro-ang-preis" id="proAngebotPreis"></div>
+      <button class="sub-btn sub-public" id="proAngebotBtn" onclick="proAngebotJa()">7 Tage gratis testen</button>
+      <button class="pro-ang-nein" onclick="proAngebotNein()">Ohne Pro fortfahren</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════ AUSWAHL-BLATT (Einstellungen) ════ -->
 <div class="overlay" id="wahlOverlay" onclick="closeIfOutside(event,'wahlOverlay')">
   <div class="modal">
@@ -9285,6 +9316,8 @@ const EINS_IC={
      Frueher: Personen am Rand abgeschnitten, eine schiefe Blase und
      fuer "Niemand" eine durchgestrichene Glocke – die meint Ruhe,
      nicht "keine Nachrichten". */
+  ort:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.6s5.9-4.9 5.9-9.4A5.9 5.9 0 0 0 6.1 11.2c0 4.5 5.9 9.4 5.9 9.4z"/><circle cx="12" cy="11" r="2.2"/></svg>',
+  glocke_an:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15.6l.7-1.1c.5-.6.8-1.4.8-2.2V9a4.5 4.5 0 0 1 9 0v3.3c0 .8.3 1.6.8 2.2l.7 1.1z"/><path d="M10.3 19a1.9 1.9 0 0 0 3.4 0"/></svg>',
   alle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M3 19.5c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M15.5 4.9a3.4 3.4 0 0 1 0 6.2"/><path d="M17.8 14.4c1.9.7 3.2 2.6 3.2 5.1"/></svg>',
   frage:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5a2 2 0 0 1-2 2H8.5L4 20V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/><path d="m8.8 10.3 2.2 2.2 4.2-4.2"/></svg>',
   niemand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5V6a2 2 0 0 0-2-2H9.5"/><path d="M5.2 4.4A2 2 0 0 0 4 6v14l4.5-3.5h8"/><path d="m3.5 3.5 17 17"/></svg>',
@@ -9316,6 +9349,24 @@ function einstiegKarten(){
       ],
     },
     {
+      feld:'ort',
+      frage:'Partys in deiner Nähe?',
+      hilfe:'Mit Standort sortiert SPOTOUT nach Entfernung und zeigt, wie weit es hin ist. Ohne ihn nach Zeit. Du kannst es jederzeit umstellen.',
+      wahl:[
+        {wert:true,  ic:'ort',      t:'Standort nutzen', s:'Sortiert nach Nähe – dein Standort verlässt das Gerät nicht'},
+        {wert:false, ic:'keiner',   t:'Lieber nicht',    s:'Sortiert nach Zeit'},
+      ],
+    },
+    {
+      feld:'push',
+      frage:'Sollen wir dich benachrichtigen?',
+      hilfe:'Nur wenn wirklich etwas passiert: eine Einladung, eine Nachricht, eine Änderung an deiner Party. Kein Werbe-Gepiepse.',
+      wahl:[
+        {wert:true,  ic:'glocke_an',t:'Ja, benachrichtigen', s:'Auch auf dem gesperrten Bildschirm'},
+        {wert:false, ic:'keiner',   t:'Später',              s:'Du findest es in den Einstellungen'},
+      ],
+    },
+    {
       feld:'privat',
       frage:'Dein Profil',
       hilfe:'Offen findet man dich leichter, privat entscheidest du bei jedem einzeln.',
@@ -9338,6 +9389,10 @@ function einstiegStarten(){
        durchtippt, soll nichts einschalten und nichts ausschalten. */
     raus: (()=>{ try{ return schnellRausWahl()||null; }catch(e){ return null; } })(),
     schreiben: cProfile?.allow_messages||'everyone',
+    /* Wie beim Fluchtknopf: null heisst "noch nicht getippt". Wer
+       durchtippt, soll nichts ein- und nichts ausschalten. */
+    ort: null,
+    push: null,
     privat: !!cProfile?.privat,
   };
   el.classList.add('open');
@@ -9404,6 +9459,15 @@ async function einstiegFertig(){
   if(einsWahl.raus!==null){
     try{ schnellRausSpeichern(einsWahl.raus); rausKnopfZeigen(); }catch(e){}
   }
+  /* Standort und Benachrichtigungen sind keine Felder in der Tabelle,
+     sondern Erlaubnisse des Geraets. Sie werden hier ausgeloest - und
+     nur, wenn wirklich getippt wurde. */
+  if(einsWahl.ort!==null){
+    try{ setOrtNutzung(!!einsWahl.ort); }catch(e){}
+  }
+  if(einsWahl.push===true){
+    try{ pushErlauben(); }catch(e){}
+  }
 
   if(!cUser)return;
   /* Beide Felder in einem Zug – zwei getrennte Aufrufe waeren zwei
@@ -9422,7 +9486,38 @@ async function einstiegFertig(){
   }
   cProfile={...cProfile,...patch};
   try{ setMsgSettingUI(cProfile.allow_messages||'everyone'); setProfilUI(!!cProfile.privat); }catch(e){}
+  proAngebotZeigen();
 }
+
+/* ── Pro zum Schluss, einmal ──────────────────────────────────────
+   Bisher endete der Einstieg auf der Startseite, und von Pro erfuhr
+   man erst, wenn man gegen eine Sperre lief. Das ist der falsche
+   Moment: da will jemand gerade etwas tun und wird aufgehalten.
+
+   Hier steht es am Ende des Einstiegs, mit einem ehrlichen zweiten
+   Knopf daneben. Wer nein sagt, wird nicht noch einmal gefragt. */
+const PRO_ANGEBOT_SCHLUESSEL='spotout_pro_angebot_v1';
+function proAngebotZeigen(){
+  if(!cUser||cProfile?.is_pro||istVerein())return;
+  try{ if(localStorage.getItem(PRO_ANGEBOT_SCHLUESSEL))return; }catch(e){}
+  try{ localStorage.setItem(PRO_ANGEBOT_SCHLUESSEL,'1'); }catch(e){}
+  setTimeout(()=>{
+    const ov=document.getElementById('proAngebotOverlay');
+    if(!ov)return;
+    const t=document.getElementById('proAngebotPreis');
+    if(t)t.textContent=probeFrei()
+      ? '7 Tage gratis, danach CHF 3.00 im Monat. Jederzeit kündbar.'
+      : 'CHF 3.00 im Monat. Jederzeit kündbar.';
+    const b=document.getElementById('proAngebotBtn');
+    if(b)b.textContent=probeFrei()?'7 Tage gratis testen':'Pro holen';
+    ov.classList.add('open');
+  },420);
+}
+function proAngebotJa(){
+  closeOverlay('proAngebotOverlay');
+  showPage('pro');
+}
+function proAngebotNein(){ closeOverlay('proAngebotOverlay'); }
 
 /* Aus den Einstellungen heraus laesst sie sich jederzeit wieder
    ansehen – dort sucht man so etwas, und dort stoert es niemanden. */
@@ -10055,8 +10150,10 @@ function regPruefen(){
       if(!rWert('reg-vo')) return 'Bitte gib den Ort des Vereins ein.';
       return '';
     }
-    const bd=rWert('reg-bd');
-    if(!bd)return 'Bitte gib dein Geburtsdatum ein.';
+    const roh=rWert('reg-bd');
+    if(!roh)return 'Bitte gib dein Geburtsdatum ein.';
+    const bd=bdNachIso(roh);
+    if(!bd)return 'Bitte im Format TT.MM.JJJJ – zum Beispiel 24.07.2007.';
     const alter=calcAge(bd);
     if(alter===null||isNaN(alter))return 'Das Geburtsdatum sieht nicht richtig aus.';
     if(alter<16) return 'SPOTOUT ist ab 16 Jahren.';
@@ -10155,15 +10252,35 @@ function vereinDomainPruefen(){
 }
 
 // Der Datumswähler soll gar nicht erst in die Zukunft zeigen.
-function regBdGrenzen(){
-  const el=document.getElementById('reg-bd');
-  if(!el)return;
-  const h=new Date();
-  const iso=d=>d.toISOString().slice(0,10);
-  el.max=iso(new Date(h.getFullYear()-16,h.getMonth(),h.getDate()));
-  el.min=iso(new Date(h.getFullYear()-100,h.getMonth(),h.getDate()));
+/* ── Geburtsdatum wird getippt, nicht gedreht ──────────────────────
+   Vorher stand hier ein <input type="date">. Auf dem iPhone geht dafuer
+   ein Rad auf, das im Jahr des heutigen Tages startet: wer 2007 geboren
+   ist, dreht achtzehn Jahre zurueck. Tippen ist schneller, und die
+   Punkte setzt das Feld selbst.
+
+   Gespeichert wird weiterhin als JJJJ-MM-TT – das erwartet die
+   Datenbank. Umgerechnet wird erst beim Absenden. */
+function bdTippen(el){
+  const roh=String(el.value||'').replace(/[^0-9]/g,'').slice(0,8);
+  let aus=roh.slice(0,2);
+  if(roh.length>2)aus+='.'+roh.slice(2,4);
+  if(roh.length>4)aus+='.'+roh.slice(4,8);
+  el.value=aus;
 }
-document.addEventListener('DOMContentLoaded',regBdGrenzen);
+
+/* "24.07.2007" → "2007-07-24". Gibt null zurueck, wenn das Datum so
+   nicht existiert (31.02. zum Beispiel) – dann meldet die Pruefung. */
+function bdNachIso(text){
+  const m=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(String(text||'').trim());
+  if(!m)return null;
+  const t=+m[1], mo=+m[2], j=+m[3];
+  if(mo<1||mo>12||t<1||t>31)return null;
+  const d=new Date(j,mo-1,t);
+  if(d.getFullYear()!==j||d.getMonth()!==mo-1||d.getDate()!==t)return null;
+  return m[3]+'-'+m[2]+'-'+m[1];
+}
+
+function regBdGrenzen(){}   // das Rad gibt es nicht mehr, also auch keine Grenzen
 // Dasselbe gleich beim Laden: sonst ist der Streifen leer, bis jemand
 // zufaellig hin und her tippt.
 document.addEventListener('DOMContentLoaded',()=>setKontoart(regArt||'privat'));
@@ -10183,7 +10300,8 @@ async function doRegister(){
   if(regArt==='verein')return registriereVerein(em,pw);
 
   const fullName=document.getElementById('reg-fn')?.value.trim()||'';
-  const bd=document.getElementById('reg-bd')?.value||'';
+  // Getippt steht TT.MM.JJJJ im Feld, die Datenbank will JJJJ-MM-TT
+  const bd=bdNachIso(document.getElementById('reg-bd')?.value||'')||'';
   if(!fullName){toast('Bitte gib deinen Namen ein','warn');return;}
   /* Die Rueckfrage bei einem einzelnen Wort steht auf Schritt 2, in
      regPruefen – dort, wo der Name eingetippt wird. Hier stand sie ein
