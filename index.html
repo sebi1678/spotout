@@ -1425,6 +1425,29 @@
       border:1px solid rgba(255,255,255,.10);color:#fff;
       border-radius:18px 18px 18px 4px;
     }
+    /* ── Chat-Menue und Bearbeiten-Leiste ── */
+    .cm-zeile{display:flex;align-items:flex-start;gap:13px;width:100%;padding:14px 4px;
+      background:none;border:none;border-bottom:1px solid rgba(255,255,255,.07);
+      color:#fff;font-family:var(--font);text-align:left;cursor:pointer}
+    .cm-zeile:last-child{border-bottom:none}
+    .cm-zeile:active{background:rgba(255,255,255,.05)}
+    .cm-ic{flex:none;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.07);color:#fff}
+    .cm-zeile b{display:block;font-size:.92rem;font-weight:700;margin-bottom:2px}
+    .cm-zeile small{display:block;font-size:.76rem;line-height:1.4;color:rgba(255,255,255,.55)}
+    .cm-rot .cm-ic{background:rgba(255,77,79,.14);color:#ff6b6d}
+    .cm-rot b{color:#ff6b6d}
+    .conv-bearb{display:none;align-items:center;gap:9px;margin:0 16px;padding:9px 12px;
+      border-radius:12px 12px 0 0;background:rgba(255,45,118,.12);border:1px solid rgba(255,45,118,.25);
+      border-bottom:none;font-size:.8rem;color:#fff}
+    .conv-bearb.show{display:flex}
+    .cb-ic{display:flex;color:#FF2D76}
+    .cb-ic svg{width:15px;height:15px}
+    .cb-txt{flex:1;min-width:0;font-weight:700}
+    .cb-x{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;padding:2px;display:flex}
+    .cb-x svg{width:15px;height:15px}
+    .bub-bearb{opacity:.65;margin-right:5px}
+
     .conv-input-wrap{
       display:flex;gap:10px;padding:12px 16px calc(12px + var(--safe-bottom));
       background:rgba(9,13,36,.96);
@@ -6808,11 +6831,18 @@
         <div style="font-size:.95rem;font-weight:700;color:#fff" id="convName"></div>
         <div style="font-size:.75rem;color:var(--muted)" id="convSub"></div>
       </div>
-      <button class="more-btn" id="convMelden" onclick="convMelden()" aria-label="Melden oder blockieren">
+      <button class="more-btn" id="convMelden" onclick="convMenue()" aria-label="Mehr">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.6v5.2"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg>
       </button>
     </div>
     <div class="conv-msgs" id="convMsgs"></div>
+    <div class="conv-bearb" id="convBearb">
+      <span class="cb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg></span>
+      <span class="cb-txt">Nachricht bearbeiten</span>
+      <button class="cb-x" onclick="bearbeitenAbbrechen()" aria-label="Abbrechen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
     <div class="conv-input-wrap">
       <input class="conv-input" id="convInput" placeholder="Nachricht…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"/>
       <button class="send-btn" id="sendBtn" onclick="sendMsg()" aria-label="Senden">
@@ -7950,6 +7980,20 @@
 </div>
 
 <!-- ════ KONTO WECHSELN ════ -->
+<!-- ════ CHAT-MENUE ════ -->
+<div class="overlay" id="convMenueOverlay" onclick="closeIfOutside(event,'convMenueOverlay')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Chat</div>
+      <button class="modal-x" onclick="closeOverlay('convMenueOverlay')" aria-label="Schliessen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="convMenueBody"></div>
+  </div>
+</div>
+
 <div class="overlay" id="kontenOverlay" onclick="closeIfOutside(event,'kontenOverlay')">
   <div class="modal no-swipe">
     <div class="modal-handle"></div>
@@ -9452,11 +9496,32 @@ async function kontoWechseln(id){
   alleFensterZu();
   seitenVorher.length=0;
   vergissOrt();
+  /* Zuerst das Konto sichern, das man gerade verlaesst. Supabase
+     erneuert den Zugang laufend und wirft den alten Schluessel dabei
+     weg. Stand in der Liste noch der Schluessel von vorhin, war der
+     Weg zurueck versperrt - und das sah aus wie "Wechsel kaputt". */
+  try{ await kontoMerken(); }catch(e){}
   await pushTokenLoesen();
   try{
-    const{data,error}=await sb.auth.setSession({
-      access_token:k.zugang, refresh_token:k.erneuerung });
-    if(error||!data?.session)throw error||new Error('keine Sitzung');
+    let sitzung=null;
+    try{
+      const{data,error}=await sb.auth.setSession({
+        access_token:k.zugang, refresh_token:k.erneuerung });
+      if(error)throw error;
+      sitzung=data&&data.session;
+    }catch(ersterFehler){
+      /* Zweiter Versuch mit dem Erneuerungsschluessel allein. Ist der
+         Zugang abgelaufen - nach einer Stunde ist er das immer -, will
+         setSession ihn erneuern und stolpert dabei ueber jeden Zustand,
+         den ein zweiter Tab oder die Huelle inzwischen geschaffen hat.
+         refreshSession geht denselben Weg ohne den alten Zugang. */
+      console.warn('[konten] setSession gescheitert, versuche refreshSession',ersterFehler);
+      const{data:d2,error:e2}=await sb.auth.refreshSession({refresh_token:k.erneuerung});
+      if(e2)throw e2;
+      sitzung=d2&&d2.session;
+    }
+    if(!sitzung)throw new Error('keine Sitzung');
+    const data={session:sitzung};
     // Der Rest laeuft ueber onAuthStateChange wie bei einer normalen
     // Anmeldung – inklusive Aufraeumen der alten Ansicht.
     spurenLoeschen();
@@ -9466,9 +9531,22 @@ async function kontoWechseln(id){
     enterApp();
     }catch(err){
     console.warn('[konten]',err);
-    // Sitzungen laufen ab. Dann nicht meckern, sondern den Weg zeigen.
-    const liste=kontenLesen().filter(x=>x.id!==id);
-    kontenSchreiben(liste);
+    /* Nur wirklich verbrauchte Schluessel fliegen aus der Liste. Vorher
+       genuegte ein Aussetzer - kein Netz, ein Zeitueberschreiten - und
+       das Konto war dauerhaft weg. Wer es dann wiederhaben wollte,
+       musste sich neu anmelden, und genau das hiess "geht nicht". */
+    const grund=String(err&&(err.message||err.error_description||err.code)||'');
+    const wirklichHin=/refresh.?token|already used|invalid|expired|not found|revoked/i.test(grund);
+    if(wirklichHin){
+      kontenSchreiben(kontenLesen().filter(x=>x.id!==id));
+    }else{
+      toast('Wechsel gerade nicht möglich: '+(grund||'unbekannter Fehler'),'warn');
+      // Im alten Konto bleiben, statt jemanden auf die Anmeldung zu werfen
+      try{
+        const{data:noch}=await sb.auth.getSession();
+        if(noch?.session){ nativePushAnmelden(); return; }
+      }catch(e){}
+    }
     // Laeuft das bisherige Konto noch, bleibt man einfach drin
     try{
       const{data:noch}=await sb.auth.getSession();
@@ -14143,10 +14221,25 @@ function renderChatPro(){
     +'</div>';
 }
 
+/* Wer einen Chat geloescht hat, sieht ihn ab diesem Zeitpunkt nicht
+   mehr. Die Nachrichten bleiben fuer den anderen stehen - geloescht
+   wird die eigene Sicht, nicht seine. Schreibt er neu, ist der Chat
+   wieder da, weil die neue Nachricht nach dem Zeitpunkt liegt. */
+let chatGeloescht=new Map();
+async function chatGeloeschtLaden(){
+  chatGeloescht=new Map();
+  if(!cUser)return;
+  try{
+    const{data}=await sb.from('chat_geloescht').select('conversation_id,ab').eq('user_id',cUser.id);
+    (data||[]).forEach(z=>chatGeloescht.set(z.conversation_id,new Date(z.ab).getTime()));
+  }catch(e){}
+}
+
 async function loadChats(){
   chatSperreZeigen();
   renderChatPro();
   await loadMsgRequests();
+  await chatGeloeschtLaden();
   const{data}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id},group_id.not.is.null`).order('created_at',{ascending:false});
   /* Im Gruppenchat kann "gelesen" nicht an der Nachricht haengen – es
      gibt nur eine Spalte fuer alle. Wer zuerst reinschaut, haette allen
@@ -14168,7 +14261,15 @@ async function loadChats(){
     });
     return neuste || new Date(c.created_at).getTime() || 0;
   };
-  const gespraeche=(data||[]).slice().sort((a,b)=>zuletzt(b)-zuletzt(a));
+  /* Geloeschte Chats: die alten Nachrichten fallen aus der Vorschau,
+     und bleibt gar nichts uebrig, verschwindet die Zeile ganz. */
+  (data||[]).forEach(c=>{
+    const ab=chatGeloescht.get(c.id);
+    if(ab&&Array.isArray(c.messages))
+      c.messages=c.messages.filter(m=>new Date(m.created_at).getTime()>ab);
+  });
+  const sichtbar=(data||[]).filter(c=>!chatGeloescht.get(c.id)||(c.messages||[]).length);
+  const gespraeche=sichtbar.slice().sort((a,b)=>zuletzt(b)-zuletzt(a));
 
   // Die Namen der Gruppen in einer Abfrage – nicht eine je Zeile
   const grpNamen=new Map();
@@ -14184,6 +14285,11 @@ async function loadChats(){
       +(cProfile?.is_pro
         ?'Öffne ein Profil und schreib der Person.'
         :'Wer dir schreibt, erscheint hier.')+'</div>';
+    return;
+  }
+  if(!gespraeche.length){
+    list.innerHTML='<div class="chat-leer">Noch keine Nachrichten.<br>'
+      +(cProfile?.is_pro?'Öffne ein Profil und schreib der Person.':'Wer dir schreibt, erscheint hier.')+'</div>';
     return;
   }
   list.innerHTML=gespraeche.map(c=>{
@@ -14348,8 +14454,11 @@ async function openConv(cid,other){
 }
 
 async function loadMsgs(){
-  const{data}=await sb.from('messages').select('*').eq('conversation_id',convId)
-    .order('created_at',{ascending:true});
+  // Wer diesen Chat geloescht hat, sieht nur, was danach geschrieben wurde
+  const ab=chatGeloescht.get(convId);
+  let abfrage=sb.from('messages').select('*').eq('conversation_id',convId);
+  if(ab)abfrage=abfrage.gt('created_at',new Date(ab).toISOString());
+  const{data}=await abfrage.order('created_at',{ascending:true});
   const c=document.getElementById('convMsgs');
   const msgs=data||[];
   /* "Nicht von mir" hiess bisher zwingend "vom einen Gegenueber". In der
@@ -14415,10 +14524,17 @@ async function loadMsgs(){
     const werAttr=(convGruppe&&!mine)
       ? ' data-wer="'+escAttr(String(convLeute.get(m.sender_id)?.full_name
           ||convLeute.get(m.sender_id)?.username||'').replace(/['"\\<>&]/g,''))+'"' : '';
-    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+'"'+(mine?'':' data-mid="'+m.id+'"')+werAttr+' data-x="'
+    /* Die Kennung steht jetzt auf jeder Blase, auch auf den eigenen -
+       ohne sie liesse sich eine eigene Nachricht nicht bearbeiten.
+       Gemeldet werden koennen weiterhin nur fremde: dafuer zaehlt
+       data-mine, nicht das Fehlen der Kennung. */
+    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+'"'
+      +' data-mid="'+m.id+'"'+(mine?' data-mine="1"':'')
+      +' data-zeit="'+new Date(m.created_at).getTime()+'"'+werAttr+' data-x="'
       +(grouped?'':' bub-grp')+'">'
       +bild+text
-      +(showMeta?'<div class="bub-meta">'+fmtT(m.created_at)+(mine?tick(m.read):'')+'</div>':'')
+      +(showMeta?'<div class="bub-meta">'+(m.bearbeitet_am?'<span class="bub-bearb">bearbeitet</span>':'')
+         +fmtT(m.created_at)+(mine?tick(m.read):'')+'</div>':'')
       +'</div>';
 
     lastSender=m.sender_id;lastTime=d;
@@ -14451,6 +14567,23 @@ async function sendMsg(){
      ist es zu spaet. */
   if(feld)feld.focus();
   if(!convId){toast('Keine Unterhaltung geöffnet','warn');return;}
+  // Aendern statt senden, wenn gerade eine Nachricht in Arbeit ist
+  if(bearbeiteId){
+    const id=bearbeiteId;
+    inp.value='';
+    bearbeitenAbbrechen();
+    const{error:bFehler}=await sb.rpc('nachricht_bearbeiten',{p_id:id,p_text:txt});
+    if(bFehler){
+      console.error('[msg:bearbeiten]',bFehler);
+      inp.value=txt; bearbeiteId=id;
+      document.getElementById('convBearb')?.classList.add('show');
+      toast(fehlerText(bFehler),'error');
+      return;
+    }
+    if(warFokus&&feld)feld.focus();
+    loadMsgs();
+    return;
+  }
   inp.value='';
   const btn=document.getElementById('sendBtn');
   // disabled nimmt dem Knopf den Fokus – und iOS faehrt dann die
@@ -26026,6 +26159,51 @@ function convProfilOeffnen(){
    soll nicht erst das Profil der Person oeffnen muessen, um sie
    loszuwerden – das ist genau der Umweg, an dem andere Party-Apps in
    den Bewertungen haengen ("no in-app report button"). */
+/* Der Knopf im Kopf fuehrte direkt ins Melden. Jetzt steht dort, was
+   man mit einem Gespraech sonst noch tun will - und Melden ist einer
+   von mehreren Wegen, nicht der einzige. */
+async function convMenue(){
+  if(!convUser?.id)return;
+  if(convGruppe){ gruppeOeffnen(convUser.id); return; }
+  let stumm=false;
+  try{ const{data}=await sb.rpc('ist_stumm',{p_ziel:convUser.id}); stumm=!!data; }catch(e){}
+  const name=convUser.full_name||convUser.username||'diese Person';
+  const kasten=document.getElementById('convMenueBody');
+  if(!kasten)return;
+  kasten.innerHTML=
+     '<button class="cm-zeile" onclick="convStumm('+(stumm?'false':'true')+')">'
+    +'<span class="cm-ic">'+(stumm?GLOCKE_AN_SVG:GLOCKE_AUS_SVG)+'</span>'
+    +'<span><b>'+(stumm?'Stummschaltung aufheben':'Stummschalten')+'</b>'
+    +'<small>'+(stumm?'Du bekommst wieder Push-Nachrichten von '+esc(name)
+                     :'Keine Push-Nachrichten mehr von '+esc(name)+' – sehen könnt ihr euch weiterhin')+'</small></span></button>'
+    +'<button class="cm-zeile" onclick="convLoeschen()">'
+    +'<span class="cm-ic">'+KORB_SVG+'</span>'
+    +'<span><b>Chat löschen</b><small>Nur bei dir. Schreibt '+esc(name)+' wieder, ist der Chat zurück.</small></span></button>'
+    +'<button class="cm-zeile cm-rot" onclick="closeOverlay(\'convMenueOverlay\');convMelden()">'
+    +'<span class="cm-ic">'+pikto('melden',19)+'</span>'
+    +'<span><b>Melden oder blockieren</b><small>Verstösst jemand gegen die Regeln</small></span></button>';
+  document.getElementById('convMenueOverlay')?.classList.add('open');
+}
+
+async function convStumm(an){
+  closeOverlay('convMenueOverlay');
+  if(!convUser?.id)return;
+  const{error}=await sb.rpc('stumm_setzen',{p_ziel:convUser.id,p_an:!!an});
+  if(error){ toast(fehlerText(error),'error'); return; }
+  toast(an?'Stummgeschaltet – es klingelt nicht mehr':'Stummschaltung aufgehoben','info');
+}
+
+async function convLoeschen(){
+  closeOverlay('convMenueOverlay');
+  if(!convId)return;
+  const cid=convId;
+  const{error}=await sb.rpc('chat_loeschen',{p_conv:cid});
+  if(error){ toast(fehlerText(error),'error'); return; }
+  toast('Chat gelöscht','info');
+  showPage('chat');
+  loadChats();
+}
+
 function convMelden(){
   if(!convUser?.id)return;
   /* Eine Gruppe ist keine Person – "melden" haette hier die Gruppe als
@@ -26035,6 +26213,62 @@ function convMelden(){
   if(convGruppe){ gruppeOeffnen(convUser.id); return; }
   openReport('user',convUser.id,convUser.full_name||convUser.username||'');
 }
+/* ── Eine eigene Nachricht bearbeiten ─────────────────────────────
+   Zwei Minuten lang, wie bei WhatsApp. Danach nicht mehr: was gelesen
+   wurde, soll sich nicht mehr aendern. Die Grenze zieht die Datenbank,
+   nicht diese Ansicht - hier wird nur ausgegraut, was ohnehin
+   abgewiesen wuerde.
+
+   Ausgeloest wird es mit einem Tipp auf die eigene Blase. Der lange
+   Druck gehoert seit dem 22.09. dem Markieren von Text, und ein
+   Doppeltipp findet niemand von selbst. */
+const GLOCKE_AN_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M6 15.6l.7-1.1c.5-.6.8-1.4.8-2.2V9a4.5 4.5 0 0 1 9 0v3.3c0 .8.3 1.6.8 2.2l.7 1.1z"/><path d="M10.3 19a1.9 1.9 0 0 0 3.4 0"/></svg>';
+const GLOCKE_AUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M8.7 4.6A5.5 5.5 0 0 1 17.5 9v3.3c0 .8.3 1.6.8 2.2l.9 1.1"/><path d="M6.6 6.9A5.5 5.5 0 0 0 6.5 9v3.3c0 .8-.3 1.6-.8 2.2L4.8 15.6h11"/><path d="M10.3 19a1.9 1.9 0 0 0 3.4 0"/><path d="m3.2 3.2 17.6 17.6"/></svg>';
+const KORB_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M4 7h16M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 12a1.6 1.6 0 0 0 1.6 1.5h6.2a1.6 1.6 0 0 0 1.6-1.5l.8-12"/><path d="M10.5 11v6M13.5 11v6"/></svg>';
+
+const BEARBEIT_FENSTER = 2*60*1000;
+let bearbeiteId=null;
+
+function bearbeitenStarten(bub){
+  const id=bub?.dataset?.mid, zeit=Number(bub?.dataset?.zeit||0);
+  if(!id)return;
+  if(Date.now()-zeit > BEARBEIT_FENSTER){
+    toast('Bearbeiten geht nur in den ersten zwei Minuten','info');
+    return;
+  }
+  const inp=document.getElementById('convInput');
+  if(!inp)return;
+  bearbeiteId=id;
+  // Den reinen Text zurueckholen: die Blase enthaelt auch die Uhrzeit
+  const kopie=bub.cloneNode(true);
+  kopie.querySelectorAll('.bub-meta,.msg-weg').forEach(x=>x.remove());
+  inp.value=kopie.innerText.trim();
+  document.getElementById('convBearb')?.classList.add('show');
+  inp.focus();
+  try{ inp.setSelectionRange(inp.value.length,inp.value.length); }catch(e){}
+}
+
+function bearbeitenAbbrechen(){
+  bearbeiteId=null;
+  const inp=document.getElementById('convInput');
+  if(inp)inp.value='';
+  document.getElementById('convBearb')?.classList.remove('show');
+}
+
+(function bearbeitenGeste(){
+  const box=document.getElementById('convMsgs');
+  if(!box)return;
+  box.addEventListener('click',e=>{
+    // Wer gerade Text markiert, will nicht bearbeiten
+    const auswahl=window.getSelection&&String(window.getSelection()).length>0;
+    if(auswahl)return;
+    const bub=e.target.closest('.bub[data-mine]');
+    if(!bub)return;
+    if(Date.now()-Number(bub.dataset.zeit||0) > BEARBEIT_FENSTER)return;
+    bearbeitenStarten(bub);
+  });
+})();
+
 /* Eine einzelne Nachricht melden - am Computer per Rechtsklick. Auf dem
    Handy gibt es diesen Weg seit dem 22.09. nicht mehr, siehe unten;
    gemeldet und blockiert wird dort ueber den Knopf im Kopf des Chats. */
@@ -26064,7 +26298,7 @@ function convMelden(){
      Auswahl-Geste, die damit kollidiert. */
   if(window.matchMedia&&window.matchMedia('(hover:hover)').matches){
     box.addEventListener('contextmenu',e=>{
-      const bub=e.target.closest('.bub[data-mid]'); if(!bub)return;
+      const bub=e.target.closest('.bub[data-mid]:not([data-mine])'); if(!bub)return;
       e.preventDefault(); melden(bub);
     });
   }
