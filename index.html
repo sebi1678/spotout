@@ -6217,8 +6217,27 @@
       .sr-name .d1{width:20px;padding:0;font-size:0;gap:0;justify-content:center}
     }
 
-    .bub[data-mid]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     .bub.bub-markiert{transform:scale(.97);transition:transform .15s ease;filter:brightness(1.15)}
+
+    /* ══════════ Text markieren ══════════
+       Ueberall gesperrt: ein langer Druck soll die App bedienen und
+       nicht eine Auswahl aufziehen, die niemand wollte. Genau zwei
+       Ausnahmen, und beide aus demselben Grund - man will sie kopieren:
+       was Leute schreiben (Chat) und wie Leute heissen (Benutzernamen).
+       Eingabefelder sowieso, sonst koennte man den eigenen Text nicht
+       mehr korrigieren. */
+    body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+    input,textarea,[contenteditable],[contenteditable] *{
+      -webkit-user-select:text!important;user-select:text!important;
+      -webkit-touch-callout:default;
+    }
+    .bub,.bub *,
+    #convName,#convSub,#profKontoName,.up-kopf-titel,.up-name,
+    .insta-handle,.sr-handle,.sr-name,.att-name,.att-user,.mg-req-s,.plus-konto-u{
+      -webkit-user-select:text;user-select:text;-webkit-touch-callout:default;
+    }
+    /* Bilder bleiben aussen vor - die waren schon vorher zu. */
+    .bub img{-webkit-user-select:none;user-select:none}
 
     /* ══════════ FINALCHECK ══════════ */
     body:not(.veranstalter) .type-card-pro[data-type="events"]{display:none}
@@ -25925,12 +25944,12 @@ function convMelden(){
   if(convGruppe){ gruppeOeffnen(convUser.id); return; }
   openReport('user',convUser.id,convUser.full_name||convUser.username||'');
 }
-/* Eine einzelne Nachricht melden: lange auf eine fremde Nachricht druecken
-   (am Computer: Rechtsklick). Apple verlangt, dass jeder Inhalt meldbar ist. */
+/* Eine einzelne Nachricht melden - am Computer per Rechtsklick. Auf dem
+   Handy gibt es diesen Weg seit dem 22.09. nicht mehr, siehe unten;
+   gemeldet und blockiert wird dort ueber den Knopf im Kopf des Chats. */
 (function nachrichtMeldenGesten(){
   const box=document.getElementById('convMsgs');
   if(!box)return;
-  let uhr=null, start=null;
   const melden=(bub)=>{
     if(!bub?.dataset.mid)return;
     nativeHaptik('mittel');
@@ -25941,23 +25960,23 @@ function convMelden(){
     openReport('message',bub.dataset.mid,
       bub.dataset.wer||convUser?.full_name||convUser?.username||'');
   };
-  box.addEventListener('touchstart',e=>{
-    const bub=e.target.closest('.bub[data-mid]'); if(!bub)return;
-    start=[e.touches[0].clientX,e.touches[0].clientY];
-    clearTimeout(uhr); uhr=setTimeout(()=>melden(bub),550);
-  },{passive:true});
-  const stopp=()=>{clearTimeout(uhr);uhr=null;};
-  box.addEventListener('touchmove',e=>{
-    if(!start)return;
-    const t=e.touches[0];
-    if(Math.abs(t.clientX-start[0])>8||Math.abs(t.clientY-start[1])>8)stopp();
-  },{passive:true});
-  box.addEventListener('touchend',stopp,{passive:true});
-  box.addEventListener('touchcancel',stopp,{passive:true});
-  box.addEventListener('contextmenu',e=>{
-    const bub=e.target.closest('.bub[data-mid]'); if(!bub)return;
-    e.preventDefault(); melden(bub);
-  });
+  /* Hier lag bis zum 22.09. ein langer Druck von 550 ms auf einer
+     fremden Nachricht: er meldete sie. Seit Nachrichten markierbar
+     sind, gehoert diese Geste dem Auswaehlen - zwei Dinge auf
+     derselben Geste heisst, dass beide unzuverlaessig werden.
+
+     Melden und Blockieren steht weiter im Kopf des Chats (convMelden).
+     Was dabei verloren geht, ist ehrlich benannt: die Meldung traegt
+     dann den Chatpartner, nicht mehr die einzelne Zeile.
+
+     Am Rechner bleibt der Rechtsklick - dort gibt es keine
+     Auswahl-Geste, die damit kollidiert. */
+  if(window.matchMedia&&window.matchMedia('(hover:hover)').matches){
+    box.addEventListener('contextmenu',e=>{
+      const bub=e.target.closest('.bub[data-mid]'); if(!bub)return;
+      e.preventDefault(); melden(bub);
+    });
+  }
 })();
 
 /* ── Pro verschenken ───────────────────────────────────────────────
