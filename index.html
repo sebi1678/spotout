@@ -1401,7 +1401,14 @@
     .chat-preview{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .chat-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
     .chat-time{font-size:.72rem;color:var(--muted)}
-    .unread-dot{width:10px;height:10px;border-radius:50%;background:#FF2D76}
+    /* Ein nackter Punkt sagt "irgendwas ist da". Eine Zahl sagt, wie
+       viel - und ob es sich lohnt, jetzt hineinzuschauen. */
+    .unread-dot{
+      min-width:20px;height:20px;padding:0 6px;border-radius:999px;
+      background:#FF2D76;color:#fff;font-size:.7rem;font-weight:800;
+      display:flex;align-items:center;justify-content:center;line-height:1;
+      box-shadow:0 2px 8px rgba(255,45,118,.45);
+    }
 
     /* Conversation */
     /* --tastatur ist die Hoehe, die nach dem Aufgehen der Tastatur
@@ -1425,6 +1432,25 @@
       border:1px solid rgba(255,255,255,.10);color:#fff;
       border-radius:18px 18px 18px 4px;
     }
+    /* ── Pro-Hinweis in der Chatliste: eine Zeile, kein Plakat ── */
+    .cpro{
+      display:flex;align-items:center;gap:11px;margin:0 0 14px;padding:12px 13px;
+      border-radius:15px;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.09);
+    }
+    .cpro-ic{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#7C3AED,#FF2D76);color:#fff}
+    .cpro-ic svg{width:17px;height:17px}
+    .cpro-txt{flex:1;min-width:0}
+    .cpro-txt b{display:block;font-size:.86rem;font-weight:700;color:#fff}
+    .cpro-txt small{display:block;font-size:.74rem;line-height:1.35;color:rgba(255,255,255,.55);margin-top:2px}
+    .cpro-btn{flex:none;padding:8px 14px;border-radius:999px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,#7C3AED,#FF2D76);color:#fff;
+      font-family:var(--font);font-size:.78rem;font-weight:800}
+    .cpro-btn:active{transform:scale(.96)}
+    .cpro-x{flex:none;background:none;border:none;padding:4px;cursor:pointer;color:rgba(255,255,255,.4);display:flex}
+    .cpro-x svg{width:14px;height:14px}
+
     /* ── Chat-Menue und Bearbeiten-Leiste ── */
     .cm-zeile{display:flex;align-items:flex-start;gap:13px;width:100%;padding:14px 4px;
       background:none;border:none;border-bottom:1px solid rgba(255,255,255,.07);
@@ -1435,6 +1461,10 @@
       background:rgba(255,255,255,.07);color:#fff}
     .cm-zeile b{display:block;font-size:.92rem;font-weight:700;margin-bottom:2px}
     .cm-zeile small{display:block;font-size:.76rem;line-height:1.4;color:rgba(255,255,255,.55)}
+    .cm-block{padding:14px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .cm-block b{display:block;font-size:.92rem;font-weight:700;color:#fff;margin-bottom:3px}
+    .cm-block small{display:block;font-size:.76rem;line-height:1.45;color:rgba(255,255,255,.55);margin-bottom:11px}
+    .cm-chips{display:flex;flex-wrap:wrap;gap:7px}
     .cm-rot .cm-ic{background:rgba(255,77,79,.14);color:#ff6b6d}
     .cm-rot b{color:#ff6b6d}
     .conv-bearb{display:none;align-items:center;gap:9px;margin:0 16px;padding:9px 12px;
@@ -2304,9 +2334,11 @@
 
     /* Unread badge */
     .unread-badge{
-      position:absolute;top:-3px;right:-3px;
-      width:10px;height:10px;border-radius:50%;
-      background:#FF2D76;border:2px solid #090D24;
+      position:absolute;top:-6px;right:-10px;
+      min-width:18px;height:18px;padding:0 5px;border-radius:999px;
+      background:#FF2D76;color:#fff;border:2px solid #090D24;
+      font-size:.66rem;font-weight:800;line-height:1;
+      display:flex;align-items:center;justify-content:center;
     }
 
     /* Photo overlay */
@@ -14107,117 +14139,26 @@ function chatSperreZeigen(){
   if(!el)return;
   if(cProfile?.is_pro||chatSperreWeg||istVerein()){el.hidden=true;return;}
 
-  const stern='<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">'
-    +'<path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/></svg>';
-  const haken='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg>';
-  const schloss='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>';
-  const senden='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+  /* Neu am 22.09. Vorher stand hier eine hohe Karte mit einem
+     nachgebauten, gesperrten Schreibfeld, einem Stern, einem Schloss,
+     einem Sende-Pfeil, Preis und zwei Knoepfen. Sie nahm den halben
+     Bildschirm und erklaerte trotzdem nicht, was gilt.
 
-  el.innerHTML=
-    '<div class="mpv-griff"></div>'
-    +'<div class="mpv-mitte">'
-      +'<div class="mpv-marke">'+stern+'SPOTOUT Pro</div>'
-      +'<div class="mpv-t">Du kannst antworten.<br>Anfangen darfst du mit Pro.</div>'
-      +'<div class="mpv-s">Ohne Pro schreibst du nur denen zurück, die dich zuerst angeschrieben haben.</div>'
-      +'<div class="mpv-beispiel"><div class="mpro-feld">'
-        +'<span class="mpro-feld-txt">Schreib zuerst…</span>'
-        +'<span class="mpro-schloss">'+schloss+'</span>'
-        +'<span class="mpro-senden">'+senden+'</span>'
-      +'</div></div>'
-    +'</div>'
-    +'<div class="mpv-fuss">'
-      +'<div class="mpv-preis">'+(probeFrei()?'<b>7 Tage gratis</b>, danach CHF 3.00 im Monat':'<b>CHF 3.00</b> im Monat')+'</div>'
-      +'<button class="mpv-cta" onclick="showPage(\'pro\')">Gratis testen</button>'
-      +'<button class="mpv-weiter" onclick="chatSperreSchliessen()">'+haken+'Verstanden, zu den Nachrichten</button>'
-      +'<div class="mpv-wisch">oder nach unten wischen</div>'
-    +'</div>';
-
-  el.hidden=false;
-  el.classList.remove('zu');
-  chatSperreWischen(el);
-}
-
-/* Nach unten wischen schliesst. Die Karte folgt dem Finger, damit man
-   sieht, dass sie sich bewegen laesst – ohne das wirkt eine Geste wie
-   ein Zufall. */
-function chatSperreWischen(el){
-  if(el.dataset.wisch)return;
-  el.dataset.wisch='1';
-  let start=0,jetzt=0,zieht=false;
-  el.addEventListener('touchstart',e=>{
-    if(e.target.closest('button'))return;
-    start=e.touches[0].clientY;jetzt=0;zieht=true;
-    el.style.transition='none';
-  },{passive:true});
-  el.addEventListener('touchmove',e=>{
-    if(!zieht)return;
-    jetzt=Math.max(0,e.touches[0].clientY-start);
-    el.style.transform='translateY('+jetzt+'px)';
-    el.style.opacity=String(Math.max(.35,1-jetzt/420));
-  },{passive:true});
-  el.addEventListener('touchend',()=>{
-    if(!zieht)return;
-    zieht=false;
-    el.style.transition='';
-    el.style.transform='';
-    el.style.opacity='';
-    if(jetzt>110)chatSperreSchliessen();
-  });
-}
-
-function chatSperreSchliessen(){
-  chatSperreWeg=true;
-  const el=document.getElementById('msgProVoll');
-  if(!el)return;
-  el.classList.add('zu');
-  setTimeout(()=>{el.hidden=true;el.classList.remove('zu');},320);
-  // Die kleine Karte bleibt oben stehen
-  renderChatPro();
-}
-
-function chatProSchliessen(ev){
-  if(ev)ev.stopPropagation();
-  chatProWeg=true;
-  const box=document.getElementById('msgProBox');
-  if(!box)return;
-  const karte=box.querySelector('.mpro');
-  if(!karte){box.innerHTML='';return;}
-  karte.classList.add('mpro-zu');
-  setTimeout(()=>{box.innerHTML='';},260);
-}
-
-function renderChatPro(){
-  const box=document.getElementById('msgProBox');
-  if(!box)return;
-  if(cProfile?.is_pro||chatProWeg){box.innerHTML='';return;}
-
-  const stern='<svg viewBox="0 0 24 24" fill="currentColor" stroke="none">'
-    +'<path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/></svg>';
-  const schloss='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>';
-  const senden='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
-  const kreuz='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+     Jetzt ein Satz, der die Regel nennt, und ein Knopf. Wer mehr
+     wissen will, tippt drauf. */
+  const kreuz='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  const blitz='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>';
 
   box.innerHTML=
-    '<div class="mpro" role="button" tabindex="0" onclick="showPage(\'pro\')">'
-    +'<button class="mpro-x" onclick="chatProSchliessen(event)" aria-label="Hinweis schliessen">'+kreuz+'</button>'
-    +'<div class="mpro-top">'
-      +'<div class="mpro-ic">'+stern+'</div>'
-      +'<div class="mpro-t">SPOTOUT Pro</div>'
-    +'</div>'
-    +'<div class="mpro-kern">Du kannst antworten.<br>Anfangen darfst du mit Pro.</div>'
-
-    /* Das gesperrte Schreibfeld sagt in einem Bild, was drei Saetze
-       nicht schaffen. */
-    +'<div class="mpro-feld">'
-      +'<span class="mpro-feld-txt">Schreib zuerst…</span>'
-      +'<span class="mpro-schloss">'+schloss+'</span>'
-      +'<span class="mpro-senden">'+senden+'</span>'
-    +'</div>'
-
-    +'<div class="mpro-fuss">'
-      +'<div class="mpro-preis">'+(probeFrei()?'<b>7 Tage gratis</b>, danach CHF 3.00 im Monat':'<b>CHF 3.00</b> im Monat')+'</div>'
-      +'<button class="mpro-btn" onclick="event.stopPropagation();showPage(\'pro\')">Gratis testen</button>'
-    +'</div>'
+    '<div class="cpro">'
+    +'<span class="cpro-ic">'+blitz+'</span>'
+    +'<span class="cpro-txt">'
+      +'<b>Antworten kannst du immer.</b>'
+      +'<small>Wer zuerst schreibt, braucht Pro – '
+      +(probeFrei()?'7 Tage gratis, danach CHF 3.00 im Monat':'CHF 3.00 im Monat')+'</small>'
+    +'</span>'
+    +'<button class="cpro-btn" onclick="showPage(\'pro\')">'+(probeFrei()?'Testen':'Holen')+'</button>'
+    +'<button class="cpro-x" onclick="chatProSchliessen(event)" aria-label="Hinweis schliessen">'+kreuz+'</button>'
     +'</div>';
 }
 
@@ -14306,7 +14247,7 @@ async function loadChats(){
               +(lastG.image_url&&!lastG.content?'Bild':esc(lastG.content||'')))
             :'Noch keine Nachrichten')+'</div></div>'
         +'<div class="chat-meta"><div class="chat-time">'+(lastG?fmtT(lastG.created_at):'')+'</div>'
-        +(unreadG?'<div class="unread-dot"></div>':'')+'</div></div>';
+        +(unreadG?'<div class="unread-dot">·</div>':'')+'</div></div>';
     }
     const o=(c.user1_id===cUser.id?c.user2:c.user1)||null;
     // Ohne Gegenueber bleibt die Zeile stehen, aber ohne Ziel – sonst
@@ -14317,12 +14258,13 @@ async function loadChats(){
         +'<div class="chat-preview">Diese Person hat SPOTOUT verlassen.</div></div></div>';
     }
     const last=c.messages?.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
-    const unread=c.messages?.some(m=>!m.read&&m.sender_id!==cUser.id);
+    const offeneZahl=(c.messages||[]).filter(m=>!m.read&&m.sender_id!==cUser.id).length;
+    const unread=offeneZahl>0;
     const av=o?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(o.avatar_url)+'"/>'):esc((o?.full_name||o?.username||'?').charAt(0).toUpperCase());
     return`<div class="chat-item ${unread?'unread':''}" onclick="openConv('${c.id}',${JSON.stringify(o).replace(/"/g,'&quot;')})">
       <div class="chat-av">${av}</div>
       <div class="chat-info"><div class="chat-name">${esc(o?.full_name||o?.username||'Unbekannt')}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
-      <div class="chat-meta"><div class="chat-time">${last?fmtT(last.created_at):''}</div>${unread?'<div class="unread-dot"></div>':''}</div>
+      <div class="chat-meta"><div class="chat-time">${last?fmtT(last.created_at):''}</div>${unread?'<div class="unread-dot">'+(offeneZahl>9?'9+':offeneZahl)+'</div>':''}</div>
     </div>`;
   }).join('');
 }
@@ -17805,7 +17747,14 @@ async function renderShareContacts(alsEinladung){
      ein Gratis-Konto einen Pro-Nutzer anschreiben konnte. Wer kein Pro
      hat, laedt jetzt ein: die Person bekommt eine Benachrichtigung, aber
      es wird kein Gespraech eroeffnet. */
-  const alsNachricht=!alsEinladung&&!!cProfile?.is_pro;
+  /* Bis zum 22.09. schickte "Senden" einer Person den Party-Link als
+     Nachricht in den Zweierchat. Das ist genau das, was niemand will:
+     ein nackter Link von jemandem, mit dem man vielleicht nie
+     geschrieben hat. Eine Person bekommt jetzt immer eine richtige
+     Einladung - sie steht im Kalender und in den Meldungen, ohne dass
+     ein Gespraech aufgeht. Der Link gehoert in eine Gruppe, wo alle
+     ohnehin miteinander reden. */
+  const alsNachricht=false;
   const[{data:folge},{data:folger},{data:schon}]=await Promise.all([
     sb.from('follows').select('following_id').eq('follower_id',cUser.id),
     sb.from('follows').select('follower_id').eq('following_id',cUser.id),
@@ -17854,7 +17803,49 @@ async function renderShareContacts(alsEinladung){
     : '';
 
   box.innerHTML=werkzeug+'<div class="sh-rows" id="shRows">'+reihen+'</div>'
-    +'<div class="mg-empty" id="shNichts" style="display:none">Niemand mit diesem Namen.</div>';
+    +'<div class="mg-empty" id="shNichts" style="display:none">Niemand mit diesem Namen.</div>'
+    +'<div id="shareGruppen"></div>';
+  renderShareGruppen();
+}
+
+/* In eine Gruppe schicken: dort ist ein Link am richtigen Platz. Alle
+   in der Gruppe kennen sich, und die Party steht im selben Verlauf wie
+   das Gerede darueber. */
+async function renderShareGruppen(){
+  const box=document.getElementById('shareGruppen');
+  if(!box||!cUser)return;
+  let gruppen=[];
+  try{
+    const{data}=await sb.rpc('meine_gruppen');
+    gruppen=Array.isArray(data)?data:[];
+  }catch(e){}
+  if(!gruppen.length){ box.innerHTML=''; return; }
+  box.innerHTML='<div class="mg-sec" style="margin-top:20px">In eine Gruppe senden</div>'
+    +gruppen.map(g=>'<div class="mg-guest" id="shg-'+g.id+'">'
+      +'<div class="grp-ic">'+pikto('gaeste',19)+'</div>'
+      +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(g.name||'Gruppe')+'</div>'
+      +'<div class="mg-req-s">'+((g.mitglieder||0)+' dabei')+'</div></div>'
+      +'<button class="sh-send" onclick="sendEventToGroup(\''+g.id+'\')">Senden</button>'
+      +'</div>').join('');
+}
+
+async function sendEventToGroup(gid){
+  if(!shareEv)return;
+  const btn=document.querySelector('#shg-'+gid+' .sh-send');
+  if(btn){btn.disabled=true;btn.textContent='…';}
+  try{
+    const{data,error}=await sb.rpc('gruppe_chat_oeffnen',{p_group:gid});
+    if(error)throw error;
+    if(data?.status!=='ok'||!data?.id)throw new Error(grpSagen(data?.status));
+    const{error:mFehler}=await sb.from('messages')
+      .insert({conversation_id:data.id,sender_id:cUser.id,content:shareText(shareEv)});
+    if(mFehler)throw mFehler;
+    if(btn){btn.textContent='Gesendet';btn.classList.add('done');}
+  }catch(err){
+    console.error('[share:gruppe]',err);
+    toast(fehlerText(err),'error');
+    if(btn){btn.disabled=false;btn.textContent='Senden';}
+  }
 }
 
 // Tippen filtert die Liste, ohne die Datenbank noch einmal zu fragen.
@@ -26167,6 +26158,11 @@ async function convMenue(){
   if(convGruppe){ gruppeOeffnen(convUser.id); return; }
   let stumm=false;
   try{ const{data}=await sb.rpc('ist_stumm',{p_ziel:convUser.id}); stumm=!!data; }catch(e){}
+  let selbst=null;
+  try{
+    const{data}=await sb.from('conversations').select('selbstloeschung_h').eq('id',convId).maybeSingle();
+    selbst=data?.selbstloeschung_h??null;
+  }catch(e){}
   const name=convUser.full_name||convUser.username||'diese Person';
   const kasten=document.getElementById('convMenueBody');
   if(!kasten)return;
@@ -26179,10 +26175,29 @@ async function convMenue(){
     +'<button class="cm-zeile" onclick="convLoeschen()">'
     +'<span class="cm-ic">'+KORB_SVG+'</span>'
     +'<span><b>Chat löschen</b><small>Nur bei dir. Schreibt '+esc(name)+' wieder, ist der Chat zurück.</small></span></button>'
+    +'<div class="cm-block">'
+      +'<b>Selbstlöschende Nachrichten</b>'
+      +'<small>Alles in diesem Chat verschwindet nach der gewählten Zeit – bei euch beiden, und zwar wirklich gelöscht, nicht nur ausgeblendet.</small>'
+      +'<div class="chipset cm-chips">'
+        +[[null,'Aus'],[1,'1 Stunde'],[24,'24 Stunden'],[168,'7 Tage']].map(([w,t])=>
+          '<button class="cset'+(selbst===w?' on':'')+'" onclick="convSelbstloeschung('+(w===null?'null':w)+')">'+t+'</button>').join('')
+      +'</div>'
+    +'</div>'
     +'<button class="cm-zeile cm-rot" onclick="closeOverlay(\'convMenueOverlay\');convMelden()">'
     +'<span class="cm-ic">'+pikto('melden',19)+'</span>'
     +'<span><b>Melden oder blockieren</b><small>Verstösst jemand gegen die Regeln</small></span></button>';
   document.getElementById('convMenueOverlay')?.classList.add('open');
+}
+
+async function convSelbstloeschung(stunden){
+  if(!convId)return;
+  const{error}=await sb.rpc('selbstloeschung_setzen',{p_conv:convId,p_stunden:stunden});
+  if(error){ toast(fehlerText(error),'error'); return; }
+  closeOverlay('convMenueOverlay');
+  toast(stunden===null
+    ? 'Nachrichten bleiben wieder stehen'
+    : ('Nachrichten verschwinden nach '+(stunden===1?'einer Stunde':stunden===24?'24 Stunden':'7 Tagen')),'info');
+  loadMsgs();
 }
 
 async function convStumm(an){
@@ -26841,7 +26856,7 @@ async function setMsgSetting(val){
 async function loadUnread(){
   if(!cUser)return;
   try{
-    const{data}=await sb.from('messages').select('id,read,sender_id,conversations!inner(user1_id,user2_id)').eq('read',false).neq('sender_id',cUser.id).limit(50);
+    const{data}=await sb.from('messages').select('id,conversation_id,read,sender_id,conversations!inner(user1_id,user2_id)').eq('read',false).neq('sender_id',cUser.id).limit(50);
     const unread=(data||[]).filter(m=>m.conversations?.user1_id===cUser.id||m.conversations?.user2_id===cUser.id);
     // Gruppen: "gelesen" gilt dort pro Person, also aus den Meldungen
     if(!unread.length){
@@ -26850,8 +26865,14 @@ async function loadUnread(){
         .not('conversation_id','is',null).limit(1);
       if((gnt||[]).length)unread.push({id:'gruppe'});
     }
+    /* Wie viele Gespraeche warten - nicht wie viele Nachrichten. Zehn
+       Zeilen von einer Person sind ein Gespraech, kein Zehnfaches. */
+    const wartende=new Set(unread.map(m=>m.conversation_id||m.id)).size;
     const badge=document.getElementById('unreadBadge');
-    if(badge)badge.style.display=unread.length>0?'block':'none';
+    if(badge){
+      badge.style.display=wartende>0?'flex':'none';
+      badge.textContent=wartende>9?'9+':String(wartende||'');
+    }
   }catch(e){}
 }
 
