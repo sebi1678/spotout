@@ -43,6 +43,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <!-- Die Karte holt ihre Bausteine von Google. Namensaufloesung und
+       Handschlag kosten auf dem Handy je nach Netz 100 bis 300 ms –
+       die sind erledigt, bevor jemand die Karte aufklappt. -->
+  <link rel="preconnect" href="https://maps.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://maps.gstatic.com" crossorigin/>
+  <link rel="dns-prefetch" href="https://maps.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     /* ═══════════════════════════════════════════════
@@ -25427,6 +25433,24 @@ let mapMe=null,mapPts=[];
 
 let mapVoll=false;
 
+/* Zwischen Beruehren und Loslassen liegen 70 bis 150 ms, und beim
+   Zielen auf den Knopf noch mehr. Die Zeit reicht, um die Bausteine
+   anzustossen – dann ist die Karte beim Loslassen schon halb da.
+   Kostet nichts: geladen wird ohnehin, nur frueher. Abgerechnet wird
+   bei Google erst, wenn wirklich eine Karte entsteht. */
+(function karteVorbereiten(){
+  const anstossen=()=>{ try{ if(karteHatGoogle())googleKarteLaden().catch(()=>{}); }catch(_){} };
+  const anhaengen=()=>{
+    const b=document.getElementById('mapBtn');
+    if(!b||b.dataset.vorbereitet)return;
+    b.dataset.vorbereitet='1';
+    b.addEventListener('pointerdown',anstossen,{once:true,passive:true});
+    b.addEventListener('touchstart',anstossen,{once:true,passive:true});
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',anhaengen);
+  else anhaengen();
+})();
+
 function toggleMap(){
   mapVis=!mapVis;
   const wrap=document.getElementById('mapWrap');
@@ -25563,9 +25587,19 @@ function googleKarteLaden(){
       document.head.appendChild(el);
     });
     const zeitgrenze=setTimeout(()=>daneben(new Error('Zeit abgelaufen')),12000);
-    skript('https://maps.googleapis.com/maps/api/js?v=weekly&key='
-           +encodeURIComponent(GOOGLE_KARTE_SCHLUESSEL))
-      .then(()=>skript('https://cdn.jsdelivr.net/npm/leaflet.gridlayer.googlemutant@0.13.5/dist/Leaflet.GoogleMutant.min.js'))
+    /* Beide gleichzeitig. Vorher lud erst Google, danach der Aufsatz –
+       zwei Wege zum Server nacheinander, obwohl der Aufsatz nur Leaflet
+       braucht und das steht laengst da. Gemessen kostete allein diese
+       Reihenfolge rund 250 ms, auf dem Handy mehr. */
+    Promise.all([
+      /* Bewusst ohne loading=async: damit stellt Google seine Bausteine
+         erst auf Abruf bereit (importLibrary), der Aufsatz greift aber
+         direkt auf google.maps.Map zu. Die Karte fiele stumm auf
+         OpenStreetMap zurueck. Die Warnung in der Konsole bleibt. */
+      skript('https://maps.googleapis.com/maps/api/js?v=weekly&key='
+             +encodeURIComponent(GOOGLE_KARTE_SCHLUESSEL)),
+      skript('https://cdn.jsdelivr.net/npm/leaflet.gridlayer.googlemutant@0.13.5/dist/Leaflet.GoogleMutant.min.js'),
+    ])
       .then(()=>{
         clearTimeout(zeitgrenze);
         if(window.google?.maps && L.gridLayer?.googleMutant)fertig();
