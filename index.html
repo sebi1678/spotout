@@ -1445,6 +1445,12 @@
       color:rgba(255,255,255,.55);font-family:var(--font);font-size:.86rem;font-weight:600;cursor:pointer}
     .pro-ang-nein:active{color:#fff}
 
+    /* Eine Zeile, die statt eines Pfeils einen Schalter traegt. Sonst
+       stand sie ohne Kasten zwischen den anderen und brach die Reihe. */
+    .set-schalter{cursor:default}
+    .set-schalter .s-label{display:flex;flex-direction:column;gap:2px;text-align:left}
+    .set-schalter .s-label small{font-size:.72rem;line-height:1.35;color:rgba(255,255,255,.5);font-weight:500}
+
     /* ── Auswahl-Blatt der Einstellungen ── */
     .wz-hilfe{font-size:.79rem;line-height:1.5;color:rgba(255,255,255,.55);padding:0 4px 12px}
     .wz-zeile{align-items:center}
@@ -7664,8 +7670,9 @@
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         </div>
-        <div class="push-zeile set-besuche">
-          <div><b>Profilbesuche</b><span>An: Wer Pro hat, sieht, dass du sein Profil angesehen hast – und mit Pro siehst du, wer bei dir war. Aus: beides nicht.</span></div>
+        <div class="settings-btn set-schalter">
+          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.4 12S5.9 5.6 12 5.6 21.6 12 21.6 12 18.1 18.4 12 18.4 2.4 12 2.4 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+          <span class="s-label">Profilbesuche<small>Wer Pro hat, sieht, dass du da warst – und du siehst, wer bei dir war</small></span>
           <span id="setBesucheSchalter"></span>
         </div>
         <div id="setNachrichtenBox">
