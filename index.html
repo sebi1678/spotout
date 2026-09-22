@@ -1203,6 +1203,12 @@
     }
     .d-info-cell-lbl{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
     .d-info-cell-val{font-size:.88rem;font-weight:600;color:#fff;line-height:1.3}
+    /* Die Adresse fuehrt zur Karten-App, genau wie im Kalender. Der
+       kleine Pfeil sagt, dass hier etwas passiert. */
+    .d-info-tipp{cursor:pointer}
+    .d-info-tipp:active{background:rgba(255,255,255,.09)}
+    .d-info-pfeil{display:inline-flex;vertical-align:-2px;margin-left:6px;opacity:.5}
+    .d-info-pfeil svg{width:13px;height:13px}
     .d-info-cell.full{grid-column:1/-1}
     .d-desc{font-size:.9rem;color:rgba(255,255,255,.65);line-height:1.7;margin:0 0 16px;padding:0 0 16px;border-bottom:1px solid rgba(255,255,255,.06)}
     .d-section-title{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
@@ -7607,6 +7613,13 @@
           <button class="cset" data-raus="youtube" onclick="setSchnellRaus('youtube')">YouTube Shorts</button>
         </div>
         </div>
+        <div class="set-frage">Standort</div>
+        <div class="set-hilfe">Mit Standort sortiert SPOTOUT nach Nähe und zeigt, wie weit es zu einer Party ist. Aus heisst: sortiert nach Zeit, und niemand erfährt, wo du bist.</div>
+        <div class="chipset" id="setOrtWahl">
+          <button class="cset" data-ort="an" onclick="setOrtNutzung(true)">An</button>
+          <button class="cset" data-ort="aus" onclick="setOrtNutzung(false)">Aus</button>
+        </div>
+
         <div class="set-frage">Karten-App</div>
         <div class="chipset" id="setKartenWahl">
           <button class="cset" data-app="" onclick="setKartenApp('')">Jedes Mal fragen</button>
@@ -11298,7 +11311,10 @@ function renderFeed(){
   const scored=beliebt
     ? pool.map(e=>({...e,_score:beliebtScore(e)})).sort((a,b)=>b._score-a._score)
     : pool.map(e=>({...e,_score:fyScore(e,now)})).sort((a,b)=>b._score-a._score);
-  const top=beliebt?scored.slice(0,4):fyDiversify(scored,4);
+  /* Vorher vier. Danach ging es unten in den kleinen Karten weiter,
+     und der Wechsel mitten im Scrollen sah aus wie ein Bruch. */
+  const FY_ANZAHL=12;
+  const top=beliebt?scored.slice(0,FY_ANZAHL):fyDiversify(scored,FY_ANZAHL);
 
   const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   const pinSm=pikto('ort',14,'d-sym');
@@ -12103,9 +12119,10 @@ async function openDetail(id){
           <div class="d-info-cell-lbl">${D_SYM.zeit} Uhrzeit</div>
           <div class="d-info-cell-val">${e.time?(zeitText(e.time)+(e.end_time?(' – '+zeitText(e.end_time)):'')):'–'}</div>
         </div>
-        <div class="d-info-cell full">
+        <div class="d-info-cell full${e.address?' d-info-tipp':''}"
+             ${e.address?`role="button" tabindex="0" onclick="openRoute('${e.id}')"`:''}>
           <div class="d-info-cell-lbl">${D_SYM.ort} Adresse</div>
-          <div class="d-info-cell-val">${esc(e.address||'–')}</div>
+          <div class="d-info-cell-val">${esc(e.address||'–')}${e.address?'<span class="d-info-pfeil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>':''}</div>
         </div>
         <div class="d-info-cell${isPrivEv?' full':''}">
           <div class="d-info-cell-lbl">${D_SYM.gaeste} Gäste</div>
@@ -12649,6 +12666,39 @@ function setKartenApp(k){
 }
 
 /* Beim Oeffnen der Einstellungen muessen beide Reihen zeigen, was gilt. */
+/* ── Standort an oder aus ──────────────────────────────────────────
+   Bisher gab es nur einen Weg hinein: einmal freigeben. Wieder
+   abschalten ging nur ueber die Einstellungen des Geraets - in der App
+   stand nirgends, dass der Standort ueberhaupt benutzt wird.
+
+   "Aus" heisst hier: SPOTOUT fragt nicht mehr und benutzt nichts mehr.
+   Die Erlaubnis im Geraet bleibt, die kann nur iOS selbst zuruecknehmen
+   - das steht auch so im Hinweis. */
+function ortNutzungAus(){ return ortAntwort()==='aus'; }
+
+function setOrtNutzung(an){
+  if(an){
+    ortAntwortSetzen('gefragt');            // 'aus' aufheben, dann fragen
+    standortHolen(true).then(ok=>{
+      if(!ok)ortAntwortSetzen('gefragt');
+      ortWahlAnzeigen();
+    });
+  }else{
+    ortAntwortSetzen('aus');
+    userLat=null; userLng=null;
+    document.getElementById('locBanner')?.classList.remove('show');
+    try{ filterAll(); }catch(e){}
+    toast('Standort aus – sortiert jetzt nach Zeit','info');
+  }
+  ortWahlAnzeigen();
+}
+
+function ortWahlAnzeigen(){
+  const an=!ortNutzungAus();
+  document.querySelectorAll('#setOrtWahl .cset').forEach(b=>
+    b.classList.toggle('on',(b.dataset.ort==='an')===an));
+}
+
 function rausWahlAnzeigen(){
   const k=schnellRausWahl();
   document.querySelectorAll('#setRausWahl .cset').forEach(b=>
@@ -13021,6 +13071,10 @@ async function renderProf(){
   const hatBegonnen=(ev)=>{ const st=evStart(ev); return !!st && Date.now()>=st.getTime(); };
   const visitedEvts=[
     ...(atts||[]).filter(a=>a.events&&hatBegonnen(a.events)&&a.events.created_by!==cUser.id),
+    /* Auch als Gastgeber war man dabei. Die eigene Party stand bisher
+       nur unter "Erstellt" - unter "Besucht" fehlte ausgerechnet die,
+       auf der man mit Sicherheit war. */
+    ...(myEvts||[]).filter(e=>hatBegonnen(e)).map(e=>({events:e})),
     ...archivBesucht.map(r=>({archiv:true,events:{id:r.event_id,name:r.name,image_url:r.image_url,
         type:r.type,category:r.category,emoji:r.emoji,date:r.datum,time:r.zeit,address:r.ort}})),
   ].filter((a,i,l)=>l.findIndex(b=>b.events.id===a.events.id)===i)
@@ -25852,6 +25906,9 @@ let ortLaeuft=null;
 /* aufFrage=true heisst: der Nutzer hat gerade selbst danach getippt.
    Dann darf die Systemfrage sofort kommen, ohne Karte davor. */
 function standortHolen(aufFrage){
+  /* Wer ihn in den Einstellungen abgeschaltet hat, meint es auch so.
+     Nur der Schalter selbst hebt das wieder auf (er setzt vorher um). */
+  if(ortAntwort()==='aus')return Promise.resolve(false);
   if(userLat!=null)return Promise.resolve(true);
   if(ortLaeuft)return ortLaeuft;
   ortLaeuft=(async()=>{
@@ -26197,13 +26254,17 @@ function dayOneMarke(gross){
      Day One denselben Stern wie Pro und sah aus wie eine kleinere
      Pro-Marke in Gold. Ein Tooltip erklaert auf dem Handy nichts, also
      sagt ein Tipp, was es bedeutet. */
-  return '<span class="d1'+(gross?' d1-gross':'')+'" role="button" tabindex="0" '
-    +'aria-label="Day One – von Anfang an dabei" onclick="event.stopPropagation();dayOneInfo()">'
+  /* Kein Tipp-Hinweis mehr: die Meldung kam mit dem Info-Zeichen der
+     App, und das sieht auf dem iPhone aus wie ein umgedrehtes
+     Ausrufezeichen. Die Marke sagt "Day One" im Klartext - wer sie
+     sieht, braucht keine Erklaerung in einer Sprechblase. */
+  return '<span class="d1'+(gross?' d1-gross':'')+'" '
+    +'aria-label="Day One – von Anfang an dabei">'
     +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
     +'<path d="M3 18.5h18"/><path d="M6.5 18.5a5.5 5.5 0 0 1 11 0"/><path d="M12 4.5v3M5 8l2 2M19 8l-2 2"/></svg>'
     +'Day One</span>';
 }
-function dayOneInfo(){ toast('Day One – von Anfang an bei SPOTOUT dabei','info'); }
+/* dayOneInfo() ist am 22.09. weggefallen - siehe dayOneMarke(). */
 
 /* ── Pro-Marke ─────────────────────────────────────────────────────
    Pro stand in drei Rosatoenen da, mal mit Textstern, mal mit SVG, und
@@ -26492,6 +26553,7 @@ function showSettingsModal(){
   pushWertZeigen();
   besucheSchalterZeigen();
   rausWahlAnzeigen();
+  ortWahlAnzeigen();
   schenkenAnzeigen();
   setProfilUI(!!cProfile?.privat);
   // Ein Verein ist nie privat – der Schalter ergibt dort keinen Sinn
