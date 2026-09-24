@@ -14357,7 +14357,7 @@ async function verifyProStatus(){
     if(verloren){
       chatProWeg=false; chatSperreWeg=false;
       try{ await loadEvts(); }catch(_){}
-      try{ renderChatPro(); }catch(_){}
+      try{ chatSperreZeigen(); }catch(_){}
       const id=window.__offenePartyId;
       if(id&&document.getElementById('detailOverlay')?.classList.contains('open'))openDetail(id);
       toast('Dein Pro-Abo ist beendet. Die Pro-Funktionen sind wieder gesperrt.','warn');
@@ -14379,9 +14379,15 @@ let chatSperreWeg=false;
    eine Huerde, die man zehnmal am Abend wegwischt, wird zur Wut auf die
    App und nicht zum Abo. */
 function chatSperreZeigen(){
-  const el=document.getElementById('msgProVoll');
-  if(!el)return;
-  if(cProfile?.is_pro||chatSperreWeg||istVerein()){el.hidden=true;return;}
+  /* Die ganzseitige Sperre gibt es seit dem 22.09. nicht mehr – ihr
+     Behaelter bleibt zu. Der Hinweis ist jetzt eine Zeile in msgProBox.
+     (Beim Umbau blieb hier "box" ohne Definition stehen: das warf, und
+     loadChats brach ab, bevor die Liste gezeichnet war – Chats leer.) */
+  const voll=document.getElementById('msgProVoll');
+  if(voll)voll.hidden=true;
+  const box=document.getElementById('msgProBox');
+  if(!box)return;
+  if(cProfile?.is_pro||chatProWeg||istVerein()){box.innerHTML='';return;}
 
   /* Neu am 22.09. Vorher stand hier eine hohe Karte mit einem
      nachgebauten, gesperrten Schreibfeld, einem Stern, einem Schloss,
@@ -14406,6 +14412,14 @@ function chatSperreZeigen(){
     +'</div>';
 }
 
+/* Weggetippt bleibt der Hinweis weg, bis die App neu startet. */
+function chatProSchliessen(ev){
+  if(ev)ev.stopPropagation();
+  chatProWeg=true;
+  const box=document.getElementById('msgProBox');
+  if(box)box.innerHTML='';
+}
+
 /* Wer einen Chat geloescht hat, sieht ihn ab diesem Zeitpunkt nicht
    mehr. Die Nachrichten bleiben fuer den anderen stehen - geloescht
    wird die eigene Sicht, nicht seine. Schreibt er neu, ist der Chat
@@ -14421,11 +14435,24 @@ async function chatGeloeschtLaden(){
 }
 
 async function loadChats(){
-  chatSperreZeigen();
-  renderChatPro();
-  await loadMsgRequests();
+  const list=document.getElementById('chatList');
+  /* Der Pro-Hinweis und die Anfragen sind Beiwerk. Scheitert eines davon,
+     darf die Liste darunter trotzdem nicht leer bleiben – genau das ist
+     am 22.09. passiert (ReferenceError im Hinweis, Chats leer). */
+  try{ chatSperreZeigen(); }catch(e){ console.error('[chats] Pro-Hinweis:',e); }
+  try{ await loadMsgRequests(); }catch(e){ console.error('[chats] Anfragen:',e); }
   await chatGeloeschtLaden();
-  const{data}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id},group_id.not.is.null`).order('created_at',{ascending:false});
+  try{
+    await chatListeZeichnen(list);
+  }catch(e){
+    console.error('[chats] Liste:',e);
+    if(list)list.innerHTML='<div class="chat-leer">Die Nachrichten liessen sich gerade nicht laden.<br>'
+      +'<button class="auth-zweit" style="margin-top:14px" onclick="loadChats()">Nochmals versuchen</button></div>';
+  }
+}
+
+async function chatListeZeichnen(list){
+  const{data,error:chatFehler}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id},group_id.not.is.null`).order('created_at',{ascending:false});
   /* Im Gruppenchat kann "gelesen" nicht an der Nachricht haengen – es
      gibt nur eine Spalte fuer alle. Wer zuerst reinschaut, haette allen
      anderen den Punkt geloescht. Der Ungelesen-Zustand kommt darum aus
@@ -14464,7 +14491,7 @@ async function loadChats(){
     (gr||[]).forEach(g=>grpNamen.set(g.id,g.name));
   }
 
-  const list=document.getElementById('chatList');
+  if(chatFehler)throw chatFehler;
   if(!data?.length){
     list.innerHTML='<div class="chat-leer">Noch keine Nachrichten.<br>'
       +(cProfile?.is_pro
