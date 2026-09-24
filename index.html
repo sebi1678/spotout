@@ -2398,6 +2398,10 @@
 
     /* Edit profile modal */
     #editProfOverlay .modal{max-height:85vh;max-height:85dvh}
+    /* Benachrichtigungen: immer gleich hoch. Vorher richtete sich das
+       Blatt nach dem Inhalt – bei wenigen Einladungen sackte es beim
+       Umschalten nach unten, bei "Sonstiges" stand es wieder oben. */
+    #notifOverlay .modal{height:90vh;height:90dvh}
 
     /* User search overlay */
 
@@ -14483,12 +14487,12 @@ async function chatListeZeichnen(list){
   const sichtbar=(data||[]).filter(c=>!chatGeloescht.get(c.id)||(c.messages||[]).length);
   const gespraeche=sichtbar.slice().sort((a,b)=>zuletzt(b)-zuletzt(a));
 
-  // Die Namen der Gruppen in einer Abfrage – nicht eine je Zeile
-  const grpNamen=new Map();
+  // Name und Bild der Gruppen in einer Abfrage – nicht eine je Zeile
+  const grpNamen=new Map(), grpBilder=new Map();
   const grpIds=[...new Set((data||[]).map(c=>c.group_id).filter(Boolean))];
   if(grpIds.length){
-    const{data:gr}=await sb.from('groups').select('id,name').in('id',grpIds);
-    (gr||[]).forEach(g=>grpNamen.set(g.id,g.name));
+    const{data:gr}=await sb.from('groups').select('id,name,bild_url').in('id',grpIds);
+    (gr||[]).forEach(g=>{ grpNamen.set(g.id,g.name); if(g.bild_url)grpBilder.set(g.id,g.bild_url); });
   }
 
   if(chatFehler)throw chatFehler;
@@ -14511,7 +14515,7 @@ async function chatListeZeichnen(list){
       const lastG=c.messages?.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
       const unreadG=grpOffenNt.has(c.id);
       return '<div class="chat-item'+(unreadG?' unread':'')+'" onclick="gruppeChat(\''+c.group_id+'\')">'
-        +'<div class="chat-av">'+pikto('gaeste',18)+'</div>'
+        +'<div class="chat-av">'+grpAv(grpBilder.get(c.group_id))+'</div>'
         +'<div class="chat-info"><div class="chat-name">'+esc(gname)+'</div>'
         +'<div class="chat-preview">'+(lastG
             ?((lastG.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')
@@ -14599,8 +14603,8 @@ async function gespraechOeffnen(cid){
     const{data:g}=await sb.from('conversations').select('*').eq('id',cid).maybeSingle();
     if(!g){toast('Dieses Gespräch gibt es nicht mehr','warn');return;}
     if(g.group_id){
-      const{data:gr}=await sb.from('groups').select('id,name').eq('id',g.group_id).maybeSingle();
-      await openConv(cid,{gruppe:true,id:g.group_id,name:gr?.name||'Gruppe'});
+      const{data:gr}=await sb.from('groups').select('id,name,bild_url').eq('id',g.group_id).maybeSingle();
+      await openConv(cid,{gruppe:true,id:g.group_id,name:gr?.name||'Gruppe',bild_url:gr?.bild_url||null});
       return;
     }
     const anderer=(g.user1_id===cUser.id)?g.user2_id:g.user1_id;
@@ -14642,7 +14646,7 @@ async function openConv(cid,other){
   convGruppe=!!other?.gruppe;
   convLeute.clear();
   const av=convGruppe
-    ? pikto('gaeste',18)
+    ? grpAv(other?.bild_url)
     : (other?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(other.avatar_url)+'"/>'):esc((other?.full_name||other?.username||'?').charAt(0).toUpperCase()));
   const elAv=document.getElementById('convAv');
   const elNm=document.getElementById('convName');
@@ -17513,9 +17517,19 @@ async function gruppeChat(gid){
   const{data,error}=await sb.rpc('gruppe_chat_oeffnen',{p_group:gid});
   if(error){toast(fehlerText(error),'error');return;}
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');return;}
-  const titel=document.getElementById('gruppeTitel')?.textContent||'Gruppe';
+  /* Name und Bild aus der Gruppe selbst – aus der Chatliste heraus ist
+     die Gruppenansicht gar nicht offen, ihr Titel waere von vorhin. */
+  const{data:gr}=await sb.from('groups').select('name,bild_url').eq('id',gid).maybeSingle();
+  const titel=gr?.name||document.getElementById('gruppeTitel')?.textContent||'Gruppe';
   closeOverlay('gruppeOverlay');
-  await openConv(data.id,{gruppe:true,id:gid,name:titel});
+  await openConv(data.id,{gruppe:true,id:gid,name:titel,bild_url:gr?.bild_url||null});
+}
+
+/* Das Bild einer Gruppe als Kreis – oder das Gruppensymbol, wenn keins gesetzt ist. */
+function grpAv(bild){
+  return bild
+    ? '<img loading="lazy" decoding="async" src="'+escAttr(bild)+'" alt=""/>'
+    : pikto('gaeste',18);
 }
 
 /* Leute in die Gruppe holen. Derselbe Waehler wie beim Einladen zu
@@ -26934,6 +26948,25 @@ function schnellRaus(){
      manchmal nichts tut. */
   document.addEventListener('visibilitychange',merken);
   window.addEventListener('pagehide',merken,{once:true});
+
+  /* In der SPOTOUT-App: Die Huelle oeffnet die Ziel-App selbst und weiss
+     sicher, ob das geklappt hat – nur wenn nicht, nimmt sie die Website.
+     Der Zeitmesser unten taugt dort nicht: die Huelle oeffnet das Schema
+     asynchron, die Seite rutscht oft erst nach den 500 ms in den
+     Hintergrund, und dann ging zusaetzlich tiktok.com auf.
+     Aeltere Fassungen der App kennen "raus" noch nicht – dort nur das
+     Schema, ohne Netzweg hinterher. */
+  if(istApp()){
+    nativeCall('raus',{app:ziel.app,netz:ziel.netz},4000).then(r=>{
+      /* Nur "unbekannt": das antwortet eine aeltere Huelle sofort. Keine
+         Zeitueberschreitung – die kaeme, waehrend TikTok offen ist, und
+         wuerde es beim Zurueckkommen ein zweites Mal oeffnen. */
+      if(r&&/^unbekannt/.test(String(r.fehler||''))){
+        try{ location.href=ziel.app; }catch(e){}
+      }
+    });
+    return;
+  }
 
   try{ location.href=ziel.app; }catch(e){}
   setTimeout(()=>{
