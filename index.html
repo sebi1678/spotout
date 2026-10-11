@@ -9663,6 +9663,13 @@ async function pushTokenLoesen(){
   if(cProfile)cProfile.push_token=null;
 }
 
+/* Haelt fest, wie ein Kontowechsel ausgegangen ist. Nur Schritt und
+   Fehlertext, keine Schluessel. Ohne das raten wir weiter: der Wechsel
+   scheitert nur auf dem Geraet, und dort sieht niemand die Konsole. */
+function wechselNotieren(schritt,text){
+  try{ sb.rpc('wechsel_notieren',{p_schritt:String(schritt),p_text:text?String(text):null}).then(()=>{},()=>{}); }catch(e){}
+}
+
 let kontoWechselLaeuft=false,kontoNeuLaeuft=false;
 async function kontoWechseln(id){
   if(id===cUser?.id){ closeOverlay('kontenOverlay'); return; }
@@ -9678,6 +9685,8 @@ async function kontoWechseln(id){
      weg. Stand in der Liste noch der Schluessel von vorhin, war der
      Weg zurueck versperrt - und das sah aus wie "Wechsel kaputt". */
   try{ await kontoMerken(); }catch(e){}
+  wechselNotieren('start','ziel='+String(id).slice(0,8)
+    +' alter='+Math.round((Date.now()-(k.zeit||0))/3600000)+'h');
   await pushTokenLoesen();
   try{
     let sitzung=null;
@@ -9693,11 +9702,13 @@ async function kontoWechseln(id){
          den ein zweiter Tab oder die Huelle inzwischen geschaffen hat.
          refreshSession geht denselben Weg ohne den alten Zugang. */
       console.warn('[konten] setSession gescheitert, versuche refreshSession',ersterFehler);
+      wechselNotieren('setSession_fehler',ersterFehler&&(ersterFehler.message||ersterFehler.code));
       const{data:d2,error:e2}=await sb.auth.refreshSession({refresh_token:k.erneuerung});
       if(e2)throw e2;
       sitzung=d2&&d2.session;
     }
     if(!sitzung)throw new Error('keine Sitzung');
+    wechselNotieren('sitzung_steht','neuer Nutzer='+String(sitzung.user?.id||'').slice(0,8));
     const data={session:sitzung};
     // Der Rest laeuft ueber onAuthStateChange wie bei einer normalen
     // Anmeldung – inklusive Aufraeumen der alten Ansicht.
@@ -9706,6 +9717,7 @@ async function kontoWechseln(id){
     await loadProf();
     await kontoMerken();
     enterApp();
+    wechselNotieren('fertig','Konto gewechselt');
     }catch(err){
     console.warn('[konten]',err);
     /* Nur wirklich verbrauchte Schluessel fliegen aus der Liste. Vorher
@@ -9713,6 +9725,7 @@ async function kontoWechseln(id){
        das Konto war dauerhaft weg. Wer es dann wiederhaben wollte,
        musste sich neu anmelden, und genau das hiess "geht nicht". */
     const grund=String(err&&(err.message||err.error_description||err.code)||'');
+    wechselNotieren('gescheitert',grund);
     const wirklichHin=/refresh.?token|already used|invalid|expired|not found|revoked/i.test(grund);
     if(wirklichHin){
       kontenSchreiben(kontenLesen().filter(x=>x.id!==id));
