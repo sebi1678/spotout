@@ -12548,6 +12548,9 @@ async function toggleAtt(id,isAtt){
       const{error}=await sb.from('event_attendees').insert({event_id:id,user_id:cUser.id});
       // 23505 = bereits angemeldet, das ist kein Fehler für den Nutzer
       if(error&&error.code!=='23505')throw error;
+      /* Zusagen ist die wichtigste Handlung in dieser App. Sie darf
+         sich anfuehlen wie etwas, das geklappt hat. */
+      nativeHaptik('erfolg');
         }
     await loadEvts();
     await openDetail(id);
@@ -23431,6 +23434,27 @@ async function nativePushAnmelden(erzwingen){
 
 function nativeHaptik(art){ if(istApp())nativeCall('haptik',{art},3000); }
 
+/* ── Zweites Tippen auf den aktiven Tab ───────────────────────────
+   Auf dem iPhone bringt das in jeder App die Liste zurueck an den
+   Anfang. Man tippt es, ohne darueber nachzudenken - und bei uns
+   passierte nichts. Die Huelle ruft das hier, wenn der schon aktive
+   Tab noch einmal getippt wird.
+
+   Welches Element scrollt, haengt davon ab, was offen ist: ein Fenster
+   scrollt in seinem Koerper, sonst die Seite selbst. */
+window.__huelleNachOben=function(){
+  try{
+    const offen=document.querySelector('.overlay.open');
+    const ziel=offen
+      ? (offen.querySelector('.modal-body')||offen.querySelector('.modal'))
+      : document.querySelector('.page.active');
+    if(!ziel)return;
+    if((ziel.scrollTop||0)<=0){ nativeHaptik('leicht'); return; }
+    ziel.scrollTo({top:0,behavior:'smooth'});
+    nativeHaptik('leicht');
+  }catch(e){}
+};
+
 /* In der iPhone-App ersetzte ein Tipp auf "Datenschutz" die ganze App –
    mitten in der Registrierung war der Fortschritt weg. Jetzt ein Fenster. */
 function rechtOeffnen(pfad){
@@ -27091,6 +27115,10 @@ const TOAST_SYM={
 function toast(msg,type='info'){
   const t=document.getElementById('toast');
   if(!t)return;
+  /* Ein Fehlschlag soll sich anders anfuehlen als ein Erfolg. Bisher
+     war beides stumm, und auf dem Handy merkt man eine Meldung am
+     unteren Rand leicht gar nicht. */
+  try{ if(type==='error')nativeHaptik('fehler'); else if(type==='warn')nativeHaptik('warnung'); }catch(e){}
   const art=TOAST_SYM[type]?type:'info';
   const text=String(msg||'');
   const warDa=t.classList.contains('show');
