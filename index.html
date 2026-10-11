@@ -11961,9 +11961,21 @@ const D_SYM={
    billiger als das Neuzeichnen, das er erspart. */
 function setzeHTML(el,html){
   if(!el)return false;
-  if(el.__letzterInhalt===html)return false;
-  el.__letzterInhalt=html;
+  /* Der Merker allein genuegt nicht: an mehreren Stellen wird ein
+     Bereich direkt geleert (innerHTML='' beim Abmelden, beim
+     Kontowechsel, bei aktiver Suche). Der Merker weiss davon nichts,
+     haelt den Inhalt fuer unveraendert - und der Bildschirm bleibt
+     leer. Genau das ist am 11.10. passiert: nach dem Anmelden stand
+     nur noch der dunkle Grund da.
+
+     Darum wird zusaetzlich gezaehlt, wie viele Kinder zuletzt wirklich
+     dastanden. Stimmt das nicht mehr, wird neu gezeichnet. Im Zweifel
+     lieber einmal zu viel zeichnen als einmal zu wenig - ein kurzes
+     Blinken ist ein Schoenheitsfehler, eine leere Seite ist keiner. */
+  if(el.__letzterInhalt===html && el.childElementCount===el.__letzteKinder)return false;
   el.innerHTML=html;
+  el.__letzterInhalt=html;
+  el.__letzteKinder=el.childElementCount;
   return true;
 }
 
