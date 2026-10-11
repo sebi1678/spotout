@@ -11637,7 +11637,7 @@ function renderFeed(){
     </article>`;
   }).join('');
 
-  wrap.innerHTML=`<div class="fy-list">${cards}</div>`;
+  setzeHTML(wrap,`<div class="fy-list">${cards}</div>`);
 }
 
 // Empfehlungen neu mischen (Button in der Kopfzeile)
@@ -11832,13 +11832,13 @@ function renderGrid(type,list){
   const grenze=Math.min(gridZeigt[type]||GRID_SCHRITT, list.length);
   const rest=list.length-grenze;
   const pfeil='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
-  g.innerHTML=list.slice(0,grenze).map(e=>cardHTML(e)).join('')
+  setzeHTML(g,list.slice(0,grenze).map(e=>cardHTML(e)).join('')
     +(rest>0
       ? '<button class="grid-mehr" onclick="gridMehr(\''+type+'\')">'
         +'Noch '+rest+(rest===1?' Party':' Partys')+' anzeigen'+pfeil+'</button>'
       : (list.length>GRID_SCHRITT
           ? '<div class="grid-ende">Das waren alle '+list.length+'.</div>'
-          : ''));
+          : '')));
 }
 
 /* ── Wer von deinen Leuten ist dabei? ──────────────────────────────
@@ -11918,6 +11918,28 @@ const D_SYM={
   gaeste:pikto('gaeste',15,'d-sym'), preis:pikto('ticket',15,'d-sym'), glas:pikto('drink',15,'d-sym'),
   summe:pikto('muenzen',15,'d-sym'), haus:pikto('home',15,'d-sym'),
 };
+
+/* ── Neu zeichnen, ohne dass die Bilder verschwinden ──────────────
+   Beim Neuladen wurde die Liste jedes Mal komplett neu gebaut. Dabei
+   entstehen neue <img>-Elemente, und die sind einen Moment lang leer -
+   auch wenn dasselbe Bild schon im Zwischenspeicher liegt. Genau das
+   sieht man als kurzes Wegblinken aller Bilder.
+
+   Meistens aendert sich beim Neuladen aber gar nichts. Dann ist der
+   beste Umbau keiner: Wir vergleichen den fertigen Text mit dem, was
+   schon dasteht, und lassen den Bildschirm in Ruhe, wenn er gleich
+   ist. Nur wenn sich wirklich etwas geaendert hat, wird ersetzt.
+
+   Der Vergleich kostet nichts Messbares - der Text ist ohnehin gerade
+   gebaut worden, und ein Zeichenketten-Vergleich ist um ein Vielfaches
+   billiger als das Neuzeichnen, das er erspart. */
+function setzeHTML(el,html){
+  if(!el)return false;
+  if(el.__letzterInhalt===html)return false;
+  el.__letzterInhalt=html;
+  el.innerHTML=html;
+  return true;
+}
 
 function cardHTML(e){
   const w=worldVars(e.type);
@@ -12368,7 +12390,7 @@ async function openDetail(id){
      Sorten Bild: das Bild einer Party und das Profilbild. Alles
      andere war ein Weg, ueber den fremde Bilder in die App kamen. */
   const albumHTML='';
-  document.getElementById('detailContent').innerHTML=`
+  setzeHTML(document.getElementById('detailContent'),`
     <div class="d-hero" style="background:${bg}">
       <div class="glow-spot glow-1" style="background:radial-gradient(circle,${w.glow1},transparent 70%)"></div>
       <div class="glow-spot glow-2" style="background:radial-gradient(circle,${w.glow2},transparent 70%)"></div>
@@ -12426,7 +12448,7 @@ async function openDetail(id){
       ${attHTML}
       ${albumHTML}
     </div>
-    <div style="height:32px"></div>`;
+    <div style="height:32px"></div>`);
   /* Der Kopf wird getrennt gefuellt: er steht ueber dem Bild und klebt
      beim Scrollen oben, genau wie in jedem anderen Fenster. */
   const kopfRechts=
@@ -13447,7 +13469,7 @@ async function renderProf(){
   ].filter((a,i,l)=>l.findIndex(b=>b.events.id===a.events.id)===i)
    .sort((x,y)=>new Date(y.events.date)-new Date(x.events.date));
   const warBesucht=document.getElementById('tab-visited')?.classList.contains('active');
-  document.getElementById('profContent').innerHTML=`
+  setzeHTML(document.getElementById('profContent'),`
     <div class="prof-wrap-insta">
       <div class="fa-box" id="faBox"></div>
 
@@ -13534,7 +13556,7 @@ async function renderProf(){
       </div>
       <div id="prof-panel-gruppen" style="display:none;padding:4px 2px 0"></div>
       <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
-    </div>`;
+    </div>`);
   if(warBesucht)switchProfTab('visited');
   renderFolgeAnfragen();
   besucherPunkt();
@@ -14517,7 +14539,7 @@ async function chatListeZeichnen(list){
       +(cProfile?.is_pro?'Öffne ein Profil und schreib der Person.':'Wer dir schreibt, erscheint hier.')+'</div>';
     return;
   }
-  list.innerHTML=gespraeche.map(c=>{
+  setzeHTML(list,gespraeche.map(c=>{
     // Eine Gruppe hat kein Gegenueber – sie traegt ihren eigenen Namen
     if(c.group_id){
       const gname=grpNamen.get(c.group_id)||'Gruppe';
@@ -14550,7 +14572,7 @@ async function chatListeZeichnen(list){
       <div class="chat-info"><div class="chat-name">${esc(o?.full_name||o?.username||'Unbekannt')}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
       <div class="chat-meta"><div class="chat-time">${last?fmtT(last.created_at):''}</div>${unread?'<div class="unread-dot">'+(offeneZahl>9?'9+':offeneZahl)+'</div>':''}</div>
     </div>`;
-  }).join('');
+  }).join(''));
 }
 
 // Eingehende Nachrichten-Anfragen – die liefen bisher ins Leere
