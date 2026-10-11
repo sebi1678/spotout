@@ -1506,6 +1506,25 @@
     .cpro-x{flex:none;background:none;border:none;padding:4px;cursor:pointer;color:rgba(255,255,255,.4);display:flex}
     .cpro-x svg{width:14px;height:14px}
 
+    /* ── Eine Party als Karte in der Nachricht ── */
+    .bub-party{
+      display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px;
+      border-radius:13px;background:rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.12);cursor:pointer;
+      min-width:210px;
+    }
+    .bub-party:active{background:rgba(0,0,0,.4)}
+    .bp-bild{flex:none;width:46px;height:46px;border-radius:10px;overflow:hidden;background:#0d1030}
+    .bp-bild img{width:100%;height:100%;object-fit:cover;display:block}
+    .bp-ohne{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;opacity:.8}
+    .bp-text{flex:1;min-width:0}
+    .bp-name{font-size:.86rem;font-weight:800;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bp-wann{font-size:.74rem;color:rgba(255,255,255,.7);margin-top:1px}
+    .bp-wo{font-size:.72rem;color:rgba(255,255,255,.45);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bp-pfeil{width:16px;height:16px;flex:none;opacity:.5;color:#fff}
+    .bp-laden{display:flex;align-items:center;justify-content:center;width:100%;height:46px}
+    .bp-weg{font-size:.78rem;color:rgba(255,255,255,.5);padding:6px 2px}
+
     /* ── Chat-Menue und Bearbeiten-Leiste ── */
     .cm-zeile{display:flex;align-items:flex-start;gap:13px;width:100%;padding:14px 4px;
       background:none;border:none;border-bottom:1px solid rgba(255,255,255,.07);
@@ -14738,7 +14757,18 @@ async function loadMsgs(){
     /* Alte Nachrichten koennen noch ein Bild haben. Angezeigt wird es
        nicht mehr, aber die Blase soll nicht leer dastehen. */
     const bild=m.image_url?'<span class="msg-weg">Bild entfernt</span>':'';
-    const text=m.content?esc(m.content).replace(/\n/g,'<br>'):'';
+    /* Eine Einladung war bisher eine Wand aus Text mit einer Adresse,
+       die man nicht einmal antippen konnte: der Inhalt wird escapet,
+       also stand dort ein toter Link. Jetzt wird die Party erkannt und
+       als Karte gezeigt - antippen oeffnet sie in der App. Der Rest
+       des Textes bleibt stehen, nur die Adresse faellt weg. */
+    const evId=partyAusText(m.content||'');
+    const roh=evId
+      ? String(m.content||'').replace(PARTY_LINK,'').replace(/\n?\s*Schau dir (die Party|das Event) auf SPOTOUT an:\s*/,'\n').trim()
+      : (m.content||'');
+    const text=roh?esc(roh).replace(/\n/g,'<br>'):'';
+    const karte=evId?'<div class="bub-party" data-ev="'+escAttr(evId)+'">'
+      +'<div class="bp-laden"><div class="spinner"></div></div></div>':'';
     if(convGruppe&&!mine&&!grouped){
       const wr=convLeute.get(m.sender_id);
       html+='<div class="bub-wer">'+esc(wr?.full_name||wr?.username||'Jemand')+'</div>';
@@ -14754,7 +14784,7 @@ async function loadMsgs(){
       +' data-mid="'+m.id+'"'+(mine?' data-mine="1"':'')
       +' data-zeit="'+new Date(m.created_at).getTime()+'"'+werAttr+' data-x="'
       +(grouped?'':' bub-grp')+'">'
-      +bild+text
+      +bild+text+karte
       +(showMeta?'<div class="bub-meta">'+(m.bearbeitet_am?'<span class="bub-bearb">bearbeitet</span>':'')
          +fmtT(m.created_at)+(mine?tick(m.read):'')+'</div>':'')
       +'</div>';
@@ -14774,6 +14804,53 @@ async function loadMsgs(){
 
   c.innerHTML=html;
   c.scrollTop=c.scrollHeight;
+  partyKartenFuellen();
+}
+
+/* ── Party-Karten in Nachrichten ──────────────────────────────────
+   Die Nachricht traegt nur die Kennung. Was die Party heisst, wann sie
+   ist und wie sie aussieht, wird hier nachgeholt - fuer alle Karten im
+   Verlauf in einer Abfrage, nicht eine je Nachricht. */
+const PARTY_LINK=/https?:\/\/[^\s]*[?&]event=([0-9a-f-]{36})/i;
+function partyAusText(t){
+  const m=PARTY_LINK.exec(String(t||''));
+  return m?m[1]:null;
+}
+
+async function partyKartenFuellen(){
+  const kasten=[...document.querySelectorAll('.bub-party[data-ev]')].filter(k=>!k.dataset.fertig);
+  if(!kasten.length)return;
+  const ids=[...new Set(kasten.map(k=>k.dataset.ev))];
+  const bekannt=new Map();
+  ids.forEach(id=>{ const e=evts.find(x=>x.id===id); if(e)bekannt.set(id,e); });
+  const fehlen=ids.filter(id=>!bekannt.has(id));
+  if(fehlen.length){
+    try{
+      const{data}=await sb.from('events')
+        .select('id,name,date,time,address,image_url,type,category')
+        .in('id',fehlen);
+      (data||[]).forEach(e=>bekannt.set(e.id,e));
+    }catch(err){ console.warn('[party-karte]',err); }
+  }
+  kasten.forEach(k=>{
+    k.dataset.fertig='1';
+    const e=bekannt.get(k.dataset.ev);
+    if(!e){
+      /* Geloescht, privat oder vorbei: ehrlich sagen statt ewig laden. */
+      k.innerHTML='<div class="bp-weg">Diese Party gibt es nicht mehr</div>';
+      return;
+    }
+    const bild=e.image_url
+      ? '<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
+      : '<div class="bp-ohne" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),22)+'</div>';
+    k.onclick=(ev)=>{ ev.stopPropagation(); openDetail(e.id); };
+    k.innerHTML='<div class="bp-bild">'+bild+'</div>'
+      +'<div class="bp-text"><div class="bp-name">'+esc(e.name||'Party')+'</div>'
+      +'<div class="bp-wann">'+esc(wannText(e.date,e.time))+'</div>'
+      +(e.address?'<div class="bp-wo">'+esc(String(e.address).split(',')[0])+'</div>':'')
+      +'</div>'
+      +'<svg class="bp-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+  });
 }
 
 async function sendMsg(){
@@ -26200,16 +26277,44 @@ function applyMapTheme(){
 
   if(!karteHatGoogle()){ setzen(osmEbene()); return; }
 
+  /* ── Warum die Karte so lange brauchte ──────────────────────────
+     Vor der ersten Kachel lief eine ganze Kette: Google-Skript laden,
+     dann der Leaflet-Aufsatz, dann wird die Karte erzeugt – und erst
+     dabei laedt Google drei weitere eigene Bausteine nach. Gemessen
+     allein fuer die Bibliotheken 367 ms im Festnetz; auf dem Handy das
+     Zwei- bis Vierfache. So lange stand ein leerer Kasten da.
+
+     Jetzt zuerst OpenStreetMap: das braucht kein einziges Skript mehr,
+     Leaflet steht ohnehin schon, und die Kacheln sind sofort unterwegs.
+     Google schiebt sich darueber, sobald es bereit ist. Man sieht also
+     in jedem Fall eine Karte – im schlechtesten Fall eben die von
+     OpenStreetMap, statt eines leeren Kastens. */
+  const wrapEl=document.getElementById('mapWrap');
+  wrapEl?.classList.add('map-osm');          // bis Google da ist: OSM-Darstellung
+  setzen(osmEbene());
+
   googleKarteLaden().then(()=>{
-    setzen(L.gridLayer.googleMutant({
+    if(!mapInst)return;
+    const vorher=mapTiles;
+    const g=L.gridLayer.googleMutant({
       type:'roadmap',
       styles: mapTheme==='light' ? [] : GOOGLE_DUNKEL,
       maxZoom:20,
-    }));
+    }).addTo(mapInst);
+    mapTiles=g;
+    /* Die alte Ebene erst wegnehmen, wenn die neue wirklich Kacheln
+       zeigt – sonst blitzt zwischendrin der leere Grund auf. */
+    const weg=()=>{
+      wrapEl?.classList.remove('map-osm');
+      if(vorher&&vorher.remove)vorher.remove();
+    };
+    let getan=false;
+    const einmal=()=>{ if(getan)return; getan=true; weg(); };
+    g.once('load',einmal);
+    setTimeout(einmal,1800);
   }).catch((err)=>{
-    console.warn('[karte] Google nicht verfügbar, nehme OpenStreetMap', err);
-    document.getElementById('mapWrap')?.classList.add('map-osm');
-    setzen(osmEbene());
+    // Kein Netz, Schluessel abgelehnt: OpenStreetMap liegt schon da.
+    console.warn('[karte] Google nicht verfügbar, bleibe bei OpenStreetMap', err);
   });
 }
 
