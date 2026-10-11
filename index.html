@@ -16316,6 +16316,13 @@ async function submitEventInner(){
     startFeeCheckout(data.id,Number(data.fee_amount||0));
     return;
   }
+  /* War die Party fuer eine Gruppe gedacht, geht sie dorthin - dann
+     braucht es das Teilen-Fenster nicht mehr, die Leute sind schon
+     eingeladen. */
+  if(grpZiel){
+    const rein=await gruppeNachErstellen(data.id);
+    if(rein){ openDetail(data.id); return; }
+  }
   // Letzter, freiwilliger Schritt: Leute einladen
   setTimeout(()=>openShare(data.id,{afterCreate:true}),300);
 }
@@ -17551,6 +17558,9 @@ function gruppeZeichnen(g){
       +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppeKontakteWaehlen(\''+g.id+'\')">Leute holen</button>'
       +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppePartyWaehlen(\''+g.id+'\')">Party hineinstellen</button>'
     +'</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:4px">'
+      +'<button class="sub-btn sub-public" style="flex:1;margin:0" onclick="gruppePartyNeu(\''+g.id+'\')">Neue Party für die Gruppe</button>'
+    +'</div>'
     +anfragen
     +'<div class="mg-sec">Partys</div>'+partys
     +'<div class="mg-sec">'+(g.mitglieder||[]).length+' Mitglieder</div>'+leute
@@ -17818,6 +17828,56 @@ async function spotoutEinladen(){
 
 /* Hineinstellen darf man nur, was man selbst sieht – die Auswahl zeigt
    deshalb die eigenen und die zugesagten Partys, nicht alles. */
+/* ── Eine Party fuer die Gruppe ───────────────────────────────────
+   Bisher gab es nur "Party hineinstellen" - das setzt voraus, dass
+   schon eine existiert. Wer keine hatte, bekam "Du hast gerade keine
+   kommende Party" und stand vor einer Sackgasse. Genau der Weg, den
+   man in einer Gruppe als Erstes will, fehlte.
+
+   Jetzt merkt sich die App die Gruppe, oeffnet das gewohnte Formular
+   und stellt die fertige Party danach selbst hinein - samt Einladung
+   an alle Mitglieder. Ein Schritt statt drei. */
+let grpZiel=null;
+
+function gruppePartyNeu(gid){
+  grpZiel=gid;
+  closeOverlay('gruppeOverlay');
+  openCreate('private');
+}
+
+/* Laeuft nach dem Speichern, wenn die Party fuer eine Gruppe gedacht war. */
+async function gruppeNachErstellen(eventId){
+  const gid=grpZiel; grpZiel=null;
+  if(!gid||!eventId)return false;
+  try{
+    const{data,error}=await sb.rpc('gruppe_party_stellen',{p_group:gid,p_event:eventId});
+    if(error||data?.status!=='ok'){
+      toast('Die Party steht, aber nicht in der Gruppe: '+(grpSagen(data?.status)||fehlerText(error)),'warn');
+      return false;
+    }
+    /* Alle Mitglieder einladen - das ist der Sinn einer Gruppenparty.
+       Einzeln nacheinander: fuenfzig gleichzeitige Anfragen loesen die
+       Ratenbremse aus, und ein Teil bliebe still liegen. */
+    let geladen=0;
+    try{
+      const{data:g}=await sb.rpc('gruppe_ansehen',{p_group:gid});
+      const leute=(g?.mitglieder||[]).filter(m=>m.id&&m.id!==cUser.id);
+      for(const m of leute){
+        const{error:eFehler}=await sb.from('event_invites')
+          .insert({event_id:eventId,user_id:m.id,invited_by:cUser.id});
+        if(!eFehler)geladen++;
+      }
+    }catch(e){ console.warn('[gruppe] einladen',e); }
+    toast(geladen
+      ? 'In der Gruppe – '+geladen+(geladen===1?' Person eingeladen':' Leute eingeladen')
+      : 'Die Party steht jetzt in der Gruppe','info');
+    return true;
+  }catch(err){
+    console.warn('[gruppe] party stellen',err);
+    return false;
+  }
+}
+
 async function gruppePartyWaehlen(gid){
   const body=document.getElementById('gruppeBody');
   const heute=new Date().toISOString().slice(0,10);
@@ -17828,7 +17888,12 @@ async function gruppePartyWaehlen(gid){
   const alle=[...(meine||[]),...((zusagen||[]).map(z=>z.events).filter(e=>e&&e.date>=heute))]
     .filter((e,i,l)=>l.findIndex(x=>x.id===e.id)===i)
     .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
-  if(!alle.length){toast('Du hast gerade keine kommende Party','warn');return;}
+  if(!alle.length){
+    body.innerHTML='<div class="mg-empty" style="margin-bottom:12px">Du hast gerade keine kommende Party, die du hineinstellen könntest.</div>'
+      +'<button class="sub-btn sub-public" style="width:100%" onclick="gruppePartyNeu(\''+gid+'\')">Neue Party für die Gruppe</button>'
+      +'<button class="prof-action-btn" style="width:100%;margin-top:8px" onclick="gruppeOeffnen(\''+gid+'\')">Zurück</button>';
+    return;
+  }
   body.innerHTML='<div class="mg-sec">Welche Party?</div>'
     +alle.map(e=>'<div class="mg-guest" style="cursor:pointer" onclick="gruppePartyStellen(\''+gid+'\',\''+e.id+'\')">'
       +'<div class="grp-ic">'+iconSvg(evIconKey(e),20)+'</div>'
