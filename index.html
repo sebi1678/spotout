@@ -23450,16 +23450,25 @@ window.__huelleNachOben=function(){
       : document.querySelector('.page.active');
     if(!ziel)return;
     if((ziel.scrollTop||0)<=0){ nativeHaptik('leicht'); return; }
-    /* Selbst animiert statt behavior:'smooth'. Geprueft am 11.10.: auf
-       diesen Behaeltern wird 'smooth' schlicht ignoriert, die Seite
-       blieb stehen. Mit eigener Schleife haengt es an nichts. */
+    /* Selbst animiert, nicht ueber behavior:'smooth' - wie gut ein
+       WKWebView das auf einem scrollenden div unterstuetzt, ist von
+       Fassung zu Fassung verschieden, und ein Tipp, der manchmal
+       nichts tut, ist schlimmer als ein harter Sprung.
+
+       Die Notbremse unten ist kein Schmuck: laeuft die App im
+       Hintergrund oder drosselt iOS die Bilder, feuert
+       requestAnimationFrame gar nicht - dann bliebe die Seite auf
+       halber Strecke stehen. */
     const start=ziel.scrollTop, t0=performance.now(), dauer=280;
+    let fertig=false;
     const schritt=(jetzt)=>{
+      if(fertig)return;
       const p=Math.min(1,(jetzt-t0)/dauer);
-      ziel.scrollTop=start*(1-(1-(1-p)*(1-p)));   // weich auslaufend
-      if(p<1)requestAnimationFrame(schritt); else ziel.scrollTop=0;
+      ziel.scrollTop=start*(1-p)*(1-p);           // weich auslaufend
+      if(p<1)requestAnimationFrame(schritt); else { fertig=true; ziel.scrollTop=0; }
     };
     requestAnimationFrame(schritt);
+    setTimeout(()=>{ if(!fertig){ fertig=true; ziel.scrollTop=0; } }, dauer+120);
     nativeHaptik('leicht');
   }catch(e){}
 };
