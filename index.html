@@ -1506,6 +1506,36 @@
     .cpro-x{flex:none;background:none;border:none;padding:4px;cursor:pointer;color:rgba(255,255,255,.4);display:flex}
     .cpro-x svg{width:14px;height:14px}
 
+    /* ── Wohin die Gruppe als Naechstes geht ── */
+    .grp-naechste{
+      display:flex;align-items:center;gap:10px;flex:none;width:100%;
+      padding:9px 16px;border:none;border-bottom:1px solid rgba(255,255,255,.08);
+      background:rgba(255,45,118,.09);cursor:pointer;font-family:var(--font);text-align:left;
+    }
+    .grp-naechste[hidden]{display:none!important}
+    .grp-naechste:active{background:rgba(255,45,118,.16)}
+    .gn-bild{flex:none;width:36px;height:36px;border-radius:9px;overflow:hidden;background:#0d1030;
+      display:flex;align-items:center;justify-content:center}
+    .gn-bild img{width:100%;height:100%;object-fit:cover;display:block}
+    .gn-ohne{display:flex;color:#fff;opacity:.75}
+    .gn-text{flex:1;min-width:0;display:flex;flex-direction:column}
+    .gn-name{font-size:.84rem;font-weight:800;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .gn-meta{font-size:.72rem;color:rgba(255,255,255,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .gn-dabei{flex:none;font-size:.66rem;font-weight:800;color:#4ade80;
+      background:rgba(74,222,128,.14);padding:4px 8px;border-radius:999px}
+    .gn-pfeil{width:15px;height:15px;flex:none;opacity:.45;color:#fff}
+
+    /* Eine Zeile zum Mitlesen, keine Sprechblase */
+    .chat-sys{
+      align-self:center;display:flex;align-items:center;gap:6px;max-width:88%;
+      margin:6px auto;padding:6px 12px;border-radius:999px;
+      background:rgba(255,255,255,.06);color:rgba(255,255,255,.65);
+      font-size:.74rem;font-weight:600;cursor:pointer;text-align:center;
+    }
+    .chat-sys:active{background:rgba(255,255,255,.1)}
+    .cs-haken{display:flex;color:#4ade80}
+    .cs-haken svg{width:13px;height:13px}
+
     /* ── Eine Party als Karte in der Nachricht ── */
     .bub-party{
       display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px;
@@ -6946,6 +6976,9 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.6v5.2"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg>
       </button>
     </div>
+    <!-- Wohin die Gruppe als Naechstes geht. Nur im Gruppenchat, nur
+         wenn wirklich eine Party ansteht. -->
+    <button class="grp-naechste" id="grpNaechste" hidden onclick="grpNaechsteOeffnen()"></button>
     <div class="conv-msgs" id="convMsgs"></div>
     <div class="conv-bearb" id="convBearb">
       <span class="cb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg></span>
@@ -14678,7 +14711,9 @@ async function openConv(cid,other){
   if(elAv)elAv.innerHTML=av;
   if(elNm)elNm.textContent=convGruppe?(other?.name||'Gruppe'):(other?.full_name||other?.username||'Unbekannt');
   if(elSub)elSub.textContent=convGruppe?'Gruppenchat':('@'+(other?.username||''));
-  showOnly('conv');await loadMsgs();
+  showOnly('conv');
+  grpNaechsteZeigen();          // leert sofort, fuellt gleich nach
+  await loadMsgs();
   /* Nur im Zweiergespraech: "read" ist eine Spalte fuer alle, in einer
      Gruppe waere das Lesen des Ersten das Lesen aller. Dort zaehlen die
      Benachrichtigungen, die ntGespraechGelesen() gleich abraeumt. */
@@ -14762,6 +14797,19 @@ async function loadMsgs(){
        also stand dort ein toter Link. Jetzt wird die Party erkannt und
        als Karte gezeigt - antippen oeffnet sie in der App. Der Rest
        des Textes bleibt stehen, nur die Adresse faellt weg. */
+    /* "[[zusage:…]]" schreibt die Datenbank, wenn jemand aus dieser
+       Gruppe bei einer hier vorgeschlagenen Party zusagt. Das ist
+       keine Nachricht, sondern eine Zeile zum Mitlesen. */
+    const zusage=/^\[\[zusage:([0-9a-f-]{36})\]\]$/i.exec(String(m.content||'').trim());
+    if(zusage){
+      const wer=mine?'Du bist':((convLeute.get(m.sender_id)?.full_name
+                 ||convLeute.get(m.sender_id)?.username||'Jemand')+' ist');
+      html+='<div class="chat-sys" data-ev="'+escAttr(zusage[1])+'">'
+        +'<span class="cs-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></span>'
+        +esc(wer)+' dabei<span class="cs-party"></span></div>';
+      lastSender=null; lastTime=d;
+      return;
+    }
     const evId=partyAusText(m.content||'');
     const roh=evId
       ? String(m.content||'').replace(PARTY_LINK,'').replace(/\n?\s*Schau dir (die Party|das Event) auf SPOTOUT an:\s*/,'\n').trim()
@@ -14807,6 +14855,46 @@ async function loadMsgs(){
   partyKartenFuellen();
 }
 
+/* ── Wohin die Gruppe als Naechstes geht ──────────────────────────
+   Eine Gruppe war ein Chat mit Mitgliedern: kein Grund, sie zu
+   oeffnen. Oben steht jetzt die naechste Party, die jemand in die
+   Gruppe gestellt hat - mit der Zahl derer, die aus dieser Gruppe
+   schon zugesagt haben. Das ist der Grund.
+
+   Steht nichts an, ist die Leiste weg. Eine leere Leiste, die nur
+   sagt "hier koennte etwas stehen", ist schlimmer als keine. */
+let grpNaechsteEv=null;
+
+async function grpNaechsteZeigen(){
+  const leiste=document.getElementById('grpNaechste');
+  if(!leiste)return;
+  grpNaechsteEv=null;
+  leiste.hidden=true;
+  if(!convGruppe||!convUser?.id)return;
+  try{
+    const{data}=await sb.rpc('gruppe_ansehen',{p_group:convUser.id});
+    if(data?.status!=='ok')return;
+    // Die Liste kommt nach Datum sortiert – die erste ist die naechste.
+    const e=(data.partys||[])[0];
+    if(!e)return;
+    grpNaechsteEv=e;
+    const dabei=(e.dabei||[]).length;
+    const leute=(data.mitglieder||[]).length;
+    const bild=e.image_url
+      ? '<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
+      : '<span class="gn-ohne">'+iconSvg(evIconKey(e),18)+'</span>';
+    leiste.innerHTML='<span class="gn-bild">'+bild+'</span>'
+      +'<span class="gn-text"><span class="gn-name">'+esc(e.name||'Party')+'</span>'
+      +'<span class="gn-meta">'+esc(wannText(e.date,e.time))
+        +(leute?' · '+dabei+' von '+leute+' dabei':'')+'</span></span>'
+      +(e.ich_dabei?'<span class="gn-dabei">Du bist dabei</span>':'')
+      +'<svg class="gn-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+    leiste.hidden=false;
+  }catch(err){ console.warn('[gruppe]',err); }
+}
+
+function grpNaechsteOeffnen(){ if(grpNaechsteEv)openDetail(grpNaechsteEv.id); }
+
 /* ── Party-Karten in Nachrichten ──────────────────────────────────
    Die Nachricht traegt nur die Kennung. Was die Party heisst, wann sie
    ist und wie sie aussieht, wird hier nachgeholt - fuer alle Karten im
@@ -14819,8 +14907,9 @@ function partyAusText(t){
 
 async function partyKartenFuellen(){
   const kasten=[...document.querySelectorAll('.bub-party[data-ev]')].filter(k=>!k.dataset.fertig);
-  if(!kasten.length)return;
-  const ids=[...new Set(kasten.map(k=>k.dataset.ev))];
+  const zeilen=[...document.querySelectorAll('.chat-sys[data-ev]')].filter(k=>!k.dataset.fertig);
+  if(!kasten.length&&!zeilen.length)return;
+  const ids=[...new Set([...kasten,...zeilen].map(k=>k.dataset.ev))];
   const bekannt=new Map();
   ids.forEach(id=>{ const e=evts.find(x=>x.id===id); if(e)bekannt.set(id,e); });
   const fehlen=ids.filter(id=>!bekannt.has(id));
@@ -14832,6 +14921,13 @@ async function partyKartenFuellen(){
       (data||[]).forEach(e=>bekannt.set(e.id,e));
     }catch(err){ console.warn('[party-karte]',err); }
   }
+  zeilen.forEach(z=>{
+    z.dataset.fertig='1';
+    const e=bekannt.get(z.dataset.ev);
+    const nm=z.querySelector('.cs-party');
+    if(nm&&e)nm.textContent=' · '+(e.name||'');
+    if(e)z.onclick=()=>openDetail(e.id);
+  });
   kasten.forEach(k=>{
     k.dataset.fertig='1';
     const e=bekannt.get(k.dataset.ev);
