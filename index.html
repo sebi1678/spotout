@@ -23450,7 +23450,16 @@ window.__huelleNachOben=function(){
       : document.querySelector('.page.active');
     if(!ziel)return;
     if((ziel.scrollTop||0)<=0){ nativeHaptik('leicht'); return; }
-    ziel.scrollTo({top:0,behavior:'smooth'});
+    /* Selbst animiert statt behavior:'smooth'. Geprueft am 11.10.: auf
+       diesen Behaeltern wird 'smooth' schlicht ignoriert, die Seite
+       blieb stehen. Mit eigener Schleife haengt es an nichts. */
+    const start=ziel.scrollTop, t0=performance.now(), dauer=280;
+    const schritt=(jetzt)=>{
+      const p=Math.min(1,(jetzt-t0)/dauer);
+      ziel.scrollTop=start*(1-(1-(1-p)*(1-p)));   // weich auslaufend
+      if(p<1)requestAnimationFrame(schritt); else ziel.scrollTop=0;
+    };
+    requestAnimationFrame(schritt);
     nativeHaptik('leicht');
   }catch(e){}
 };
