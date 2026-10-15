@@ -14342,8 +14342,20 @@ async function kalenderOeffnen(ics,dateiname,e){
      hat Sebastian auf dem Telefon gesehen. Die Hülle kann es richtig:
      sie legt die Datei ab und reicht sie an iOS weiter. */
   if(istApp()){
-    const a=await nativeCall('kalender',{ics:ics,name:dateiname},20000);
-    if(a&&!a.fehler){ toast('Wähle "Zu Kalender hinzufügen"','info'); return; }
+    /* termin: ab Build 20 öffnet die Hülle damit direkt das iOS-Fenster
+       „Neues Ereignis“. Ältere Fassungen kennen nur ics (Teilen-Menü). Das
+       Warten ist lang, weil das Fenster offen bleibt, bis man speichert. */
+    let termin=null;
+    try{
+      const {st,en}=kalZeiten(e);
+      termin={titel:e.name||'Party',start:st.toISOString(),ende:en.toISOString(),
+        ort:e.address||'',notiz:kalText(e),url:eventUrl(e)};
+    }catch(err){ console.warn('[kalender] termin',err); }
+    const a=await nativeCall('kalender',{ics:ics,name:dateiname,termin:termin},600000);
+    if(a&&!a.fehler){
+      if('gespeichert' in a){ if(a.gespeichert){ nativeHaptik('erfolg'); toast('Im Kalender eingetragen','success'); } return; }
+      toast('Wähle "Zu Kalender hinzufügen"','info'); return;
+    }
     if(a&&a.fehler==='abgebrochen')return;
     // Die Hülle kennt den Weg nicht (ältere Fassung): dann bleibt nur
     // das Fenster mit Google und Outlook.
