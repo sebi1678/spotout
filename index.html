@@ -3032,6 +3032,12 @@
       background:rgba(74,222,128,.12);color:#4ade80;
       border:1px solid rgba(74,222,128,.35);
     }
+    /* Die Punkte beim Zusagen (zusageFeiern). Fest ueber allem, damit
+       das Fenster sie nicht abschneidet; antippen geht durch sie hindurch. */
+    .feier-punkt{
+      position:fixed;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;
+      z-index:260;pointer-events:none;will-change:transform,opacity;
+    }
     .attend-btn-wait{
       background:rgba(255,215,0,.12);color:#FFD700;border:1px solid rgba(255,215,0,.34);
     }
@@ -12843,6 +12849,75 @@ async function deleteEvent(id){
   if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
 }
 
+/* ── Zusagen feiern (GSAP) ─────────────────────────────────────────
+   Zusagen ist die wichtigste Handlung der App und kommt selten genug
+   vor, dass ein kleiner Moment Platz hat (Emil Kowalski: "Rare /
+   first-time → delight"). Eine Zeitleiste, weil drei Dinge zusammen
+   spielen muessen: das Haekchen zeichnet sich, der Knopf gibt nach,
+   ein paar Punkte in den Markenfarben springen heraus. Unter 0.7 s,
+   zur selben Zeit wie die Vibration, und nichts wartet darauf.
+
+   GSAP laedt erst im Leerlauf. Ist es beim Zusagen noch nicht da,
+   gibt es nur die Vibration – die Zusage selbst haengt nie daran.
+   Weniger Bewegung: nur das Haekchen, kein Springen, keine Punkte. */
+let gsapGeladen=null;
+function gsapLaden(){
+  if(window.gsap)return Promise.resolve(window.gsap);
+  if(gsapGeladen)return gsapGeladen;
+  gsapGeladen=new Promise((ja,nein)=>{
+    const el=document.createElement('script');
+    el.src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js';
+    el.async=true;
+    el.onload=()=>window.gsap?ja(window.gsap):nein(new Error('gsap fehlt'));
+    el.onerror=()=>nein(new Error('gsap nicht geladen'));
+    document.head.appendChild(el);
+  });
+  gsapGeladen.catch(err=>{ console.warn('[gsap]',err); gsapGeladen=null; });
+  return gsapGeladen;
+}
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    const los=()=>gsapLaden().catch(()=>{});
+    if('requestIdleCallback' in window)requestIdleCallback(los,{timeout:5000}); else los();
+  },5000);
+});
+
+function zusageFeiern(btn){
+  const gsap=window.gsap;
+  if(!btn||!gsap)return;
+  const mm=gsap.matchMedia();
+  mm.add({wenig:'(prefers-reduced-motion: reduce)',voll:'(prefers-reduced-motion: no-preference)'},(ctx)=>{
+    const tl=gsap.timeline({defaults:{ease:'power3.out'},onComplete:()=>mm.revert()});
+    const haken=btn.querySelector('svg path');
+    if(haken){
+      const l=haken.getTotalLength?haken.getTotalLength():24;
+      tl.fromTo(haken,{strokeDasharray:l,strokeDashoffset:l},{strokeDashoffset:0,duration:.32},0);
+    }
+    if(ctx.conditions.wenig)return;
+    /* Von 0.96, nie aus dem Nichts; leichtes Nachfedern ist hier gewollt –
+       es ist der eine Moment, der sich nach Erfolg anfuehlen soll. */
+    tl.fromTo(btn,{scale:.96},{scale:1,duration:.45,ease:'back.out(1.6)'},0);
+    const r=btn.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2, n=12;
+    const farben=['#FF2D76','#FF5A45','#633BFF','#54A7FF','#4ade80'];
+    const punkte=Array.from({length:n},(_,i)=>{
+      const d=document.createElement('i');
+      d.className='feier-punkt';
+      d.style.left=cx+'px'; d.style.top=cy+'px';
+      d.style.background=farben[i%farben.length];
+      document.body.appendChild(d);
+      return d;
+    });
+    const winkel=(i)=>i/n*Math.PI*2;
+    tl.fromTo(punkte,{x:0,y:0,scale:.6,autoAlpha:1},{
+        x:(i)=>Math.cos(winkel(i))*(r.width*.42+gsap.utils.random(0,22)),
+        y:(i)=>Math.sin(winkel(i))*(r.height*.8+gsap.utils.random(8,26)),
+        scale:1,duration:.5,stagger:.012},.02)
+      .to(punkte,{autoAlpha:0,scale:.4,duration:.25,ease:'power1.out',stagger:.012},.32);
+    return ()=>punkte.forEach(p=>p.remove());
+  });
+}
+
 let attBusy=false;
 async function toggleAtt(id,isAtt){
   if(!cUser){kontoNoetig();return;}
@@ -12888,7 +12963,7 @@ async function toggleAtt(id,isAtt){
        sich anfuehlen wie etwas, das geklappt hat – und zwar in dem
        Moment, in dem man es sieht (der Knopf zeigt jetzt "dabei"),
        nicht schon vorher, waehrend noch der Ladekreis dreht. */
-    if(!isAtt)nativeHaptik('erfolg');
+    if(!isAtt){ nativeHaptik('erfolg'); zusageFeiern(document.getElementById('attendBtn')); }
     if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
     if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
     // Frisch angemeldet? Dann gleich fragen, was man mitbringt – sofern es
