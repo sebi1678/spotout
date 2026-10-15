@@ -1984,7 +1984,7 @@
     /* Mit offener Tastatur ueber der Tastatur, nicht darunter */
     .toast.ueber-tastatur{bottom:auto;top:calc(var(--tastatur,100vh) - 68px)}
     /* Eine Strichstaerke fuer die runden Knoepfe oben und auf dem Partybild */
-    .nav-bell svg,.nav-suche svg,.nav-icon-btn svg,.d-hero-btn svg{stroke-width:2}
+    .nav-icon-btn svg:not(.pk),.d-hero-btn svg:not(.pk){stroke-width:2}
     @media(prefers-reduced-motion:reduce){
       .toast,.toast.geht{transition:opacity var(--takt) ease}
       .toast,.toast.show{transform:translate(-50%,0)}
@@ -8042,25 +8042,25 @@
         <div class="set-lbl">Privatsphäre</div>
         <div id="setProfilBox">
         <button class="settings-btn" onclick="wahlProfil()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.4" r="3.6"/><path d="M4.8 19.6c0-3.3 3.2-5.6 7.2-5.6s7.2 2.3 7.2 5.6"/></svg>
+          <i data-pk="profil" data-pk-g="20"></i>
           <span class="s-label">Dein Profil</span><span class="s-wert" id="setProfilWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         </div>
         <div class="settings-btn set-schalter">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.4 12S5.9 5.6 12 5.6 21.6 12 21.6 12 18.1 18.4 12 18.4 2.4 12 2.4 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+          <i data-pk="auge" data-pk-g="20"></i>
           <span class="s-label">Profilbesuche<small>Wer Pro hat, sieht, dass du da warst – und du siehst, wer bei dir war</small></span>
           <span id="setBesucheSchalter"></span>
         </div>
         <div id="setNachrichtenBox">
         <button class="settings-btn" onclick="wahlNachrichten()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.8a2 2 0 0 1-2 2H8.4L4 20.4V5.6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>
+          <i data-pk="chat" data-pk-g="20"></i>
           <span class="s-label">Wer darf dir schreiben</span><span class="s-wert" id="setMsgWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         </div>
         <button class="settings-btn set-abstand" onclick="blockiertOeffnen()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="url(#pkPink)"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.3 6.3l11.4 11.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <i data-pk="blockiert" data-pk-g="20"></i>
           <span class="s-label">Blockierte Personen</span><span class="s-wert" id="setBlockZahl"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -8069,29 +8069,29 @@
       <div class="set-gruppe">
         <div class="set-lbl">App</div>
         <button class="settings-btn" onclick="pushEinstOeffnen()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <i data-pk="glocke" data-pk-g="20"></i>
           <span class="s-label">Benachrichtigungen</span><span class="s-wert" id="setPushWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-btn" onclick="wahlSprache()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M3.8 12h16.4"/><path d="M12 3.6c2.2 2.3 3.3 5.2 3.3 8.4s-1.1 6.1-3.3 8.4c-2.2-2.3-3.3-5.2-3.3-8.4S9.8 5.9 12 3.6z"/></svg>
+          <i data-pk="sprache" data-pk-g="20"></i>
           <span class="s-label">Sprache</span><span class="s-wert" id="setSpracheWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <div id="setRausBox">
         <button class="settings-btn" onclick="wahlRaus()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3 6 13.2h5l-1 7.8 7.5-10.2h-5z"/></svg>
+          <i data-pk="doomscroll" data-pk-g="20"></i>
           <span class="s-label">Fluchtknopf</span><span class="s-wert" id="setRausWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         </div>
         <button class="settings-btn" onclick="wahlOrt()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.4-5.3 6.4-10.2A6.4 6.4 0 0 0 5.6 10.8C5.6 15.7 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.4"/></svg>
+          <i data-pk="ort" data-pk-g="20"></i>
           <span class="s-label">Standort</span><span class="s-wert" id="setOrtWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-btn" onclick="wahlKarten()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.4 3.8 6.6v13l5.2-2.2 6 2.2 5.2-2.2v-13L15 6.6z"/><path d="M9 4.4v13M15 6.6v13"/></svg>
+          <i data-pk="karte" data-pk-g="20"></i>
           <span class="s-label">Karten-App</span><span class="s-wert" id="setKartenWert"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -8100,22 +8100,22 @@
       <div class="set-gruppe">
         <div class="set-lbl">Hilfe</div>
       <button class="settings-btn" onclick="tourNochmal('start')">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.2 14.4 9.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M16.8 2.6l1 2.6 2.8.3-2.1 1.9.6 2.7-2.3-1.4-2.4 1.4.6-2.7-2.1-1.9 2.8-.3z" fill="url(#pkSonne)"/><path d="M16.8 2.6l1 2.6 2.8.3-2.1 1.9.6 2.7-2.3-1.4-2.4 1.4.6-2.7-2.1-1.9 2.8-.3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(7 5.2) scale(1)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/><path transform="translate(20 14.2) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
+        <i data-pk="tour" data-pk-g="20"></i>
         <span class="s-label">So funktioniert SPOTOUT</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn" id="setProTour" onclick="tourNochmal('pro')" hidden>
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.6l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="url(#pkPink)"/><path d="M12 2.8l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.6l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.6 9.8l1.2-.2" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(20.2 3.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
+        <i data-pk="stern" data-pk-g="20"></i>
         <span class="s-label">Was Pro alles kann</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn" onclick="openRules()">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.6" fill="url(#pkMint)"/><rect x="5" y="4" width="14" height="17" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 2.8h6a1 1 0 0 1 1 1v1.6a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V3.8a1 1 0 0 1 1-1z" fill="#fff"/><path transform="translate(12 13.4) scale(1.35)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
+        <i data-pk="regeln" data-pk-g="20"></i>
         <span class="s-label">Community-Regeln</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <a class="settings-btn" href="mailto:support@spotoutapp.ch">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="url(#pkPink)"/><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(12 9.8) scale(1.15)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
+        <i data-pk="support" data-pk-g="20"></i>
         <span class="s-label">Support</span><span class="s-wert">support@spotoutapp.ch</span>
       </a>
       </div>
@@ -8123,17 +8123,17 @@
       <div class="set-gruppe">
         <div class="set-lbl">Rechtliches</div>
       <a class="settings-btn" href="/nutzungsbedingungen" target="_blank" rel="noopener">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4.5 4.5V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="url(#pkEis)"/><path d="M7 3h7l4.5 4.5V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 3v4.5h4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 12.5h7M8.5 16h4.6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <i data-pk="dokument" data-pk-g="20"></i>
         <span class="s-label">Nutzungsbedingungen</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
       <a class="settings-btn" href="/datenschutz" target="_blank" rel="noopener">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="url(#pkMint)"/><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="9.2" y="11" width="5.6" height="4.6" rx="1.1" fill="#fff"/><path d="M10.3 11V9.7a1.7 1.7 0 0 1 3.4 0V11" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
+        <i data-pk="datenschutz" data-pk-g="20"></i>
         <span class="s-label">Datenschutzerklärung</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
       <a class="settings-btn" href="/impressum" target="_blank" rel="noopener">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="url(#pkEis)"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 11v5.2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.25" fill="#fff"/></svg>
+        <i data-pk="impressum" data-pk-g="20"></i>
         <span class="s-label">Impressum</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
@@ -8142,17 +8142,17 @@
       <div class="set-gruppe">
         <div class="set-lbl">Konto</div>
       <button class="settings-btn" id="pwAendernBtn" onclick="pwAendernMail()">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.4" fill="url(#pkSonne)"/><circle cx="8" cy="12" r="4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.4 12h8.2M17.4 12v3M20.4 12v2.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="12" r="1.5" fill="#fff"/></svg>
+        <i data-pk="passwort" data-pk-g="20"></i>
         <span class="s-label">Passwort ändern</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn" onclick="doLogout()">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H5z" fill="url(#pkViolett)"/><path d="M5 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="12" r="1.1" fill="#fff"/><path d="M16.5 12h5M19 9.5l2.5 2.5-2.5 2.5" fill="none" stroke="#FF8FB3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <i data-pk="abmelden" data-pk-g="20"></i>
         <span class="s-label">Abmelden</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
       <button class="settings-btn danger" id="kontoWegBtn" onclick="kontoWeg()">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7.5h12l-1 11.7a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z" fill="url(#pkRot)"/><path d="M6 7.5h12l-1 11.7a2 2 0 0 1-2 1.8H9a2 2 0 0 1-2-1.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 7.5h15M9.5 7.5V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <i data-pk="loeschen" data-pk-g="20"></i>
         <span class="s-label" id="kontoWegLabel">Konto löschen</span>
         <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
@@ -8167,12 +8167,12 @@
       <div class="set-gruppe" id="setSchenkenBox" hidden>
         <div class="set-lbl">Betreiber</div>
         <button class="settings-btn" onclick="vereinePruefenOeffnen()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="url(#pkMint)"/><path d="M12 2.8 4.8 5.6v6c0 4.6 3.1 8.2 7.2 9.6 4.1-1.4 7.2-5 7.2-9.6v-6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m8.8 12.2 2.3 2.3 4.2-4.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <i data-pk="verein" data-pk-g="20"></i>
           <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-btn" onclick="moderationOeffnen()">
-          <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 4.2 2.8 17.3A2 2 0 0 0 4.5 20.3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z" fill="url(#pkSonne)"/><path d="M10.3 4.2 2.8 17.3A2 2 0 0 0 4.5 20.3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 9.4v4.4" fill="none" stroke="#3A1600" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.2" fill="#3A1600"/></svg>
+          <i data-pk="gefahr" data-pk-g="20"></i>
           <span class="s-label">Meldungen</span>
           <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -8792,8 +8792,8 @@ let convId=null,convUser=null,convSub_=null,evts=[];
    Verlaeufe nur auf Flaechen – auf geraden Linien verschwinden sie im
    Browser, weil deren Umriss keine Breite hat. */
 const PIKTO_DEFS='<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>'
-  +'<linearGradient id="pkPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4D8D"/><stop offset="1" stop-color="#FF8A3D"/></linearGradient>'
-  +'<linearGradient id="pkViolett" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#FF4D8D"/></linearGradient>'
+  +'<linearGradient id="pkPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF2D76"/><stop offset="1" stop-color="#FF5A45"/></linearGradient>'
+  +'<linearGradient id="pkViolett" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#633BFF"/><stop offset="1" stop-color="#54A7FF"/></linearGradient>'
   +'<linearGradient id="pkSonne" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD166"/><stop offset="1" stop-color="#FF7A45"/></linearGradient>'
   +'<linearGradient id="pkMint" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34E3A4"/><stop offset="1" stop-color="#1FB6FF"/></linearGradient>'
   +'<linearGradient id="pkEis" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5AC8FA"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>'
@@ -8818,6 +8818,14 @@ const PK_HERZ=(x,y,s,farbe)=>'<path transform="translate('+x+' '+y+') scale('+s+
 const PK_TEXT=(t,farbe,groesse)=>'<text x="12" y="'+(12+(groesse||8)*0.36)+'" text-anchor="middle" font-size="'+(groesse||8)+'" font-weight="800" fill="'+(farbe||'#fff')+'" font-family="Inter,system-ui,sans-serif">'+t+'</text>';
 
 const PIKTO={
+  /* ── Neu 15.10.: was vorher als fremdes Linien-Icon daneben stand ── */
+  auge: PK_F('Eis','M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z')
+      +PK_P('M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z')
+      +'<circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/>'+'<circle cx="12" cy="12" r="3.1" '+PK_L+'/>'
+      +'<circle cx="13.2" cy="10.8" r=".9" fill="#fff"/>',
+  sprache: PK_F('Mint','M3.6 12a8.4 8.4 0 1 0 16.8 0 8.4 8.4 0 1 0-16.8 0z')
+      +PK_P('M3.6 12a8.4 8.4 0 1 0 16.8 0 8.4 8.4 0 1 0-16.8 0z')
+      +PK_P('M3.8 12h16.4M12 3.6c2.4 2.4 3.4 5.3 3.4 8.4s-1 6-3.4 8.4M12 3.6C9.6 6 8.6 8.9 8.6 12s1 6 3.4 8.4'),
   /* ── Navigation ── */
   home: PK_F('Pink','M5.2 10.6 12 4.8l6.8 5.8V19a1.6 1.6 0 0 1-1.6 1.6H6.8A1.6 1.6 0 0 1 5.2 19z')
       +PK_P('M3.4 11.3 12 4l8.6 7.3')+PK_P('M5.2 10v9a1.6 1.6 0 0 0 1.6 1.6h10.4a1.6 1.6 0 0 0 1.6-1.6v-9')
@@ -8914,6 +8922,16 @@ const PIKTO={
       +'<circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/>',
 };
 
+/* Platzhalter <i data-pk="name"> im festen Markup werden hier zum
+   Piktogramm – damit jedes Ding genau einmal gezeichnet ist (vorher
+   standen dieselben Formen als Kopien im HTML, teils veraltet). Farbig,
+   ausser das Element sagt data-pk-schlicht. */
+function piktosEinsetzen(wurzel){
+  (wurzel||document).querySelectorAll('i[data-pk]').forEach(el=>{
+    const html=pikto(el.dataset.pk,Number(el.dataset.pkG)||22,el.hasAttribute('data-pk-schlicht')?'':'pk-bunt');
+    if(html)el.outerHTML=html;
+  });
+}
 function pikto(name,groesse,klasse){
   const inhalt=PIKTO[name];
   if(!inhalt)return '';
@@ -9843,13 +9861,13 @@ const EINS_IC={
   instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="16.9" cy="7.1" r="1" fill="currentColor" stroke="none"/></svg>',
   youtube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.6" width="17.6" height="12.8" rx="4"/><path d="M10.6 9.9 15.2 12l-4.6 2.1z" fill="currentColor" stroke="none"/></svg>',
   keiner:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m6.1 6.1 11.8 11.8"/></svg>',
-  ort:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.6s5.9-4.9 5.9-9.4A5.9 5.9 0 0 0 6.1 11.2c0 4.5 5.9 9.4 5.9 9.4z"/><circle cx="12" cy="11" r="2.2"/></svg>',
-  glocke_an:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15.6l.7-1.1c.5-.6.8-1.4.8-2.2V9a4.5 4.5 0 0 1 9 0v3.3c0 .8.3 1.6.8 2.2l.7 1.1z"/><path d="M10.3 19a1.9 1.9 0 0 0 3.4 0"/></svg>',
-  alle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M3 19.5c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M15.5 4.9a3.4 3.4 0 0 1 0 6.2"/><path d="M17.8 14.4c1.9.7 3.2 2.6 3.2 5.1"/></svg>',
+  ort:pikto('ort',20,'pk-bunt'),
+  glocke_an:pikto('glocke',20,'pk-bunt'),
+  alle:pikto('gaeste',20,'pk-bunt'),
   frage:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5a2 2 0 0 1-2 2H8.5L4 20V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/><path d="m8.8 10.3 2.2 2.2 4.2-4.2"/></svg>',
   niemand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5V6a2 2 0 0 0-2-2H9.5"/><path d="M5.2 4.4A2 2 0 0 0 4 6v14l4.5-3.5h8"/><path d="m3.5 3.5 17 17"/></svg>',
-  offen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8"/><path d="M12 3.6c2.2 2.4 3.4 5.2 3.4 8.4s-1.2 6-3.4 8.4c-2.2-2.4-3.4-5.2-3.4-8.4S9.8 6 12 3.6z"/></svg>',
-  schloss:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.8" y="10.4" width="14.4" height="9.4" rx="2.6"/><path d="M8.4 10.4V7.9a3.6 3.6 0 0 1 7.2 0v2.5"/><circle cx="12" cy="15.1" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  offen:pikto('events',20,'pk-bunt'),
+  schloss:pikto('privat',20,'pk-bunt'),
 };
 
 
@@ -10991,6 +11009,8 @@ function schonRegistriert(em){
   loginFehler('Diese E-Mail-Adresse hat schon ein Konto – melde dich hier an.','warn');
   document.getElementById('login-pw')?.focus();
 }
+
+piktosEinsetzen();
 
 let selGenderVal='';
 function selGender(g,el){
@@ -14916,7 +14936,13 @@ const PRO_ICON={
   check:'<path d="M20 6 9 17l-5-5"/>',
   auge:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
 };
-function proIcon(k,w){return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.7)+'" stroke-linecap="round" stroke-linejoin="round">'+PRO_ICON[k]+'</svg>';}
+/* Pro-Vorteile zeigen dieselben SPOTOUT-Piktogramme wie der Rest der
+   App; nur das Haekchen bleibt eine schlichte Linie. */
+const PRO_PK={profil:'profil',chat:'chat',liste:'gaeste',geld:'muenzen',stern:'stern',auge:'auge'};
+function proIcon(k,w){
+  if(k!=='check'&&PRO_PK[k])return pikto(PRO_PK[k],19,'pk-bunt');
+  return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.7)+'" stroke-linecap="round" stroke-linejoin="round">'+PRO_ICON[k]+'</svg>';
+}
 
 const PRO_VORTEILE=[
   {k:'liste',t:'Sieh, wer von deinen Leuten hingeht',
@@ -24723,7 +24749,7 @@ function abzeichenReihe(schluessel,eigen){
       : '';
   }
   return '<div class="abz-reihe"'+(eigen?' role="button" onclick="abzeichenOeffnen()"':'')+'>'
-    +hat.map(a=>'<span class="abz-chip">'+pikto(a.i,13)+'<span>'+a.n+'</span></span>').join('')
+    +hat.map(a=>'<span class="abz-chip">'+pikto(a.i,13,'pk-bunt')+'<span>'+a.n+'</span></span>').join('')
     +'</div>';
 }
 function abzeichenPlatz(uid){
@@ -24758,7 +24784,7 @@ async function abzeichenOeffnen(){
       const hat=abzCache.eigene.includes(a.k);
       const ist=Math.min(a.z,Number(stand[a.f]||0));
       return '<div class="abz-karte'+(hat?' hat':'')+'">'
-        +'<div class="abz-ic">'+pikto(a.i,22)+'</div>'
+        +'<div class="abz-ic">'+pikto(a.i,22,'pk-bunt')+'</div>'
         +'<b>'+a.n+'</b><span>'+a.s+'</span>'
         +(hat?'<em>'+pikto('ok',12)+'Geschafft</em>'
              :'<div class="abz-balken"><i style="width:'+Math.round(ist/a.z*100)+'%"></i></div><small>'+ist+' / '+a.z+'</small>')
@@ -25157,7 +25183,7 @@ async function openReport(art,id,name){
     +'<div class="rep-frage">Was stimmt nicht?</div>'
     +repGruendeFuer(art).map((g,i)=>
       '<button class="rep-opt einzeln" data-i="'+i+'" onclick="repWaehlen('+i+')">'
-      +'<span class="rep-ic">'+pikto(REP_PK[g[1]]||'anderes',22)+'</span><span>'+g[2]+'</span></button>').join('')
+      +'<span class="rep-ic">'+pikto(REP_PK[g[1]]||'anderes',22,'pk-bunt')+'</span><span>'+g[2]+'</span></button>').join('')
     +'<textarea class="rep-note" id="repNote" rows="3" maxlength="600" style="display:none" '
       +'placeholder="Was ist passiert? (optional)"></textarea>'
     +'<button class="rep-opt rep-kontakt" id="repKontakt" onclick="repKontaktUm(this)">'
@@ -25539,7 +25565,7 @@ const NT_PK={beitritt_anfrage:'gast_anfrage',beitritt_ok:'ok',beitritt_nein:'nei
   gruppe_einladung:'einladung'};
 function ntIcon(art){
   const d=NT_ICON[art]||NT_ICON.event_changed;
-  return '<div class="nt-ic '+d.cls+'">'+pikto(NT_PK[art]||'glocke',20)+'</div>';
+  return '<div class="nt-ic '+d.cls+'">'+pikto(NT_PK[art]||'glocke',20,'pk-bunt')+'</div>';
 }
 
 function ntZeit(iso){
@@ -25856,7 +25882,7 @@ function renderNotifs(){
   }
 
   if(!list.length&&!anfrZeile){
-    box.innerHTML=sys+'<div class="nt-leer"><div class="nt-leer-ic">'+NT_GLOCKE+'</div>'
+    box.innerHTML=sys+'<div class="nt-leer"><div class="nt-leer-ic">'+pikto('glocke',30,'pk-bunt')+'</div>'
       +(ntAnsicht==='einladungen'
         ? '<b>Keine offenen Einladungen</b>'
           +'<span>Lädt dich jemand zu einer Party oder in eine Gruppe ein, steht sie hier.</span>'
