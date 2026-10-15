@@ -38,6 +38,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Spotout"/>
   <meta name="theme-color" content="#090D24"/>
+  <meta name="color-scheme" content="dark"/>
   <meta name="format-detection" content="telephone=no"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -6649,6 +6650,43 @@
       .overlay:not(.open) .modal,#userProfOverlay:not(.open) .modal{transition:opacity var(--takt) ease}
     }
 
+
+    /* ══════════ ROBUST MIT ECHTEN DATEN (break-ui, 15.10.) ══════════
+       Lange Namen, Adressen ohne Leerzeichen, Links und Zeilenumbrueche
+       sprengen kein Layout mehr. */
+    .d-desc{white-space:pre-line;overflow-wrap:anywhere}
+    .d-title{overflow-wrap:anywhere;hyphens:auto;-webkit-hyphens:auto}
+    .d-info-cell{min-width:0}
+    .d-info-cell-val,.insta-bio,.dc-row span,.mg-req-n,.grp-party-n,.grp-kopf-n,.att-name,.fy-name,.insta-handle{overflow-wrap:anywhere}
+    .insta-bio{white-space:pre-line}
+    .att-left{flex:1;min-width:0}
+    .att-left>div:last-child{min-width:0}
+    .att-user{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .msg-btn{flex:none}
+    #convName,#convSub,.chat-name,.sr-handle{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sr-chip{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .social-link,.up2-link{max-width:100%;min-width:0}
+    .social-link span,.up2-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .popup-name{overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .fy-ccat{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .insta-stat-num{font-variant-numeric:tabular-nums}
+    /* Gruppenzeile: drei kleinere Gesichter lassen dem Namen Platz */
+    .grp-bilder .av-sm{width:28px;height:28px;font-size:.7rem}
+    .grp-bilder .av-sm:nth-child(n+4){display:none}
+
+    /* Mobil (mobile-native) */
+    body.tastatur-offen .conv-input-wrap,body.tastatur-offen .create-foot{padding-bottom:12px}
+    @media(min-width:720px){ .conv-input-wrap{padding-bottom:calc(18px + var(--safe-bottom))} }
+    .page,.conv-msgs,.search-wrap,.sh-rows,#einsBuehne,.sperr-seite,.auth-page{overscroll-behavior-y:contain}
+    .filter-scroll,.oe-zeile,.nt-chips{overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding-inline:16px}
+    .filter-scroll>*,.oe-zeile>*,.nt-chips>*{scroll-snap-align:start}
+    /* Ein langer Druck auf eine antippbare Zeile ist ein Druck, keine Auswahl */
+    .sr-row *,.att-left[onclick] *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+    :root{color-scheme:dark}
+    /* Auf dem Handy gibt es kein Hover – die Namen auf den Profil-Kacheln
+       waren dort nie zu sehen. */
+    @media(hover:none){ .insta-tile-overlay{opacity:1} }
+
     /* ══════════ SCHRIFT: Laufweite nach Groesse (15.10.) ══════════
        Eine Laufweite fuer alle Groessen ist irgendwo falsch: grosse
        Titel wirken zu luftig, kleiner Text zu eng. Werte aus Inters
@@ -6806,7 +6844,7 @@
           <div class="rfrage">Wie heisst du?</div>
           <div class="auth-field">
             <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input type="text" id="reg-fn" placeholder="Max Muster" autocomplete="name"/>
+            <input type="text" id="reg-fn" placeholder="Max Muster" autocomplete="name" maxlength="60"/>
           </div>
           <div class="rhinweis">Vor- und Nachname. Ändern geht später nur mit Pro.</div>
         </div>
@@ -7471,7 +7509,7 @@
       <div class="cq">Wie heisst deine Party?</div>
       <div class="cq-sub">Der Name steht später gross auf der Karte.</div>
       <div class="fg" id="fgName">
-        <input type="text" id="fName" class="big-input" placeholder="z.B. Rooftop Summer Vibes" oninput="cPrevUpdate()"/>
+        <input type="text" id="fName" class="big-input" placeholder="z.B. Rooftop Summer Vibes" oninput="cPrevUpdate()" maxlength="80"/>
         <div class="fg-err">Gib deiner Party einen Namen</div>
       </div>
     </div>
@@ -7709,7 +7747,7 @@
         </div>
       </div>
 
-      <div class="fg"><label>Beschreibung</label><textarea id="fDesc" rows="3" placeholder="Was erwartet die Gäste?"></textarea></div>
+      <div class="fg"><label>Beschreibung</label><textarea id="fDesc" rows="3" placeholder="Was erwartet die Gäste?" maxlength="400"></textarea></div>
     </div>
 
     <!-- 9 · VORSCHAU -->
@@ -11089,6 +11127,17 @@ function vollseitenGesteStarten(){
 
    Sie beginnt nur an der linken Kante (28 px). Sonst wuerde jeder
    waagrechte Wisch im Schreibfeld die Seite mitnehmen. */
+/* Ein Bild, das nicht laedt (geloescht, abgelaufen), zeigte das
+   kaputte-Bild-Zeichen von iOS mitten im runden Profilbild oder auf der
+   Karte. Jetzt verschwindet es einfach – darunter liegt ohnehin der
+   Verlauf bzw. der Kreis. Einmal fuer die ganze App. */
+document.addEventListener('error',e=>{
+  const i=e.target;
+  if(!i||i.tagName!=='IMG'||i.dataset.weg)return;
+  i.dataset.weg='1';
+  i.style.visibility='hidden';
+},true);
+
 const KANTE=28, ZURUECK_AB=70;
 /* Zurueck oder nicht? Deutliches Tempo entscheidet allein (nach rechts
    = zurueck, nach links = bleiben). Sonst zaehlt, wohin der Wisch mit
@@ -12021,7 +12070,7 @@ function renderFeed(){
         </div>
         ${freundeZeile(e.id)}
         <div class="fy-foot">
-          <div class="fy-price${free?' free':''}">${free?'Gratis':'CHF '+tot}</div>
+          <div class="fy-price${free?' free':''}">${free?'Gratis':chf(tot)}</div>
           <button class="fy-go${istVoll(e)?' fy-go-voll':''}" style="${istVoll(e)?'':'background:'+w.btnBg+';color:'+w.btnColor}"
             onclick="event.stopPropagation();openDetail('${e.id}')">${istVoll(e)?'Ausgebucht':'Ansehen'+arrow}</button>
         </div>
@@ -12361,7 +12410,7 @@ function cardHTML(e){
   const imgHTML=e.image_url
     ?('<img src="'+escAttr(e.image_url)+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform var(--takt-lang) var(--kurve)" loading="lazy"/>')
     :('<div style="position:absolute;inset:0;background:'+gradBg(e.type,e.category)+';display:flex;align-items:center;justify-content:center"><div style="opacity:.2;color:#fff">'+iconSvg(ev,52)+'</div></div>');
-  const priceTag=free?'Gratis':'CHF '+tot;
+  const priceTag=free?'Gratis':chf(tot);
   return`<div class="card" onclick="openDetail('${e.id}')">
   <div class="card-glow-img">
     ${imgHTML}
@@ -12456,6 +12505,24 @@ function wannText(datum,zeit){
 
 function fmtD(d){if(!d)return'';return new Date(d+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});}
 function fmtT(d){if(!d)return'';return new Date(d).toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'});}
+/* Fuer Listen (Chats): heute die Uhrzeit, gestern "Gestern", in dieser
+   Woche der Wochentag, sonst das Datum. Vorher stand bei einer drei
+   Wochen alten Nachricht "14:32" – wie bei einer von heute. */
+function listenZeit(d){
+  if(!d)return'';
+  const t=new Date(d), jetzt=new Date();
+  const tage=Math.floor((new Date(jetzt.toDateString())-new Date(t.toDateString()))/864e5);
+  if(tage<=0)return fmtT(d);
+  if(tage===1)return 'Gestern';
+  if(tage<7)return t.toLocaleDateString(locale(),{weekday:'short'});
+  return t.toLocaleDateString(locale(),{day:'numeric',month:'short'});
+}
+/* Grosse Zahlen lesbar: 12'345 statt 12345, auf Wunsch kurz (12,3 K). */
+function zahlText(n,kurz){
+  const z=Number(n)||0;
+  try{ return new Intl.NumberFormat(locale(),kurz&&z>=10000?{notation:'compact',maximumFractionDigits:1}:{}).format(z); }
+  catch(e){ return String(z); }
+}
 function distKm(a,b,c,d){const R=6371,dl=(c-a)*Math.PI/180,dg=(d-b)*Math.PI/180;const x=Math.sin(dl/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dg/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 
 /* ══════════ SOCIAL-ICONS ══════════ */
@@ -12829,7 +12896,7 @@ async function openDetail(id){
         </div>
         ${isPrivEv?'':`<div class="d-info-cell">
           <div class="d-info-cell-lbl">${D_SYM.preis} Eintritt</div>
-          <div class="d-info-cell-val" style="color:${free?'#4ade80':'#fff'}">${free?'Gratis':'CHF '+e.price}</div>
+          <div class="d-info-cell-val" style="color:${free?'#4ade80':'#fff'}">${free?'Gratis':chf(e.price)}</div>
           ${free?'':'<div class="d-info-sub">'+zahlartenText(e.zahlarten)+'</div>'}
         </div>`}
         ${hasDrink&&!isPrivEv?('<div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.glas+' Getränke</div><div class="d-info-cell-val">CHF '+e.drink_price+'</div></div><div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.summe+' Total</div><div class="d-info-cell-val" style="color:'+w.accent+'">CHF '+tot+'</div></div>'):''}
@@ -15027,7 +15094,7 @@ async function chatListeZeichnen(list){
             ?((lastG.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')
               +(lastG.image_url&&!lastG.content?'Bild':esc(lastG.content||'')))
             :'Noch keine Nachrichten')+'</div></div>'
-        +'<div class="chat-meta"><div class="chat-time">'+(lastG?fmtT(lastG.created_at):'')+'</div>'
+        +'<div class="chat-meta"><div class="chat-time">'+(lastG?listenZeit(lastG.created_at):'')+'</div>'
         +(unreadG?'<div class="unread-dot">·</div>':'')+'</div></div>';
     }
     const o=(c.user1_id===cUser.id?c.user2:c.user1)||null;
@@ -15045,7 +15112,7 @@ async function chatListeZeichnen(list){
     return`<div class="chat-item ${unread?'unread':''}" onclick="openConv('${c.id}',${JSON.stringify(o).replace(/"/g,'&quot;')})">
       <div class="chat-av">${av}</div>
       <div class="chat-info"><div class="chat-name">${esc(o?.full_name||o?.username||'Unbekannt')}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
-      <div class="chat-meta"><div class="chat-time">${last?fmtT(last.created_at):''}</div>${unread?'<div class="unread-dot">'+(offeneZahl>9?'9+':offeneZahl)+'</div>':''}</div>
+      <div class="chat-meta"><div class="chat-time">${last?listenZeit(last.created_at):''}</div>${unread?'<div class="unread-dot">'+(offeneZahl>9?'9+':offeneZahl)+'</div>':''}</div>
     </div>`;
   }).join(''));
 }
@@ -16098,7 +16165,7 @@ function cPrevUpdate(){
     +'<div class="cprev-cat" style="color:'+w.accent+'">'+esc(cat||typeLabel)+'</div>'
     +'<div class="cprev-name">'+(name?esc(name):'<span style="opacity:.4">Name deiner Party</span>')+'</div>'
     +'<div class="cprev-meta">'+esc(when)+(addr?' · '+esc(addr.split(',')[0]):'')+'</div>'
-    +'<div class="cprev-foot"><div class="cprev-price'+(tot===0?' free':'')+'">'+(tot===0?'Gratis':'CHF '+tot)+'</div>'
+    +'<div class="cprev-foot"><div class="cprev-price'+(tot===0?' free':'')+'">'+(tot===0?'Gratis':chf(tot))+'</div>'
     +'<span style="font-size:.7rem;font-weight:700;color:'+w.accent+'">Ansehen →</span></div>'
     +'</div>';
 }
@@ -16392,7 +16459,10 @@ function feeFor(cap,price,isPro){
   return isPro?feeProRabatt(b):b;
 }
 function chf(n){
-  return 'CHF '+(Number(n)%1?Number(n).toFixed(2):String(Number(n)));
+  /* Auf Rappen gerundet: Summen wie 12.1+18.2 ergaben sonst
+     "CHF 30.300000000000001". */
+  const z=Math.round((Number(n)||0)*100)/100;
+  return 'CHF '+(z%1?z.toFixed(2):String(z));
 }
 
 /* Mehrfachwahl, aber nie leer: eine Party mit Eintritt und ohne
@@ -17043,13 +17113,17 @@ async function openUserProf(userId,zurueck){
      Mobilfunk ist der Unterschied noch groesser.
      Ist das Profil blockiert, waren zwei davon umsonst. Das kostet
      nichts Sichtbares und ist es wert. */
-  const [aProfil, aStats, aEvs] = await Promise.all([
+  const [aProfil, aStats, aEvs, aAnzahl] = await Promise.all([
     sb.rpc('profil_ansehen',{p_id:userId}),
     sb.rpc('get_follow_stats',{p_user_id:userId,p_viewer_id:cUser?.id||null}),
     sb.from('events').select('*')
       .eq('created_by',userId).neq('type','private')
       .gte('date',new Date(Date.now()-864e5).toISOString().slice(0,10))
       .order('date',{ascending:true}).limit(5),
+    /* Die Zahl "Partys" zaehlt alle, nicht nur die fuenf kommenden
+       Kacheln. Vorher zeigte jemand mit 40 Partys bei anderen "5". */
+    sb.from('events').select('id',{count:'exact',head:true})
+      .eq('created_by',userId).neq('type','private'),
   ]);
   if(openUserProf.t!==marke)return;
   const{data:pl,error}=aProfil;
@@ -17089,7 +17163,7 @@ async function openUserProf(userId,zurueck){
 
   // Ein Verein hat keinen Posteingang – also auch keinen Schreiben-Knopf.
   const canChat=cProfile?.is_pro && p.kontoart!=='verein' && !istVerein();
-  const partyZahl=(evs||[]).length;
+  const partyZahl=zahlText(typeof aAnzahl?.count==='number'?aAnzahl.count:(evs||[]).length);
   const istV=p.kontoart==='verein';
   // profil_ansehen liefert den Pruefstatus nicht mit – eine kleine Abfrage dazu.
   let vStatus=null;
@@ -17880,10 +17954,10 @@ async function gruppenLaden(){
         +(g.bild_url?'<img loading="lazy" decoding="async" src="'+escAttr(g.bild_url)+'" alt=""/>'
                     :pikto('gaeste',21))
       +'</div>'
-      +'<div class="grp-txt"><div class="grp-name">'+esc(g.name||'')+'</div>'
+      +'<div class="grp-txt"><div class="grp-name">'+esc(g.name||'Gruppe')+'</div>'
       +'<div class="grp-unter">'+teile.join(' · ')+'</div></div>'
       +(bilder?'<div class="grp-bilder">'+bilder+'</div>':'')
-      +(offen?'<span class="grp-punkt">'+offen+'</span>':'')
+      +(offen?'<span class="grp-punkt">'+(offen>9?'9+':offen)+'</span>':'')
       +'</div>';
   }).join('')
   +'<button class="prof-action-btn" style="width:100%;margin-top:4px" onclick="gruppeNeuOeffnen()">Weitere Gruppe gründen</button>'
@@ -18011,7 +18085,7 @@ function gruppeZeichnen(g){
               +'<circle cx="12" cy="12.5" r="3.2"/></svg></button>'
             : '')
       +'</div>'
-      +'<div class="grp-kopf-n">'+esc(g.name||'')+'</div>'
+      +'<div class="grp-kopf-n">'+esc(g.name||'Gruppe')+'</div>'
       +(g.text?'<div class="grp-kopf-z">'+esc(g.text)+'</div>':'')
       +'<div class="grp-kopf-m">Gruppe · '+(g.mitglieder||[]).length+' Mitglieder</div>'
       +(wann?'<div class="grp-kopf-s">Gegründet von '+esc(g.gruender_name||'Jemand')+' am '+wann+'</div>':'')
@@ -27086,7 +27160,7 @@ function updMarkers(){
       '<div class="popup-name">'+esc(e.name||'Party')+'</div>'+
       '<div class="popup-meta">'+esc((e.address||'').split(',')[0]||'Schweiz')+
         (distTxt?'<br>'+distTxt:'')+
-        '<br>'+(tot===0?'Gratis':'CHF '+tot)+' · '+(e.attending||0)+' dabei</div>'+
+        '<br>'+(tot===0?'Gratis':chf(tot))+' · '+zahlText(e.attending||0)+' dabei</div>'+
       '<button class="popup-btn" style="background:'+w.btnBg+';color:'+w.btnColor+'" '+
         'onclick="openDetail(\''+e.id+'\')">Details ansehen</button>'
     );
