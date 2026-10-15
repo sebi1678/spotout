@@ -251,8 +251,21 @@
       position:sticky;top:0;z-index:50;
       display:flex;align-items:center;justify-content:space-between;
       padding:calc(var(--safe-top) + 12px) 20px 12px;
+      /* Eine durchscheinende Schicht, unter der der Inhalt weiterlaeuft
+         (Apple: Material statt deckender Streifen). Statt der 1-px-Linie
+         ein weicher Uebergang darunter – sichtbar nur, wo Inhalt
+         darunter liegt. Ohne Unschaerfe-Unterstuetzung: deckend wie vorher. */
       background:#090d24;
-      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    @supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+      .top-nav{
+        background:rgba(9,13,36,.78);
+        -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+      }
+    }
+    .top-nav::after{
+      content:'';position:absolute;left:0;right:0;top:100%;height:14px;pointer-events:none;
+      background:linear-gradient(rgba(9,13,36,.5),rgba(9,13,36,0));
     }
     .nav-icon-btn{
       width:38px;height:38px;border-radius:50%;
@@ -669,14 +682,21 @@
       position:fixed;bottom:0;left:0;right:0;
       z-index:100;
       width:100%;max-width:none;transform:none;
-      background:rgba(9,13,36,.94);
-      border:none;border-top:1px solid rgba(255,255,255,.07);
-      backdrop-filter:blur(24px) saturate(140%);
-      -webkit-backdrop-filter:blur(24px) saturate(140%);
+      /* Schwebende Schicht: der Inhalt laeuft sichtbar darunter weiter.
+         Oben keine harte Linie, sondern eine Lichtkante, die zu den
+         Seiten hin ausläuft (siehe .bnav::before). */
+      background:rgba(9,13,36,.72);
+      border:none;
+      backdrop-filter:blur(24px) saturate(180%);
+      -webkit-backdrop-filter:blur(24px) saturate(180%);
       border-radius:0;
       padding:7px 4px calc(7px + var(--safe-bottom));
       display:flex;align-items:center;justify-content:space-around;
       box-shadow:0 -6px 24px rgba(0,0,0,.32);
+    }
+    .bnav::before{
+      content:'';position:absolute;left:0;right:0;top:0;height:1px;pointer-events:none;
+      background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.14) 30%,rgba(255,255,255,.14) 70%,rgba(255,255,255,0));
     }
     .bnav.hidden{display:none}
     /* Im Chat wuerde die Leiste das Schreibfeld verdecken. */
@@ -6527,6 +6547,24 @@
 
     .c.yes svg,.c.no svg{width:15px;height:15px;display:block;margin:0 auto}
     .c.no svg{opacity:.5}
+
+    /* ══════════ BARRIEREFREIHEIT: Durchsicht und Kontrast ══════════
+       Wer im System "Transparenz reduzieren" eingestellt hat, bekommt
+       deckende Flaechen statt Glas; wer "Kontrast erhoehen" will,
+       klare Kanten. Bewegung: siehe --takt und Bewegung.wenigBewegung. */
+    @media (prefers-reduced-transparency: reduce){
+      .top-nav,.bnav{background:#0b1030;-webkit-backdrop-filter:none;backdrop-filter:none}
+      .toast{background:#141834;-webkit-backdrop-filter:none;backdrop-filter:none}
+      .top-nav::after{display:none}
+    }
+    @media (prefers-contrast: more){
+      .top-nav,.bnav{background:#090D24;-webkit-backdrop-filter:none;backdrop-filter:none}
+      .top-nav{border-bottom:1px solid rgba(255,255,255,.4)}
+      .top-nav::after{display:none}
+      .bnav::before{background:rgba(255,255,255,.4)}
+      .modal{border-color:rgba(255,255,255,.4)}
+      .toast{background:#141834;border-color:rgba(255,255,255,.45)}
+    }
   </style>
 </head>
 <body>
