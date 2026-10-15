@@ -10362,7 +10362,13 @@ function kontenZeichnen(){
    Kontos – mit Inhalt auf dem Sperrbildschirm. */
 async function pushTokenLoesen(){
   if(!cUser)return;
-  try{ await sb.from('profiles').update({push_token:null}).eq('id',cUser.id); }catch(e){}
+  /* Läuft bei Abmelden, Kontowechsel und Löschen. Auch RevenueCat muss
+     das Konto vergessen, sonst geht der nächste Kauf aufs alte Konto. */
+  if(istApp())nativeCall('kaeufe_abmelden',null,8000);
+  try{
+    const{error}=await sb.from('profiles').update({push_token:null}).eq('id',cUser.id);
+    if(error)console.warn('[huelle] push-token lösen',error);
+  }catch(e){ console.warn('[huelle] push-token lösen',e); }
   if(cProfile)cProfile.push_token=null;
 }
 
@@ -11858,6 +11864,20 @@ async function loadEvts(opt){
 
 function netzDa(){ return navigator.onLine !== false; }
 
+/* Statt eines falschen Leerzustands ("Noch keine Partys", "Schreib die
+   erste"), wenn in Wahrheit nur das Laden gescheitert ist. */
+function ladeFehlerHtml(nochmal){
+  return '<div class="empty"><div class="empty-icon">'
+    +'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    +'stroke-width="1.8" stroke-linecap="round"><path d="M2 8.8a16 16 0 0 1 20 0"/>'
+    +'<path d="M5 12.4a11 11 0 0 1 14 0"/><path d="M8.5 16a6 6 0 0 1 7 0"/>'
+    +'<circle cx="12" cy="20" r="1"/><line x1="3" y1="3" x2="21" y2="21"/></svg></div>'
+    +'<p><b>'+(netzDa()?'Das hat nicht geklappt.':'Kein Netz.')+'</b><br>'
+    +(netzDa()?'Wir konnten das gerade nicht laden.':'Sobald du wieder Empfang hast, geht es weiter.')+'</p>'
+    +'<button class="cset" style="margin-top:14px" onclick="'+nochmal+'">Nochmals versuchen</button>'
+    +'</div>';
+}
+
 function netzFehlerZeigen(error){
   const schonWas = (evts && evts.length);
   if(schonWas){
@@ -12775,6 +12795,17 @@ function renderGrid(type,list){
   if(!list.length){
     const w=worldVars(type);
     const icons={events:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',public:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',private:'<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/>'};
+    /* Gibt es Partys, aber Suche, Filter oder Umkreis blenden alle aus,
+       ist "hier ist nichts los" falsch – dann sagen, woran es liegt. */
+    const q=(document.getElementById('searchInput')?.value||'').trim();
+    const versteckt=evts.some(e=>e.type===type&&!istVorbei(e));
+    if(versteckt&&(q||oeFilterAktiv())){
+      g.innerHTML=`<div class="empty"><div class="empty-icon" style="color:${w.accent}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${icons[type]}</svg></div><p>Keine Party passt zu ${q?'deiner Suche':'deinen Filtern'}.</p>`
+        +(q?'<button class="cset" style="margin-top:14px" onclick="sucheLeeren()">Suche löschen</button>'
+           :oeFilterAktiv()?'<button class="cset" style="margin-top:14px" onclick="oeFilterZuruecksetzen()">Filter zurücksetzen</button>':'')
+        +'</div>';
+      return;
+    }
     g.innerHTML=`<div class="empty"><div class="empty-icon" style="color:${w.accent}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${icons[type]}</svg></div><p>${type==='private'?'Noch keine privaten Partys. Sobald dich jemand einlädt, steht sie hier.':'Gerade ist hier nichts los. Schau später wieder vorbei oder mach selbst eine Party.'}</p></div>`;
     return;
   }
@@ -13675,7 +13706,9 @@ async function joinWaitlist(eventId){
       if(btn)btn.disabled=false;
       return;
     }else{
-        }
+      toast('Du stehst auf der Warteliste – wird ein Platz frei, melden wir uns','success');
+      nativeHaptik('erfolg');
+    }
     openDetail(eventId);
   }finally{
     wartelisteLaeuft=false;
@@ -13883,10 +13916,17 @@ async function renderCalendar(){
 
   // Angemeldete UND selbst erstellte Partys – als Gastgeber stand man vorher
   // gar nicht im eigenen Kalender.
-  const[{data:atts},{data:hosted}]=await Promise.all([
+  const[{data:atts,error:f1},{data:hosted,error:f2}]=await Promise.all([
     sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id),
     sb.from('events').select('*').eq('created_by',cUser.id)
   ]);
+  if(f1||f2){
+    console.warn('[kalender] laden',f1||f2);
+    // Was schon dastand, bleibt stehen – sonst die ehrliche Meldung
+    if(list.dataset.geladen)toast(netzDa()?'Kalender konnte nicht aktualisiert werden':'Kein Netz','warn');
+    else list.innerHTML=ladeFehlerHtml('renderCalendar()');
+    return;
+  }
 
   const byId=new Map();
   (atts||[]).forEach(a=>{ if(a.events)byId.set(a.events.id,{...a.events,_mine:false}); });
@@ -15288,7 +15328,7 @@ function renderProPage(){
       : null;
     const status={active:'Aktiv',trialing:'Testwoche',past_due:'Zahlung offen',cancelled:'Gekündigt',canceled:'Gekündigt',expired:'Abgelaufen'}[cProfile.subscription_status]||'Aktiv';
     const probe=probeLaeuft();
-    const gekuendigt=['cancelled','canceled'].includes(cProfile.subscription_status);
+    const gekuendigt=['cancelled','canceled','gekuendigt'].includes(cProfile.subscription_status);
     // In der App führt der Weg zum Kündigen über Apple, nicht über uns.
     const verwalten = istApp()
       ? '<div class="pro2-q"><b>Kündigen oder Zahlungsmittel ändern</b>'
@@ -15793,8 +15833,11 @@ async function openConv(cid,other){
   loadUnread();
   try{ if(convSub_)await sb.removeChannel(convSub_); }catch(e){console.warn('[chat] unsubscribe',e);}
   ntGespraechGelesen(cid);
-  convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},()=>{
+  /* Alle Änderungen, nicht nur neue: bearbeitete und selbstgelöschte
+     Nachrichten kamen beim Gegenüber sonst erst nach dem Neuöffnen an. */
+  convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},(pl)=>{
     loadMsgs();
+    if(pl&&pl.eventType&&pl.eventType!=='INSERT')return;
     // Wer im Gespraech sitzt, hat die neue Nachricht gesehen
     if(!convGruppe)sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
     ntGespraechGelesen(cid);
@@ -15808,9 +15851,17 @@ async function loadMsgs(){
   if(ab)abfrage=abfrage.gt('created_at',new Date(ab).toISOString());
   /* Die neusten 150, nicht der ganze Verlauf seit dem ersten Tag – der
      wurde bei jeder neuen Nachricht zweimal komplett geholt. */
-  const{data:neuste}=await abfrage.order('created_at',{ascending:false}).limit(150);
-  const data=(neuste||[]).slice().reverse();
+  const fuer=convId;
+  const{data:neuste,error:ladeFehler}=await abfrage.order('created_at',{ascending:false}).limit(150);
+  if(fuer!==convId)return;          // inzwischen ein anderes Gespräch offen
   const c=document.getElementById('convMsgs');
+  if(ladeFehler){
+    console.warn('[chat] laden',ladeFehler);
+    if(c&&!c.querySelector('.bub'))c.innerHTML=ladeFehlerHtml('loadMsgs()');
+    else toast(netzDa()?'Nachrichten konnten nicht geladen werden':'Kein Netz','warn');
+    return;
+  }
+  const data=(neuste||[]).slice().reverse();
   const msgs=data||[];
   /* "Nicht von mir" hiess bisher zwingend "vom einen Gegenueber". In der
      Gruppe muss der Name dabeistehen – sonst weiss niemand, wer spricht. */
@@ -16014,6 +16065,7 @@ async function partyKartenFuellen(){
     if(e)bekannt.set(id,e);
   });
   const fehlen=ids.filter(id=>!bekannt.has(id)&&partyKartenGemerkt.get(id)!==false);
+  let gescheitert=false;
   if(fehlen.length){
     try{
       const{data,error}=await sb.from('events')
@@ -16022,7 +16074,7 @@ async function partyKartenFuellen(){
       if(error)throw error;
       (data||[]).forEach(e=>bekannt.set(e.id,e));
       fehlen.forEach(id=>partyKartenGemerkt.set(id,bekannt.get(id)||false));
-    }catch(err){ console.warn('[party-karte]',err); }
+    }catch(err){ console.warn('[party-karte]',err); gescheitert=true; }
   }
   zeilen.forEach(z=>{
     z.dataset.fertig='1';
@@ -16032,8 +16084,16 @@ async function partyKartenFuellen(){
     if(e)z.onclick=()=>openDetail(e.id);
   });
   kasten.forEach(k=>{
-    k.dataset.fertig='1';
     const e=bekannt.get(k.dataset.ev);
+    /* Nur das Laden ist gescheitert (kein Netz): nicht behaupten, die
+       Party gebe es nicht mehr. Antippen öffnet sie trotzdem. */
+    if(!e&&gescheitert){
+      const id=k.dataset.ev;
+      k.innerHTML='<div class="bp-weg">Party antippen zum Öffnen</div>';
+      k.onclick=()=>openDetail(id);
+      return;
+    }
+    k.dataset.fertig='1';
     if(!e){
       /* Geloescht, privat oder vorbei: ehrlich sagen statt ewig laden. */
       k.innerHTML='<div class="bp-weg">Diese Party gibt es nicht mehr</div>';
@@ -18362,6 +18422,10 @@ async function einladungTeilen(code,eventId,label){
   const url=einladungUrl(code);
   // Der Text OHNE Link – den haengt das Teilen-Blatt selbst hinten an.
   const txt=inviteText(e||{},code,label,true);
+  if(istApp()){
+    const a=await nativeCall('teilen',{text:txt,url},600000);
+    if(!a||!a.fehler||a.fehler==='abgebrochen')return;
+  }
   if(navigator.share){
     try{ await navigator.share({title:e?.name||'Private Party',text:txt,url}); return; }
     catch(err){ if(err?.name==='AbortError')return; }
@@ -19112,6 +19176,12 @@ async function gruppePartyEntfernen(btn,gid,eid){
 async function gruppeTeilen(code,name){
   const url=grpUrl(code);
   const txt='Komm in die Gruppe „'+name+'“ auf SPOTOUT';
+  /* In der App das Teilen-Fenster von iOS – das der WebView kennt
+     WhatsApp & Co. nicht zuverlässig. */
+  if(istApp()){
+    const a=await nativeCall('teilen',{text:txt,url},600000);
+    if(!a||!a.fehler||a.fehler==='abgebrochen')return;
+  }
   if(navigator.share){
     try{ await navigator.share({title:'SPOTOUT',text:txt,url}); return; }catch(ex){ if(ex&&ex.name==='AbortError')return; }
   }
@@ -19162,6 +19232,7 @@ async function gruppeBeitreten(){
   if(data?.status==='schon_drin'){closeOverlay('gruppeJoinOverlay');gruppeOeffnen(data.id);return;}
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');if(btn){btn.disabled=false;btn.textContent='Anfragen';}return;}
   closeOverlay('gruppeJoinOverlay');
+  toast('Anfrage gesendet – wer die Gruppe gegründet hat, entscheidet','success');
 }
 
 /* ── Beitritt über den Link ── */
@@ -25368,19 +25439,34 @@ async function proKaufenApple(){
   if(a.pro){
     toast('Danke – Pro wird freigeschaltet…','info');
     await warteAufPro();
+  }else{
+    // Kauf ist durch, aber noch nicht freigegeben (z. B. Kaufanfrage an die Eltern)
+    toast('Der Kauf wird noch geprüft – Pro kommt, sobald '+storeName()+' ihn freigibt','info');
   }
 }
 
+let wiederherLaeuft=false;
 async function proWiederherstellen(){
-  const a=await nativeCall('pro_wiederherstellen',null,60000);
-  if(a.pro){await warteAufPro();}
-  else toast('Kein früherer Kauf gefunden','warn');
+  if(!cUser){kontoNoetig();return;}
+  if(kaufGesperrt()||wiederherLaeuft)return;
+  wiederherLaeuft=true;
+  try{
+    const a=await nativeCall('pro_wiederherstellen',{userId:cUser.id},60000);
+    if(a.pro){await warteAufPro();}
+    else if(a.fehler)toast('Wiederherstellen gerade nicht möglich. Versuch es gleich nochmals.','error');
+    else toast('Kein früherer Kauf gefunden','warn');
+  }finally{ wiederherLaeuft=false; }
 }
 
 // RevenueCat meldet den Kauf an unseren Server; von dort kommt is_pro zurück
 /* Apple verlangt, dass ein laufendes Abo aus der App heraus erreichbar ist.
    Diese Adresse öffnet auf dem iPhone direkt die Abo-Verwaltung. */
-function abosBeiApple(){
+async function abosBeiApple(){
+  // In der App das Abo-Fenster des Stores direkt (Apple wie Google)
+  if(istApp()){
+    const r=await nativeCall('abos_verwalten',null,600000);
+    if(!r.fehler)return;
+  }
   const a=document.createElement('a');
   a.href='https://apps.apple.com/account/subscriptions';
   a.target='_blank'; a.rel='noopener';
@@ -25817,6 +25903,7 @@ async function blockUser(id){
   window.__blocked.add(id);
   closeReport();
   closeUserProf(true);
+  toast('Blockiert. Du kannst das in den Einstellungen aufheben.','info');
   // Wer mitten im Gespraech blockiert, soll nicht darin sitzen bleiben.
   if(convUser?.id===id&&document.getElementById('page-conv')?.classList.contains('active'))showPage('chat');
   await loadEvts();
@@ -26878,7 +26965,8 @@ async function saveManage(){
   const addr=document.getElementById('mg-addr').value.trim();
   if(!name){toast('Der Name darf nicht leer sein','warn');return;}
   if(!date){toast('Bitte ein Datum wählen','warn');return;}
-  if(!addr){toast('Bitte eine Adresse eintragen','warn');return;}
+  const istTreffen=mgEvent.category==='Treffen';
+  if(!addr&&!istTreffen){toast('Bitte eine Adresse eintragen','warn');return;}
   // Eine Party in die Vergangenheit schieben loescht sie beim naechsten Aufraeumen
   const zeitNeu=(date!==mgEvent.date||time!==String(mgEvent.time||'').slice(0,5));
   if(zeitNeu&&new Date(date+'T'+time)<Date.now()-5*6e4){toast('Das Datum liegt in der Vergangenheit','warn');return;}
@@ -26890,7 +26978,7 @@ async function saveManage(){
   const label=btn?btn.innerHTML:'';
   if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Wird gespeichert…';}
   try{
-    const patch={name,date,time,address:addr,
+    const patch={name,date,time,address:addr||null,
       dresscode:(document.getElementById('mg-dress')?.value||'').trim()||null,
       description:document.getElementById('mg-desc').value.trim()||null};
     if(plEl)patch.spotify_url=pl;
@@ -26911,7 +26999,7 @@ async function saveManage(){
     }
 
     // Adresse geändert? Dann neue Koordinaten holen, sonst steht der Pin falsch
-    if(addr!==(mgEvent.address||'')){
+    if(addr!==(mgEvent.address||'')&&!istTreffen){
       const co=await geocode(addr);
       if(co){patch.lat=co.lat;patch.lng=co.lng;}
       else toast('Adresse nicht gefunden – der Kartenpin bleibt, wo er war','warn');
@@ -26923,6 +27011,8 @@ async function saveManage(){
       closeManage(); await loadEvts(); return;
     }
     mgEvent={...mgEvent,...patch};
+    toast('Gespeichert','success');
+    nativeHaptik('erfolg');
     await loadEvts();
     if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
     if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
@@ -28152,10 +28242,16 @@ function bearbeitenStarten(bub){
   }
   const inp=document.getElementById('convInput');
   if(!inp)return;
+  /* Eine Nachricht mit Party-Karte trägt den Link nur im Rohtext. Aus
+     der Blase zurückgeholt, wären Link und Karte nach dem Speichern weg. */
+  if(bub.querySelector('.bub-party')){
+    toast('Nachrichten mit einer Party lassen sich nicht bearbeiten','info');
+    return;
+  }
   bearbeiteId=id;
   // Den reinen Text zurueckholen: die Blase enthaelt auch die Uhrzeit
   const kopie=bub.cloneNode(true);
-  kopie.querySelectorAll('.bub-meta,.msg-weg').forEach(x=>x.remove());
+  kopie.querySelectorAll('.bub-meta,.msg-weg,.bub-wer').forEach(x=>x.remove());
   inp.value=kopie.innerText.trim();
   document.getElementById('convBearb')?.classList.add('show');
   inp.focus();
