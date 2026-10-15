@@ -2,11 +2,20 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["6VMVGUPDY5.com.spotout.app"],
+        "appIDs": [
+          "6VMVGUPDY5.com.spotout.app"
+        ],
         "components": [
-          { "/": "*" }
+          {
+            "/": "*"
+          }
         ]
       }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "6VMVGUPDY5.com.spotout.app"
     ]
   }
 }
