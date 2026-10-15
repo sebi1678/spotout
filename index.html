@@ -183,11 +183,11 @@
     }
     @keyframes spHaloIn{to{opacity:1}}
     @keyframes spAtmen{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.62}}
-    .splash-logo{position:relative;opacity:0;animation:splashIn 760ms var(--kurve) forwards}
+    .splash-logo{position:relative;opacity:0;animation:splashIn var(--takt-lang) var(--kurve) forwards}
     .splash-logo img{display:block;width:min(212px,58vw);height:auto;filter:drop-shadow(0 6px 26px rgba(255,45,118,.22))}
     @keyframes splashIn{
-      0%{opacity:0;transform:translateY(10px) scale(.96);filter:blur(8px)}
-      100%{opacity:1;transform:none;filter:blur(0)}
+      0%{opacity:0;transform:translateY(6px) scale(.97)}
+      100%{opacity:1;transform:none}
     }
     /* Frueher stand hier ein Ladebalken: ein pink-oranger Strich direkt
        unter dem Schriftzug. Er sah nicht nach Ladeanzeige aus, sondern
@@ -2287,7 +2287,7 @@
       position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.28;
     }
     .fy-fallback-ic svg{width:64px;height:64px;stroke-width:1.1}
-    .fy-orb{position:absolute;border-radius:50%;filter:blur(34px);pointer-events:none}
+    .fy-orb{position:absolute;border-radius:50%;pointer-events:none;transform:scale(1.5)}
     .fy-orb-a{width:52%;padding-bottom:52%;top:-18%;right:-10%}
     .fy-orb-b{width:44%;padding-bottom:44%;bottom:-16%;left:-8%}
     .fy-scrim{
@@ -3144,7 +3144,7 @@
     .gender-opt.active{background:var(--grad-cta);color:#fff;border-color:transparent}
 
     /* Glow-Flecken im Detail-Hero (Markup war da, CSS fehlte) */
-    .glow-spot{position:absolute;border-radius:50%;filter:blur(42px);pointer-events:none;z-index:1}
+    .glow-spot{position:absolute;border-radius:50%;pointer-events:none;z-index:1;transform:scale(1.7)}
     .glow-1{width:62%;padding-bottom:62%;top:-18%;right:-16%}
     .glow-2{width:54%;padding-bottom:54%;bottom:-14%;left:-14%}
 
@@ -3602,6 +3602,7 @@
        Blase die Animation – und weil der Chat nach jedem Senden neu
        gezeichnet wird, blinkte das ganze Gespraech jedes Mal auf. */
     .bub.neu{animation:bubIn var(--takt) var(--kurve)}
+    .bub.sendet{opacity:.6}
     @keyframes bubIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .bub-mine{
       align-self:flex-end;background:var(--grad-cta);color:#fff;
@@ -7108,7 +7109,7 @@
   <div class="search-bar-wrap" id="searchWrap">
     <div class="search-bar">
       <svg class="pk" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <input type="text" id="searchInput" placeholder="Ort, Club oder Party…" oninput="filterAll();ortVorschlagPruefen()"/>
+      <input type="text" id="searchInput" placeholder="Ort, Club oder Party…" enterkeyhint="search" oninput="sucheTippen()"/>
       <button class="s-loeschen" id="sLoeschen" onclick="sucheLeeren()" aria-label="Suche löschen" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -9412,7 +9413,24 @@ async function init(){
   }else if(PW_LINK.neu&&session&&!PW_LINK.abgelaufen){
     cUser=session.user;
     pwAnsicht('neu');
-  }else if(session){cUser=session.user;await loadProf();kontoMerken();enterApp();}
+  }else if(session){
+    cUser=session.user;
+    /* Schneller Start (15.10.): Partys und Blockliste laufen ab jetzt
+       gleichzeitig mit dem Profil – vorher nacheinander (Profil 400 ms,
+       dann Blockliste, erst dann die Partys). Und wer schon einmal da
+       war, sieht sofort den gemerkten Stand; die frischen Daten ersetzen
+       ihn still, sobald sie da sind. */
+    evtsVorab=evtsAbfrage();
+    blocksBereit=loadBlocks().catch(()=>{});
+    const gemerkt=profilGemerkt(cUser.id);
+    if(gemerkt){
+      cProfile=gemerkt;updNavAv();navFuerKontoart();vereinHomeUmschalten();
+      kontoMerken();enterApp();
+      loadProf().then(()=>{ document.body.classList.toggle('veranstalter',!!cProfile?.verified); }).catch(e=>console.warn('[profil]',e));
+    }else{
+      await loadProf();kontoMerken();enterApp();
+    }
+  }
   sb.auth.onAuthStateChange(async(ev,s)=>{
     if(ev==='PASSWORD_RECOVERY'&&s){cUser=s.user;pwAnsicht('neu');return;}
     // Supabase erneuert den Zugang stuendlich – die Kontoliste muss den neuen kennen
@@ -9477,6 +9495,19 @@ async function loadProf(){
   cProfile=updated;updNavAv();
   navFuerKontoart();          // Verein sieht eine andere Leiste
   vereinHomeUmschalten();
+  profilMerken();
+}
+/* Das eigene Profil fuer den naechsten Start merken (nur auf diesem
+   Geraet). Sensible Felder wie Geburtsdatum bleiben draussen. */
+function profilMerken(){
+  try{
+    if(!cUser||!cProfile)return;
+    const {birthdate,gender,...rest}=cProfile;
+    localStorage.setItem('spotout_prof_'+cUser.id,JSON.stringify(rest));
+  }catch(e){}
+}
+function profilGemerkt(id){
+  try{ return JSON.parse(localStorage.getItem('spotout_prof_'+id)||'null'); }catch(e){ return null; }
 }
 
 /* Das Bildchen oben rechts steht inzwischen in mehreren Kopfzeilen –
@@ -10375,9 +10406,13 @@ function enterApp(){
     t0.style.transform='translateX('+(i0*100)+'%)';
     t0.style.background=worldVars(curCol).grad;
   }
-  // Erst die Blockliste, dann der Feed – sonst filterte der erste Feed mit der alten
-  loadBlocks().catch(()=>{}).then(()=>loadEvts()).then(()=>stelleOrtHer());
-  loadUnread();autoLoc();
+  /* Blockliste und Feed laufen gleichzeitig; gefiltert wird erst, wenn
+     beide da sind (loadEvts wartet auf blocksBereit). Der gemerkte Feed
+     steht sofort da. */
+  if(!blocksBereit)blocksBereit=loadBlocks().catch(()=>{});
+  feedAusGemerktem();
+  loadEvts().then(()=>stelleOrtHer());
+  autoLoc();
   initFyModus();
   checkJoinLink();checkFeeSuccess();checkEventLink();checkProfilLink();startNotifPolling();
   netzWaechterAn();
@@ -10400,8 +10435,9 @@ function enterApp(){
     const pendG=localStorage.getItem('spotout_gruppe');
     if(pendG){localStorage.removeItem('spotout_gruppe');setTimeout(()=>gruppeBeitrittOeffnen(pendG),600);}
   }catch(err){}
-  // Verify pro status on every app load
-  setTimeout(verifyProStatus,1000);
+  /* Pro-Status: mein_profil hat ihn eben frisch geliefert – nicht eine
+     Sekunde spaeter nochmals dieselbe Zeile holen. Nach einem Kauf und
+     beim Zurueckkommen in die App wird weiter geprueft. */
   setTimeout(()=>sanktionPruefen(true),1200);
 }
 
@@ -11012,6 +11048,39 @@ function schonRegistriert(em){
 
 piktosEinsetzen();
 
+/* Die App war laenger als 10 Minuten im Hintergrund (WebHuelle ruft
+   das). Vorher fehlte die Funktion – die App lud dann komplett neu:
+   Ladeschirm, 1.5 MB einlesen, alle Abfragen. Jetzt: gibt es eine neue
+   Fassung der Seite, neu laden; sonst nur die Daten auffrischen. */
+let seitenFassung=null;
+fetch(location.pathname,{method:'HEAD',cache:'no-store'}).then(r=>{seitenFassung=r.headers.get('etag');}).catch(()=>{});
+window.__huelleZurueck=async()=>{
+  try{
+    const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'});
+    const f=r.headers.get('etag');
+    if(seitenFassung&&f&&f!==seitenFassung){ location.reload(); return; }
+  }catch(e){}
+  try{
+    loadEvts();
+    if(cUser){
+      if(typeof loadNotifs==='function')loadNotifs();
+      if(typeof sanktionPruefen==='function')sanktionPruefen(false);
+      if(typeof verifyProStatus==='function')verifyProStatus();
+      if(document.getElementById('page-chat')?.classList.contains('active')&&typeof loadChats==='function')loadChats();
+      if(document.getElementById('page-conv')?.classList.contains('active')&&typeof loadMsgs==='function')loadMsgs();
+    }
+  }catch(e){ console.warn('[zurueck]',e); location.reload(); }
+};
+
+/* Suche: erst zeichnen, wenn kurz nicht getippt wird (140 ms). Vorher
+   wurden bei jedem Buchstaben alle drei Listen, der Feed und – bei
+   offener Karte – alle Marker neu gebaut. */
+let sucheUhr=0;
+function sucheTippen(){
+  clearTimeout(sucheUhr);
+  sucheUhr=setTimeout(()=>{ filterAll(); ortVorschlagPruefen(); },140);
+}
+
 let selGenderVal='';
 function selGender(g,el){
   selGenderVal=g;
@@ -11197,10 +11266,15 @@ function ziehAktualisieren(){
     if(e.touches[0].clientX<=KANTE)return;
     y0=e.touches[0].clientY;zieht=true;
     anzeige.style.transition='';
+    /* Der Zug-Zuhoerer haengt nur waehrend einer moeglichen Geste
+       (oben am Rand). Dauerhaft angehaengt musste iOS bei jedem
+       Scrollen erst das Programm fragen – das ruckelte, sobald die App
+       beschaeftigt war. */
+    seite.addEventListener('touchmove',zug,{passive:false});
   },{passive:true});
 
-  seite.addEventListener('touchmove',e=>{
-    if(!zieht)return;
+  const zug=e=>{
+    if(!zieht){seite.removeEventListener('touchmove',zug);return;}
     const y=e.touches[0].clientY-y0;
     if(!entschieden){
       if(Math.abs(y)<6)return;
@@ -11222,9 +11296,10 @@ function ziehAktualisieren(){
        Pixel darueber. */
     if(bereit!==warBereit){ warBereit=bereit; if(bereit)nativeHaptik('leicht'); }
     anzeige.classList.toggle('bereit',bereit);
-  },{passive:false});
+  };
 
   const los=async()=>{
+    seite.removeEventListener('touchmove',zug);
     if(!zieht)return;
     zieht=false;warBereit=false;
     if(dy<ZIEH_AB){weg();dy=0;return;}
@@ -11252,7 +11327,7 @@ function ziehAktualisieren(){
     weg();
   };
   seite.addEventListener('touchend',los,{passive:true});
-  seite.addEventListener('touchcancel',()=>{if(zieht){zieht=false;weg();}},{passive:true});
+  seite.addEventListener('touchcancel',()=>{seite.removeEventListener('touchmove',zug);if(zieht){zieht=false;weg();}},{passive:true});
 }
 
 /* ── Aus einem Vollseiten-Fenster zurückwischen ───────────────────
@@ -11395,10 +11470,12 @@ function zurueckGesteStarten(){
     unten=document.getElementById('page-'+ziel.name);
     if(!oben||!unten||oben===unten){ziel=null;return;}
     x0=t.clientX;y0=t.clientY;zieht=true;mess.reset();
+    // Nur waehrend der Geste angehaengt (siehe Ziehen zum Aktualisieren).
+    document.addEventListener('touchmove',kantenZug,{passive:false});
   },{passive:true});
 
-  document.addEventListener('touchmove',e=>{
-    if(!zieht)return;
+  const kantenZug=e=>{
+    if(!zieht){document.removeEventListener('touchmove',kantenZug);return;}
     const t=e.touches[0];
     const x=t.clientX-x0, y=t.clientY-y0;
     if(!entschieden){
@@ -11412,9 +11489,10 @@ function zurueckGesteStarten(){
     dx=x<0?Bewegung.gummiband(x,window.innerWidth||390):x;
     setze(dx);
     mess.add(dx);
-  },{passive:false});
+  };
 
   const los=()=>{
+    document.removeEventListener('touchmove',kantenZug);
     if(!zieht){ziel=null;return;}
     zieht=false;
     if(!entschieden||!oben||!unten){aufraeumen(true);return;}
@@ -11525,7 +11603,7 @@ function showPage(name,richtung){
   showOnly(name,richtung);
   if(name==='profile')renderProf();
   if(name==='chat')loadChats();
-  if(name==='main'){ loadEvts(); vereinHomeUmschalten(); }
+  if(name==='main'){ loadEvts({wennAlt:true}); vereinHomeUmschalten(); }
   if(name==='pro')renderProPage();
   if(name==='calendar')renderCalendar();
   if(name==='search')openSearchPage();
@@ -11555,20 +11633,47 @@ function goHome(){showPage('main');}
 // also ihre Chatliste. Pro ist nur nötig, um selbst ein Gespräch zu beginnen.
 function openChatOrUpgrade(){ showPage('chat'); }
 
-async function loadEvts(){
-  // Nur beim allerersten Laden ein Drehraedchen. Danach bleibt die Liste
-  // stehen, bis die neue da ist – sonst springt die Seite nach jeder Aktion nach oben.
-  if(!evts.length)['events','public','private'].forEach(t=>document.getElementById('grid-'+t).innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>');
+/* Die Partys-Abfrage als eigene Funktion: der Start kann sie schon
+   losschicken, waehrend noch das Profil laedt (evtsVorab). supabase-js
+   sendet erst bei .then – darum hier ausdruecklich. */
+let evtsVorab=null, blocksBereit=null, evtsZeit=0;
+function evtsAbfrage(){
   /* Nur was noch kommt. Vergangenes gehoert in den Kalender und ins
      Profil, nicht in die Uebersicht – und es kostet sonst mit jedem
      Monat mehr, ohne jemandem zu nuetzen. Ein Tag Rueckstand, damit
      eine Party, die gerade laeuft, nicht verschwindet. */
   const gestern=new Date(Date.now()-864e5).toISOString().slice(0,10);
-  const{data,error}=await sb.from('events')
+  return sb.from('events')
     .select(`*,profiles(username,full_name,avatar_url,kontoart,verein_ort,website),event_attendees(count)`)
     .gte('date',gestern)
     .order('date',{ascending:true})
-    .limit(500);
+    .limit(500).then(x=>x);
+}
+/* Der Feed vom letzten Mal, sofort beim Start – bis die frischen Daten da sind. */
+function feedGemerktSchluessel(){ return 'spotout_evts_'+(cUser?.id||'gast'); }
+function feedAusGemerktem(){
+  if(evts.length)return;
+  try{
+    const g=JSON.parse(localStorage.getItem(feedGemerktSchluessel())||'null');
+    if(!g||!Array.isArray(g.e)||Date.now()-g.t>3*864e5)return;
+    const gestern=new Date(Date.now()-864e5).toISOString().slice(0,10);
+    evts=g.e.filter(e=>(e.date||'')>=gestern&&!istBlockiert(e.created_by));
+    if(evts.length)filterAll(false);
+  }catch(e){}
+}
+function feedMerken(){
+  try{ localStorage.setItem(feedGemerktSchluessel(),JSON.stringify({t:Date.now(),e:evts.slice(0,150)})); }catch(e){}
+}
+async function loadEvts(opt){
+  /* Wer nur zwischen den Reitern wechselt, bekommt keine neue Abfrage,
+     wenn die letzte keine Minute alt ist (vorher: 500 Partys bei jedem
+     Tipp auf "Home"). Nach eigenen Aenderungen wird immer frisch geholt. */
+  if(opt&&opt.wennAlt&&evts.length&&Date.now()-evtsZeit<60000)return;
+  // Nur beim allerersten Laden Platzhalter. Danach bleibt die Liste
+  // stehen, bis die neue da ist – sonst springt die Seite nach jeder Aktion nach oben.
+  if(!evts.length)['events','public','private'].forEach(t=>document.getElementById('grid-'+t).innerHTML=skelett(4,180));
+  const abfrage=evtsVorab||evtsAbfrage(); evtsVorab=null;
+  const [{data,error}]=await Promise.all([abfrage,blocksBereit||Promise.resolve()]);
   if(error){
     /* Vorher blieben hier drei Drehraedchen fuer immer stehen. Wer im
        Keller steht, hat kein Netz – und sah eine App, die ewig laedt.
@@ -11588,7 +11693,9 @@ async function loadEvts(){
      ergaenzt ("Lena ist dabei") – die Partys standen also einen
      vollen Rundweg spaeter da, als sie koennten. Wer keine Freunde
      auf der Party hat, merkte davon nie etwas ausser der Wartezeit. */
+  evtsZeit=Date.now();
   filterAll(false);
+  feedMerken();
   if(istVerein())renderVereinHome();
   ladeFreunde().then(()=>{
     if(typeof filterAll==='function')filterAll(false);
@@ -12255,8 +12362,8 @@ function renderFeed(){
     const media=e.image_url
       ? `<img src="${escAttr(e.image_url)}" loading="lazy" alt=""/>`
       : `<div class="fy-fallback" style="background:${gradBg(e.type,e.category)}">
-           <div class="fy-orb fy-orb-a" style="background:${w.accent}40"></div>
-           <div class="fy-orb fy-orb-b" style="background:${w.accent}22"></div>
+           <div class="fy-orb fy-orb-a" style="background:radial-gradient(circle,${w.accent}40,transparent 70%)"></div>
+           <div class="fy-orb fy-orb-b" style="background:radial-gradient(circle,${w.accent}22,transparent 70%)"></div>
            <div class="fy-fallback-ic" style="color:${w.accent}">${iconSvg(evIconKey(e),64)}</div>
          </div>`;
 
@@ -13380,8 +13487,14 @@ async function toggleAtt(id,isAtt){
       // 23505 = bereits angemeldet, das ist kein Fehler für den Nutzer
       if(error&&error.code!=='23505')throw error;
         }
-    await loadEvts();
+    /* Vorher: erst alle 500 Partys neu laden, dann das Fenster – der
+       Ladekreis drehte ueber mehrere Rundwege. Jetzt nur die Zahl hier
+       anpassen, das Fenster frisch zeichnen, und die Liste im
+       Hintergrund nachziehen. */
+    const ev=evts.find(x=>x.id===id);
+    if(ev)ev.attending=Math.max(0,(ev.attending||0)+(isAtt?-1:1));
     await openDetail(id);
+    loadEvts();
     /* Zusagen ist die wichtigste Handlung in dieser App. Sie darf
        sich anfuehlen wie etwas, das geklappt hat – und zwar in dem
        Moment, in dem man es sieht (der Knopf zeigt jetzt "dabei"),
@@ -15306,14 +15419,21 @@ async function loadChats(){
 }
 
 async function chatListeZeichnen(list){
-  const{data,error:chatFehler}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id},group_id.not.is.null`).order('created_at',{ascending:false});
+  /* Vorher kamen ALLE Nachrichten jedes Gespraechs mit – bei 30 Chats
+     schnell ein Megabyte, bei jedem Tipp auf "Chats". Fuer Vorschau,
+     Reihenfolge und den Ungelesen-Punkt reichen die neusten 20 (die
+     Zahl zeigt ohnehin hoechstens 9+). Die Benachrichtigungen laufen
+     gleichzeitig statt danach. */
+  const ntAbfrage=sb.from('notifications')
+    .select('conversation_id').eq('user_id',cUser.id).eq('gelesen',false)
+    .not('conversation_id','is',null).then(x=>x);
+  const{data,error:chatFehler}=await sb.from('conversations').select(`*,user1:profiles!conversations_user1_id_fkey(id,username,full_name,avatar_url),user2:profiles!conversations_user2_id_fkey(id,username,full_name,avatar_url),messages(content,image_url,created_at,read,sender_id)`).or(`user1_id.eq.${cUser.id},user2_id.eq.${cUser.id},group_id.not.is.null`).order('created_at',{ascending:false})
+    .order('created_at',{ascending:false,referencedTable:'messages'}).limit(20,{referencedTable:'messages'});
   /* Im Gruppenchat kann "gelesen" nicht an der Nachricht haengen – es
      gibt nur eine Spalte fuer alle. Wer zuerst reinschaut, haette allen
      anderen den Punkt geloescht. Der Ungelesen-Zustand kommt darum aus
      den Benachrichtigungen; die gibt es ohnehin pro Person. */
-  const{data:offeneNt}=await sb.from('notifications')
-    .select('conversation_id').eq('user_id',cUser.id).eq('gelesen',false)
-    .not('conversation_id','is',null);
+  const{data:offeneNt}=await ntAbfrage;
   const grpOffenNt=new Set((offeneNt||[]).map(n=>n.conversation_id));
   /* Sortiert war bisher nach dem Tag, an dem das Gespräch angelegt
      wurde. Wer heute Morgen geschrieben hat, stand deshalb ganz unten,
@@ -15530,7 +15650,10 @@ async function loadMsgs(){
   const ab=chatGeloescht.get(convId);
   let abfrage=sb.from('messages').select('*').eq('conversation_id',convId);
   if(ab)abfrage=abfrage.gt('created_at',new Date(ab).toISOString());
-  const{data}=await abfrage.order('created_at',{ascending:true});
+  /* Die neusten 150, nicht der ganze Verlauf seit dem ersten Tag – der
+     wurde bei jeder neuen Nachricht zweimal komplett geholt. */
+  const{data:neuste}=await abfrage.order('created_at',{ascending:false}).limit(150);
+  const data=(neuste||[]).slice().reverse();
   const c=document.getElementById('convMsgs');
   const msgs=data||[];
   /* "Nicht von mir" hiess bisher zwingend "vom einen Gegenueber". In der
@@ -15568,6 +15691,8 @@ async function loadMsgs(){
   /* Was schon zu sehen war, bleibt ruhig; nur Neues gleitet herein.
      Beim ersten Zeichnen eines Gespraechs gleitet nichts. */
   const erstes=chatGezeigt.cid!==convId;
+  // Eine eben gesendete Blase stand schon da – sie gleitet nicht nochmals herein.
+  const hatteVorab=!!c.querySelector('.bub.sendet');
   if(erstes){ chatGezeigt.cid=convId; chatGezeigt.ids=new Set(); chatGezeigt.html=''; }
   let html='',lastDay='',lastSender=null,lastTime=0;
   msgs.forEach((m,idx)=>{
@@ -15628,7 +15753,7 @@ async function loadMsgs(){
        ohne sie liesse sich eine eigene Nachricht nicht bearbeiten.
        Gemeldet werden koennen weiterhin nur fremde: dafuer zaehlt
        data-mine, nicht das Fehlen der Kennung. */
-    const neu=!erstes&&!chatGezeigt.ids.has(m.id);
+    const neu=!erstes&&!chatGezeigt.ids.has(m.id)&&!(mine&&hatteVorab);
     html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+(neu?' neu':'')+'"'
       +' data-mid="'+m.id+'"'+(mine?' data-mine="1"':'')
       +' data-zeit="'+new Date(m.created_at).getTime()+'"'+werAttr+' data-x="'
@@ -15802,6 +15927,19 @@ async function sendMsg(){
     return;
   }
   inp.value='';
+  /* Die eigene Nachricht steht sofort da (leicht blass, bis der Server
+     sie hat) – nicht erst nach Speichern und Neuladen. Klappt es nicht,
+     verschwindet sie wieder und der Text steht zurueck im Feld. */
+  const verlauf=document.getElementById('convMsgs');
+  let vorab=null;
+  if(verlauf){
+    verlauf.querySelector('.conv-empty')?.remove();
+    vorab=document.createElement('div');
+    vorab.className='bub bub-mine neu sendet bub-grp';
+    vorab.innerHTML=esc(txt).replace(/\n/g,'<br>');
+    verlauf.appendChild(vorab);
+    verlauf.scrollTop=verlauf.scrollHeight;
+  }
   const btn=document.getElementById('sendBtn');
   // disabled nimmt dem Knopf den Fokus – und iOS faehrt dann die
   // Tastatur ein. Also nur optisch sperren.
@@ -15811,6 +15949,7 @@ async function sendMsg(){
   if(btn)btn.classList.remove('sendet');
   if(error){
     console.error('[msg]',error);
+    vorab?.remove();
     inp.value=txt;                       // Text zurückgeben statt verlieren
     toast(fehlerText(error),'error');
     if(warFokus&&feld)feld.focus();
@@ -27220,16 +27359,13 @@ const GOOGLE_DUNKEL=[
 let mapTheme='dark', mapTiles=null, googleGeladen=null, googleBereit=false;
 
 function karteHatGoogle(){ return !!String(GOOGLE_KARTE_SCHLUESSEL||'').trim(); }
-/* Die Google-Bausteine im Leerlauf vorladen, ein paar Sekunden nach dem
-   Start. Dann ist die Karte beim ersten Antippen sofort Google und
-   wechselt nicht mittendrin das Aussehen. Kostet nichts bei Google:
-   gezaehlt wird erst eine erzeugte Karte, nicht das Skript. */
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
-    const los=()=>{ if(karteHatGoogle()&&!mapInst)googleKarteLaden().catch(()=>{}); };
-    if('requestIdleCallback' in window)requestIdleCallback(los,{timeout:4000}); else los();
-  },3500);
-});
+/* Die Google-Bausteine laden, sobald jemand zur Karte greift (Finger
+   auf dem Karten-Knopf) – bis die Karte aufgeht, sind sie meist da.
+   Frueher im Leerlauf nach 3.5 s: genau dann, wenn man den Feed
+   scrollt, und auch fuer alle, die die Karte nie oeffnen. */
+document.addEventListener('pointerdown',e=>{
+  if(e.target.closest&&e.target.closest('#mapBtn,.karte-knopf')&&karteHatGoogle()&&!mapInst)googleKarteLaden().catch(()=>{});
+},{passive:true,capture:true});
 
 /* Laedt Google Maps und den Leaflet-Aufsatz – einmal, und nur wenn ein
    Schluessel da ist. Geht dabei etwas schief (kein Netz, Schluessel
@@ -28438,10 +28574,13 @@ async function loadUnread(){
 function tastaturBeobachten(){
   const vv=window.visualViewport;
   if(!vv)return;
-  let takt=null;
+  let takt=null, letzteH=-1;
   const setzen=()=>{
-    // Was nach dem Aufgehen der Tastatur wirklich sichtbar bleibt.
-    document.documentElement.style.setProperty('--tastatur',Math.round(vv.height)+'px');
+    // Was nach dem Aufgehen der Tastatur wirklich sichtbar bleibt. Nur
+    // bei einer Aenderung setzen – die Variable erbt sich auf die ganze
+    // Seite, jedes Setzen rechnet alle Stile neu.
+    const h=Math.round(vv.height);
+    if(h!==letzteH){ letzteH=h; document.documentElement.style.setProperty('--tastatur',h+'px'); }
     // Den Versatz, den iOS dabei erzeugt, sofort wieder zuruecknehmen –
     // sonst wandert die Kopfzeile des Chats aus dem Bild.
     if(vv.offsetTop>0||window.scrollY>0||document.documentElement.scrollTop>0){
@@ -28449,8 +28588,10 @@ function tastaturBeobachten(){
       document.documentElement.scrollTop=0;
       document.body.scrollTop=0;
     }
-    const m=document.getElementById('convMsgs');
-    if(m)m.scrollTop=m.scrollHeight;
+    if(document.getElementById('page-conv')?.classList.contains('active')){
+      const m=document.getElementById('convMsgs');
+      if(m)m.scrollTop=m.scrollHeight;
+    }
     merken();
   };
   const geplant=()=>{ cancelAnimationFrame(takt); takt=requestAnimationFrame(setzen); };
