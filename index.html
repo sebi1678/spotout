@@ -1675,6 +1675,19 @@
     }
     .send-btn:active{transform:scale(var(--druck-klein))}
     .send-btn.sendet{opacity:.5;pointer-events:none}
+    /* Treffen planen – nur im Gruppenchat sichtbar */
+    .conv-plus{
+      width:42px;height:42px;border-radius:50%;flex-shrink:0;cursor:pointer;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      transition:transform var(--takt-kurz) var(--kurve);-webkit-tap-highlight-color:transparent;
+    }
+    .conv-plus[hidden]{display:none}
+    .conv-plus svg{width:20px;height:20px}
+    .conv-plus:active{transform:scale(var(--druck-klein))}
+    .tr-wann{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .tr-opt{text-transform:none;letter-spacing:0;font-weight:500;opacity:.8;margin-left:4px}
+    .tr-hinweis{font-size:.78rem;color:var(--muted);line-height:1.45;margin:2px 0 14px}
 
     /* ── FORMS (dark) ── */
     .fg{margin-bottom:14px}
@@ -7316,6 +7329,9 @@
       </button>
     </div>
     <div class="conv-input-wrap">
+      <button class="conv-plus" id="convTreffen" hidden onclick="treffenOeffnen(convUser?.id)" aria-label="Treffen planen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17M12 13v5M9.5 15.5h5"/></svg>
+      </button>
       <input class="conv-input" id="convInput" placeholder="Nachricht…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"/>
       <button class="send-btn" id="sendBtn" onclick="sendMsg()" aria-label="Senden">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -8593,6 +8609,35 @@
       </button>
     </div>
     <div class="modal-body" id="gruppeBody"></div>
+  </div>
+</div>
+
+<!-- Treffen: in einer Gruppe keine ganze Party mit neun Schritten,
+     sondern Was, Wann und – wenn man will – Wo. Der Ort darf auch nur
+     eine Beschreibung sein ("bei Lena", "beim Brunnen"). -->
+<div class="overlay" id="treffenOverlay" onclick="closeIfOutside(event,'treffenOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Treffen planen</div>
+      <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('treffenOverlay')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label for="trName">Was</label>
+        <input type="text" id="trName" maxlength="60" placeholder="z. B. Grillabend, Kino, Znacht" autocomplete="off"/></div>
+      <div class="tr-wann">
+        <div class="fg"><label for="trDatum">Tag</label><input type="date" id="trDatum"/></div>
+        <div class="fg"><label for="trZeit">Uhrzeit</label><input type="time" id="trZeit"/></div>
+      </div>
+      <div class="fg"><label for="trOrt">Wo <span class="tr-opt">freiwillig</span></label>
+        <input type="text" id="trOrt" maxlength="120" placeholder="Adresse oder einfach „bei Lena“" autocomplete="off"/></div>
+      <div class="fg"><label for="trNotiz">Notiz <span class="tr-opt">freiwillig</span></label>
+        <textarea id="trNotiz" rows="2" maxlength="400" placeholder="Was mitnehmen, wer fährt …"></textarea></div>
+      <div class="tr-hinweis">Alle in der Gruppe werden eingeladen und sehen das Treffen im Chat.</div>
+      <button class="sub-btn sub-public" id="trKnopf" style="width:100%;margin:0" onclick="treffenSpeichern()">Treffen erstellen</button>
+    </div>
   </div>
 </div>
 
@@ -15726,6 +15771,8 @@ async function openConv(cid,other){
   if(convId!==cid){ const alt=document.getElementById('convMsgs'); if(alt)alt.innerHTML=''; }
   convId=cid;convUser=other;
   convGruppe=!!other?.gruppe;
+  const trKnopf=document.getElementById('convTreffen');
+  if(trKnopf)trKnopf.hidden=!convGruppe;
   convLeute.clear();
   const av=convGruppe
     ? grpAv(other?.bild_url)
@@ -18629,7 +18676,7 @@ function gruppeZeichnen(g){
       +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppePartyWaehlen(\''+g.id+'\')">Party hineinstellen</button>'
     +'</div>'
     +'<div style="display:flex;gap:8px;margin-bottom:4px">'
-      +'<button class="sub-btn sub-public" style="flex:1;margin:0" onclick="gruppePartyNeu(\''+g.id+'\')">Neue Party für die Gruppe</button>'
+      +'<button class="sub-btn sub-public" style="flex:1;margin:0" onclick="treffenOeffnen(\''+g.id+'\')">Treffen planen</button>'
     +'</div>'
     +anfragen
     +'<div class="mg-sec">Partys</div>'+partys
@@ -18910,10 +18957,84 @@ async function spotoutEinladen(){
    an alle Mitglieder. Ein Schritt statt drei. */
 let grpZiel=null;
 
-function gruppePartyNeu(gid){
-  grpZiel=gid;
+/* In einer Gruppe gibt es keine neue Party mit neun Schritten mehr,
+   sondern ein Treffen: Was, Wann und – freiwillig – Wo. Der Ort darf
+   auch nur eine Beschreibung sein; ohne Koordinaten steht das Treffen
+   nicht auf der Karte (es ist privat und gehört nur der Gruppe). */
+let treffenGruppe=null,treffenLaeuft=false;
+function treffenOeffnen(gid){
+  if(!cUser){kontoNoetig();return;}
+  if(!gid)return;
+  treffenGruppe=gid;
+  const jetzt=new Date(Date.now()+60*60*1000);
+  const zwei=n=>String(n).padStart(2,'0');
+  const tag=d=>d.getFullYear()+'-'+zwei(d.getMonth()+1)+'-'+zwei(d.getDate());
+  const d=document.getElementById('trDatum');
+  if(d){ d.min=tag(new Date()); if(!d.value||d.value<d.min)d.value=tag(jetzt); }
+  const z=document.getElementById('trZeit');
+  if(z&&!z.value)z.value=zwei(jetzt.getHours())+':00';
   closeOverlay('gruppeOverlay');
-  openCreate('private');
+  document.getElementById('treffenOverlay')?.classList.add('open');
+}
+function gruppePartyNeu(gid){ treffenOeffnen(gid); }
+
+async function treffenSpeichern(){
+  if(treffenLaeuft||!cUser)return;
+  const gid=treffenGruppe;
+  const name=(document.getElementById('trName')?.value||'').trim();
+  const datum=document.getElementById('trDatum')?.value||'';
+  const zeit=document.getElementById('trZeit')?.value||'';
+  const ort=(document.getElementById('trOrt')?.value||'').trim();
+  const notiz=(document.getElementById('trNotiz')?.value||'').trim();
+  if(!name){toast('Wie heisst das Treffen?','warn');document.getElementById('trName')?.focus();return;}
+  if(!datum||!zeit){toast('Tag und Uhrzeit fehlen','warn');return;}
+  if(new Date(datum+'T'+zeit+':00').getTime()<Date.now()-15*60*1000){toast('Das liegt in der Vergangenheit','warn');return;}
+  if(!gid){toast('Keine Gruppe gewählt','error');return;}
+  treffenLaeuft=true;
+  const btn=document.getElementById('trKnopf');
+  const label=btn?btn.innerHTML:'';
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>Wird erstellt…';}
+  try{
+    const zeile={
+      created_by:cUser.id,type:'private',name,category:'Treffen',
+      date:datum,time:zeit,end_time:null,
+      address:ort||null,lat:null,lng:null,
+      price:0,zahlarten:[],drink_price:0,drink_desc:null,capacity:null,
+      description:notiz,emoji:'private',image_url:null,invite_code:null,
+      nur_persoenliche_links:true,verified:false,host_name:null,
+      registration_deadline:null,dresscode:null,spotify_url:null
+    };
+    let{data,error}=await sb.from('events').insert(zeile).select().single();
+    /* Verlangt die Datenbank eine Adresse, steht eben "Ort folgt" da –
+       lieber das als ein Treffen, das gar nicht zustande kommt. */
+    if(error&&!ort&&/address/i.test(error.message||'')){
+      ({data,error}=await sb.from('events').insert({...zeile,address:'Ort folgt'}).select().single());
+    }
+    if(error){console.warn('[treffen]',error);toast(fehlerText(error),'error');return;}
+    grpZiel=gid;
+    const rein=await gruppeNachErstellen(data.id);
+    // Im Gruppenchat als Karte, damit alle es sofort sehen
+    try{
+      const{data:chat}=await sb.rpc('gruppe_chat_oeffnen',{p_group:gid});
+      if(chat?.status==='ok'&&chat.id){
+        const{error:mFehler}=await sb.from('messages').insert({conversation_id:chat.id,sender_id:cUser.id,
+          content:'Neues Treffen: '+name+'\n'+eventUrl(data)});
+        if(mFehler)console.warn('[treffen] chat',mFehler);
+      }
+    }catch(err){console.warn('[treffen] chat',err);}
+    ['trName','trOrt','trNotiz','trZeit'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    closeOverlay('treffenOverlay');
+    nativeHaptik('erfolg');
+    await loadEvts();
+    if(convGruppe&&convUser?.id===gid){ await loadMsgs(); grpNaechsteZeigen(); }
+    else if(rein) gruppeChat(gid);
+  }catch(err){
+    console.warn('[treffen]',err);
+    toast('Das Treffen konnte nicht erstellt werden','error');
+  }finally{
+    treffenLaeuft=false;
+    if(btn){btn.disabled=false;btn.innerHTML=label;}
+  }
 }
 
 /* Laeuft nach dem Speichern, wenn die Party fuer eine Gruppe gedacht war. */
@@ -18961,7 +19082,7 @@ async function gruppePartyWaehlen(gid){
     .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   if(!alle.length){
     body.innerHTML='<div class="mg-empty" style="margin-bottom:12px">Du hast gerade keine kommende Party, die du hineinstellen könntest.</div>'
-      +'<button class="sub-btn sub-public" style="width:100%" onclick="gruppePartyNeu(\''+gid+'\')">Neue Party für die Gruppe</button>'
+      +'<button class="sub-btn sub-public" style="width:100%" onclick="treffenOeffnen(\''+gid+'\')">Treffen planen</button>'
       +'<button class="prof-action-btn" style="width:100%;margin-top:8px" onclick="gruppeOeffnen(\''+gid+'\')">Zurück</button>';
     return;
   }
