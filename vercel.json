@@ -1,17 +1,5 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "query",
-          "key": "join"
-        }
-      ],
-      "destination": "/api/einladung"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
