@@ -152,7 +152,7 @@
       position:fixed;inset:0;z-index:999;overflow:hidden;
       background:var(--bg);
       display:flex;align-items:center;justify-content:center;
-      transition:opacity 380ms var(--kurve) 90ms;
+      transition:opacity var(--takt-lang) var(--kurve);
     }
     #splash.hide{opacity:0;pointer-events:none}
     .sp-licht{position:absolute;inset:0;pointer-events:none}
@@ -662,7 +662,7 @@
        nur die Zeichnung dreht – so springt nichts. */
     .ptr.laeuft .ptr-voll{
       stroke:#FF2D76;stroke-dasharray:17.3 51.8;stroke-dashoffset:0;
-      transform-origin:50% 50%;animation:ptrDreht .85s linear infinite;
+      transform-origin:50% 50%;animation:ptrDreht var(--dreh) linear infinite;
     }
     @keyframes ptrDreht{to{transform:rotate(360deg)}}
     @media(prefers-reduced-motion:reduce){ .ptr.laeuft .ptr-voll{animation:none} }
@@ -708,7 +708,6 @@
       font-size:.6rem;font-weight:600;padding:4px 10px;
       transition:color var(--takt);min-width:44px;
     }
-    .bnav-btn svg{transition:transform var(--takt)}
     /* Die Beschriftung des aktiven Tabs traegt die Farbe, nicht nur
        das Symbol. Weiss gegen Grau sieht man im Augenwinkel kaum -
        Farbe sagt sofort, wo man steht. */
@@ -1953,12 +1952,11 @@
       display:flex;align-items:center;gap:11px;
       font-size:.88rem;font-weight:600;color:#fff;line-height:1.35;text-align:left;
       opacity:0;pointer-events:none;
-      transition:opacity 180ms ease,transform 380ms var(--kurve-schwung);
+      transition:opacity var(--takt-kurz) var(--kurve),transform var(--takt-lang) var(--kurve-schwung);
+      transform-origin:50% 100%;
     }
     .toast.show{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto;cursor:pointer}
-    .toast.geht{transition:opacity 160ms ease,transform 220ms var(--kurve)}
-    .toast.stoss{animation:toastStoss 260ms var(--kurve-schwung)}
-    @keyframes toastStoss{0%{transform:translate(-50%,0) scale(.95)}100%{transform:translate(-50%,0) scale(1)}}
+    .toast.geht{transition:opacity var(--takt-kurz) var(--kurve),transform var(--takt) var(--kurve)}
     .toast-ic{
       flex:0 0 32px;height:32px;border-radius:11px;
       display:flex;align-items:center;justify-content:center;
@@ -1977,7 +1975,6 @@
     @media(prefers-reduced-motion:reduce){
       .toast,.toast.geht{transition:opacity var(--takt) ease}
       .toast,.toast.show{transform:translate(-50%,0)}
-      .toast.stoss{animation:none}
     }
 
     /* ── LOCATION BANNER ── */
@@ -2008,7 +2005,7 @@
          noch die eine Ebene hier. */
       z-index:1;isolation:isolate;
     }
-    #mapWrap.show{display:block;animation:mapIn var(--takt-lang) var(--kurve)}
+    #mapWrap.show{display:block;animation:mapIn var(--takt) var(--kurve)}
     #mapWrap.voll{
       /* Unter den Fenstern (200): eine Party, die man auf der Karte
          antippt, oeffnet sich ueber der Karte und nicht darunter. */
@@ -2101,7 +2098,7 @@
     .mpin-ic svg{width:18px;height:18px}
     .mpin-ring{
       position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;
-      border-radius:50%;border:2px solid currentColor;animation:mpinPulse 1.9s ease-out infinite;
+      border-radius:50%;border:2px solid currentColor;animation:mpinPulse 1.9s ease-out 4;will-change:transform,opacity;
     }
     @keyframes mpinPulse{0%{transform:scale(.7);opacity:.85}100%{transform:scale(2.1);opacity:0}}
     .mpin-live{
@@ -2235,7 +2232,7 @@
     .fy-title .fy-spark{
       display:inline-block;width:7px;height:7px;border-radius:50%;
       background:var(--grad-cta);box-shadow:0 0 12px rgba(255,45,118,0.22);
-      animation:fyPulse 2.4s ease-in-out infinite;
+      animation:fyPulse 2.4s ease-in-out 3;
     }
     @keyframes fyPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.78)}}
     .fy-cat{
@@ -2566,8 +2563,7 @@
       display:inline-flex;align-items:center;justify-content:center;
     }
     .mg-blatt{display:none}
-    .mg-blatt.on{display:block;animation:mgRein var(--takt) var(--kurve)}
-    @keyframes mgRein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .mg-blatt.on{display:block}
     .mg-stats{display:flex;gap:12px;margin-bottom:6px}
     .mg-stats>div{
       flex:1;text-align:center;padding:12px 8px;border-radius:15px;
@@ -2985,8 +2981,15 @@
     @media(min-width:480px){
       .grid{grid-template-columns:1fr 1fr 1fr}
     }
+    /* Weniger Bewegung heisst sanfter, nicht gar nichts (Apple, Emil).
+       Frueher stand hier ein Hammer, der jede Dauer auf 0.01 ms setzte –
+       er schlug auch die sanften Ersatz-Ueberblendungen weiter unten tot,
+       und Ladekreise zeigten in jedem Bild einen Zufallsstand (Flackern).
+       Jetzt: Schleifen laufen nur einmal, Ladekreise drehen ruhig weiter,
+       Dauern regeln die --takt-Werte. */
     @media(prefers-reduced-motion:reduce){
-      *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+      *,*::before,*::after{animation-iteration-count:1!important}
+      .spin,.btn-spin,.spinner{animation:spin 1.6s linear infinite!important}
     }
 
     /* ══════════ NACHTRÄGE: fehlende Klassen ══════════ */
@@ -3283,7 +3286,7 @@
          auch bevor JavaScript etwas dazu sagt. */
       transform:translateX(100%);
       background:var(--grad-cta);box-shadow:0 4px 16px rgba(255,45,118,0.15);
-      transition:transform var(--takt-lang) var(--kurve),background var(--takt-lang);
+      transition:transform var(--takt) var(--kurve);
       pointer-events:none;z-index:0;
     }
     .segbtn{
@@ -3429,13 +3432,13 @@
     }
     .follow-btn.busy .fb-spin{display:flex}
     /* kurzer Impuls beim Folgen */
-    .follow-btn.pulse{animation:fbPulse var(--takt-lang) var(--kurve-schwung)}
-    @keyframes fbPulse{0%{transform:scale(1)}38%{transform:scale(.955)}100%{transform:scale(1)}}
+    /* Kein Keyframe-Impuls mehr: er verdoppelte den Druck (:active) und
+       fing bei schnellem Tippen jedes Mal von vorn an. */
     .follow-btn .fb-check{transform:scale(.6);opacity:0;transition:transform var(--takt-lang) var(--kurve-schwung),opacity var(--takt)}
     .follow-btn.following .fb-check{transform:none;opacity:1}
     /* Zähler zählt sichtbar hoch statt zu springen */
     .up-stat-num{transition:transform var(--takt) var(--kurve-schwung)}
-    .up-stat-num.bump{transform:scale(1.18)}
+    .up-stat-num.bump{transform:scale(1.1)}
 
     /* ══════════ KALENDER ══════════ */
     .cal-next{
@@ -5088,11 +5091,11 @@
     /* ── PIKTOGRAMME ──
        Linie in der Schriftfarbe, Flaeche im SPOTOUT-Verlauf. Beim Antippen
        federn sie kurz, der aktive Reiter unten huepft. */
-    .pk{display:block;overflow:visible;flex-shrink:0;transition:transform 220ms var(--kurve-schwung)}
+    .pk{display:block;overflow:visible;flex-shrink:0;transition:transform var(--takt-kurz) var(--kurve)}
     button:active>.pk,a:active>.pk,.bnav-btn:active .pk,.settings-btn:active .pk,.rep-opt:active .rep-ic .pk{transform:scale(.86)}
     /* Unten: inaktiv nur eine helle Flaeche, aktiv in Farbe */
     .bnav-btn:not(.bnav-create):not(.active) .pk [fill^="url(#pk"]{fill:rgba(255,255,255,.16)}
-    .bnav-btn.active:not(.bnav-create) .pk{transform:scale(1.08)}
+    .bnav-btn.active:not(.bnav-create) .pk{transform:none}
     /* Kein Huepfen mehr beim Tabwechsel (15.10.): den sieht man dutzendmal
        am Tag, und jede Animation dort macht den Wechsel nur langsamer. */
     .rep-opt.einzeln{padding:10px 14px}
@@ -6083,7 +6086,7 @@
       content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
       background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.30) 50%,transparent 70%);
       transform:translateX(-130%);
-      animation:proGlanz 4.2s var(--kurve) 1.4s infinite;
+      animation:proGlanz 4.2s var(--kurve) 1.4s 2;
     }
     @keyframes proGlanz{0%,62%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
     .pro2-cta:disabled::after{animation:none;opacity:0}
@@ -6153,7 +6156,7 @@
       background:linear-gradient(135deg,rgba(255,45,118,.12),rgba(124,92,252,.08));
       border-color:rgba(255,45,118,.3);
     }
-    .nt-row.frisch{animation:ntRein var(--takt-lang) var(--kurve) both;animation-delay:calc(var(--i,0) * 40ms)}
+    .nt-row.frisch{animation:ntRein var(--takt) var(--kurve) both;animation-delay:calc(min(var(--i,0),6) * 40ms)}
     @keyframes ntRein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
     .nt-punkt{
       position:absolute;top:14px;right:12px;width:8px;height:8px;border-radius:50%;
@@ -6244,7 +6247,7 @@
       0%,100%{transform:rotate(0)} 15%{transform:rotate(16deg)} 30%{transform:rotate(-12deg)}
       45%{transform:rotate(8deg)} 60%{transform:rotate(-5deg)} 75%{transform:rotate(2deg)}
     }
-    .nav-bell.wackelt svg{animation:glocke .9s var(--kurve);transform-origin:50% 12%}
+    .nav-bell.wackelt svg{animation:glocke 600ms var(--kurve);transform-origin:50% 12%}
     @media (prefers-reduced-motion: reduce){ .nav-bell.wackelt svg{animation:none} }
     /* In der Chatliste: die eigene letzte Nachricht beginnt mit "Du:" */
     .chat-du{color:var(--muted)}
@@ -6453,7 +6456,8 @@
       .sr-name .d1{width:20px;padding:0;font-size:0;gap:0;justify-content:center}
     }
 
-    .bub.bub-markiert{transform:scale(.97);transition:transform .15s ease;filter:brightness(1.15)}
+    .bub{transition:transform var(--takt-kurz) var(--kurve),filter var(--takt-kurz) var(--kurve)}
+    .bub.bub-markiert{transform:scale(.97);filter:brightness(1.15)}
 
     /* ══════════ Text markieren ══════════
        Ueberall gesperrt: ein langer Druck soll die App bedienen und
@@ -6561,6 +6565,89 @@
 
     .c.yes svg,.c.no svg{width:15px;height:15px;display:block;margin:0 auto}
     .c.no svg{opacity:.5}
+
+    /* ══════════ POLITUR NACH EMIL KOWALSKI (15.10.) ══════════
+       Aus dem Durchgang mit emil-design-eng / review-animations:
+       - Alles, was man antippt, gibt beim Aufsetzen nach (:active) –
+         vorher hatten ueber 40 antippbare Stellen gar keine Rueckmeldung.
+       - Druck-Rueckmeldung 140 ms (--takt-kurz), nicht 220–320 ms.
+       - Zugehen schneller als Aufgehen (Fenster).
+       - Nur transform/opacity bewegen, nie Breite (Schalter-Knopf).
+       - Wo sich Farbe/Rand aendert, gleitet genau das – nicht ein
+         transform, das nie passiert. */
+
+    /* Fenster: zu in 320 ms statt 510 ms – auf schnell, zu schneller. */
+    .overlay:not(.open){transition-duration:var(--takt-lang)}
+    .overlay:not(.open) .modal,#userProfOverlay:not(.open) .modal{transition:transform var(--takt-lang) var(--kurve)}
+
+    /* Karten und Zeilen, die man dutzendmal am Tag antippt */
+    .card{transition:transform var(--takt-kurz) var(--kurve),box-shadow var(--takt) var(--kurve)}
+    .chat-item{transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve);-webkit-tap-highlight-color:transparent}
+    .chat-item:active{transform:scale(var(--druck-gross));background:rgba(255,255,255,.09)}
+    .fl-row,.konto-neu{transition:background-color var(--takt-kurz) var(--kurve);-webkit-tap-highlight-color:transparent}
+    .fl-row:active,.konto-neu:active{background:rgba(255,255,255,.05)}
+    .grp-karte,.entwurf-zeile,.ep-locked,.ort-vorschlag,.img-upload-pro{transition:transform var(--takt-kurz) var(--kurve)}
+    .grp-karte:active,.entwurf-zeile:active,.ep-locked:active,.ort-vorschlag:active,.img-upload-pro:active{transform:scale(var(--druck-gross))}
+    .type-card-pro{transition:transform var(--takt-kurz) var(--kurve),border-color var(--takt-kurz),background-color var(--takt-kurz)}
+    .type-card-pro:active{transform:scale(var(--druck-gross))}
+    .insta-tile{transition:opacity var(--takt-kurz) var(--kurve)}
+    .insta-tile:active{opacity:.75}
+    .nt-tab{transition:color var(--takt-kurz) var(--kurve),opacity var(--takt-kurz) var(--kurve)}
+    .nt-tab:active{opacity:.7}
+    .nt-schieber-fuell{transition:transform var(--takt) var(--kurve)}
+    .mg-tab:active{background:rgba(255,255,255,.09)}
+
+    /* Knoepfe */
+    .pro-cta,.oe-knopf,.tour-skip,.mg-raus,.oe-zeile button,.os-km button{
+      transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz),border-color var(--takt-kurz),color var(--takt-kurz)}
+    .pro-cta:active,.oe-knopf:active,.tour-skip:active,.mg-raus:active,.oe-zeile button:active,.os-km button:active{transform:scale(var(--druck))}
+    .nav-av,.map-zu{transition:transform var(--takt-kurz) var(--kurve)}
+    .nav-av:active,.map-zu:active{transform:scale(var(--druck-klein))}
+    .bring-box{transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz),border-color var(--takt-kurz)}
+    .bring-box:active{transform:scale(var(--druck-klein))}
+
+    /* Kleine Antippstellen: Helligkeit genuegt */
+    .auth-vergessen,.pw-zurueck,.pw-auge,.cpro-x,.cb-x,.addr-opt,.fy-sub-knopf,.ep-help-pro,.search-clear,
+    .ez-weg,.img-clear,.social-lock,.bring-del,.oe-zurueck,.up2-zahl,.such-kopf button,.such-weg,.prof-konto,
+    .os-weg,.konto-nein,.ort-nein,.foto-voll-pfeil,.abz-reihe,.oe-reset,.up-stat-knopf,.grp-party-kopf,
+    .grp-bild-aendern,.wl-raus,.insta-av-wrap,.insta-stat{
+      transition:opacity var(--takt-kurz) var(--kurve);-webkit-tap-highlight-color:transparent}
+    .auth-vergessen:active,.pw-zurueck:active,.pw-auge:active,.cpro-x:active,.cb-x:active,.addr-opt:active,
+    .fy-sub-knopf:active,.ep-help-pro:active,.search-clear:active,.ez-weg:active,.img-clear:active,
+    .social-lock:active,.bring-del:active,.oe-zurueck:active,.up2-zahl:active,.such-kopf button:active,
+    .such-weg:active,.prof-konto:active,.os-weg:active,.konto-nein:active,.ort-nein:active,
+    .foto-voll-pfeil:active,.abz-reihe:active,.oe-reset:active,.up-stat-knopf:active,.grp-party-kopf:active,
+    .grp-bild-aendern:active,.wl-raus:active,.insta-av-wrap:active,.insta-stat:active{opacity:.6}
+
+    /* Druck in 140 ms statt 220 ms */
+    .auth-submit-btn,.attend-btn,.sub-btn,.cal-item,.icon-opt,.fy-refresh,.fy-go,.fy-empty-btn,
+    .ep-gender .gender-opt,.fy-card{transition:transform var(--takt-kurz) var(--kurve),border-color var(--takt),background-color var(--takt),box-shadow var(--takt)}
+
+    /* Was sich wirklich aendert (Rand, Grund), gleitet – nicht ein
+       transform, das nie kommt. */
+    .fg input,.auth-field,.msg-setting-radio,.cs-num,.tour-punkt{
+      transition:border-color var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve),box-shadow var(--takt-kurz) var(--kurve)}
+    .tcp-check,.io-ic{
+      transition:border-color var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve),color var(--takt-kurz) var(--kurve)}
+    .cs-line{transition:background var(--takt)}
+    .rwahl-haken{transition:opacity var(--takt-kurz) var(--kurve)}
+
+    /* Folgen-Knopf: Beschriftung wechselt schnell, Haekchen nie aus dem Nichts */
+    .follow-btn .fb-face{transition:opacity var(--takt-kurz) var(--kurve),transform var(--takt) var(--kurve)}
+    .follow-btn .fb-check{transform:scale(.9);transition:transform var(--takt) var(--kurve),opacity var(--takt-kurz) var(--kurve)}
+
+    /* Schalter: der Knopf streckt sich per transform, nicht per Breite */
+    .sw>i{transition:transform var(--takt) var(--kurve)}
+    .sw:not(:disabled):active>i{width:27px;transform:scaleX(1.15);transform-origin:left center}
+    .sw.an:not(:disabled):active>i{transform:translateX(20px) scaleX(1.15);transform-origin:right center}
+
+    /* Zeilen, die verschwinden: kurz und mit derselben Kurve */
+    .fa-zeile,.anfr-zeile,.bes-zeile,.mg-guest{transition:opacity var(--takt) var(--kurve),transform var(--takt) var(--kurve)}
+    .mpro-zu{transition:opacity var(--takt-kurz) var(--kurve),transform var(--takt-kurz) var(--kurve)}
+    @media(prefers-reduced-motion:reduce){
+      .ptr.laeuft .ptr-voll{animation:ptrDreht 1.6s linear infinite}
+      .overlay:not(.open) .modal,#userProfOverlay:not(.open) .modal{transition:opacity var(--takt) ease}
+    }
 
     /* ══════════ SCHRIFT: Laufweite nach Groesse (15.10.) ══════════
        Eine Laufweite fuer alle Groessen ist irgendwo falsch: grosse
@@ -17214,7 +17301,6 @@ async function folgenOderAnfragen(userId, btn){
   if(data==='angefragt'){
     if(btn){
       btn.classList.add('following');   // blendet auf "Angefragt" um
-      btn.classList.remove('pulse');void btn.offsetWidth;btn.classList.add('pulse');
       btn.disabled=false;
     }
     }else if(data==='folgt'||data==='folgst_schon'){
@@ -17271,7 +17357,6 @@ async function toggleFollow(btnOrId,legacyFlag){
   // Sofort umschalten – der Nutzer sieht die Reaktion, nicht die Wartezeit
   if(btn){
     btn.classList.toggle('following',!wasFollowing);
-    if(!wasFollowing){btn.classList.remove('pulse');void btn.offsetWidth;btn.classList.add('pulse');}
     btn.disabled=true;
   }
   bumpFollowers(wasFollowing?-1:1);
@@ -17315,7 +17400,7 @@ function bumpFollowers(delta){
   const next=Math.max(0,(parseInt(num.textContent,10)||0)+delta);
   num.textContent=next;
   num.classList.remove('bump');void num.offsetWidth;num.classList.add('bump');
-  setTimeout(()=>num.classList.remove('bump'),280);
+  setTimeout(()=>num.classList.remove('bump'),220);
 }
 
 function closeUserProf(ganz){
@@ -18060,7 +18145,8 @@ async function gruppeRauswerfen(btn,gid,uid,name){
   if(error){toast(fehlerText(error),'error');btn.disabled=false;return;}
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');btn.disabled=false;return;}
   const zeile=document.getElementById('grpm-'+uid);
-  if(zeile){ zeile.style.opacity='.35'; setTimeout(()=>{ try{zeile.remove();}catch(e){} },400); }
+  /* Weich ausblenden statt erst grau und dann schlagartig weg. */
+  if(zeile){ zeile.style.transition='opacity var(--takt) var(--kurve)'; zeile.style.opacity='0'; setTimeout(()=>{ try{zeile.remove();}catch(e){} },230); }
   nativeHaptik('mittel');
   gruppenLaden();
 }
@@ -25144,7 +25230,7 @@ async function loadNotifs(){
   if(!notifFirst&&offen.length>ntVorher){
     document.querySelectorAll('.nav-bell').forEach(b=>{
       b.classList.remove('wackelt'); void b.offsetWidth; b.classList.add('wackelt');
-      setTimeout(()=>b.classList.remove('wackelt'),1000);
+      setTimeout(()=>b.classList.remove('wackelt'),650);
     });
   }
   ntVorher=offen.length;
@@ -27856,8 +27942,10 @@ function toast(msg,type='info'){
   t.style.setProperty('--toast-dauer',dauer+'ms');
   const lage=tippt?' ueber-tastatur':'';
   t.className='toast '+art+lage;
-  void t.offsetWidth;                       // Strich und Schwung neu starten
-  t.className='toast show '+art+lage+(warDa?' stoss':'');
+  /* Steht schon ein Hinweis, wechselt nur der Inhalt – kein Neustart
+     per Keyframe (der fing jedes Mal bei 0.95 an, statt weiterzulaufen). */
+  if(!warDa)void t.offsetWidth;
+  t.className='toast show '+art+lage;
   clearTimeout(toastUhr);
   toastUhr=setTimeout(toastWeg,dauer);
 
@@ -28117,7 +28205,7 @@ function splashAb(fruehestensNach){
     const el=document.getElementById('splash');
     if(!el)return;
     el.classList.add('hide');
-    setTimeout(()=>{el.parentNode&&el.parentNode.removeChild(el);},500);
+    setTimeout(()=>{el.parentNode&&el.parentNode.removeChild(el);},360);
   },warten);
 }
 
