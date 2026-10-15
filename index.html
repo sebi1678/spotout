@@ -26534,11 +26534,12 @@ function toggleMap(){
   if(!mapVis&&mapVoll)mapVollbild(false);
   if(!mapVis)return;
   mapKopfSetzen();
+  /* Der Kasten ist ab hier sichtbar und hat seine Groesse – Leaflet kann
+     sofort messen. Frueher kam das Einpassen erst nach 260 ms: die Karte
+     ging auf der ganzen Schweiz auf und sprang dann auf die Partys, mit
+     neu ladenden Kacheln dazwischen. Jetzt steht sie gleich richtig. */
   if(!mapInst){ initMap(); }
-  else{ updMarkers(); }
-
-  // Leaflet kennt die Grösse nicht, solange der Container ausgeblendet war
-  setTimeout(()=>{ mapInst&&mapInst.invalidateSize(); mapFitAll(); },260);
+  else{ mapInst.invalidateSize(false); updMarkers(); mapFitAll(true); }
 }
 
 /* Gross oder klein. Ohne Argument: umschalten. */
@@ -26558,8 +26559,9 @@ function mapVollbild(auf){
   if(knopf)knopf.setAttribute('aria-label', mapVoll?'Karte verkleinern':'Karte im Vollbild');
   mapKopfSetzen();
   // Der Kasten hat eine andere Groesse als der Bildschirm – Leaflet muss
-  // es erfahren, sonst bleibt die halbe Karte grau.
-  setTimeout(()=>{ mapInst&&mapInst.invalidateSize(); mapFitAll(); },300);
+  // es erfahren, sonst bleibt die halbe Karte grau. Sofort, nicht nach
+  // 300 ms: die neue Groesse gilt, sobald die Klasse sitzt.
+  if(mapInst){ mapInst.invalidateSize(false); mapFitAll(true); }
 }
 
 /* Im Vollbild schliesst das Kreuz die Karte ganz, der Wisch nach unten
@@ -26643,9 +26645,19 @@ const GOOGLE_DUNKEL=[
    stylers:[{color:'#c7cbe8'}]},
 ];
 
-let mapTheme='dark', mapTiles=null, googleGeladen=null;
+let mapTheme='dark', mapTiles=null, googleGeladen=null, googleBereit=false;
 
 function karteHatGoogle(){ return !!String(GOOGLE_KARTE_SCHLUESSEL||'').trim(); }
+/* Die Google-Bausteine im Leerlauf vorladen, ein paar Sekunden nach dem
+   Start. Dann ist die Karte beim ersten Antippen sofort Google und
+   wechselt nicht mittendrin das Aussehen. Kostet nichts bei Google:
+   gezaehlt wird erst eine erzeugte Karte, nicht das Skript. */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    const los=()=>{ if(karteHatGoogle()&&!mapInst)googleKarteLaden().catch(()=>{}); };
+    if('requestIdleCallback' in window)requestIdleCallback(los,{timeout:4000}); else los();
+  },3500);
+});
 
 /* Laedt Google Maps und den Leaflet-Aufsatz – einmal, und nur wenn ein
    Schluessel da ist. Geht dabei etwas schief (kein Netz, Schluessel
@@ -26675,7 +26687,7 @@ function googleKarteLaden(){
     ])
       .then(()=>{
         clearTimeout(zeitgrenze);
-        if(window.google?.maps && L.gridLayer?.googleMutant)fertig();
+        if(window.google?.maps && L.gridLayer?.googleMutant){ googleBereit=true; fertig(); }
         else daneben(new Error('nicht bereit'));
       })
       .catch((err)=>{ clearTimeout(zeitgrenze); daneben(err); });
@@ -26694,8 +26706,11 @@ function initMap(){
   // Am Rand unten links, damit sie nicht unter dem Kreuz sitzen –
   // und weil der Daumen dort ohnehin hinreicht.
   try{ L.control?.zoom?.({position:'bottomleft'})?.addTo(mapInst); }catch(err){}
-  applyMapTheme();
+  /* Erst wissen, wohin, dann Kacheln laden – sonst laedt sie zuerst die
+     ganze Schweiz und gleich danach den richtigen Ausschnitt. */
   updMarkers();
+  mapFitAll(true);
+  applyMapTheme();
 }
 
 function osmEbene(){
@@ -26732,6 +26747,26 @@ function applyMapTheme(){
      in jedem Fall eine Karte – im schlechtesten Fall eben die von
      OpenStreetMap, statt eines leeren Kastens. */
   const wrapEl=document.getElementById('mapWrap');
+  /* Ist Google schon geladen (siehe Vorladen unten), gleich Google –
+     sonst sah man zuerst die umgedrehte OpenStreetMap und einen Moment
+     spaeter eine andere Karte darueber. */
+  if(googleBereit){
+    wrapEl?.classList.remove('map-osm');
+    const g=L.gridLayer.googleMutant({type:'roadmap',styles:mapTheme==='light'?[]:GOOGLE_DUNKEL,maxZoom:20});
+    setzen(g);
+    /* Liefert Google nach 2.5 s noch nichts (Schluessel abgelehnt, kein
+       Netz), lieber OpenStreetMap als ein grauer Kasten. */
+    let da=false;
+    g.once('load',()=>{da=true;});
+    setTimeout(()=>{
+      if(da||mapTiles!==g||!mapInst)return;
+      console.warn('[karte] Google liefert keine Kacheln, nehme OpenStreetMap');
+      wrapEl?.classList.add('map-osm');
+      mapTiles=osmEbene().addTo(mapInst);
+      g.remove();
+    },2500);
+    return;
+  }
   wrapEl?.classList.add('map-osm');          // bis Google da ist: OSM-Darstellung
   setzen(osmEbene());
 
@@ -26865,16 +26900,19 @@ function updMarkers(){
   mapKopfSetzen();
 }
 
-function mapFitAll(){
+/* sofort=true: ohne Flug – beim Aufgehen soll sie einfach richtig
+   dastehen, nicht erst hinzoomen. */
+function mapFitAll(sofort){
   if(!mapInst)return;
   const mitte=(typeof umkreisOrt==='function')?umkreisOrt():null;
   const pts=mapPts.slice();
   if(mitte)pts.push([mitte.lat,mitte.lng]);
-  if(pts.length>1)mapInst.fitBounds(pts,{padding:[46,46],maxZoom:14});
-  else if(pts.length===1)mapInst.setView(pts[0],14);
+  const wie=sofort?{animate:false}:{};
+  if(pts.length>1)mapInst.fitBounds(pts,{padding:[46,46],maxZoom:14,...wie});
+  else if(pts.length===1)mapInst.setView(pts[0],14,wie);
   // Nichts gefunden, aber ein Ort gesucht: trotzdem dorthin. Eine leere
   // Karte am richtigen Ort sagt mehr als eine leere Karte irgendwo.
-  else if(mitte)mapInst.setView([mitte.lat,mitte.lng],12);
+  else if(mitte)mapInst.setView([mitte.lat,mitte.lng],12,wie);
 }
 
 async function mapToMe(){
