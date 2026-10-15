@@ -12202,6 +12202,41 @@ function anfangRoh(s){
 }
 function anfang(s){return esc(anfangRoh(s));}
 
+/* Eine Zeile verschwindet aus einer Liste: erst gleitet sie weg (Deckkraft
+   und 12 px nach links, --takt), dann schliesst sich die Lücke (Höhe, Rand,
+   Innenabstand auf 0 in 200 ms), dann ist sie weg. Die Nachbarn rutschen
+   nach, statt zu springen. Mit reduzierter Bewegung nur ausblenden.
+   Gibt ein Promise zurück: danach "Liste leer?" prüfen. */
+function zeileWeg(el){
+  if(!el||!el.isConnected)return Promise.resolve();
+  if(el.__weg)return el.__weg;
+  const ms=n=>{const w=getComputedStyle(document.documentElement).getPropertyValue(n).trim();return parseFloat(w)*(/ms$/.test(w)?1:1000)||220;};
+  const warte=t=>new Promise(r=>setTimeout(r,t));
+  const st=el.style;
+  st.pointerEvents='none';
+  let still=false;
+  try{still=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+  el.__weg=(async()=>{
+    if(still){
+      st.transition='opacity 150ms ease';st.opacity='0';
+      await warte(150);
+    }else{
+      st.transition='opacity var(--takt) var(--kurve),transform var(--takt) var(--kurve)';
+      st.opacity='0';st.transform='translateX(-12px)';
+      await warte(ms('--takt'));
+      if(el.isConnected){
+        st.height=el.offsetHeight+'px';st.overflow='hidden';st.boxSizing='border-box';
+        void el.offsetHeight;
+        st.transition='height 200ms var(--kurve),margin 200ms var(--kurve),padding 200ms var(--kurve),border-width 200ms var(--kurve)';
+        st.height='0';st.marginTop=st.marginBottom='0';st.paddingTop=st.paddingBottom='0';st.borderTopWidth=st.borderBottomWidth='0';
+        await warte(200);
+      }
+    }
+    el.remove();
+  })();
+  return el.__weg;
+}
+
 /* ── Ist die Party vorbei? ─────────────────────────────────────────
    Sechs Stunden nach dem Start gilt sie als gelaufen. Danach kann sich
    niemand mehr anmelden – ein "Dabei sein" auf einer Party von letzter
@@ -17451,11 +17486,10 @@ function anfrageErledigtZeigen(von,angenommen,schonErledigt){
       zeile.insertAdjacentHTML('beforeend',flKnopf(von,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true));
     }else{
       if(txt)txt.textContent=schonErledigt?'Schon erledigt':'Anfrage gelöscht';
-      setTimeout(()=>{ zeile.classList.add('weg'); setTimeout(()=>{
-        zeile.remove();
+      setTimeout(()=>{ zeileWeg(zeile).then(()=>{
         const box=document.getElementById('faBox');
         if(box&&!box.querySelector('.fa-zeile'))box.innerHTML='';
-      },260); },900);
+      }); },900);
     }
   }
   if(angenommen){
@@ -18102,7 +18136,7 @@ async function gruppeEinladungAntwort(btn,gid,ja){
   if(zeile){
     zeile.innerHTML='<div class="mg-req-s" style="padding:2px 0">'+(ja?'Du bist dabei':'Abgelehnt')+'</div>';
     zeile.style.opacity='.6';
-    setTimeout(()=>{ try{zeile.remove();}catch(e){} },1200);
+    setTimeout(()=>zeileWeg(zeile),1200);
   }
   nativeHaptik('leicht');
   gruppenLaden();
@@ -18347,7 +18381,7 @@ async function gruppeRauswerfen(btn,gid,uid,name){
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');btn.disabled=false;return;}
   const zeile=document.getElementById('grpm-'+uid);
   /* Weich ausblenden statt erst grau und dann schlagartig weg. */
-  if(zeile){ zeile.style.transition='opacity var(--takt) var(--kurve)'; zeile.style.opacity='0'; setTimeout(()=>{ try{zeile.remove();}catch(e){} },230); }
+  zeileWeg(zeile);
   nativeHaptik('mittel');
   gruppenLaden();
 }
@@ -18366,7 +18400,7 @@ async function gruppeEntscheiden(btn,gid,uid,ja){
     zeile.innerHTML='<div class="mg-req-s" style="padding:2px 0">'
       +(ja?'Aufgenommen':'Abgelehnt')+'</div>';
     zeile.style.opacity='.6';
-    setTimeout(()=>{ try{ zeile.remove(); }catch(e){} },1400);
+    setTimeout(()=>zeileWeg(zeile),1400);
   }
   gruppenLaden();
 }
@@ -24416,8 +24450,7 @@ async function gastEntfernen(btn,eventId,uid){
   const{error}=await sb.from('event_attendees').delete().eq('event_id',eventId).eq('user_id',uid);
   if(error){ toast(fehlerText(error),'error'); btn.disabled=false; return; }
   mgGeaendert=true;
-  btn.closest('.mg-guest')?.classList.add('weg');
-  setTimeout(()=>openManage(eventId),350);
+  zeileWeg(btn.closest('.mg-guest')).then(()=>openManage(eventId));
   loadEvts();
 }
 
@@ -24490,7 +24523,7 @@ async function anfrageImBlatt(btn,von,ja){
   }else{
     if(status)status.textContent=data==='keine_anfrage'?'Schon erledigt':'Anfrage gelöscht';
     knoepfe.innerHTML='';
-    setTimeout(()=>{ zeile.classList.add('weg'); setTimeout(()=>{ zeile.remove(); if(!(window.__anfragen||[]).length&&!document.querySelector('#anfragenListe .anfr-zeile'))anfragenZeichnen(); },260); },700);
+    setTimeout(()=>{ zeileWeg(zeile).then(()=>{ if(!(window.__anfragen||[]).length&&!document.querySelector('#anfragenListe .anfr-zeile'))anfragenZeichnen(); }); },700);
   }
   anfrageErledigtZeigen(von,angenommen,data==='keine_anfrage');
   try{ renderNotifs(); }catch(e){}
@@ -25343,9 +25376,10 @@ async function blockAufheben(btn,id){
   if(btn)btn.disabled=true;
   const ok=await unblockUser(id);
   if(!ok){ if(btn)btn.disabled=false; return; }
-  btn?.closest('.mg-guest')?.remove();
-  const box=document.getElementById('blockiertListe');
-  if(box&&!box.querySelector('.mg-guest'))box.innerHTML='<div class="up-empty">Du hast niemanden blockiert.</div>';
+  zeileWeg(btn?.closest('.mg-guest')).then(()=>{
+    const box=document.getElementById('blockiertListe');
+    if(box&&!box.querySelector('.mg-guest'))box.innerHTML='<div class="up-empty">Du hast niemanden blockiert.</div>';
+  });
   const bz=document.getElementById('setBlockZahl');
   if(bz)bz.textContent=window.__blocked.size?String(window.__blocked.size):'';
 }
@@ -27789,9 +27823,10 @@ async function vereinEntscheiden(btn,id,ja){
     karte?.querySelectorAll('button').forEach(b=>b.disabled=false);
     return;
   }
-  karte?.remove();
-  const box=document.getElementById('vereinePruefenListe');
-  if(box&&!box.querySelector('.vp-karte'))box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';
+  zeileWeg(karte).then(()=>{
+    const box=document.getElementById('vereinePruefenListe');
+    if(box&&!box.querySelector('.vp-karte'))box.innerHTML='<div class="up-empty">Kein Verein wartet auf eine Prüfung.</div>';
+  });
   vereinZahlLaden();
 }
 
