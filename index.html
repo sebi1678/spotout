@@ -6687,6 +6687,66 @@
        waren dort nie zu sehen. */
     @media(hover:none){ .insta-tile-overlay{opacity:1} }
 
+
+    /* ══════════ UEBERGAENGE, DIE FEHLTEN (15.10.) ══════════
+       find-animation-opportunities: wo etwas sprang, obwohl ein kurzer
+       Uebergang erklaert, was passiert. Nicht bei Dingen, die man
+       dutzendmal am Tag sieht (Seiten- und Reiterwechsel bleiben ruhig). */
+
+    /* Inhalt ersetzt einen Ladekreis */
+    @keyframes einblenden{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    @keyframes einblendenRuhig{from{opacity:0}to{opacity:1}}
+    .einblenden>*{animation:einblenden var(--takt) var(--kurve) both;animation-delay:calc(min(var(--i,0),6) * 40ms)}
+    /* Ladekreise erst nach 300 ms – bei schnellem Netz sieht man sie gar
+       nicht, statt dass sie kurz aufblitzen (gefuehlt schneller). */
+    .loading{animation:einblendenRuhig 200ms ease 300ms both}
+
+    /* Party erstellen: Schritte gleiten in Blaetterrichtung */
+    .create-panel.rein{animation:rein var(--takt-lang) var(--kurve)}
+    .create-panel.reinL{animation:reinLinks var(--takt-lang) var(--kurve)}
+
+    /* Antworten im Einstieg: Rand und Grund gleiten */
+    .msg-setting-opt{transition:transform var(--takt-kurz) var(--kurve),border-color var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve)}
+
+    /* Punkte: der aktive wird breit – gleitend (kleine Elemente, seltener
+       Bildschirm: die eine erlaubte Ausnahme von "nur transform"). */
+    .tour-punkt{transition:width var(--takt) var(--kurve),background-color var(--takt-kurz) var(--kurve)}
+
+    /* Tour: Karten kommen aus der Blaetterrichtung und gehen zur anderen Seite */
+    .tour-karte{transform:translateX(calc(var(--r,1) * 16px));transition:opacity var(--takt-lang) var(--kurve),transform var(--takt-lang) var(--kurve)}
+    .tour-karte.weg{transform:translateX(calc(var(--r,1) * -16px))}
+    .tour-karte.on{transform:none}
+
+    /* "Nochmals tippen": Farbe gleitet, ein Balken zeigt, wann es verfaellt */
+    .settings-btn.danger,.danger-btn,.rep-danger,.sec-btn.vp-nein,.mg-raus,.nt-knopf,.attend-btn{
+      transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve),border-color var(--takt-kurz) var(--kurve),color var(--takt-kurz) var(--kurve)}
+    .attend-btn.armed{background:rgba(255,69,86,.16);border-color:rgba(255,69,86,.55);color:#FF8A92;position:relative;overflow:hidden}
+    .attend-btn.armed::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:currentColor;opacity:.55;
+      transform-origin:left center;animation:armUhr 3500ms linear forwards}
+    @keyframes armUhr{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+    /* Was auftaucht, taucht weich auf (statt hart dazustehen) */
+    .rfehler,.fg-err,.konto-weg-hinweis,.nt-antwort,.ort-vorschlag,.ort-schild,.conv-bearb,.grp-naechste{
+      transition:opacity var(--takt) var(--kurve),transform var(--takt) var(--kurve)}
+    @starting-style{
+      .rfehler,.fg-err,.konto-weg-hinweis,.nt-antwort,.grp-naechste{opacity:0;transform:translateY(-4px)}
+      .ort-vorschlag,.ort-schild{opacity:0;transform:translateY(-6px) scale(.98)}
+      .conv-bearb.show{opacity:0;transform:translateY(8px)}
+    }
+    /* Zaehler-Punkte poppen leicht auf */
+    .unread-badge,.nav-bell-dot{transition:transform var(--takt) var(--kurve),opacity var(--takt-kurz) var(--kurve)}
+    @starting-style{ .unread-badge,.nav-bell-dot{transform:scale(.6);opacity:0} }
+
+    @media(prefers-reduced-motion:reduce){
+      .einblenden>*{animation:einblendenRuhig 150ms ease both;animation-delay:0s}
+      .create-panel.rein,.create-panel.reinL{animation:einblendenRuhig 150ms ease}
+      .tour-karte,.tour-karte.weg{transform:none;transition:opacity 150ms ease}
+      .tour-punkt{transition:background-color 150ms ease}
+      .attend-btn.armed::after{animation:none}
+      .rfehler,.fg-err,.konto-weg-hinweis,.nt-antwort,.ort-vorschlag,.ort-schild,.conv-bearb,.grp-naechste,
+      .unread-badge,.nav-bell-dot{transition:opacity 150ms ease;transform:none}
+    }
+
     /* ══════════ SCHRIFT: Laufweite nach Groesse (15.10.) ══════════
        Eine Laufweite fuer alle Groessen ist irgendwo falsch: grosse
        Titel wirken zu luftig, kleiner Text zu eng. Werte aus Inters
@@ -9539,6 +9599,27 @@ function tourStarten(satz,erzwingen){
   tourAufbauen();
   tourZeichnen();
   requestAnimationFrame(()=>t.classList.add('sichtbar'));
+  /* Erster Eindruck: Bild, Titel, Text und Knoepfe kommen nacheinander. */
+  mitGsap((gsap,fertig)=>{
+    const k=t.querySelector('.tour-karte.on');
+    if(!k){fertig();return;}
+    gsap.timeline({defaults:{ease:'power3.out',duration:.45},onComplete:fertig})
+      .fromTo(k.querySelector('.tour-bild'),{autoAlpha:0,scale:.94,y:8},{autoAlpha:1,scale:1,y:0},.08)
+      .fromTo(k.querySelectorAll('.tour-t,.tour-s'),{autoAlpha:0,y:12},{autoAlpha:1,y:0,stagger:.06},.16)
+      .fromTo(t.querySelector('.tour-fuss'),{autoAlpha:0,y:8},{autoAlpha:1,y:0,duration:.3},.3);
+  });
+}
+
+/* GSAP fuer seltene Momente: kurz warten (hoechstens 150 ms), ob es
+   da ist; sonst bleibt es beim schlichten Einblenden. In einer
+   matchMedia-Huelle, damit "Weniger Bewegung" nichts davon abbekommt,
+   und am Ende sauber zurueckgenommen. */
+async function mitGsap(fn){
+  const g=window.gsap||await Promise.race([gsapLaden().catch(()=>null),new Promise(r=>setTimeout(()=>r(null),150))]);
+  if(!g)return false;
+  const mm=g.matchMedia();
+  mm.add('(prefers-reduced-motion: no-preference)',()=>{ fn(g,()=>mm.revert()); });
+  return true;
 }
 
 function tourAnzahl(){ return (TOUREN[tourSatz]||[]).length; }
@@ -9630,8 +9711,14 @@ function tourZeichnen(){
   const karten=TOUREN[tourSatz]||[];
   const buehne=document.getElementById('tourBuehne');
   if(!buehne)return;
+  /* Die Karte kommt aus der Richtung, in die man blaettert, und die
+     alte geht zur anderen Seite (Apple: gleicher Weg rein und raus). */
+  buehne.style.setProperty('--r',tourRichtung);
   buehne.querySelectorAll('.tour-karte').forEach(el=>{
-    el.classList.toggle('on', Number(el.dataset.tk)===tourIndex);
+    const jetzt=Number(el.dataset.tk)===tourIndex;
+    if(el.classList.contains('on')&&!jetzt)el.classList.add('weg');
+    if(jetzt)el.classList.remove('weg');
+    el.classList.toggle('on', jetzt);
   });
   const punkte=document.getElementById('tourPunkte');
   if(punkte)[...punkte.children].forEach((p,i)=>
@@ -9825,9 +9912,13 @@ function einstiegZeichnen(){
       }).join('')
     +'</div>';
 
+  /* Punkte bleiben stehen und wechseln nur die Klasse – so kann der
+     aktive Punkt gleiten statt zu springen. */
   const punkte=document.getElementById('einsPunkte');
-  if(punkte)punkte.innerHTML=karten.map((_,i)=>
-    '<div class="tour-punkt'+(i===einsIndex?' an':'')+'"></div>').join('');
+  if(punkte){
+    if(punkte.children.length!==karten.length)punkte.innerHTML=karten.map(()=>'<div class="tour-punkt"></div>').join('');
+    [...punkte.children].forEach((pt,i)=>pt.classList.toggle('an',i===einsIndex));
+  }
   const schritt=document.getElementById('einsSchritt');
   if(schritt)schritt.textContent=(einsIndex+1)+' von '+karten.length;
   const btn=document.getElementById('einsBtn');
@@ -9837,6 +9928,14 @@ function einstiegZeichnen(){
 function einstiegWaehlen(feld,wert){
   einsWahl[feld]=wert;
   nativeHaptik('leicht');
+  /* Nur die Markierung umhaengen. Vorher wurde die ganze Karte neu
+     gebaut – sie flog bei jedem Antippen einer Antwort neu herein. */
+  const k=einstiegKarten()[einsIndex];
+  const zeilen=[...document.querySelectorAll('#einsBuehne .msg-setting-opt')];
+  if(k&&zeilen.length===k.wahl.length){
+    k.wahl.forEach((w,i)=>zeilen[i].classList.toggle('active',String(w.wert)===String(wert)));
+    return;
+  }
   einstiegZeichnen();
 }
 
@@ -12388,7 +12487,17 @@ function setzeHTML(el,html){
      lieber einmal zu viel zeichnen als einmal zu wenig - ein kurzes
      Blinken ist ein Schoenheitsfehler, eine leere Seite ist keiner. */
   if(el.__letzterInhalt===html && el.childElementCount===el.__letzteKinder)return false;
+  /* Stand vorher ein Ladekreis oder Platzhalter da, blendet der echte
+     Inhalt kurz ein (die ersten sechs leicht versetzt) statt
+     aufzuspringen. Sonst – bei jedem weiteren Zeichnen – nichts. */
+  const kamVomLaden=!!el.querySelector(':scope>.loading,:scope>.skelett');
   el.innerHTML=html;
+  if(kamVomLaden){
+    [...el.children].slice(0,7).forEach((c,i)=>c.style.setProperty('--i',i));
+    el.classList.add('einblenden');
+    clearTimeout(el.__einUhr);
+    el.__einUhr=setTimeout(()=>el.classList.remove('einblenden'),600);
+  }
   el.__letzterInhalt=html;
   el.__letzteKinder=el.childElementCount;
   return true;
@@ -15924,9 +16033,15 @@ async function validateStep(step){
 async function goCreateStep(step,silent){
   if(!silent&&step>cStep&&!(await validateStep(cStep)))return;
 
+  /* Vorwaerts kommt der Schritt von rechts, zurueck von links – wie
+     bei der Registrierung. */
+  const richtung=step<cStep?'reinL':'rein';
   for(let i=1;i<=CTOTAL;i++){
     const p=document.getElementById('cpanel-'+i);
-    if(p)p.style.display=(i===step)?'block':'none';
+    if(!p)continue;
+    p.style.display=(i===step)?'block':'none';
+    p.classList.remove('rein','reinL');
+    if(i===step&&!silent&&step!==cStep){ void p.offsetWidth; p.classList.add(richtung); }
   }
   cStep=step;
 
@@ -24737,6 +24852,23 @@ function abosBeiApple(){
   document.body.appendChild(a); a.click(); a.remove();
 }
 
+/* Der Moment, in dem Pro freigeschaltet ist: Krone, Titel, Liste der
+   freigeschalteten Dinge kommen nacheinander, jedes Haekchen zeichnet
+   sich. Nur hier, nicht bei jedem Oeffnen der Pro-Seite. */
+function proFeiern(){
+  mitGsap((gsap,fertig)=>{
+    const el=document.getElementById('proPageContent');
+    if(!el){fertig();return;}
+    const haken=el.querySelectorAll('.pro2-done svg path,.pro2-done svg polyline');
+    haken.forEach(h=>{ const l=h.getTotalLength?h.getTotalLength():24; gsap.set(h,{strokeDasharray:l,strokeDashoffset:l}); });
+    gsap.timeline({defaults:{ease:'power3.out'},onComplete:fertig})
+      .fromTo(el.querySelector('.pro2-krone'),{scale:.8,rotation:-8,autoAlpha:0},{scale:1,rotation:0,autoAlpha:1,duration:.5,ease:'back.out(1.6)'},0)
+      .fromTo(el.querySelectorAll('.pro2-live h2,.pro2-live p'),{y:10,autoAlpha:0},{y:0,autoAlpha:1,duration:.4,stagger:.05},.12)
+      .fromTo(el.querySelectorAll('.pro2-done'),{x:-8,autoAlpha:0},{x:0,autoAlpha:1,duration:.35,stagger:.05},.3)
+      .to(haken,{strokeDashoffset:0,duration:.3,stagger:.05},.4);
+  });
+}
+
 async function warteAufPro(){
   for(let i=0;i<10;i++){
     await new Promise(r=>setTimeout(r,1500));
@@ -24747,6 +24879,7 @@ async function warteAufPro(){
       renderProPage();
       /* Fuehlbar in dem Moment, in dem Pro sichtbar da ist. */
       nativeHaptik('erfolg');
+      proFeiern();
       // Einmal zeigen, was jetzt anders ist – sonst merkt kaum
       // jemand, wofuer er bezahlt hat.
       proTourPruefen();
