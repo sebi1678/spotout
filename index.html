@@ -1685,9 +1685,80 @@
     .conv-plus[hidden]{display:none}
     .conv-plus svg{width:20px;height:20px}
     .conv-plus:active{transform:scale(var(--druck-klein))}
-    .tr-wann{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .tr-opt{text-transform:none;letter-spacing:0;font-weight:500;opacity:.8;margin-left:4px}
-    .tr-hinweis{font-size:.78rem;color:var(--muted);line-height:1.45;margin:2px 0 14px}
+    /* ── Treffen planen ──────────────────────────────────────────
+       Apple: das Häufige zuerst und mit einem Tipp (Chips), das Seltene
+       eine Ebene tiefer (eigenes Datum, Notiz). Die Vorschau oben zeigt
+       das Ergebnis, bevor man es abschickt. */
+    .tr-body{padding-top:4px}
+    .tr-vorschau{
+      display:flex;gap:13px;align-items:center;padding:13px 14px;margin-bottom:18px;
+      border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);
+    }
+    .tr-kal{
+      flex:none;width:50px;height:54px;border-radius:13px;overflow:hidden;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.08);
+    }
+    .tr-kal-mon{font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#FF5A8A}
+    .tr-kal-tag{font-size:1.32rem;font-weight:800;line-height:1.1;color:#fff;letter-spacing:-.02em}
+    .tr-v-text{min-width:0;flex:1}
+    .tr-v-name{font-size:1rem;font-weight:800;color:#fff;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tr-v-name.leer{color:rgba(255,255,255,.5)}
+    .tr-v-wann{font-size:.8rem;color:var(--text2);margin-top:2px}
+    .tr-v-wo{font-size:.78rem;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tr-frage{font-size:.95rem;font-weight:800;color:#fff;letter-spacing:-.01em;margin:4px 0 9px}
+    .tr-opt{font-size:.74rem;font-weight:600;color:var(--muted);margin-left:4px}
+    .tr-feld{
+      width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.10);
+      border-radius:14px;color:#fff;font-family:var(--font);font-size:16px;padding:12px 14px;outline:none;
+      transition:border-color var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve);
+    }
+    .tr-feld::placeholder{color:rgba(255,255,255,.5)}
+    .tr-feld:focus{border-color:rgba(255,45,118,.55);background:rgba(255,255,255,.09)}
+    .tr-feld-gross{font-size:1.08rem;font-weight:700;padding:13px 15px}
+    .tr-feld.fehlt{border-color:rgba(255,90,90,.75)}
+    .tr-chips{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0 16px}
+    .tr-chips.tr-scroll{flex-wrap:nowrap;overflow-x:auto;margin-bottom:8px;padding-bottom:2px;
+      scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+    .tr-chips.tr-scroll::-webkit-scrollbar{display:none}
+    .tr-chip{
+      flex:none;scroll-snap-align:start;
+      border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text2);
+      border-radius:980px;padding:8px 14px;cursor:pointer;font-family:var(--font);font-size:.8rem;font-weight:700;
+      transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve),color var(--takt-kurz) var(--kurve);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .tr-chip small{display:block;font-size:.66rem;font-weight:600;opacity:.75;margin-top:1px}
+    .tr-chip.tr-tag{text-align:center;padding:7px 13px;min-width:62px}
+    .tr-chip:active{transform:scale(var(--druck))}
+    .tr-chip.on{background:var(--grad-cta);color:#fff;border-color:transparent}
+    .tr-eigen{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:-6px 0 16px}
+    .tr-eigen[hidden]{display:none}
+    .tr-mehr{background:none;border:none;color:#FF7AA2;font-family:var(--font);font-size:.84rem;font-weight:700;
+      padding:4px 0 12px;cursor:pointer}
+    .tr-mehr[hidden]{display:none}
+    #trNotiz{margin-bottom:14px;resize:none}
+    .tr-los{width:100%;margin:6px 0 0}
+    .tr-hinweis{font-size:.76rem;color:var(--muted);line-height:1.45;margin:10px 2px 4px;text-align:center}
+
+    /* Treffen im Chat: Kalenderblatt, wer kommt, und Zusagen direkt hier */
+    .bub-party.bp-treffen{display:block;padding:12px;cursor:default}
+    .bpt-kopf{display:flex;gap:11px;align-items:center;cursor:pointer}
+    .bpt-kopf .tr-kal{width:44px;height:48px;border-radius:11px}
+    .bpt-kopf .tr-kal-tag{font-size:1.15rem}
+    .bpt-label{font-size:.62rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#FF7AA2}
+    .bpt-name{font-size:.95rem;font-weight:800;color:#fff;line-height:1.25}
+    .bpt-meta{font-size:.76rem;color:rgba(255,255,255,.66);margin-top:1px}
+    .bpt-fuss{display:flex;align-items:center;gap:10px;margin-top:11px}
+    .bpt-wer{flex:1;min-width:0;font-size:.74rem;color:rgba(255,255,255,.66)}
+    .bpt-knopf{
+      flex:none;border:none;border-radius:980px;padding:8px 15px;cursor:pointer;
+      font-family:var(--font);font-size:.8rem;font-weight:800;color:#fff;background:var(--grad-cta);
+      transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve);
+    }
+    .bpt-knopf:active{transform:scale(var(--druck))}
+    .bpt-knopf.dabei{background:rgba(74,222,128,.16);color:#7EE2A6;box-shadow:inset 0 0 0 1px rgba(74,222,128,.35)}
+    .bpt-knopf:disabled{opacity:.6}
 
     /* ── FORMS (dark) ── */
     .fg{margin-bottom:14px}
@@ -8624,20 +8695,41 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="modal-body">
-      <div class="fg"><label for="trName">Was</label>
-        <input type="text" id="trName" maxlength="60" placeholder="z. B. Grillabend, Kino, Znacht" autocomplete="off"/></div>
-      <div class="tr-wann">
-        <div class="fg"><label for="trDatum">Tag</label><input type="date" id="trDatum"/></div>
-        <div class="fg"><label for="trZeit">Uhrzeit</label><input type="time" id="trZeit"/></div>
+    <div class="modal-body tr-body">
+      <!-- Vorschau: so sieht das Treffen gleich im Chat aus. Sie füllt
+           sich beim Tippen – man sieht das Ergebnis, bevor man es abschickt. -->
+      <div class="tr-vorschau" aria-hidden="true">
+        <div class="tr-kal"><span class="tr-kal-mon" id="trVMon">–</span><span class="tr-kal-tag" id="trVTag">–</span></div>
+        <div class="tr-v-text">
+          <div class="tr-v-name" id="trVName">Was macht ihr?</div>
+          <div class="tr-v-wann" id="trVWann">Tag und Uhrzeit wählen</div>
+          <div class="tr-v-wo" id="trVWo">Ort folgt</div>
+        </div>
       </div>
-      <div class="fg"><label for="trOrt">Wo <span class="tr-opt">freiwillig</span></label>
-        <input type="text" id="trOrt" maxlength="120" placeholder="Adresse oder einfach „bei Lena“" autocomplete="off"/></div>
-      <div class="fg"><label for="trNotiz">Notiz <span class="tr-opt">freiwillig</span></label>
-        <textarea id="trNotiz" rows="2" maxlength="400" placeholder="Was mitnehmen, wer fährt …"></textarea></div>
-      <div class="tr-hinweis">Alle in der Gruppe werden eingeladen und sehen das Treffen im Chat.</div>
-      <button class="sub-btn sub-public" id="trKnopf" style="width:100%;margin:0" onclick="treffenSpeichern()">Treffen erstellen</button>
+
+      <div class="tr-frage">Was?</div>
+      <input class="tr-feld tr-feld-gross" type="text" id="trName" maxlength="60" placeholder="z. B. Znacht bei mir" autocomplete="off" enterkeyhint="next" oninput="treffenVorschau()"/>
+      <div class="tr-chips" id="trWasChips"></div>
+
+      <div class="tr-frage">Wann?</div>
+      <div class="tr-chips tr-scroll" id="trTagChips"></div>
+      <div class="tr-chips" id="trZeitChips"></div>
+      <div class="tr-eigen" id="trEigen" hidden>
+        <input class="tr-feld" type="date" id="trDatum" onchange="treffenWahl('tag',this.value,true)"/>
+        <input class="tr-feld" type="time" id="trZeit" onchange="treffenWahl('zeit',this.value,true)"/>
+      </div>
+
+      <div class="tr-frage">Wo? <span class="tr-opt">freiwillig</span></div>
+      <input class="tr-feld" type="text" id="trOrt" maxlength="120" placeholder="Adresse oder einfach „bei Lena“" autocomplete="off" enterkeyhint="done" oninput="treffenVorschau()"/>
+      <div class="tr-chips" id="trOrtChips"></div>
+
+      <button class="tr-mehr" id="trNotizAuf" onclick="treffenNotizAuf()">+ Notiz für die Gruppe</button>
+      <textarea class="tr-feld" id="trNotiz" rows="2" maxlength="400" placeholder="Was mitnehmen, wer fährt …" hidden></textarea>
+
+      <button class="sub-btn sub-public tr-los" id="trKnopf" onclick="treffenSpeichern()">Treffen vorschlagen</button>
+      <div class="tr-hinweis">Alle in der Gruppe bekommen eine Einladung und können im Chat zusagen.</div>
     </div>
+  </div>
   </div>
 </div>
 
@@ -16069,7 +16161,7 @@ async function partyKartenFuellen(){
   if(fehlen.length){
     try{
       const{data,error}=await sb.from('events')
-        .select('id,name,date,time,address,image_url,type,category')
+        .select('id,name,date,time,address,image_url,type,category,created_by')
         .in('id',fehlen);
       if(error)throw error;
       (data||[]).forEach(e=>bekannt.set(e.id,e));
@@ -16099,6 +16191,7 @@ async function partyKartenFuellen(){
       k.innerHTML='<div class="bp-weg">Diese Party gibt es nicht mehr</div>';
       return;
     }
+    if(e.category==='Treffen'){ treffenKarte(k,e); return; }
     const bild=e.image_url
       ? '<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
       : '<div class="bp-ohne" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),22)+'</div>';
@@ -16110,6 +16203,76 @@ async function partyKartenFuellen(){
       +'</div>'
       +'<svg class="bp-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
   });
+}
+
+/* ── Treffen im Chat ──────────────────────────────────────────────
+   Statt einer Link-Karte, die erst ins Detail führt: Kalenderblatt,
+   was, wann, wo – und Zusagen direkt hier, mit einem Tipp. Wer kommt,
+   steht daneben. Apple: die Handlung dort, wo man sie braucht. */
+const treffenDabei=new Map();   // eventId -> Set(userIds)
+async function treffenKarte(k,e){
+  const d=new Date((e.date||'')+'T12:00:00');
+  const mon=isNaN(d)?'':d.toLocaleDateString(locale(),{month:'short'}).replace('.','');
+  k.classList.add('bp-treffen');
+  k.onclick=null;
+  const wann=treffenWannText(e.date,String(e.time||'').slice(0,5));
+  const ort=e.address&&e.address!=='Ort folgt'?e.address:'Ort folgt';
+  k.innerHTML='<div class="bpt-kopf" onclick="event.stopPropagation();openDetail(\''+e.id+'\')">'
+      +'<div class="tr-kal"><span class="tr-kal-mon">'+esc(mon)+'</span><span class="tr-kal-tag">'+(isNaN(d)?'':d.getDate())+'</span></div>'
+      +'<div style="min-width:0;flex:1"><div class="bpt-label">Treffen</div>'
+      +'<div class="bpt-name">'+esc(e.name||'Treffen')+'</div>'
+      +'<div class="bpt-meta">'+esc(wann)+' · '+esc(ort)+'</div></div></div>'
+    +'<div class="bpt-fuss"><div class="bpt-wer" data-wer></div>'
+    +(e.created_by===cUser?.id?'':'<button class="bpt-knopf" data-knopf onclick="event.stopPropagation();treffenZusagen(\''+e.id+'\',this)">Bin dabei</button>')
+    +'</div>';
+  await treffenStandLaden(e.id);
+  treffenKarteZeichnen(k,e);
+}
+async function treffenStandLaden(id){
+  try{
+    const{data,error}=await sb.from('event_attendees').select('user_id').eq('event_id',id);
+    if(error)throw error;
+    treffenDabei.set(id,new Set((data||[]).map(r=>r.user_id)));
+  }catch(err){ console.warn('[treffen] wer kommt',err); }
+}
+function treffenKarteZeichnen(k,e){
+  const leute=treffenDabei.get(e.id);
+  const wer=k.querySelector('[data-wer]'), knopf=k.querySelector('[data-knopf]');
+  if(!leute){ if(wer)wer.textContent=''; return; }
+  const ich=leute.has(cUser?.id);
+  // Wer das Treffen vorschlägt, kommt sowieso
+  const n=leute.size+(e.created_by&&!leute.has(e.created_by)?1:0);
+  if(wer)wer.textContent=n===1?'1 Person kommt':n+' kommen';
+  if(knopf){
+    knopf.classList.toggle('dabei',ich);
+    knopf.textContent=ich?'✓ Dabei':'Bin dabei';
+    knopf.dataset.ich=ich?'1':'';
+  }
+}
+async function treffenZusagen(id,knopf){
+  if(!cUser){kontoNoetig();return;}
+  if(knopf.disabled)return;
+  const ich=!!knopf.dataset.ich;
+  knopf.disabled=true;
+  // Sofort umschalten (Apple: Rückmeldung im selben Moment), bei Fehler zurück
+  const leute=treffenDabei.get(id)||new Set();
+  if(ich)leute.delete(cUser.id); else leute.add(cUser.id);
+  treffenDabei.set(id,leute);
+  const e=partyKartenGemerkt.get(id)||{id};
+  document.querySelectorAll('.bub-party.bp-treffen[data-ev="'+id+'"]').forEach(k=>treffenKarteZeichnen(k,e));
+  nativeHaptik(ich?'leicht':'erfolg');
+  try{
+    const{error}=ich
+      ? await sb.from('event_attendees').delete().eq('event_id',id).eq('user_id',cUser.id)
+      : await sb.from('event_attendees').insert({event_id:id,user_id:cUser.id});
+    if(error&&error.code!=='23505')throw error;
+    loadEvts();
+  }catch(err){
+    console.warn('[treffen] zusagen',err);
+    if(ich)leute.add(cUser.id); else leute.delete(cUser.id);
+    document.querySelectorAll('.bub-party.bp-treffen[data-ev="'+id+'"]').forEach(k=>treffenKarteZeichnen(k,e));
+    toast(fehlerText(err),'error');
+  }finally{ knopf.disabled=false; }
 }
 
 async function sendMsg(){
@@ -19026,19 +19189,109 @@ let grpZiel=null;
    auch nur eine Beschreibung sein; ohne Koordinaten steht das Treffen
    nicht auf der Karte (es ist privat und gehört nur der Gruppe). */
 let treffenGruppe=null,treffenLaeuft=false;
+const TREFFEN_WAS=['Znacht','Grillieren','Kino','Ausgang','Sport','Spieleabend','Kafi'];
+const TREFFEN_ZEIT=['12:00','18:00','19:00','20:00','21:00'];
+const treffenStand={tag:'',zeit:''};
+const trZwei=n=>String(n).padStart(2,'0');
+const trIsoTag=d=>d.getFullYear()+'-'+trZwei(d.getMonth()+1)+'-'+trZwei(d.getDate());
+
 function treffenOeffnen(gid){
   if(!cUser){kontoNoetig();return;}
   if(!gid)return;
   treffenGruppe=gid;
-  const jetzt=new Date(Date.now()+60*60*1000);
-  const zwei=n=>String(n).padStart(2,'0');
-  const tag=d=>d.getFullYear()+'-'+zwei(d.getMonth()+1)+'-'+zwei(d.getDate());
-  const d=document.getElementById('trDatum');
-  if(d){ d.min=tag(new Date()); if(!d.value||d.value<d.min)d.value=tag(jetzt); }
-  const z=document.getElementById('trZeit');
-  if(z&&!z.value)z.value=zwei(jetzt.getHours())+':00';
+  // Was: ein Tipp genügt, das Feld bleibt frei tippbar
+  document.getElementById('trWasChips').innerHTML=TREFFEN_WAS.map(w=>
+    '<button class="tr-chip" onclick="treffenWas(this,\''+w+'\')">'+w+'</button>').join('');
+  // Wann: heute und die nächsten sechs Tage, dann "Anderer Tag"
+  const wt=['So','Mo','Di','Mi','Do','Fr','Sa'];
+  let tage='';
+  for(let i=0;i<7;i++){
+    const d=new Date(); d.setDate(d.getDate()+i);
+    const name=i===0?'Heute':i===1?'Morgen':wt[d.getDay()];
+    tage+='<button class="tr-chip tr-tag" data-tag="'+trIsoTag(d)+'" onclick="treffenWahl(\'tag\',\''+trIsoTag(d)+'\')">'
+      +name+'<small>'+d.getDate()+'.'+(d.getMonth()+1)+'.</small></button>';
+  }
+  tage+='<button class="tr-chip tr-tag" data-tag="eigen" onclick="treffenEigen()">Anderer<small>Tag</small></button>';
+  document.getElementById('trTagChips').innerHTML=tage;
+  document.getElementById('trZeitChips').innerHTML=TREFFEN_ZEIT.map(z=>
+    '<button class="tr-chip" data-zeit="'+z+'" onclick="treffenWahl(\'zeit\',\''+z+'\')">'+z+'</button>').join('')
+    +'<button class="tr-chip" data-zeit="eigen" onclick="treffenEigen()">Andere</button>';
+  // Wo: "bei mir" mit dem eigenen Vornamen
+  const vorname=String(cProfile?.full_name||cProfile?.username||'').trim().split(/\s+/)[0];
+  document.getElementById('trOrtChips').innerHTML=
+    '<button class="tr-chip" onclick="treffenOrt(\'bei '+escAttr(vorname||'mir').replace(/'/g,'')+'\')">bei mir</button>'
+    +'<button class="tr-chip" onclick="treffenOrt(\'\')">Ort folgt</button>';
+  // Vorschlag: heute, nächste volle Stunde – oder morgen, wenn es spät ist
+  const jetzt=new Date();
+  if(!treffenStand.tag||treffenStand.tag<trIsoTag(jetzt)){
+    const spaet=jetzt.getHours()>=21;
+    const d=new Date(); if(spaet)d.setDate(d.getDate()+1);
+    treffenStand.tag=trIsoTag(d);
+    treffenStand.zeit=spaet?'19:00':TREFFEN_ZEIT.find(z=>z>trZwei(jetzt.getHours()+1)+':00')||'20:00';
+  }
+  const dEl=document.getElementById('trDatum'); if(dEl)dEl.min=trIsoTag(jetzt);
+  treffenWahl('tag',treffenStand.tag,true);
+  treffenWahl('zeit',treffenStand.zeit,true);
   closeOverlay('gruppeOverlay');
   document.getElementById('treffenOverlay')?.classList.add('open');
+}
+
+function treffenWas(btn,w){
+  const f=document.getElementById('trName');
+  f.value=w; f.classList.remove('fehlt');
+  document.querySelectorAll('#trWasChips .tr-chip').forEach(b=>b.classList.toggle('on',b===btn));
+  nativeHaptik('leicht');
+  treffenVorschau();
+}
+function treffenWahl(art,wert,still){
+  if(!wert)return;
+  treffenStand[art]=wert;
+  if(art==='tag'){
+    const chip=document.querySelector('#trTagChips [data-tag="'+wert+'"]');
+    document.querySelectorAll('#trTagChips .tr-chip').forEach(b=>b.classList.toggle('on',chip?b===chip:b.dataset.tag==='eigen'));
+    const d=document.getElementById('trDatum'); if(d)d.value=wert;
+  }else{
+    const chip=document.querySelector('#trZeitChips [data-zeit="'+wert+'"]');
+    document.querySelectorAll('#trZeitChips .tr-chip').forEach(b=>b.classList.toggle('on',chip?b===chip:b.dataset.zeit==='eigen'));
+    const z=document.getElementById('trZeit'); if(z)z.value=wert;
+  }
+  if(!still)nativeHaptik('leicht');
+  treffenVorschau();
+}
+function treffenEigen(){
+  const e=document.getElementById('trEigen');
+  e.hidden=false;
+  document.getElementById('trDatum')?.focus();
+}
+function treffenOrt(t){
+  const f=document.getElementById('trOrt'); f.value=t;
+  nativeHaptik('leicht');
+  treffenVorschau();
+}
+function treffenNotizAuf(){
+  document.getElementById('trNotizAuf').hidden=true;
+  const n=document.getElementById('trNotiz'); n.hidden=false; n.focus();
+}
+function treffenWannText(tag,zeit){
+  if(!tag)return '';
+  const d=new Date(tag+'T12:00:00'), h=new Date(); h.setHours(12,0,0,0);
+  const diff=Math.round((d-h)/864e5);
+  const tagTxt=diff===0?'Heute':diff===1?'Morgen':d.toLocaleDateString(locale(),{weekday:'long',day:'numeric',month:'long'});
+  return tagTxt+(zeit?' · '+zeit+' Uhr':'');
+}
+function treffenVorschau(){
+  const name=(document.getElementById('trName')?.value||'').trim();
+  const ort=(document.getElementById('trOrt')?.value||'').trim();
+  const nEl=document.getElementById('trVName');
+  nEl.textContent=name||'Was macht ihr?'; nEl.classList.toggle('leer',!name);
+  if(name)document.getElementById('trName').classList.remove('fehlt');
+  document.getElementById('trVWann').textContent=treffenWannText(treffenStand.tag,treffenStand.zeit)||'Tag und Uhrzeit wählen';
+  document.getElementById('trVWo').textContent=ort||'Ort folgt';
+  if(treffenStand.tag){
+    const d=new Date(treffenStand.tag+'T12:00:00');
+    document.getElementById('trVMon').textContent=d.toLocaleDateString(locale(),{month:'short'}).replace('.','');
+    document.getElementById('trVTag').textContent=d.getDate();
+  }
 }
 function gruppePartyNeu(gid){ treffenOeffnen(gid); }
 
@@ -19050,7 +19303,11 @@ async function treffenSpeichern(){
   const zeit=document.getElementById('trZeit')?.value||'';
   const ort=(document.getElementById('trOrt')?.value||'').trim();
   const notiz=(document.getElementById('trNotiz')?.value||'').trim();
-  if(!name){toast('Wie heisst das Treffen?','warn');document.getElementById('trName')?.focus();return;}
+  if(!name){
+    const f=document.getElementById('trName');
+    f?.classList.add('fehlt'); f?.focus(); nativeHaptik('warnung');
+    toast('Was macht ihr? Ein Wort genügt.','warn'); return;
+  }
   if(!datum||!zeit){toast('Tag und Uhrzeit fehlen','warn');return;}
   if(new Date(datum+'T'+zeit+':00').getTime()<Date.now()-15*60*1000){toast('Das liegt in der Vergangenheit','warn');return;}
   if(!gid){toast('Keine Gruppe gewählt','error');return;}
@@ -19086,7 +19343,12 @@ async function treffenSpeichern(){
         if(mFehler)console.warn('[treffen] chat',mFehler);
       }
     }catch(err){console.warn('[treffen] chat',err);}
-    ['trName','trOrt','trNotiz','trZeit'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['trName','trOrt','trNotiz'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    treffenStand.tag='';treffenStand.zeit='';
+    document.getElementById('trEigen').hidden=true;
+    document.getElementById('trNotiz').hidden=true;
+    document.getElementById('trNotizAuf').hidden=false;
+    toast('Treffen steht – die Gruppe ist eingeladen','success');
     closeOverlay('treffenOverlay');
     nativeHaptik('erfolg');
     await loadEvts();
