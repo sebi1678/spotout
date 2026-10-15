@@ -8860,7 +8860,35 @@ function initSwipeToClose(){
       return modal;
     };
 
-    let startY=0,startX=0,dy=0,zieht=false,entschieden=false;
+    /* 15.10. nach Apples "Designing Fluid Interfaces":
+       - das Blatt klebt am Finger, auch nach oben (dort mit Gummiband),
+       - beim Loslassen zaehlt das Tempo: wohin wuerde es rollen?
+         Ein kurzer schneller Wisch schliesst, ein langsamer langer
+         Zug zurueck nicht unbedingt,
+       - es laeuft mit dem Tempo des Fingers weiter (keine Naht),
+       - man kann es mitten im Auf- oder Zugehen wieder packen.
+       Die Abdunkelung geht mit, je weiter das Blatt unten ist. */
+    let startY=0,startX=0,basis=0,dy=0,zieht=false,entschieden=false;
+    let hoehe=1,kannScrollen=false,grundAlpha=.7,lauf=null;
+    const mess=Bewegung.messer();
+
+    const setze=(y)=>{
+      modal.style.transform=Math.abs(y)<0.01?'translateY(0)':'translateY('+y.toFixed(2)+'px)';
+      const anteil=Math.max(0,Math.min(1,y/hoehe));
+      overlay.style.backgroundColor='rgba(0,0,0,'+(grundAlpha*(1-anteil)).toFixed(3)+')';
+    };
+    /* Alles Eigene wieder weg – danach gelten die Klassen wie zuvor. */
+    const aufraeumen=()=>{
+      modal.style.transition='';modal.style.transform='';
+      overlay.style.backgroundColor='';
+    };
+    const laufZu=(ziel,v,daempfung,fertig)=>{
+      if(lauf)lauf.stop();
+      modal.style.transition='none';
+      lauf=Bewegung.feder({von:dy,nach:ziel,v,daempfung,antwort:.3,
+        schritt:(y)=>{dy=y;setze(y);},
+        fertig:()=>{lauf=null;fertig();}});
+    };
 
     const darfHier=(ziel)=>{
       if(!ziel)return false;
@@ -8873,49 +8901,88 @@ function initSwipeToClose(){
     };
 
     modal.addEventListener('touchstart',e=>{
-      zieht=darfHier(e.target);
-      entschieden=false;dy=0;
-      if(!zieht)return;
+      entschieden=false;
+      /* Laeuft das Blatt gerade (nach einem Wisch), faengt der Finger es
+         genau dort, wo es steht – auch auf einem Knopf. */
+      const imFlug=!!lauf;
+      zieht=imFlug||darfHier(e.target);
+      if(!zieht||!overlay.classList.contains('open'))return;
+      if(lauf){ basis=lauf.stop().wert; lauf=null; }
+      else basis=Bewegung.live(modal,'y');   // auch mitten im Aufgehen
+      if(!imFlug&&basis<0.5){
+        /* Ruhiges Blatt: noch nichts festhalten, erst bei Bewegung. */
+        basis=0;
+      }
+      const sc=scrollerVon(e.target);
+      kannScrollen=!e.target.closest('.modal-handle')&&sc.scrollHeight-sc.clientHeight>2;
+      hoehe=modal.offsetHeight||1;
+      const m=/rgba?\([^,]+,[^,]+,[^,]+,\s*([\d.]+)\)/.exec(getComputedStyle(overlay).backgroundColor);
+      if(!overlay.style.backgroundColor)grundAlpha=m?parseFloat(m[1]):.7;
       startY=e.touches[0].clientY;
       startX=e.touches[0].clientX;
-      modal.style.transition='none';
+      dy=basis;
+      mess.reset();mess.add(dy);
+      if(basis!==0){ modal.style.transition='none'; setze(basis); }
     },{passive:true});
 
     modal.addEventListener('touchmove',e=>{
       if(!zieht)return;
-      const y=e.touches[0].clientY-startY;
+      let y=e.touches[0].clientY-startY;
       const x=e.touches[0].clientX-startX;
       // Erst entscheiden, ob das ueberhaupt eine senkrechte Geste ist –
       // sonst kaempft das Fenster mit jedem seitlichen Wisch.
       if(!entschieden){
         if(Math.abs(y)<6&&Math.abs(x)<6)return;
         entschieden=true;
-        if(Math.abs(x)>Math.abs(y)){zieht=false;modal.style.transition='';return;}
+        if(Math.abs(x)>Math.abs(y)&&basis===0){zieht=false;modal.style.transition='';return;}
+        /* Ab hier 1:1 – ohne den Sprung um die 6 px Schwelle. */
+        startY+=y>0?6:-6;
+        y=e.touches[0].clientY-startY;
+        modal.style.transition='none';
       }
-      if(y<=0){dy=0;modal.style.transform='';return;}
+      let ziel=basis+y;
+      if(ziel<0){
+        /* Nach oben: scrollt der Inhalt, gehoert die Geste ihm. Sonst
+           gibt das Blatt zaeh nach, statt hart anzuschlagen. */
+        if(kannScrollen&&basis===0){dy=0;setze(0);return;}
+        ziel=Bewegung.gummiband(ziel,hoehe);
+      }
       /* Solange das Fenster mitgeht, darf der Inhalt nicht zusaetzlich
          nachfedern (iOS-Gummiband beim Ziehen oben am Rand). Sonst ging
          erst das Fenster ein Stueck runter und der Rest einen Moment spaeter. */
       if(e.cancelable)e.preventDefault();
-      dy=y;
-      modal.style.transform='translateY('+Math.min(dy,460)+'px)';
+      dy=ziel;
+      setze(dy);
+      mess.add(dy);
     },{passive:false});
 
     const loslassen=()=>{
       if(!zieht)return;
       zieht=false;
-      modal.style.transition='transform var(--takt-lang) var(--kurve)';
-      if(dy>96){
-        modal.style.transform='translateY(100%)';
-        setTimeout(()=>{
+      const v=mess.v();
+      /* Nur angetippt: ein ruhiges Blatt bleibt, ein gefangenes laeuft
+         dorthin weiter, wohin es wollte – an seinen Platz. */
+      if(!entschieden){ if(dy===0)aufraeumen(); else laufZu(0,0,1,aufraeumen); return; }
+      /* Wohin wuerde das Blatt mit diesem Tempo rollen? Deutliches Tempo
+         entscheidet allein ueber die Richtung (Apple: das Vorzeichen,
+         nicht der Ort). */
+      const wohin=dy+Bewegung.projiziere(v);
+      const zu=v>450||(v>-450&&wohin>Math.min(hoehe/3,160));
+      if(zu){
+        laufZu(hoehe,v,1,()=>{
+          /* Unten angekommen ist die Abdunkelung schon weg – also ohne
+             zweites Ausblenden schliessen, sonst blitzt sie nochmal auf. */
+          overlay.style.transition='none';
           overlay.classList.remove('open');
-          modal.style.transform='';
-          modal.style.transition='';
-        },260);
+          aufraeumen();
+          void overlay.offsetWidth;
+          overlay.style.transition='';
+        });
       }else{
-        modal.style.transform='';
+        /* Zurueck an den Platz. Hat der Finger Schwung gegeben, federt
+           es leicht nach (0.8) – sonst ruhig (1.0). */
+        laufZu(0,v,Math.abs(v)>300?.8:1,aufraeumen);
       }
-      dy=0;
     };
     modal.addEventListener('touchend',loslassen);
     modal.addEventListener('touchcancel',loslassen);
@@ -10738,9 +10805,10 @@ function ziehAktualisieren(){
     }
     if(y<=0){dy=0;anzeige.style.opacity='0';return;}
     if(e.cancelable)e.preventDefault();
-    /* Je weiter gezogen, desto zaeher – wie bei einem Gummiband.
+    /* Je weiter gezogen, desto zaeher – ein echtes Gummiband (Apple-
+       Formel, Bewegung.gummiband) statt eines festen Faktors.
        Ohne das laeuft die Anzeige dem Finger davon. */
-    dy=Math.min(y*0.55,110);
+    dy=Bewegung.gummiband(y,window.innerHeight||800);
     const anteil=Math.min(dy/ZIEH_AB,1);
     anzeige.style.transform='translateY('+dy.toFixed(1)+'px)';
     anzeige.style.opacity=String(Math.min(dy/28,1));
@@ -10797,9 +10865,14 @@ function vollseitenGesteStarten(){
     if(blatt.dataset.kante)return;
     blatt.dataset.kante='1';
     let x0=0,y0=0,dx=0,zieht=false,entschieden=false;
+    const mess=Bewegung.messer();
+    const setze=(x)=>{
+      blatt.style.transform='translateX('+x.toFixed(1)+'px)';
+      blatt.style.opacity=String(Math.max(.4,1-x/600));
+    };
 
     blatt.addEventListener('touchstart',e=>{
-      zieht=false;entschieden=false;dx=0;
+      zieht=false;entschieden=false;dx=0;mess.reset();
       if(e.touches.length!==1)return;
       const t=e.touches[0];
       if(t.clientX>KANTE)return;             // nur an der linken Kante
@@ -10815,28 +10888,30 @@ function vollseitenGesteStarten(){
         entschieden=true;
         if(Math.abs(y)>Math.abs(x)){zieht=false;return;}   // das ist Scrollen
       }
-      if(x<=0){dx=0;blatt.style.transform='';return;}
       if(e.cancelable)e.preventDefault();
-      dx=x;
-      blatt.style.transform='translateX('+dx.toFixed(1)+'px)';
-      blatt.style.opacity=String(Math.max(.4,1-dx/600));
+      /* Nach links ueber den Rand: zaeh statt hart. */
+      dx=x<0?Bewegung.gummiband(x,window.innerWidth||390):x;
+      setze(dx);
+      mess.add(dx);
     },{passive:false});
 
+    /* Tempo entscheidet mit (siehe zurueckEntscheid), und das Blatt
+       laeuft mit dem Tempo des Fingers weiter. */
     const los=()=>{
       if(!zieht)return;
       zieht=false;
-      blatt.style.transition='transform .22s var(--kurve),opacity .22s ease';
-      if(dx>ZURUECK_AB){
+      const br=window.innerWidth||390, v=mess.v();
+      blatt.style.transition='none';
+      if(zurueckEntscheid(dx,v,br)){
         nativeHaptik('leicht');
-        blatt.style.transform='translateX(100%)';
-        blatt.style.opacity='0';
-        setTimeout(()=>{
+        Bewegung.feder({von:dx,nach:br,v,antwort:.3,schritt:setze,fertig:()=>{
           blatt.style.transition='';blatt.style.transform='';blatt.style.opacity='';
           closeUserProf();
-        },200);
+        }});
       }else{
-        blatt.style.transform='';blatt.style.opacity='';
-        setTimeout(()=>{blatt.style.transition='';},240);
+        Bewegung.feder({von:dx,nach:0,v,antwort:.3,daempfung:Math.abs(v)>300?.8:1,schritt:setze,fertig:()=>{
+          blatt.style.transition='';blatt.style.transform='';blatt.style.opacity='';
+        }});
       }
       dx=0;
     };
@@ -10861,8 +10936,25 @@ function vollseitenGesteStarten(){
    Sie beginnt nur an der linken Kante (28 px). Sonst wuerde jeder
    waagrechte Wisch im Schreibfeld die Seite mitnehmen. */
 const KANTE=28, ZURUECK_AB=70;
+/* Zurueck oder nicht? Deutliches Tempo entscheidet allein (nach rechts
+   = zurueck, nach links = bleiben). Sonst zaehlt, wohin der Wisch mit
+   seinem Tempo rollen wuerde – ab gut einem Drittel der Breite. Frueher
+   genuegten 70 px, egal wie langsam; dann war ein Zoegern schon zurueck. */
+function zurueckEntscheid(dx,v,breite){
+  if(v>350)return true;
+  if(v<-350)return false;
+  return dx+Bewegung.projiziere(v)>Math.max(ZURUECK_AB,breite*.35);
+}
 function zurueckGesteStarten(){
   let x0=0,y0=0,dx=0,zieht=false,entschieden=false,oben=null,unten=null,ziel=null;
+  const mess=Bewegung.messer();
+  let gleitet=false;   // solange die Seiten noch gleiten, keine zweite Geste
+  const setze=(x)=>{
+    const br=window.innerWidth||390, a=Math.max(0,Math.min(x/br,1));
+    oben.style.transform='translateX('+x.toFixed(1)+'px)';
+    unten.style.transform='translateX('+(-24+24*a)+'%)';
+    unten.style.opacity=String(.55+.45*a);
+  };
 
   /* Nur im Gespraech. Ueberall sonst bleibt die App wie vorher: jede
      Seite ist eine eigene Karte, man wechselt ueber die Leiste und die
@@ -10876,7 +10968,7 @@ function zurueckGesteStarten(){
 
   document.addEventListener('touchstart',e=>{
     zieht=false;entschieden=false;dx=0;
-    if(seitenWechselLaeuft)return;
+    if(seitenWechselLaeuft||gleitet)return;
     if(e.touches.length!==1)return;
     const t=e.touches[0];
     if(t.clientX>KANTE)return;                    // nur an der Kante
@@ -10887,7 +10979,7 @@ function zurueckGesteStarten(){
     oben=document.querySelector('.page.active');
     unten=document.getElementById('page-'+ziel.name);
     if(!oben||!unten||oben===unten){ziel=null;return;}
-    x0=t.clientX;y0=t.clientY;zieht=true;
+    x0=t.clientX;y0=t.clientY;zieht=true;mess.reset();
   },{passive:true});
 
   document.addEventListener('touchmove',e=>{
@@ -10901,32 +10993,31 @@ function zurueckGesteStarten(){
       oben.classList.add('zieht','oben');
       unten.classList.add('zieht','active');
     }
-    if(x<=0)return;
     if(e.cancelable)e.preventDefault();
-    dx=x;
-    const br=window.innerWidth||390;
-    oben.style.transform='translateX('+dx+'px)';
-    unten.style.transform='translateX('+(-24+24*Math.min(dx/br,1))+'%)';
-    unten.style.opacity=String(.55+.45*Math.min(dx/br,1));
+    dx=x<0?Bewegung.gummiband(x,window.innerWidth||390):x;
+    setze(dx);
+    mess.add(dx);
   },{passive:false});
 
   const los=()=>{
     if(!zieht){ziel=null;return;}
     zieht=false;
     if(!entschieden||!oben||!unten){aufraeumen(true);return;}
-    const schafft=dx>ZURUECK_AB;
-    oben.style.transition='transform var(--takt-lang) var(--kurve)';
-    unten.style.transition='transform var(--takt-lang) var(--kurve),opacity var(--takt-lang) var(--kurve)';
-    if(schafft){
-      oben.style.transform='translateX(100%)';
-      unten.style.transform='translateX(0)';unten.style.opacity='1';
-      nativeHaptik('leicht');
-      setTimeout(()=>{ const f=ziel&&ziel.fn; aufraeumen(false); if(f)f(); },200);
-    }else{
-      oben.style.transform='';
-      unten.style.transform='translateX(-24%)';unten.style.opacity='.55';
-      setTimeout(()=>aufraeumen(true),200);
-    }
+    const br=window.innerWidth||390, v=mess.v();
+    const schafft=zurueckEntscheid(dx,v,br);
+    oben.style.transition='none';unten.style.transition='none';
+    if(schafft)nativeHaptik('leicht');
+    gleitet=true;
+    /* Weiter mit dem Tempo des Fingers – keine Naht zwischen Ziehen
+       und Gleiten. Zurueck an den Platz federt nur nach Schwung. */
+    Bewegung.feder({von:dx,nach:schafft?br:0,v,antwort:.3,
+      daempfung:(!schafft&&Math.abs(v)>300)?.8:1,
+      schritt:(x)=>{dx=x;if(oben&&unten)setze(x);},
+      fertig:()=>{
+        gleitet=false;
+        if(schafft){ const f=ziel&&ziel.fn; aufraeumen(false); if(f)f(); }
+        else aufraeumen(true);
+      }});
   };
   /* Wer die Klasse "active" setzt, muss sie auch wieder wegnehmen.
      Seit die Uebergaenge draussen sind, raeumt showOnly nicht mehr
