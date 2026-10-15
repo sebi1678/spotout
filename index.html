@@ -11,7 +11,7 @@
        waere die Seite sonst weiss. Und ob der Fluchtknopf an ist, soll
        feststehen, bevor die Leiste zum ersten Mal erscheint. -->
   <style>html,body{background:#090D24}</style>
-  <script>try{if(localStorage.getItem('spotout_raus'))document.documentElement.classList.add('raus-an')}catch(e){}</script>
+  <script>try{if(localStorage.getItem('spotout_raus'))document.documentElement.classList.add('raus-an')}catch(e){}try{if(window.SPOTOUT_NATIVE)document.documentElement.classList.add('in-app')}catch(e){}</script>
   <title>SPOTOUT – Partys in deiner Nähe</title>
   <meta name="description" content="Finde Partys, Feste und Openairs in der Schweiz – und sieh, wer von deinen Leuten hingeht."/>
 
@@ -263,12 +263,23 @@
          darunter liegt. Ohne Unschaerfe-Unterstuetzung: deckend wie vorher. */
       background:#090d24;
     }
+    /* Glas erst, wenn wirklich Inhalt darunter durchläuft (.unterlegt,
+       gesetzt beim Scrollen) – und nie im Moment, in dem eine Seite
+       erscheint. WebKit zeichnet eine Fläche mit backdrop-filter in einem
+       eben eingeblendeten Scrollbereich ein Bild lang verschoben und
+       verkleinert: genau das Rutschen beim Wechsel Home → Kalender in der
+       App (seit dem Glas vom 15.10., 16:41). Oben auf der Seite liegt
+       ohnehin nichts darunter, da braucht es kein Glas. */
     @supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
-      .top-nav{
+      .top-nav.unterlegt{
         background:rgba(9,13,36,.78);
         -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
       }
     }
+    /* In der App zeichnet die Hülle die Leiste selbst; die Website-Leiste
+       ist dort unsichtbar. Ihr Glas wurde trotzdem bei jedem Scrollbild
+       neu berechnet – unsichtbare Arbeit, die das Scrollen bremste. */
+    html.in-app #bnav{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
     .top-nav::after{
       content:'';position:absolute;left:0;right:0;top:100%;height:14px;pointer-events:none;
       background:linear-gradient(rgba(9,13,36,.5),rgba(9,13,36,0));
@@ -11867,6 +11878,12 @@ let seitenWechselLaeuft=false;
 function showOnly(name){
   const neu=document.getElementById('page-'+name);
   if(!neu)return;
+  // Ohne Glas erscheinen, erst danach (falls gescrollt) wieder Glas
+  const kopf=neu.querySelector(':scope>.top-nav');
+  if(kopf){
+    kopf.classList.remove('unterlegt');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>kopf.classList.toggle('unterlegt',neu.scrollTop>2)));
+  }
   document.querySelectorAll('.page').forEach(p=>{
     p.classList.remove('active','zieht','oben');
     if(p.style.transform||p.style.opacity||p.style.transition){
@@ -12025,6 +12042,21 @@ async function loadEvts(opt){
       soll raten muessen, wann er wieder tippen darf. */
 
 function netzDa(){ return navigator.onLine !== false; }
+
+/* Kopfzeile: Glas nur, solange Inhalt darunter liegt (siehe .top-nav.unterlegt). */
+(function(){
+  let geplant=null;
+  document.addEventListener('scroll',e=>{
+    const p=e.target;
+    if(!p||!p.classList||!p.classList.contains('page'))return;
+    if(geplant)return;
+    geplant=requestAnimationFrame(()=>{
+      geplant=null;
+      const kopf=p.querySelector(':scope>.top-nav');
+      if(kopf)kopf.classList.toggle('unterlegt',p.scrollTop>2);
+    });
+  },{capture:true,passive:true});
+})();
 
 /* Statt eines falschen Leerzustands ("Noch keine Partys", "Schreib die
    erste"), wenn in Wahrheit nur das Laden gescheitert ist. */
