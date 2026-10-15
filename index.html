@@ -9437,7 +9437,7 @@ function updNavAv(){
     :(cProfile?.full_name||'Profil');
   const alle=document.querySelectorAll('.js-nav-av');
   if(!alle.length)return;
-  const buchstabe=(cProfile?.full_name||cProfile?.username||'?').charAt(0).toUpperCase();
+  const buchstabe=anfangRoh(cProfile?.full_name||cProfile?.username||'?');
   alle.forEach(av=>{
     if(cProfile?.avatar_url)av.innerHTML=`<img loading="lazy" decoding="async" src="${cProfile.avatar_url}"/>`;
     else av.textContent=buchstabe;
@@ -10119,7 +10119,7 @@ function kontenZeichnen(){
     +'stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></span>';
   const bild=(k)=>k.avatar
     ? '<span class="kz-av"><img loading="lazy" decoding="async" src="'+escAttr(k.avatar)+'" alt=""/></span>'
-    : '<span class="kz-av">'+esc((k.name||'?').charAt(0).toUpperCase())+'</span>';
+    : '<span class="kz-av">'+anfang(k.name||'?')+'</span>';
 
   const zeilen=liste.map(k=>
     '<button class="konto-zeile" onclick="kontoWechseln(\''+k.id+'\')">'
@@ -11974,9 +11974,9 @@ async function renderVereinHome(){
     .sort((a,b)=>new Date(b.date)-new Date(a.date));
   const gaeste=kommend.reduce((n,e)=>n+(e.attending||0),0);
 
-  const init=(cProfile.full_name||cProfile.username||'?').charAt(0).toUpperCase();
+  const init=anfang(cProfile.full_name||cProfile.username||'?');
   const av=cProfile.avatar_url
-    ? '<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>' : esc(init);
+    ? '<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>' : init;
 
   /* Was fehlt noch, bevor der Verein posten darf? Zuerst der Pruefstatus,
      darunter das Logo – vorher verdeckte der Logo-Hinweis den Status. */
@@ -12189,6 +12189,18 @@ function fyRefresh(){
 // Kleine HTML-Escaper – verhindern kaputtes Markup bei Anführungszeichen in Namen
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function escAttr(s){return esc(s);}
+
+/* Anfangsbuchstabe für runde Bilder ohne Foto. Ein ganzes Zeichen (Graphem),
+   nicht eine UTF-16-Hälfte: Bei "🎉 Lena" kam sonst ein halbes Emoji (�),
+   bei " Lena" ein leerer Kreis. anfangRoh für textContent, anfang fürs HTML. */
+const anfangTeiler=(()=>{try{return new Intl.Segmenter(undefined,{granularity:'grapheme'})}catch(e){return null}})();
+function anfangRoh(s){
+  const t=String(s??'').trim();
+  if(!t)return '?';
+  const erstes=anfangTeiler?anfangTeiler.segment(t)[Symbol.iterator]().next().value.segment:Array.from(t)[0];
+  return erstes.toLocaleUpperCase('de-CH');
+}
+function anfang(s){return esc(anfangRoh(s));}
 
 /* ── Ist die Party vorbei? ─────────────────────────────────────────
    Sechs Stunden nach dem Start gilt sie als gelaufen. Danach kann sich
@@ -12416,7 +12428,7 @@ function freundeAvatare(namen){
   const n=(namen||[]).slice(0,3);
   if(!n.length)return'';
   return '<div class="fr-av">'+n.map(x=>'<span>'
-    +(x.bild?'<img loading="lazy" decoding="async" src="'+escAttr(x.bild)+'" alt=""/>':esc((x.name||'?').charAt(0).toUpperCase()))
+    +(x.bild?'<img loading="lazy" decoding="async" src="'+escAttr(x.bild)+'" alt=""/>':anfang(x.name||'?'))
     +'</span>').join('')+'</div>';
 }
 
@@ -12831,7 +12843,7 @@ async function openDetail(id){
   const showFullList=(deadlinePassed||isOver)&&!!cProfile?.is_pro;
   const attLabel=isOver?'Wer war dabei':deadlinePassed?'Angemeldete Gäste':'Wer ist dabei';
   function buildAttRow(a){
-    const av=a.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.profiles.avatar_url)+'"/>'):esc((a.profiles?.full_name||a.profiles?.username||'?').charAt(0).toUpperCase());
+    const av=a.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.profiles.avatar_url)+'"/>'):anfang(a.profiles?.full_name||a.profiles?.username||'?');
     const nm=esc(a.profiles?.full_name||a.profiles?.username||'Unbekannt');
     const un=(a.profiles?.username||'').replace(/['"\\<>&]/g,'');
     const pid=a.profiles?.id||'';
@@ -12898,10 +12910,10 @@ async function openDetail(id){
      sonst auch. Ohne Konto ist die Zeile kein Knopf: dahinter gibt es
      nichts, und ein Knopf, der nichts tut, ist ein Fehler. */
   function buildBegleitRow(b){
-    const kopf=(b.hatNamen?b.name:b.durch).charAt(0).toUpperCase();
+    const kopf=anfang(b.hatNamen?b.name:b.durch);
     const bild=b.profil?.avatar_url
       ? '<img loading="lazy" decoding="async" src="'+escAttr(b.profil.avatar_url)+'"/>'
-      : esc(kopf);
+      : kopf;
     const auf=b.konto
       ? ' onclick="closeDetail();openUserProf(\''+b.konto+'\')" style="cursor:pointer"'
       : '';
@@ -13311,7 +13323,7 @@ function searchRow(u,ausVerlauf){
   const name=u.full_name||u.username||'Unbekannt';
   const av=u.avatar_url
     ? '<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'
-    : esc(name.charAt(0).toUpperCase());
+    : anfang(name);
   const chips=[];
   if(u.is_pro&&u.instagram_handle)chips.push('<span class="sr-chip sr-ig">'+SOCIAL_SVG.instagram+'@'+esc(u.instagram_handle)+'</span>');
   if(u.is_pro&&u.snapchat_handle) chips.push('<span class="sr-chip sr-sc">'+SOCIAL_SVG.snapchat +'@'+esc(u.snapchat_handle)+'</span>');
@@ -14099,7 +14111,7 @@ async function renderProf(){
   // Die Striche blieben stehen, weil die Zahlen nie geholt wurden
   const fs=Array.isArray(fstats)?fstats[0]:fstats;
   const genderLabel={male:'Mann',female:'Frau',other:'Andere'}[cProfile.gender]||null;
-  const init=(cProfile.full_name||cProfile.username||'?').charAt(0).toUpperCase();
+  const init=anfang(cProfile.full_name||cProfile.username||'?');
   // "Besucht" ist das Archiv: Hier bleibt, wo man war – dauerhaft.
   // Vorher verschwand alles nach 24 Stunden, dann war der Reiter leer.
   const archivBesucht=(archiv||[]).filter(r=>!r.war_host);
@@ -14515,7 +14527,7 @@ function epAvZeichnen(){
   if(!el)return;
   el.innerHTML=cProfile?.avatar_url
     ? '<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>'
-    : esc((cProfile?.full_name||cProfile?.username||'?').charAt(0).toUpperCase());
+    : anfang(cProfile?.full_name||cProfile?.username||'?');
   el.classList.toggle('pro-glow',!!cProfile?.is_pro);
 }
 
@@ -15217,7 +15229,7 @@ async function chatListeZeichnen(list){
     const last=c.messages?.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
     const offeneZahl=(c.messages||[]).filter(m=>!m.read&&m.sender_id!==cUser.id).length;
     const unread=offeneZahl>0;
-    const av=o?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(o.avatar_url)+'"/>'):esc((o?.full_name||o?.username||'?').charAt(0).toUpperCase());
+    const av=o?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(o.avatar_url)+'"/>'):anfang(o?.full_name||o?.username||'?');
     return`<div class="chat-item ${unread?'unread':''}" onclick="openConv('${c.id}',${JSON.stringify(o).replace(/"/g,'&quot;')})">
       <div class="chat-av">${av}</div>
       <div class="chat-info"><div class="chat-name">${esc(o?.full_name||o?.username||'Unbekannt')}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
@@ -15238,7 +15250,7 @@ async function loadMsgRequests(){
   box.innerHTML='<div class="sec-lbl" style="padding:0 0 10px">Anfragen ('+data.length+')</div>'
     +data.map(r=>{
       const p=r.profiles||{};
-      const av=p.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'"/>'):esc((p.full_name||p.username||'?').charAt(0).toUpperCase());
+      const av=p.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'"/>'):anfang(p.full_name||p.username||'?');
       return '<div class="mreq">'
         +'<div class="av-sm" onclick="openUserProf(\''+p.id+'\')" style="cursor:pointer">'+av+'</div>'
         +'<div style="flex:1;min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'Unbekannt')+'</div>'
@@ -15332,7 +15344,7 @@ async function openConv(cid,other){
   convLeute.clear();
   const av=convGruppe
     ? grpAv(other?.bild_url)
-    : (other?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(other.avatar_url)+'"/>'):esc((other?.full_name||other?.username||'?').charAt(0).toUpperCase()));
+    : (other?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(other.avatar_url)+'"/>'):anfang(other?.full_name||other?.username||'?'));
   const elAv=document.getElementById('convAv');
   const elNm=document.getElementById('convName');
   const elSub=document.getElementById('convSub');
@@ -17262,8 +17274,8 @@ async function openUserProf(userId,zurueck){
   // Kommende öffentliche Partys dieser Person – oben mitgeholt
   const evs=aEvs.data;
 
-  const init=(p.full_name||p.username||'?').charAt(0).toUpperCase();
-  const av=p.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'"/>'):('<span>'+esc(init)+'</span>');
+  const init=anfang(p.full_name||p.username||'?');
+  const av=p.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'"/>'):('<span>'+init+'</span>');
   const socials=buildSocialLinks(p);
 
   const evHTML=(evs||[]).length
@@ -17387,7 +17399,7 @@ async function renderFolgeAnfragen(){
     +data.map(a=>{
       const pr=a.profiles||{};
       const nm=pr.full_name||pr.username||'Jemand';
-      const av=pr.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(pr.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+      const av=pr.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(pr.avatar_url)+'"/>'):anfang(nm);
       return '<div class="fa-zeile" data-von="'+a.von+'">'
         +'<div class="av-sm" onclick="openUserProf(\''+pr.id+'\')" style="cursor:pointer">'+av+'</div>'
         +'<div class="fa-txt"><b>'+esc(nm)+'</b><span>möchte dir folgen</span></div>'
@@ -17626,7 +17638,7 @@ async function openFollowList(userId,mode){
     const knopf=(cUser&&u.id!==cUser.id&&st)
       ? flKnopf(u.id, st.ich_folge?'folge':st.angefragt?'angefragt':(st.folgt_mir?'auch':'folgen'), st.folgt_mir)
       : '';
-    const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):esc((u.full_name||u.username||'?').charAt(0).toUpperCase());
+    const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):anfang(u.full_name||u.username||'?');
     return '<div class="fl-row" onclick="document.getElementById(\'followListOverlay\').classList.remove(\'open\');openUserProf(\''+u.id+'\')">'
       +'<div class="av-sm">'+av+'</div>'
       +'<div style="min-width:0"><div class="att-name">'+esc(u.full_name||u.username||'Unbekannt')
@@ -18125,7 +18137,7 @@ function gruppeZeichnen(g){
     ? '<div class="mg-sec">Möchten dazu</div>'
       +g.anfragen.map(a=>{
         const nm=a.full_name||a.username||'Jemand';
-        const av=a.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+        const av=a.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.avatar_url)+'"/>'):anfang(nm);
         return '<div class="mg-req" id="grpanf-'+a.id+'"><div class="av-sm">'+av+'</div>'
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
           +'<div class="mg-req-s">@'+esc(a.username||'')+'</div></div>'
@@ -18142,7 +18154,7 @@ function gruppeZeichnen(g){
         const dabei=(e.dabei||[]);
         const bilder=dabei.slice(0,5).map(d=>{
           const av=d.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(d.avatar_url)+'"/>')
-                               :esc((d.full_name||d.username||'?').charAt(0).toUpperCase());
+                               :anfang(d.full_name||d.username||'?');
           return '<div class="av-sm">'+av+'</div>';
         }).join('');
         const wer=dabei.length
@@ -18166,7 +18178,7 @@ function gruppeZeichnen(g){
 
   const leute=(g.mitglieder||[]).map(m=>{
     const nm=m.full_name||m.username||'Jemand';
-    const av=m.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(m.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+    const av=m.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(m.avatar_url)+'"/>'):anfang(nm);
     const selbst=m.id===cUser?.id;
     const raus=(g.gruender&&!m.gruender&&!selbst)
       ? '<button class="mg-raus" onclick="event.stopPropagation();gruppeRauswerfen(this,\''+g.id+'\',\''+m.id+'\',\''
@@ -18418,7 +18430,7 @@ async function gruppeKontakteWaehlen(gid){
 
   const reihen=leute.map(u=>{
     const nm=u.full_name||u.username||'Unbekannt';
-    const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+    const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):anfang(nm);
     return '<div class="mg-guest" id="sh-'+u.id+'" data-such="'
       +escAttr((nm+' '+(u.username||'')).toLowerCase())+'">'
       +'<div class="av-sm">'+av+'</div>'
@@ -18665,8 +18677,8 @@ async function openJoinOverlay(code){
     ?'<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
     :'<div style="position:absolute;inset:0;background:'+gradBg(e.type,e.category)+'">'
       +'<div class="join-hero-fb" style="color:'+w.accent+'">'+iconSvg(evIconKey(ev),48)+'</div></div>';
-  const hostInit=(e.host_full_name||e.host_username||'?').charAt(0).toUpperCase();
-  const hostAv=e.host_avatar?('<img loading="lazy" decoding="async" src="'+escAttr(e.host_avatar)+'"/>'):esc(hostInit);
+  const hostInit=anfang(e.host_full_name||e.host_username||'?');
+  const hostAv=e.host_avatar?('<img loading="lazy" decoding="async" src="'+escAttr(e.host_avatar)+'"/>'):hostInit;
 
   let action;
   if(e.link_persoenlich&&e.link_verbraucht&&!e.already_in){
@@ -18970,7 +18982,7 @@ async function renderShareContacts(alsEinladung){
 
   const reihen=leute.map(u=>{
     const nm=u.full_name||u.username||'Unbekannt';
-    const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+    const av=u.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):anfang(nm);
     return '<div class="mg-guest" id="sh-'+u.id+'" data-such="'
       +escAttr((nm+' '+(u.username||'')).toLowerCase())+'">'
       +'<div class="av-sm">'+av+'</div>'
@@ -24450,7 +24462,7 @@ function anfragenZeichnen(){
   box.innerHTML=a.map(x=>{
     const p=x.profiles||{};
     const nm=p.full_name||p.username||'Jemand';
-    const av=p.avatar_url?'<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>':esc(nm.charAt(0).toUpperCase());
+    const av=p.avatar_url?'<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>':anfang(nm);
     return '<div class="fl-row anfr-zeile" data-von="'+x.von+'" onclick="closeOverlay(\'anfragenOverlay\');openUserProf(\''+x.von+'\')">'
       +'<div class="av-sm">'+av+'</div>'
       +'<div style="min-width:0;flex:1"><div class="att-name">'+esc(nm)+'</div><div class="att-user anfr-status">@'+esc(p.username||'')+' · '+ntZeit(x.created_at)+'</div></div>'
@@ -24520,7 +24532,7 @@ async function besucherOeffnen(){
   box.innerHTML='<div class="set-hilfe bes-hilfe">Letzte 30 Tage. Ausschalten kannst du das in den Einstellungen – dann siehst du hier aber auch niemanden mehr.</div>'
     +liste.map(b=>{
       const nm=b.full_name||b.username||'Jemand';
-      const av=b.avatar_url?'<img loading="lazy" decoding="async" src="'+escAttr(b.avatar_url)+'" alt=""/>':esc(nm.charAt(0).toUpperCase());
+      const av=b.avatar_url?'<img loading="lazy" decoding="async" src="'+escAttr(b.avatar_url)+'" alt=""/>':anfang(nm);
       const stand=b.ich_folge?'folge':b.angefragt?'angefragt':(b.folgt_mir?'auch':'folgen');
       return '<div class="fl-row bes-zeile" onclick="closeOverlay(\'besucherOverlay\');openUserProf(\''+b.id+'\')">'
         +'<div class="av-sm">'+av+'</div>'
@@ -25319,7 +25331,7 @@ async function blockiertOeffnen(){
     const nm=p.full_name||p.username||'Unbekannt';
     const av=p.avatar_url
       ? '<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>'
-      : esc(nm.charAt(0).toUpperCase());
+      : anfang(nm);
     return '<div class="mg-guest"><div class="av-sm">'+av+'</div>'
       +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
       +(p.username?'<div class="mg-req-s">@'+esc(p.username)+'</div>':'')+'</div>'
@@ -25533,7 +25545,7 @@ function ntAvatar(n){
   const nm=p.full_name||p.username||'?';
   const bild=p.avatar_url
     ? '<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>'
-    : esc(nm.charAt(0).toUpperCase());
+    : anfang(nm);
   return '<div class="nt-av"><div class="nt-av-bild">'+bild+'</div>'+ntIcon(n.art)+'</div>';
 }
 
@@ -25631,7 +25643,7 @@ function ntAnfragenZeile(){
     const p=x.profiles||{};
     return '<span class="nt-anfr-av">'+(p.avatar_url
       ? '<img loading="lazy" decoding="async" src="'+escAttr(p.avatar_url)+'" alt=""/>'
-      : esc((p.full_name||p.username||'?').charAt(0).toUpperCase()))+'</span>';
+      : anfang(p.full_name||p.username||'?'))+'</span>';
   }).join('');
   const rest=a.length-1;
   return '<button class="nt-anfr" onclick="anfragenOeffnen()">'
@@ -26011,7 +26023,7 @@ function plusNamenFelder(){
     if(k){
       const av=k.avatar_url
         ? '<img loading="lazy" decoding="async" src="'+escAttr(k.avatar_url)+'"/>'
-        : esc(String(k.full_name||k.username||'?').charAt(0).toUpperCase());
+        : anfang(k.full_name||k.username||'?');
       return '<div class="plus-konto" id="plusZeile'+i+'">'
         +'<div class="av-sm">'+av+'</div>'
         +'<div style="min-width:0;flex:1">'
@@ -26057,7 +26069,7 @@ function plusSuchen(i,text){
     box.innerHTML=list.map(u=>{
       const av=u.avatar_url
         ? '<img loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'
-        : esc(String(u.full_name||u.username||'?').charAt(0).toUpperCase());
+        : anfang(u.full_name||u.username||'?');
       return '<button class="plus-treffer-r" onclick="plusKontoNehmen('+i+',\''+u.id+'\')">'
         +'<div class="av-sm">'+av+'</div>'
         +'<span>'+esc(u.full_name||u.username||'')+' <small>@'+esc(u.username||'')+'</small></span>'
@@ -26201,7 +26213,7 @@ async function openManage(eventId){
     ?'<div class="mg-sec">Möchten dabei sein</div>'
       +beitritte.map(b=>{
         const nm=b.profiles?.full_name||b.profiles?.username||'Jemand';
-        const av=b.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(b.profiles.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+        const av=b.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(b.profiles.avatar_url)+'"/>'):anfang(nm);
         return '<div class="mg-req">'
           +'<div class="av-sm">'+av+'</div>'
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
@@ -26216,7 +26228,7 @@ async function openManage(eventId){
     ?'<div class="mg-sec">Offene Anfragen</div>'
       +offen.map(r=>{
         const nm=r.profiles?.full_name||r.profiles?.username||'Jemand';
-        const av=r.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(r.profiles.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+        const av=r.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(r.profiles.avatar_url)+'"/>'):anfang(nm);
         return '<div class="mg-req">'
           +'<div class="av-sm">'+av+'</div>'
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+' möchte +'+r.extra_count+' mitbringen</div>'
@@ -26233,7 +26245,7 @@ async function openManage(eventId){
      Der Gastgeber muss wissen, wer vor der Tür steht. */
   const gastZeile=(a)=>{
     const nm=a.profiles?.full_name||a.profiles?.username||'Gast';
-    const av=a.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.profiles.avatar_url)+'"/>'):esc(nm.charAt(0).toUpperCase());
+    const av=a.profiles?.avatar_url?('<img loading="lazy" decoding="async" src="'+escAttr(a.profiles.avatar_url)+'"/>'):anfang(nm);
     const namen=Array.isArray(a.begleiter_namen)?a.begleiter_namen.filter(Boolean):[];
     let raus='<div class="mg-guest"><div class="av-sm">'+av+'</div>'
       +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
@@ -26243,7 +26255,7 @@ async function openManage(eventId){
     for(let i=0;i<(a.plus_ones||0);i++){
       const bn=(namen[i]||'').trim();
       raus+='<div class="mg-guest mg-guest-plus"><div class="av-sm av-plus">'
-        +esc((bn||nm).charAt(0).toUpperCase())+'</div>'
+        +anfang(bn||nm)+'</div>'
         +'<div style="flex:1;min-width:0"><div class="mg-req-n">'
           +esc(bn||('Begleitung von '+nm))+'</div>'
         +'<div class="mg-req-s">+1 von '+esc(nm)+'</div></div></div>';
@@ -26424,7 +26436,7 @@ function renderGastgeber(e){
   const nm=veranst||konto||'Unbekannt';
   const av=pr?.avatar_url
     ? '<img loading="lazy" decoding="async" src="'+escAttr(pr.avatar_url)+'" alt=""/>'
-    : esc(nm.charAt(0).toUpperCase());
+    : anfang(nm);
   const unter=veranst
     ? '<span>Veranstalter'+(konto&&konto!==veranst?'<em style="font-style:normal"> · '+esc(konto)+'</em>':'')+'</span>'
     /* Bei einem Verein sagt die Marke daneben schon "Verein" – darunter
@@ -26644,7 +26656,7 @@ function fotoZeigen(){
   const name=eigen?'Du':(wer?.full_name||wer?.username||'Gast');
   const av=wer?.avatar_url
     ?'<img loading="lazy" decoding="async" src="'+escAttr(wer.avatar_url)+'" alt=""/>'
-    :esc(String(name).charAt(0).toUpperCase());
+    :anfang(name);
   document.getElementById('fotoVollWer').innerHTML='<div class="av-sm">'+av+'</div><span>'+esc(name)+'</span>';
   document.querySelectorAll('.foto-voll-pfeil').forEach(p=>{ p.hidden=st.fotos.length<2; });
 
@@ -28209,7 +28221,7 @@ function showSettingsModal(){
     const nm=cProfile?.full_name||cProfile?.username||'';
     const av=cProfile?.avatar_url
       ? '<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>'
-      : esc((nm||'?').charAt(0).toUpperCase());
+      : anfang(nm||'?');
     kz.innerHTML=cUser?('<span class="kz-av">'+av+'</span><span class="kz-text">'
       +'<span class="kz-name">'+esc(nm)+'</span><span class="kz-art">'+esc(cUser.email||'')+'</span></span>'):'';
     kz.hidden=!cUser;
