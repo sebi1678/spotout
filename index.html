@@ -12873,12 +12873,14 @@ async function toggleAtt(id,isAtt){
       const{error}=await sb.from('event_attendees').insert({event_id:id,user_id:cUser.id});
       // 23505 = bereits angemeldet, das ist kein Fehler für den Nutzer
       if(error&&error.code!=='23505')throw error;
-      /* Zusagen ist die wichtigste Handlung in dieser App. Sie darf
-         sich anfuehlen wie etwas, das geklappt hat. */
-      nativeHaptik('erfolg');
         }
     await loadEvts();
     await openDetail(id);
+    /* Zusagen ist die wichtigste Handlung in dieser App. Sie darf
+       sich anfuehlen wie etwas, das geklappt hat – und zwar in dem
+       Moment, in dem man es sieht (der Knopf zeigt jetzt "dabei"),
+       nicht schon vorher, waehrend noch der Ladekreis dreht. */
+    if(!isAtt)nativeHaptik('erfolg');
     if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
     if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
     // Frisch angemeldet? Dann gleich fragen, was man mitbringt – sofern es
@@ -24471,6 +24473,8 @@ async function warteAufPro(){
       cProfile={...cProfile,...data};
       await loadProf();
       renderProPage();
+      /* Fuehlbar in dem Moment, in dem Pro sichtbar da ist. */
+      nativeHaptik('erfolg');
       // Einmal zeigen, was jetzt anders ist – sonst merkt kaum
       // jemand, wofuer er bezahlt hat.
       proTourPruefen();
