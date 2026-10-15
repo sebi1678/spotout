@@ -6,7 +6,7 @@
        sichtbaren Bereich verkleinern soll, statt die Seite darunter
        zu schieben. Wo es unterstuetzt wird, ist das Problem damit
        erledigt; sonst greift die Absicherung im Skript. -->
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"/>
   <!-- Steht vor allem anderen: bis das grosse Stylesheet gelesen ist,
        waere die Seite sonst weiss. Und ob der Fluchtknopf an ist, soll
        feststehen, bevor die Leiste zum ersten Mal erscheint. -->
@@ -935,6 +935,13 @@
       opacity:0;pointer-events:none;transition:opacity var(--feder-dauer) var(--feder);
     }
     .overlay.open{opacity:1;pointer-events:all}
+    /* Geschlossene Fenster ganz aus dem Bild nehmen, sobald sie fertig
+       ausgeblendet sind. Vorher lagen alle 39 unsichtbar über der Seite
+       und wurden bei jedem Bild mitgerechnet – im WebView der App spürbar.
+       Das Profil-Fenster stand dabei rechts neben dem Bildschirm; iOS
+       konnte die Seite deshalb kurz verkleinern und verschieben. */
+    .overlay:not(.open){visibility:hidden;transition:opacity var(--feder-dauer) var(--feder),visibility 0s linear var(--feder-dauer)}
+    .overlay.open{visibility:visible}
     /* Tippen in einem Fenster: das Fenster endet genau ueber der Tastatur.
        Vorher schob iOS die ganze Seite hoch – der Kopf verschwand unter
        der Uhr, die Knoepfe unter der Tastatur. */
@@ -11583,6 +11590,69 @@ function zurueckEntscheid(dx,v,breite){
   if(v<-350)return false;
   return dx+Bewegung.projiziere(v)>Math.max(ZURUECK_AB,breite*.35);
 }
+/* ── Fremdes Profil: vom linken Rand zurückwischen ────────────────
+   Das Profil kommt wie eine iPhone-Seite von rechts herein – dann muss
+   es auch so zurückgehen: am linken Rand fassen, es folgt dem Finger,
+   und beim Loslassen entscheiden Weg und Tempo (wie im Chat). Es ist
+   ein Zurück, kein Wechsel zwischen Reitern; die gibt es weiter nur
+   über die Leiste. */
+function profilWischStarten(){
+  let x0=0,y0=0,dx=0,zieht=false,entschieden=false,m=null,ov=null,gleitet=false;
+  const mess=Bewegung.messer();
+  const setze=x=>{ if(m)m.style.transform='translateX('+x.toFixed(1)+'px)'; };
+  document.addEventListener('touchstart',e=>{
+    zieht=false;entschieden=false;dx=0;
+    if(gleitet||e.touches.length!==1)return;
+    const t=e.touches[0];
+    if(t.clientX>KANTE)return;
+    ov=document.getElementById('userProfOverlay');
+    if(!ov||!ov.classList.contains('open'))return;
+    // Liegt ein anderes Fenster darüber, gehört der Wisch diesem
+    if([...document.querySelectorAll('.overlay.open')].some(o=>o!==ov))return;
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]'))return;
+    m=ov.querySelector('.modal');
+    if(!m)return;
+    x0=t.clientX;y0=t.clientY;zieht=true;mess.reset();
+    document.addEventListener('touchmove',zug,{passive:false});
+  },{passive:true});
+  const zug=e=>{
+    if(!zieht){document.removeEventListener('touchmove',zug);return;}
+    const t=e.touches[0];
+    const x=t.clientX-x0,y=t.clientY-y0;
+    if(!entschieden){
+      if(Math.abs(x)<6&&Math.abs(y)<6)return;
+      entschieden=true;
+      if(Math.abs(y)>Math.abs(x)||x<0){zieht=false;return;}
+      m.style.transition='none';
+    }
+    if(e.cancelable)e.preventDefault();
+    dx=x<0?Bewegung.gummiband(x,window.innerWidth||390):x;
+    setze(dx);mess.add(dx);
+  };
+  const los=()=>{
+    document.removeEventListener('touchmove',zug);
+    if(!zieht)return;
+    zieht=false;
+    if(!entschieden||!m){ if(m){m.style.transition='';m.style.transform='';} return; }
+    const br=window.innerWidth||390,v=mess.v();
+    const schafft=zurueckEntscheid(dx,v,br);
+    if(schafft)nativeHaptik('leicht');
+    gleitet=true;
+    const el=m;
+    Bewegung.feder({von:dx,nach:schafft?br:0,v,antwort:.3,
+      daempfung:(!schafft&&Math.abs(v)>300)?.8:1,
+      schritt:x=>{dx=x;setze(x);},
+      fertig:()=>{
+        gleitet=false;
+        if(schafft)closeUserProf();
+        // Ohne Übergang zurück an den Platz, den die Klasse vorgibt
+        requestAnimationFrame(()=>{ el.style.transform=''; requestAnimationFrame(()=>{ el.style.transition=''; }); });
+      }});
+  };
+  document.addEventListener('touchend',los,{passive:true});
+  document.addEventListener('touchcancel',los,{passive:true});
+}
+
 function zurueckGesteStarten(){
   let x0=0,y0=0,dx=0,zieht=false,entschieden=false,oben=null,unten=null,ziel=null;
   const mess=Bewegung.messer();
@@ -29056,6 +29126,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   tastaturBeobachten();
   initSwipeToClose();
   zurueckGesteStarten();
+  profilWischStarten();
   vollseitenGesteStarten();
   ziehAktualisieren();
   /* Die untere Leiste ist der meistgetippte Ort der App – dort fuehlt
