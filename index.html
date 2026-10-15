@@ -6548,6 +6548,21 @@
     .c.yes svg,.c.no svg{width:15px;height:15px;display:block;margin:0 auto}
     .c.no svg{opacity:.5}
 
+    /* ══════════ SCHRIFT: Laufweite nach Groesse (15.10.) ══════════
+       Eine Laufweite fuer alle Groessen ist irgendwo falsch: grosse
+       Titel wirken zu luftig, kleiner Text zu eng. Werte aus Inters
+       eigener Tabelle (rsms, "dynamic metrics"):
+         Laufweite = −0.0223 + 0.185 · e^(−0.1745 · px)  em
+       → ab ~22 px rund −0.02em, um 20 px −0.015em, um 17 px −0.01em,
+       Fliesstext 13–16 px nahe 0 (bleibt, wie er ist). Grossbuchstaben-
+       Etiketten behalten ihre positive Laufweite – Versalien brauchen sie. */
+    .pro-price,.home-hero h1,.cal-title,.pro-hero h2,
+    .home-hero-knapp h1,.chat-title{letter-spacing:-.02em}
+    .join-name,.pro-ang-t{letter-spacing:-.015em}
+    .modal-title{letter-spacing:-.01em}
+    /* Zeilenabstand eng bei Titeln, die umbrechen koennen. */
+    .home-hero-knapp h1,.pro-hero h2,.cal-title{line-height:1.15}
+
     /* ══════════ BARRIEREFREIHEIT: Durchsicht und Kontrast ══════════
        Wer im System "Transparenz reduzieren" eingestellt hat, bekommt
        deckende Flaechen statt Glas; wer "Kontrast erhoehen" will,
