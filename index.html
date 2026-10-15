@@ -6760,6 +6760,10 @@
       .unread-badge,.nav-bell-dot{transition:opacity 150ms ease;transform:none}
     }
 
+    /* Einstieg: zurueckblaettern kommt von links */
+    .eins-karte.zurueck{animation-name:reinLinks}
+    #einsBuehne,#tourBuehne{touch-action:pan-y}
+
     /* ══════════ ANMELDUNG (15.10.) ══════════ */
     .auth-field{position:relative}
     .auth-field .pw-auge{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:44px;height:44px;
@@ -7419,13 +7423,17 @@
      entscheiden. -->
 <div class="tour" id="einstieg">
   <div class="tour-kopf">
-    <div class="tour-schritt" id="einsSchritt">1 von 3</div>
+    <div class="tour-schritt" id="einsSchritt">1 von 5</div>
     <button class="tour-skip" onclick="einstiegFertig()">Später</button>
   </div>
   <div class="tour-buehne" id="einsBuehne"></div>
   <div class="tour-fuss">
     <div class="tour-punkte" id="einsPunkte"></div>
     <div class="tour-reihe">
+      <!-- Wer sich vertippt hat, will zurueck – nicht alles ueberspringen. -->
+      <button class="tour-zurueck tour-zurueck-weg" id="einsZurueck" onclick="einstiegZurueck()" aria-label="Zurück">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Zurück
+      </button>
       <button class="tour-btn" id="einsBtn" onclick="einstiegWeiter()">Weiter</button>
     </div>
   </div>
@@ -7435,7 +7443,7 @@
 
 <div class="tour" id="tour">
   <div class="tour-kopf">
-    <div class="tour-schritt" id="tourSchritt">1 von 5</div>
+    <div class="tour-schritt" id="tourSchritt">1 von 4</div>
     <button class="tour-skip" onclick="tourFertig()">Überspringen</button>
   </div>
   <div class="tour-buehne" id="tourBuehne"></div>
@@ -9683,16 +9691,12 @@ function tourStarten(satz,erzwingen){
      gemeinsame Bildhoehe waere nie zustande gekommen. */
   t.classList.add('open');
   tourAufbauen();
+  tourWischenEinrichten('tourBuehne',()=>tourWeiter(),()=>tourZurueck(),()=>tourIndex,()=>tourAnzahl());
   tourZeichnen();
   requestAnimationFrame(()=>t.classList.add('sichtbar'));
-  /* Erster Eindruck: Bild, Titel, Text und Knoepfe kommen nacheinander. */
+  /* Erster Eindruck: die Leiste unten kommt nach der Karte. */
   mitGsap((gsap,fertig)=>{
-    const k=t.querySelector('.tour-karte.on');
-    if(!k){fertig();return;}
-    gsap.timeline({defaults:{ease:'power3.out',duration:.45},onComplete:fertig})
-      .fromTo(k.querySelector('.tour-bild'),{autoAlpha:0,scale:.94,y:8},{autoAlpha:1,scale:1,y:0},.08)
-      .fromTo(k.querySelectorAll('.tour-t,.tour-s'),{autoAlpha:0,y:12},{autoAlpha:1,y:0,stagger:.06},.16)
-      .fromTo(t.querySelector('.tour-fuss'),{autoAlpha:0,y:8},{autoAlpha:1,y:0,duration:.3},.3);
+    gsap.fromTo(t.querySelector('.tour-fuss'),{autoAlpha:0,y:8},{autoAlpha:1,y:0,duration:.3,delay:.35,ease:'power3.out',onComplete:fertig});
   });
 }
 
@@ -9709,6 +9713,74 @@ async function mitGsap(fn){
 }
 
 function tourAnzahl(){ return (TOUREN[tourSatz]||[]).length; }
+
+/* Jede Karte zeigt beim Erscheinen kurz, wovon sie erzaehlt: die Teile
+   der Zeichnung kommen nacheinander, Haekchen springen auf, der Knopf
+   wird "gedrueckt", der Fluchtknopf leuchtet zweimal auf. Einmalig und
+   selten (Emil: Delight gehoert in erste Male), unter einer Sekunde,
+   nichts wartet darauf. Weniger Bewegung: nichts davon. */
+function tourKarteVorfuehren(karte){
+  if(!karte)return;
+  mitGsap((gsap,fertig)=>{
+    const teile=karte.querySelectorAll('.tour-bild .tb > *, .tour-bild .tb-kachel > *');
+    const tl=gsap.timeline({defaults:{ease:'power3.out'},onComplete:fertig});
+    if(teile.length)tl.fromTo(teile,{autoAlpha:0,y:10},{autoAlpha:1,y:0,duration:.38,stagger:.06},.05);
+    const haken=karte.querySelectorAll('.tb-hk');
+    if(haken.length)tl.fromTo(haken,{scale:.6,autoAlpha:0},{scale:1,autoAlpha:1,duration:.4,ease:'back.out(2)',stagger:.08},.25);
+    const knopf=karte.querySelector('.tb-knopf');
+    if(knopf)tl.to(knopf,{scale:.95,duration:.12,ease:'power2.out'},.75).to(knopf,{scale:1,duration:.3,ease:'back.out(2.4)'});
+    const raus=karte.querySelector('.tb-ic.raus');
+    if(raus)tl.fromTo(raus,{boxShadow:'0 0 0 0 rgba(255,45,118,.55)'},{boxShadow:'0 0 0 10px rgba(255,45,118,0)',duration:.7,repeat:1,ease:'power2.out'},.4);
+    tl.fromTo(karte.querySelectorAll('.tour-t,.tour-s'),{autoAlpha:0,y:8},{autoAlpha:1,y:0,duration:.35,stagger:.05},.12);
+  });
+}
+
+/* Wischen zwischen den Karten – wie man es vom iPhone kennt, aber
+   bewusst schwer versehentlich auszuloesen (darum war es frueher weg):
+   erst ab 10 px eindeutig waagrechter Bewegung, die Karte klebt dann am
+   Finger, und weiter geht es nur mit Schwung oder ab einem Drittel der
+   Breite (Apple: Projektion statt Strecke). Der Knopf bleibt. */
+function tourWischenEinrichten(buehneId,weiter,zurueck,index,anzahl){
+  const b=document.getElementById(buehneId);
+  if(!b||b.dataset.wischt)return;
+  b.dataset.wischt='1';
+  let x0=0,y0=0,dx=0,an=false,entschieden=false,karte=null;
+  const mess=Bewegung.messer();
+  b.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1)return;
+    x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;an=true;entschieden=false;mess.reset();
+    karte=b.querySelector('.tour-karte.on,.eins-karte');
+  },{passive:true});
+  b.addEventListener('touchmove',e=>{
+    if(!an||!karte)return;
+    const x=e.touches[0].clientX-x0,y=e.touches[0].clientY-y0;
+    if(!entschieden){
+      if(Math.abs(x)<10&&Math.abs(y)<10)return;
+      entschieden=true;
+      if(Math.abs(y)>Math.abs(x)*.8){an=false;return;}   // das ist Scrollen
+      karte.style.transition='none';
+    }
+    const i=index(),n=anzahl();
+    // Am Anfang und am Ende: zaeh statt hart
+    dx=(i===0&&x>0)||(i>=n-1&&x<0)?Bewegung.gummiband(x,b.clientWidth):x;
+    karte.style.transform='translateX('+dx.toFixed(1)+'px)';
+    mess.add(dx);
+  },{passive:true});
+  const los=()=>{
+    if(!an||!entschieden||!karte){an=false;return;}
+    an=false;
+    const v=mess.v(), w=b.clientWidth||360, wohin=dx+Bewegung.projiziere(v,.99);
+    const i=index(),n=anzahl();
+    const k=karte;
+    const zuruecklegen=()=>Bewegung.feder({von:dx,nach:0,v,daempfung:Math.abs(v)>300?.8:1,antwort:.3,
+      schritt:x=>{k.style.transform='translateX('+x.toFixed(1)+'px)';},fertig:()=>{k.style.transform='';k.style.transition='';}});
+    if((v<-400||wohin<-w/3)&&i<n-1){ k.style.transform='';k.style.transition=''; weiter(); }
+    else if((v>400||wohin>w/3)&&i>0){ k.style.transform='';k.style.transition=''; zurueck(); }
+    else zuruecklegen();
+  };
+  b.addEventListener('touchend',los,{passive:true});
+  b.addEventListener('touchcancel',los,{passive:true});
+}
 
 /* Einmal alles bauen. Danach wird beim Weiterblaettern nichts mehr
    erzeugt und nichts mehr uebersetzt - nur eine Klasse umgehaengt. */
@@ -9810,6 +9882,7 @@ function tourZeichnen(){
   if(punkte)[...punkte.children].forEach((p,i)=>
     p.classList.toggle('an', i===tourIndex));
 
+  tourKarteVorfuehren(buehne.querySelector('.tour-karte.on'));
   document.getElementById('tourSchritt').textContent=
     (tourIndex+1)+' von '+karten.length;
   document.getElementById('tourBtn').textContent=
@@ -9956,6 +10029,7 @@ function einstiegKarten(){
 }
 
 function einstiegStarten(){
+  tourWischenEinrichten('einsBuehne',()=>einstiegWeiter(),()=>einstiegZurueck(),()=>einsIndex,()=>einstiegKarten().length);
   const el=document.getElementById('einstieg');
   if(!el)return;
   einsIndex=0;
@@ -10009,6 +10083,10 @@ function einstiegZeichnen(){
   if(schritt)schritt.textContent=(einsIndex+1)+' von '+karten.length;
   const btn=document.getElementById('einsBtn');
   if(btn)btn.textContent=einsIndex>=karten.length-1?'Fertig':'Weiter';
+  document.getElementById('einsZurueck')?.classList.toggle('tour-zurueck-weg',einsIndex<=0);
+  // Die Karte kommt aus der Richtung, in die man blaettert.
+  const karte=buehne.querySelector('.eins-karte');
+  if(karte&&einsRichtung<0)karte.classList.add('zurueck');
 }
 
 function einstiegWaehlen(feld,wert){
@@ -10028,6 +10106,14 @@ function einstiegWaehlen(feld,wert){
 function einstiegWeiter(){
   if(einsIndex>=einstiegKarten().length-1){ einstiegFertig(); return; }
   einsIndex++;
+  einsRichtung=1;
+  einstiegZeichnen();
+}
+let einsRichtung=1;
+function einstiegZurueck(){
+  if(einsIndex<=0)return;
+  einsIndex--;
+  einsRichtung=-1;
   einstiegZeichnen();
 }
 
@@ -10399,6 +10485,12 @@ function enterApp(){
      nicht durch nachgebaute Karten. Die App schaltet dabei selbst um,
      man muss nur Weiter druecken. */
   setTimeout(()=>tourStarten('start'),900);
+  /* Wer die Tour schon als Gast gesehen hat und sich jetzt registriert,
+     bekam die Einstiegsfragen nie – sie hingen nur am Ende der Tour.
+     Dann kommen sie jetzt direkt. */
+  setTimeout(()=>{
+    if(tourGelaufen('start')&&einstiegNoetig()&&!document.getElementById('tour')?.classList.contains('open'))einstiegStarten();
+  },1100);
   // Leiste initial auf die aktive Kategorie stellen
   const t0=document.getElementById('segThumb');
   if(t0){
