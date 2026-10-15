@@ -69,7 +69,7 @@ export default async function handler(req, res) {
   const zeile = e ? [wann(e.ev_date || e.date, e.ev_time || e.time), ort].filter(Boolean).join(' · ') : '';
   const text  = (zeile ? zeile + ' — ' : '')
     + 'Link öffnen, kurz anmelden, und du stehst auf der Gästeliste. SPOTOUT ist gratis.';
-  const bild  = (e && e.image_url) ? e.image_url : 'https://spotoutapp.ch/og.png';
+  const bild  = (e && e.image_url) ? e.image_url : 'https://spotoutapp.ch/og.jpg';
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   // Kurz zwischenspeichern: eine Einladung wird oft in derselben Minute

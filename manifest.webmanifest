@@ -1,0 +1,14 @@
+{
+  "name": "SPOTOUT",
+  "short_name": "SPOTOUT",
+  "description": "Partys und Feste in der Schweiz",
+  "lang": "de-CH",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090D24",
+  "theme_color": "#090D24",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
