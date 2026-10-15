@@ -1376,6 +1376,18 @@
       transition:transform var(--takt);display:flex;align-items:center;justify-content:center;gap:6px;
     }
     .insta-tab.active{color:#fff;border-color:#FF2D76}
+    /* Eigenes Profil: ein Strich gleitet unter den aktiven Reiter (wie
+       .segbar-thumb). Er zeigt, woher man kommt; die Inhalte bewegen sich nicht. */
+    .insta-tabs.mit-strich{position:relative}
+    .insta-tabs.mit-strich .insta-tab.active{border-color:transparent}
+    .insta-strich{
+      position:absolute;left:0;bottom:0;height:2px;
+      width:calc(100% / var(--n,3));background:#FF2D76;
+      transform:translateX(calc(var(--i,0) * 100%));
+      transition:transform var(--takt) var(--kurve);
+      pointer-events:none;
+    }
+    @media (prefers-reduced-motion:reduce){.insta-strich{transition:none}}
     
     /* Grid */
     .insta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
@@ -14224,7 +14236,8 @@ async function renderProf(){
       </div>
 
       <!-- TABS -->
-      <div class="insta-tabs">
+      <div class="insta-tabs mit-strich">
+        <span class="insta-strich" id="profStrich" aria-hidden="true"></span>
         <button class="insta-tab active" id="tab-mine" onclick="switchProfTab('mine')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
           Erstellt
@@ -14263,6 +14276,7 @@ async function renderProf(){
 function switchProfTab(tab){
   document.querySelectorAll('.insta-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('profStrich')?.style.setProperty('--i',['mine','visited','gruppen'].indexOf(tab));
   document.getElementById('prof-panel-mine').style.display=tab==='mine'?'grid':'none';
   document.getElementById('prof-panel-visited').style.display=tab==='visited'?'grid':'none';
   const gp=document.getElementById('prof-panel-gruppen');
