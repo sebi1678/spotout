@@ -907,7 +907,7 @@
       position:fixed;inset:0;z-index:200;
       background:rgba(0,0,0,.7);
       display:flex;align-items:flex-end;justify-content:center;
-      opacity:0;pointer-events:none;transition:opacity 260ms var(--kurve);
+      opacity:0;pointer-events:none;transition:opacity var(--feder-dauer) var(--feder);
     }
     .overlay.open{opacity:1;pointer-events:all}
     /* Tippen in einem Fenster: das Fenster endet genau ueber der Tastatur.
@@ -930,11 +930,23 @@
       /* Grund und Blatt liefen frueher verschieden lang: der dunkle
          Grund war nach 220 ms weg, das Blatt rutschte noch 100 ms
          weiter – sichtbar ueber der nackten Seite. Beide jetzt auf
-         260 ms mit derselben Kurve; dann endet es zusammen. */
-      transform:translateY(100%);transition:transform 260ms var(--kurve);
+         260 ms mit derselben Kurve; dann endet es zusammen.
+         Seit 15.10. beide auf der Feder (Daempfung 1.0) – endet weiter
+         zusammen, kommt aber an wie ein Gegenstand, nicht wie ein Zeitplan. */
+      transform:translateY(100%);transition:transform var(--feder-dauer) var(--feder);
       -webkit-overflow-scrolling:touch;
+      /* Ein Schatten in Blattfarbe, ohne Unschaerfe, 80 px nach unten:
+         Federt das Blatt nach einem Wisch ueber seinen Platz hinaus oder
+         zieht man es oben gegen das Gummiband, sieht man darunter Blatt
+         statt einer Luecke. Kostet kein Layout. */
+      box-shadow:0 80px 0 0 rgba(9,13,36,.99);
     }
     .overlay.open .modal{transform:translateY(0)}
+    /* Weniger Bewegung: das Fenster blendet ein, statt hochzufahren. */
+    @media (prefers-reduced-motion: reduce){
+      .overlay .modal{transform:none;transition:opacity var(--feder-dauer) ease}
+      .overlay:not(.open) .modal{opacity:0}
+    }
     .modal{overscroll-behavior:contain}
     /* Nie seitlich wischen: Fenster, Seiten und die App selbst scrollen nur
        nach oben und unten. Was seitlich scrollen soll (Chip-Leisten), hat
@@ -5052,7 +5064,7 @@
     /* Unten: inaktiv nur eine helle Flaeche, aktiv in Farbe */
     .bnav-btn:not(.bnav-create):not(.active) .pk [fill^="url(#pk"]{fill:rgba(255,255,255,.16)}
     .bnav-btn.active:not(.bnav-create) .pk{animation:pkHuepf 460ms var(--kurve-schwung) both}
-    @keyframes pkHuepf{0%{transform:scale(.8)}60%{transform:scale(1.14)}100%{transform:scale(1.08)}}
+    @keyframes pkHuepf{0%{transform:scale(.9)}100%{transform:scale(1.08)}}
     .rep-opt.einzeln{padding:10px 14px}
     .rep-opt.einzeln::before{display:none}
     .rep-ic{
@@ -5125,7 +5137,7 @@
     .sw>i{
       position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:999px;background:#fff;
       box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);
-      transition:transform .26s cubic-bezier(.3,1.3,.5,1),width .18s ease;
+      transition:transform .26s var(--kurve),width .18s ease;
     }
     .sw.an{background:#FF2D76}
     .sw.an>i{transform:translateX(20px)}
@@ -5596,14 +5608,28 @@
          --takt-lang  ganze Flächen (Fenster, Seiten, Schritte)
 
          --kurve         schnell los, sanft aus – für alles
-         --kurve-schwung federt am Ende leicht nach – nur wo es gemeint ist
+         --kurve-schwung hiess frueher so, weil es nachfederte. Seit 15.10.
+                         federt nichts mehr nach, wo kein Wisch vorausging
+                         (Apple: Daempfung 1.0 als Standard, Ueberschwingen
+                         nur nach Schwung – das machen die Gesten in JS,
+                         siehe Bewegung.feder). Der Name bleibt, damit
+                         nicht 20 Stellen umgeschrieben werden muessen.
+
+         --feder         eine echte Feder, Daempfung 1.0, Antwortzeit
+                         0.35 s – aus der Formel gerechnet, nicht geraten:
+                         x(t) = 1 − (1 + ωt)·e^(−ωt), ω = 2π/0.35.
+                         Nach 0.51 s liegt sie unter 0.1 % vom Ziel, darum
+                         --feder-dauer. Fuer ganze Flaechen (Fenster).
+                         Aeltere Safaris ohne linear() nehmen --kurve.
     */
     :root{
       --takt-kurz:140ms;
       --takt:220ms;
       --takt-lang:320ms;
       --kurve:cubic-bezier(.32,.72,0,1);
-      --kurve-schwung:cubic-bezier(.34,1.4,.64,1);
+      --feder:var(--kurve);
+      --feder-dauer:510ms;
+      --kurve-schwung:var(--feder);
       /* Alle Ladekreise drehen gleich schnell. Vorher gab es zwei
          Geschwindigkeiten – nebeneinander sah das nach Fehler aus. */
       --dreh:.8s;
@@ -5619,8 +5645,11 @@
     }
     /* Wer im Betriebssystem weniger Bewegung eingestellt hat, bekommt
        weniger Bewegung – nicht gar keine, sonst springt es. */
+    @supports (transition-timing-function:linear(0,1)){
+      :root{ --feder:linear(0,0.057,0.18,0.32,0.455,0.573,0.671,0.75,0.812,0.86,0.896,0.924,0.944,0.96,0.971,0.979,0.985,0.989,0.992,0.994,0.996,0.997,0.998,0.999,1); }
+    }
     @media (prefers-reduced-motion: reduce){
-      :root{ --takt-kurz:1ms; --takt:1ms; --takt-lang:1ms; }
+      :root{ --takt-kurz:1ms; --takt:1ms; --takt-lang:1ms; --feder-dauer:200ms; }
     }
 
     /* ══════════ REGISTRIERUNG IN SCHRITTEN ══════════
@@ -6229,14 +6258,14 @@
     /* Schalter: Farben und Zeiten aus den Tokens, 44px Tippflaeche */
     .sw.an{background:var(--pink)}
     .sw{transition:background-color var(--takt) ease}
-    .sw>i{transition:transform var(--takt) cubic-bezier(.3,1.3,.5,1),width var(--takt-kurz) ease}
+    .sw>i{transition:transform var(--takt) var(--kurve),width var(--takt-kurz) ease}
     .sw::after{content:'';position:absolute;inset:-7px -6px}
     /* Der zweite Schalter (Erstellen) sieht jetzt gleich aus */
     .tog{width:51px;height:31px;flex:0 0 51px;border-radius:999px;background:rgba(120,120,128,.36);
       -webkit-appearance:none;appearance:none;padding:0}
     .tog::after{top:2px;left:2px;width:27px;height:27px;border-radius:999px;
       box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16);
-      transition:transform var(--takt) cubic-bezier(.3,1.3,.5,1)}
+      transition:transform var(--takt) var(--kurve)}
     .tog.on{background:var(--pink)}
     .tog.on::after{transform:translateX(20px)}
     .tog:active{transform:none}
@@ -6294,7 +6323,7 @@
     #userProfOverlay .modal{
       position:fixed;inset:0;width:100%;max-width:none;height:100%;max-height:none!important;margin:0;
       border-radius:0;border:none;padding:0;background:#090D24;display:flex;flex-direction:column;
-      transform:translateX(100%);transition:transform .34s cubic-bezier(.2,.8,.2,1);
+      transform:translateX(100%);transition:transform var(--feder-dauer) var(--feder);
     }
     #userProfOverlay.open .modal{transform:none}
     .up-kopf{flex:none;display:flex;align-items:center;gap:8px;
@@ -8345,6 +8374,100 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
+/* ══════════ BEWEGUNG: Feder, Projektion, Gummiband ══════════
+   Einmal gebaut, ueberall benutzt (Fenster, Zurueckwischen, Ziehen zum
+   Aktualisieren). Werte aus Apples "Designing Fluid Interfaces"
+   (WWDC 2018), nicht geraten:
+
+   - feder(): Daempfungsgrad + Antwortzeit statt Masse/Steifigkeit.
+     Daempfung 1.0 = kein Ueberschwingen (Standard). 0.8 nur, wenn der
+     Finger Schwung mitgegeben hat. Startet immer beim Wert, der gerade
+     auf dem Bildschirm steht, und mit der Geschwindigkeit des Fingers –
+     so gibt es keine Naht zwischen Ziehen und Weiterlaufen. stop()
+     liefert Wert und Tempo zurueck: wer mitten in der Bewegung packt,
+     macht genau dort weiter.
+   - projiziere(): wohin ein Wisch mit diesem Tempo rollen wuerde
+     (dieselbe Formel wie das Auslaufen beim Scrollen).
+   - gummiband(): je weiter ueber den Rand, desto zaeher.
+   - messer(): Tempo aus den letzten 100 ms, nicht aus dem letzten Punkt.
+
+   BEWEGUNG-START (Markierung fuer tests/bewegung.test.js) */
+const Bewegung=(()=>{
+  const wenigBewegung=()=>{
+    try{return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}
+  };
+  /* Apple: (v/1000)·d/(1−d). 0.998 = Scroll-Gefuehl, 0.99 = knapper. */
+  function projiziere(v,d){
+    d=d||0.998;
+    return (v/1000)*d/(1-d);
+  }
+  function gummiband(ueber,groesse,k){
+    k=k||0.55;
+    if(!groesse)return 0;
+    return (ueber*groesse*k)/(groesse+k*Math.abs(ueber));
+  }
+  /* Ein Schritt der Feder. Weg zum Ziel x, Tempo v (px/s), dt in s.
+     Kleine Teilschritte, damit sie auch bei ruckelnden Bildern ruhig
+     bleibt. Eigene Funktion, damit sie sich ohne Bildschirm pruefen laesst. */
+  function federSchritt(x,v,dt,daempfung,antwort){
+    const w=2*Math.PI/antwort, k=w*w, c=2*daempfung*w;
+    const n=Math.max(1,Math.ceil(dt/0.004)), h=dt/n;
+    for(let i=0;i<n;i++){ v+=(-k*x-c*v)*h; x+=v*h; }
+    return [x,v];
+  }
+  function feder(o){
+    const nach=o.nach, daempfung=o.daempfung||1, antwort=o.antwort||0.35;
+    let x=o.von-nach, v=o.v||0, an=true, id=0, letzte=0;
+    const ende=()=>{ an=false; o.schritt(nach,0); if(o.fertig)o.fertig(); };
+    /* Weniger Bewegung: kein Gleiten, sofort am Ziel. */
+    if(wenigBewegung()||typeof requestAnimationFrame!=='function'){
+      ende();
+      return {stop:()=>({wert:nach,v:0}),laeuft:()=>false};
+    }
+    const tick=(t)=>{
+      if(!an)return;
+      const dt=letzte?Math.min((t-letzte)/1000,1/30):1/60; letzte=t;
+      [x,v]=federSchritt(x,v,dt,daempfung,antwort);
+      if(Math.abs(x)<0.25&&Math.abs(v)<6){ende();return;}
+      o.schritt(nach+x,v);
+      id=requestAnimationFrame(tick);
+    };
+    id=requestAnimationFrame(tick);
+    return {
+      stop(){ if(an){an=false;cancelAnimationFrame(id);} return {wert:nach+x,v}; },
+      laeuft:()=>an,
+    };
+  }
+  function messer(){
+    const p=[];
+    const jetzt=()=>(typeof performance!=='undefined'?performance.now():Date.now());
+    return {
+      add(wert,t){ t=t==null?jetzt():t; p.push([wert,t]); while(p.length>2&&t-p[0][1]>100)p.shift(); },
+      /* px/s. Lag der Finger zuletzt still, ist das Tempo null – sonst
+         wirft ein langsames Loslassen das Fenster weg. */
+      v(t){
+        if(p.length<2)return 0;
+        t=t==null?jetzt():t;
+        const a=p[0], b=p[p.length-1];
+        if(t-b[1]>80||b[1]<=a[1])return 0;
+        return (b[0]-a[0])/(b[1]-a[1])*1000;
+      },
+      reset(){p.length=0;},
+    };
+  }
+  /* Was gerade wirklich auf dem Bildschirm steht – auch mitten in einer
+     CSS-Animation. Von dort geht es weiter, nicht vom Ziel. */
+  function live(el,achse){
+    try{
+      const t=getComputedStyle(el).transform;
+      if(!t||t==='none')return 0;
+      const m=new DOMMatrixReadOnly(t);
+      return achse==='x'?m.m41:m.m42;
+    }catch(e){return 0;}
+  }
+  return {feder,federSchritt,projiziere,gummiband,messer,live,wenigBewegung};
+})();
+/* BEWEGUNG-ENDE */
 
 const SB_URL='https://tuxyyrlxjkxabhvremqu.supabase.co';
 const SB_KEY='sb_publishable_dldlgp40jFNPHVV8o7lF4A_UmGSxEFZ';
