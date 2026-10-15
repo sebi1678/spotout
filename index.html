@@ -3575,8 +3575,11 @@
     .bub{
       max-width:78%;padding:9px 14px;font-size:.9rem;line-height:1.45;
       word-break:break-word;position:relative;
-      animation:bubIn var(--takt) var(--kurve);
     }
+    /* Nur eine wirklich neue Nachricht gleitet herein. Vorher hatte jede
+       Blase die Animation – und weil der Chat nach jedem Senden neu
+       gezeichnet wird, blinkte das ganze Gespraech jedes Mal auf. */
+    .bub.neu{animation:bubIn var(--takt) var(--kurve)}
     @keyframes bubIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .bub-mine{
       align-self:flex-end;background:var(--grad-cta);color:#fff;
@@ -14978,6 +14981,9 @@ async function openConv(cid,other){
   alleFensterZu();
   const vorher=document.querySelector('.page.active')?.id?.replace('page-','');
   if(vorher&&vorher!=='conv'){ seitenVorher.push(vorher); if(seitenVorher.length>10)seitenVorher.shift(); }
+  /* Ein anderes Gespraech: die Blasen des vorherigen sofort weg. Sonst
+     standen sie da, bis die neuen geladen waren. */
+  if(convId!==cid){ const alt=document.getElementById('convMsgs'); if(alt)alt.innerHTML=''; }
   convId=cid;convUser=other;
   convGruppe=!!other?.gruppe;
   convLeute.clear();
@@ -15048,6 +15054,10 @@ async function loadMsgs(){
     return d.toLocaleDateString(locale(),{day:'numeric',month:'long'});
   };
 
+  /* Was schon zu sehen war, bleibt ruhig; nur Neues gleitet herein.
+     Beim ersten Zeichnen eines Gespraechs gleitet nichts. */
+  const erstes=chatGezeigt.cid!==convId;
+  if(erstes){ chatGezeigt.cid=convId; chatGezeigt.ids=new Set(); chatGezeigt.html=''; }
   let html='',lastDay='',lastSender=null,lastTime=0;
   msgs.forEach((m,idx)=>{
     const d=new Date(m.created_at);
@@ -15107,7 +15117,8 @@ async function loadMsgs(){
        ohne sie liesse sich eine eigene Nachricht nicht bearbeiten.
        Gemeldet werden koennen weiterhin nur fremde: dafuer zaehlt
        data-mine, nicht das Fehlen der Kennung. */
-    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+'"'
+    const neu=!erstes&&!chatGezeigt.ids.has(m.id);
+    html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+(neu?' neu':'')+'"'
       +' data-mid="'+m.id+'"'+(mine?' data-mine="1"':'')
       +' data-zeit="'+new Date(m.created_at).getTime()+'"'+werAttr+' data-x="'
       +(grouped?'':' bub-grp')+'">'
@@ -15129,10 +15140,20 @@ async function loadMsgs(){
       +'<span>Mit Pro siehst du, ob deine Nachrichten gelesen wurden</span></div>';
   }
 
+  /* Zweimal dasselbe (nach dem Senden und gleich danach von der
+     Live-Verbindung): nicht neu zeichnen. Verglichen ohne "neu", sonst
+     waere der zweite Durchgang immer anders. */
+  const vergleich=html.replace(/ neu"/g,'"');
+  msgs.forEach(m=>chatGezeigt.ids.add(m.id));
+  if(vergleich===chatGezeigt.html&&c.children.length)return;
+  chatGezeigt.html=vergleich;
   c.innerHTML=html;
   c.scrollTop=c.scrollHeight;
   partyKartenFuellen();
 }
+/* Welches Gespraech zuletzt gezeichnet wurde und welche Nachrichten
+   darin schon zu sehen waren. */
+const chatGezeigt={cid:null,ids:new Set(),html:''};
 
 /* ── Wohin die Gruppe als Naechstes geht ──────────────────────────
    Eine Gruppe war ein Chat mit Mitgliedern: kein Grund, sie zu
@@ -15184,20 +15205,31 @@ function partyAusText(t){
   return m?m[1]:null;
 }
 
+/* Einmal geladene Partys bleiben gemerkt (false = gibt es nicht mehr).
+   Ohne das fiel jede Party-Karte beim Neuzeichnen des Chats auf den
+   kleinen Ladekreis zurueck und wuchs einen Moment spaeter wieder –
+   die Nachricht wurde kurz klein. Sind alle bekannt, fuellt sie sich
+   ohne Warten, also noch bevor das Bild auf dem Schirm ist. */
+const partyKartenGemerkt=new Map();
 async function partyKartenFuellen(){
   const kasten=[...document.querySelectorAll('.bub-party[data-ev]')].filter(k=>!k.dataset.fertig);
   const zeilen=[...document.querySelectorAll('.chat-sys[data-ev]')].filter(k=>!k.dataset.fertig);
   if(!kasten.length&&!zeilen.length)return;
   const ids=[...new Set([...kasten,...zeilen].map(k=>k.dataset.ev))];
   const bekannt=new Map();
-  ids.forEach(id=>{ const e=evts.find(x=>x.id===id); if(e)bekannt.set(id,e); });
-  const fehlen=ids.filter(id=>!bekannt.has(id));
+  ids.forEach(id=>{
+    const e=evts.find(x=>x.id===id)||partyKartenGemerkt.get(id);
+    if(e)bekannt.set(id,e);
+  });
+  const fehlen=ids.filter(id=>!bekannt.has(id)&&partyKartenGemerkt.get(id)!==false);
   if(fehlen.length){
     try{
-      const{data}=await sb.from('events')
+      const{data,error}=await sb.from('events')
         .select('id,name,date,time,address,image_url,type,category')
         .in('id',fehlen);
+      if(error)throw error;
       (data||[]).forEach(e=>bekannt.set(e.id,e));
+      fehlen.forEach(id=>partyKartenGemerkt.set(id,bekannt.get(id)||false));
     }catch(err){ console.warn('[party-karte]',err); }
   }
   zeilen.forEach(z=>{
