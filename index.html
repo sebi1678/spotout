@@ -7054,6 +7054,19 @@
     .teil-rund svg{width:22px;height:22px}
     .teil-wa{background:#25D366;border-color:transparent}
     .teil-ziel:active .teil-rund{transform:scale(var(--druck))}
+    /* Chat: Gesehen, Sprung nach unten, schreibt … */
+    .msg-gesehen{align-self:flex-end;margin:4px 4px 0;font-size:.7rem;font-weight:600;color:var(--muted)}
+    .conv-nach-unten{position:absolute;right:16px;bottom:calc(84px + var(--safe-bottom));z-index:5;
+      display:flex;align-items:center;gap:6px;height:38px;min-width:38px;padding:0 11px;border-radius:999px;cursor:pointer;
+      background:rgba(22,27,64,.94);border:1px solid rgba(255,255,255,.14);color:#fff;
+      font-family:var(--font);font-size:.78rem;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+    .conv-nach-unten svg{width:16px;height:16px}
+    .conv-nach-unten .cnu-text{display:none}
+    .conv-nach-unten.neu{background:var(--grad-cta);border-color:transparent}
+    .conv-nach-unten.neu .cnu-text{display:inline}
+    .conv-nach-unten[hidden]{display:none}
+    #convSub.tippt{color:#FF7FA5!important;font-weight:600}
+    textarea.conv-input{display:block;min-height:42px;overflow-y:auto}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -7552,7 +7565,11 @@
     <!-- Wohin die Gruppe als Naechstes geht. Nur im Gruppenchat, nur
          wenn wirklich eine Party ansteht. -->
     <button class="grp-naechste" id="grpNaechste" hidden onclick="grpNaechsteOeffnen()"></button>
-    <div class="conv-msgs" id="convMsgs"></div>
+    <div class="conv-msgs" id="convMsgs" onscroll="convGescrollt(this)"></div>
+    <button class="conv-nach-unten" id="convNachUnten" hidden onclick="convNachUnten()" aria-label="Zur neusten Nachricht">
+      <span class="cnu-text">Neue Nachricht</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+    </button>
     <div class="conv-bearb" id="convBearb">
       <span class="cb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg></span>
       <span class="cb-txt">Nachricht bearbeiten</span>
@@ -7564,7 +7581,9 @@
       <button class="conv-plus" id="convTreffen" hidden onclick="treffenOeffnen(convUser?.id)" aria-label="Treffen planen">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17M12 13v5M9.5 15.5h5"/></svg>
       </button>
-      <input class="conv-input" id="convInput" placeholder="Nachricht…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"/>
+      <textarea class="conv-input" id="convInput" rows="1" placeholder="Nachricht…" enterkeyhint="enter" autocomplete="off"
+        oninput="convFeldWachsen(this);convTipptSenden()"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!convTippGeraet()){event.preventDefault();sendMsg()}"></textarea>
       <button class="send-btn" id="sendBtn" onclick="sendMsg()" aria-label="Senden">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
@@ -16429,14 +16448,44 @@ async function openConv(cid,other){
   const gruppeHier=convGruppe;
   /* Alle Änderungen, nicht nur neue: bearbeitete und selbstgelöschte
      Nachrichten kamen beim Gegenüber sonst erst nach dem Neuöffnen an. */
-  convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},(pl)=>{
+  convSub_=sb.channel('conv-'+cid)
+    .on('broadcast',{event:'tippt'},(m)=>{ if(convId===cid&&m?.payload?.von&&m.payload.von!==cUser?.id)convTipptZeigen(); })
+    .on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},(pl)=>{
     if(convId!==cid)return;
     loadMsgs();
     if(pl&&pl.eventType&&pl.eventType!=='INSERT')return;
+    if(pl?.new?.sender_id&&pl.new.sender_id!==cUser?.id){ clearTimeout(tipptUhr); const sub=document.getElementById('convSub'); if(sub&&sub.classList.contains('tippt')){ sub.classList.remove('tippt'); sub.textContent='@'+(convUser?.username||''); } }
     // Wer im Gespraech sitzt, hat die neue Nachricht gesehen
     if(!gruppeHier)sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
     ntGespraechGelesen(cid);
   }).subscribe();
+}
+
+/* Mehrzeilig wie bei iMessage: das Feld waechst bis 5 Zeilen mit.
+   Am Handy macht Return eine neue Zeile (Senden ist der Knopf), am
+   Computer sendet Enter, Shift+Enter macht eine neue Zeile. */
+function convTippGeraet(){ return istApp()||matchMedia('(pointer:coarse)').matches; }
+function convFeldWachsen(el){
+  if(!el)return;
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,118)+'px';
+}
+/* "schreibt …" wie bei WhatsApp: ueber die bestehende Live-Verbindung
+   des Gespraechs als Broadcast, nichts wird gespeichert. Hoechstens alle
+   2,5 s ein Zeichen, die Anzeige erlischt 4 s nach dem letzten. */
+let tipptZuletzt=0, tipptUhr=null;
+function convTipptSenden(){
+  if(!convSub_||convGruppe||!cUser)return;
+  if(Date.now()-tipptZuletzt<2500)return;
+  tipptZuletzt=Date.now();
+  try{ convSub_.send({type:'broadcast',event:'tippt',payload:{von:cUser.id}}); }catch(e){}
+}
+function convTipptZeigen(){
+  const sub=document.getElementById('convSub');
+  if(!sub||convGruppe)return;
+  sub.textContent='schreibt …'; sub.classList.add('tippt');
+  clearTimeout(tipptUhr);
+  tipptUhr=setTimeout(()=>{ sub.classList.remove('tippt'); sub.textContent='@'+(convUser?.username||''); },4000);
 }
 
 let msgsSeq=0;
@@ -16588,13 +16637,42 @@ async function loadMsgs(){
   /* Zweimal dasselbe (nach dem Senden und gleich danach von der
      Live-Verbindung): nicht neu zeichnen. Verglichen ohne "neu", sonst
      waere der zweite Durchgang immer anders. */
+  /* "Gesehen" unter der letzten eigenen Nachricht, wie bei Instagram –
+     nur im Zweiergespraech (in Gruppen gilt "gelesen" fuer alle). */
+  const letzte=msgs[msgs.length-1];
+  if(!convGruppe&&letzte&&letzte.sender_id===cUser?.id&&letzte.read)html+='<div class="msg-gesehen">Gesehen</div>';
   const vergleich=html.replace(/ neu"/g,'"');
+  const neueVonAnderen=!erstes&&msgs.some(m=>!chatGezeigt.ids.has(m.id)&&m.sender_id!==cUser?.id);
   msgs.forEach(m=>chatGezeigt.ids.add(m.id));
   if(vergleich===chatGezeigt.html&&c.children.length)return;
   chatGezeigt.html=vergleich;
+  /* Wer weiter oben liest, wird nicht nach unten gerissen, wenn etwas
+     Neues kommt – dann erscheint unten "Neue Nachricht". Beim Oeffnen
+     und nach dem eigenen Senden geht es wie bisher ans Ende. */
+  const amEnde=erstes||(c.scrollHeight-c.scrollTop-c.clientHeight<140)||(letzte&&letzte.sender_id===cUser?.id);
+  const vorher=c.scrollTop;
   c.innerHTML=html;
-  c.scrollTop=c.scrollHeight;
+  if(amEnde){ c.scrollTop=c.scrollHeight; convNachUntenZeigen(false); }
+  else{ c.scrollTop=vorher; if(neueVonAnderen)convNachUntenZeigen(true); }
   partyKartenFuellen();
+}
+function convNachUntenZeigen(neu){
+  const k=document.getElementById('convNachUnten');
+  if(!k)return;
+  k.classList.toggle('neu',!!neu);
+  k.hidden=!neu&&!(()=>{ const c=document.getElementById('convMsgs'); return c&&(c.scrollHeight-c.scrollTop-c.clientHeight>400); })();
+}
+/* Beim Scrollen: weit oben → kleiner Pfeil; wieder unten → alles weg */
+function convGescrollt(c){
+  const k=document.getElementById('convNachUnten'); if(!k)return;
+  const weg=c.scrollHeight-c.scrollTop-c.clientHeight;
+  if(weg<140){ k.hidden=true; k.classList.remove('neu'); }
+  else if(weg>400)k.hidden=false;
+}
+function convNachUnten(){
+  const c=document.getElementById('convMsgs'); if(!c)return;
+  c.scrollTo({top:c.scrollHeight,behavior:'smooth'});
+  convNachUntenZeigen(false);
 }
 /* Welches Gespraech zuletzt gezeichnet wurde und welche Nachrichten
    darin schon zu sehen waren. */
@@ -16817,7 +16895,7 @@ async function sendMsg(){
     loadMsgs();
     return;
   }
-  inp.value='';
+  inp.value=''; convFeldWachsen(inp);
   /* Die eigene Nachricht steht sofort da (leicht blass, bis der Server
      sie hat) – nicht erst nach Speichern und Neuladen. Klappt es nicht,
      verschwindet sie wieder und der Text steht zurueck im Feld. */
@@ -16841,7 +16919,7 @@ async function sendMsg(){
   if(error){
     console.error('[msg]',error);
     vorab?.remove();
-    inp.value=txt;                       // Text zurückgeben statt verlieren
+    inp.value=txt; convFeldWachsen(inp);  // Text zurückgeben statt verlieren
     toast(fehlerText(error),'error');
     if(warFokus&&feld)feld.focus();
     return;
