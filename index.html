@@ -4668,7 +4668,7 @@
     /* Bild buendig mit der Ueberschrift darueber ("Früher"): die Zeile
        ragt um ihren Innenrand nach links, damit neue Zeilen ihre Flaeche
        behalten, ohne dass alle Bilder eingerueckt stehen. */
-    #notifBody .nt-row{align-items:center;flex-wrap:wrap;gap:8px 12px;padding:10px 8px 10px 12px;margin:0 0 2px -10px;border:0;border-radius:14px;background:none}
+    #notifBody .nt-row{align-items:center;flex-wrap:wrap;gap:8px 12px;padding:10px 10px 10px 12px;margin:0 -10px 2px -10px;border:0;border-radius:14px;background:none}
     #notifBody .nt-row.neu{background:rgba(255,45,118,.07);border:0}
     #notifBody .nt-row:active{background:rgba(255,255,255,.05)}
     /* Der Text bekommt immer mindestens 120 px – reicht es daneben nicht,
@@ -7009,7 +7009,9 @@
        untereinander 12 px, Abschnitte 16–24 px. Gemessen mit einem
        Pruefer ueber alle Bildschirme (Funde unter 8 px, 16.10.). */
     .oe-zeile,.chipset,.ep-gender{gap:8px!important}
-    .nt-schieber{margin-bottom:12px}
+    /* Der weiche Auslauf unter dem Kopf (12 px) lag ueber der oberen
+       Kante des Umschalters – darum Luft darueber. */
+    .nt-schieber{margin-top:8px;margin-bottom:12px}
 
   </style>
 </head>
@@ -22225,7 +22227,7 @@ function renderNotifs(){
   }else{
     const erlaubnis=(typeof Notification!=='undefined')?Notification.permission:'unsupported';
     sys=(erlaubnis==='default')
-      ? '<div class="nt-sys"><span>Auch als Systemmeldung, solange SPOTOUT offen ist.</span>'
+      ? '<div class="nt-sys"><span>Lass dich auch benachrichtigen, wenn du gerade in einem anderen Tab bist.</span>'
         +'<button onclick="bitteUmErlaubnis()">Erlauben</button></div>'
       : '';
   }
