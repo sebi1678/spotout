@@ -1652,6 +1652,40 @@
     .cm-chips{display:flex;flex-wrap:wrap;gap:7px}
     .cm-rot .cm-ic{background:rgba(255,77,79,.14);color:#ff6b6d}
     .cm-rot b{color:#ff6b6d}
+    /* Chat-Einstellungen wie die iOS-Kontaktkarte */
+    .cm-kopf{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 22px}
+    .cm-av{width:76px;height:76px;border-radius:50%;border:none;padding:0;overflow:hidden;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;background:var(--grad-cta);
+      color:#fff;font-family:var(--font);font-size:1.7rem;font-weight:800}
+    .cm-av img{width:100%;height:100%;object-fit:cover}
+    .cm-name{margin-top:12px;font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+    .cm-handle{margin-top:2px;font-size:.84rem;color:var(--muted)}
+    .cm-profil{margin-top:14px;padding:9px 18px;border-radius:999px;cursor:pointer;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;
+      font-family:var(--font);font-size:.84rem;font-weight:700}
+    .cm-profil:active,.cm-av:active{transform:scale(var(--druck))}
+    .cm-gruppe{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;margin-bottom:24px;overflow:hidden}
+    .cm-gefahr{margin-top:-4px}
+    .cm-reihe{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;
+      background:none;border:none;color:#fff;font-family:var(--font);text-align:left}
+    .cm-reihe-oben{padding-bottom:4px}
+    .cm-knopf{cursor:pointer}
+    .cm-knopf:active{background:rgba(255,255,255,.05)}
+    .cm-text{flex:1;min-width:0}
+    .cm-text b{display:block;font-size:.92rem;font-weight:700}
+    .cm-text small{display:block;margin-top:2px;font-size:.76rem;line-height:1.4;color:var(--muted)}
+    .cm-reihe .cm-ic{width:34px;height:34px;border-radius:10px}
+    .cm-reihe .s-arrow{flex:none;color:var(--muted)}
+    .cm-wahl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 14px 14px 60px}
+    .cm-wahl-k{padding:9px 0;border-radius:11px;cursor:pointer;background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.8);
+      font-family:var(--font);font-size:.8rem;font-weight:700}
+    .cm-wahl-k.on{background:var(--grad-cta);border-color:transparent;color:#fff}
+    .cm-wahl-k:disabled{opacity:.5}
+    .cm-gefahr .cm-ic{background:rgba(255,77,79,.14);color:#ff6b6d}
+    .cm-gefahr b{color:#ff6b6d}
+    .cm-gefahr .scharf{background:rgba(255,77,79,.10)}
     .conv-bearb{display:none;align-items:center;gap:9px;margin:0 16px;padding:9px 12px;
       border-radius:12px 12px 0 0;background:rgba(255,45,118,.12);border:1px solid rgba(255,45,118,.25);
       border-bottom:none;font-size:.8rem;color:#fff}
@@ -3725,6 +3759,12 @@
 
     /* ══════════ CHAT-BUBBLES ══════════ */
     .conv-msgs{gap:2px;padding:16px 14px 20px}
+    /* Wenige Nachrichten stehen unten beim Eingabefeld, wie bei iMessage
+       und WhatsApp – nicht oben mit einer leeren Flaeche darunter. Bei
+       einem langen Verlauf wird der Rand zu 0 und es scrollt wie vorher. */
+    .conv-msgs>:first-child{margin-top:auto}
+    /* Leeres Feld: Senden ist gedimmt und tut nichts */
+    .conv-input:placeholder-shown+.send-btn{opacity:.4;pointer-events:none;box-shadow:none}
     .msg-day{
       align-self:center;margin:14px 0 10px;padding:5px 13px;border-radius:980px;
       font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
@@ -24102,47 +24142,106 @@ function convProfilOeffnen(){
 /* Der Knopf im Kopf fuehrte direkt ins Melden. Jetzt steht dort, was
    man mit einem Gespraech sonst noch tun will - und Melden ist einer
    von mehreren Wegen, nicht der einzige. */
-async function convMenue(){
+/* Neu (16.10.), aufgebaut wie die Kontaktkarte in iOS-Nachrichten:
+   oben wer, darunter in Gruppen, was man einstellen kann – Mitteilungen,
+   Nachrichten, Sicherheit –, ganz unten getrennt das Loeschen.
+   Vorher wartete das Blatt auf zwei Abfragen nacheinander, bevor es
+   ueberhaupt aufging (Tipp ohne Antwort), Stummschalten war ein Knopf,
+   dessen Text wechselte, und "Chat löschen" loeschte beim ersten Tipp. */
+let cmStand={stumm:null,selbst:undefined}, cmLoeschScharf=false, cmLoeschUhr=null;
+function convMenue(){
   if(!convUser?.id)return;
   if(convGruppe){ gruppeOeffnen(convUser.id); return; }
-  let stumm=false;
-  try{ const{data}=await sb.rpc('ist_stumm',{p_ziel:convUser.id}); stumm=!!data; }catch(e){}
-  let selbst=null;
-  try{
-    const{data}=await sb.from('conversations').select('selbstloeschung_h').eq('id',convId).maybeSingle();
-    selbst=data?.selbstloeschung_h??null;
-  }catch(e){}
-  const name=convUser.full_name||convUser.username||'diese Person';
-  const kasten=document.getElementById('convMenueBody');
-  if(!kasten)return;
-  kasten.innerHTML=
-     '<button class="cm-zeile" onclick="convStumm('+(stumm?'false':'true')+')">'
-    +'<span class="cm-ic">'+(stumm?GLOCKE_AN_SVG:GLOCKE_AUS_SVG)+'</span>'
-    +'<span><b>'+(stumm?'Stummschaltung aufheben':'Stummschalten')+'</b>'
-    +'<small>'+(stumm?'Du bekommst wieder Push-Nachrichten von '+esc(name)
-                     :'Keine Push-Nachrichten mehr von '+esc(name)+' – sehen könnt ihr euch weiterhin')+'</small></span></button>'
-    +'<button class="cm-zeile" onclick="convLoeschen()">'
-    +'<span class="cm-ic">'+KORB_SVG+'</span>'
-    +'<span><b>Chat löschen</b><small>Nur bei dir. Schreibt '+esc(name)+' wieder, ist der Chat zurück.</small></span></button>'
-    +'<div class="cm-block">'
-      +'<b>Selbstlöschende Nachrichten</b>'
-      +'<small>Alles in diesem Chat verschwindet nach der gewählten Zeit – bei euch beiden, und zwar wirklich gelöscht, nicht nur ausgeblendet.</small>'
-      +'<div class="chipset cm-chips">'
-        +[[null,'Aus'],[1,'1 Stunde'],[24,'24 Stunden'],[168,'7 Tage']].map(([w,t])=>
-          '<button class="cset'+(selbst===w?' on':'')+'" onclick="convSelbstloeschung('+(w===null?'null':w)+')">'+t+'</button>').join('')
-      +'</div>'
-    +'</div>'
-    +'<button class="cm-zeile cm-rot" onclick="closeOverlay(\'convMenueOverlay\');convMelden()">'
-    +'<span class="cm-ic">'+pikto('melden',19)+'</span>'
-    +'<span><b>Melden oder blockieren</b><small>Verstösst jemand gegen die Regeln</small></span></button>';
+  cmStand={stumm:null,selbst:undefined}; cmLoeschScharf=false; clearTimeout(cmLoeschUhr);
+  convMenueZeichnen();
   document.getElementById('convMenueOverlay')?.classList.add('open');
+  const uid=convUser.id, cid=convId;
+  Promise.all([
+    sb.rpc('ist_stumm',{p_ziel:uid}).then(r=>!!r.data).catch(()=>false),
+    sb.from('conversations').select('selbstloeschung_h').eq('id',cid).maybeSingle()
+      .then(r=>r.data?.selbstloeschung_h??null).catch(()=>null),
+  ]).then(([stumm,selbst])=>{
+    if(convUser?.id!==uid||convId!==cid)return;
+    cmStand={stumm,selbst};
+    if(document.getElementById('convMenueOverlay')?.classList.contains('open'))convMenueZeichnen();
+  });
+}
+function convMenueZeichnen(){
+  const kasten=document.getElementById('convMenueBody');
+  if(!kasten||!convUser)return;
+  const u=convUser, name=u.full_name||u.username||'diese Person';
+  const av=u.avatar_url
+    ? '<img src="'+escAttr(u.avatar_url)+'" alt="">'
+    : esc(((u.full_name||u.username||'?').trim()[0]||'?').toUpperCase());
+  const laedt=cmStand.stumm===null;
+  const selbst=cmStand.selbst;
+  const pfeil='<svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+  kasten.innerHTML=
+     '<div class="cm-kopf">'
+    +  '<button class="cm-av" onclick="closeOverlay(\'convMenueOverlay\');convProfilOeffnen()" aria-label="Profil ansehen">'+av+'</button>'
+    +  '<div class="cm-name">'+esc(name)+'</div>'
+    +  (u.username?'<div class="cm-handle">@'+esc(u.username)+'</div>':'')
+    +  '<button class="cm-profil" onclick="closeOverlay(\'convMenueOverlay\');convProfilOeffnen()">Profil ansehen</button>'
+    +'</div>'
+
+    +'<div class="set-lbl">Mitteilungen</div>'
+    +'<div class="cm-gruppe">'
+    +  '<div class="cm-reihe">'
+    +    '<span class="cm-ic">'+(cmStand.stumm?GLOCKE_AUS_SVG:GLOCKE_AN_SVG)+'</span>'
+    +    '<span class="cm-text"><b>Stummschalten</b><small>'
+    +      (cmStand.stumm?'Keine Mitteilungen von '+esc(name):'Du bekommst eine Mitteilung bei jeder Nachricht')
+    +    '</small></span>'
+    +    schalter(!!cmStand.stumm,'convStumm(!'+(!!cmStand.stumm)+')',laedt)
+    +  '</div>'
+    +'</div>'
+
+    +'<div class="set-lbl">Nachrichten</div>'
+    +'<div class="cm-gruppe">'
+    +  '<div class="cm-reihe cm-reihe-oben">'
+    +    '<span class="cm-ic">'+pikto('zeit',19)+'</span>'
+    +    '<span class="cm-text"><b>Selbstlöschend</b><small>Neue und alte Nachrichten verschwinden nach dieser Zeit – bei euch beiden, wirklich gelöscht.</small></span>'
+    +  '</div>'
+    +  '<div class="cm-wahl" role="radiogroup" aria-label="Selbstlöschend">'
+    +    [[null,'Aus'],[1,'1 Std.'],[24,'24 Std.'],[168,'7 Tage']].map(([w,t])=>
+           '<button role="radio" aria-checked="'+(selbst===w?'true':'false')+'" class="cm-wahl-k'+(selbst===w?' on':'')+'"'
+           +(selbst===undefined?' disabled':'')
+           +' onclick="convSelbstloeschung('+(w===null?'null':w)+')">'+t+'</button>').join('')
+    +  '</div>'
+    +'</div>'
+
+    +'<div class="set-lbl">Sicherheit</div>'
+    +'<div class="cm-gruppe">'
+    +  '<button class="cm-reihe cm-knopf" onclick="closeOverlay(\'convMenueOverlay\');convMelden()">'
+    +    '<span class="cm-ic">'+pikto('melden',19)+'</span>'
+    +    '<span class="cm-text"><b>Melden oder blockieren</b><small>Wenn jemand gegen die Regeln verstösst</small></span>'+pfeil
+    +  '</button>'
+    +'</div>'
+
+    +'<div class="cm-gruppe cm-gefahr">'
+    +  '<button class="cm-reihe cm-knopf'+(cmLoeschScharf?' scharf':'')+'" id="cmLoeschen" onclick="convLoeschenTipp()">'
+    +    '<span class="cm-ic">'+KORB_SVG+'</span>'
+    +    '<span class="cm-text"><b>'+(cmLoeschScharf?'Wirklich löschen? Nochmals tippen':'Chat löschen')+'</b>'
+    +    '<small>Nur bei dir. Schreibt '+esc(name)+' wieder, ist der Chat zurück.</small></span>'
+    +  '</button>'
+    +'</div>';
+}
+function convLoeschenTipp(){
+  if(!cmLoeschScharf){
+    cmLoeschScharf=true; nativeHaptik('mittel'); convMenueZeichnen();
+    clearTimeout(cmLoeschUhr);
+    cmLoeschUhr=setTimeout(()=>{ cmLoeschScharf=false; convMenueZeichnen(); },4000);
+    return;
+  }
+  clearTimeout(cmLoeschUhr); cmLoeschScharf=false;
+  convLoeschen();
 }
 
 async function convSelbstloeschung(stunden){
   if(!convId)return;
+  const vorher=cmStand.selbst;
+  cmStand.selbst=stunden; convMenueZeichnen(); nativeHaptik('leicht');
   const{error}=await sb.rpc('selbstloeschung_setzen',{p_conv:convId,p_stunden:stunden});
-  if(error){ toast(fehlerText(error),'error'); return; }
-  closeOverlay('convMenueOverlay');
+  if(error){ cmStand.selbst=vorher; convMenueZeichnen(); toast(fehlerText(error),'error'); return; }
   toast(stunden===null
     ? 'Nachrichten bleiben wieder stehen'
     : ('Nachrichten verschwinden nach '+(stunden===1?'einer Stunde':stunden===24?'24 Stunden':'7 Tagen')),'info');
@@ -24150,11 +24249,11 @@ async function convSelbstloeschung(stunden){
 }
 
 async function convStumm(an){
-  closeOverlay('convMenueOverlay');
   if(!convUser?.id)return;
+  const vorher=cmStand.stumm;
+  cmStand.stumm=!!an; convMenueZeichnen(); nativeHaptik('leicht');
   const{error}=await sb.rpc('stumm_setzen',{p_ziel:convUser.id,p_an:!!an});
-  if(error){ toast(fehlerText(error),'error'); return; }
-  toast(an?'Stummgeschaltet – es klingelt nicht mehr':'Stummschaltung aufgehoben','info');
+  if(error){ cmStand.stumm=vorher; convMenueZeichnen(); toast(fehlerText(error),'error'); }
 }
 
 async function convLoeschen(){
