@@ -1552,7 +1552,7 @@
     }
     .nt-schieber-fuell{
       position:absolute;top:4px;left:4px;width:calc(50% - 6px);height:calc(100% - 8px);
-      border-radius:10px;background:linear-gradient(135deg,#7C3AED,#FF2D76);
+      border-radius:10px;background:var(--grad-cta);
       transition:transform .24s var(--kurve);pointer-events:none;
     }
     .nt-tab{
@@ -4624,7 +4624,10 @@
     #page-profile .top-nav .nav-right-group{flex-shrink:0}
 
     /* ── Benachrichtigungen: ruhige Liste wie auf Instagram ── */
-    #notifBody .nt-row{align-items:center;flex-wrap:wrap;gap:8px 12px;padding:10px 8px 10px 16px;margin:0 0 2px;border:0;border-radius:14px;background:none}
+    /* Bild buendig mit der Ueberschrift darueber ("Früher"): die Zeile
+       ragt um ihren Innenrand nach links, damit neue Zeilen ihre Flaeche
+       behalten, ohne dass alle Bilder eingerueckt stehen. */
+    #notifBody .nt-row{align-items:center;flex-wrap:wrap;gap:8px 12px;padding:10px 8px 10px 12px;margin:0 0 2px -10px;border:0;border-radius:14px;background:none}
     #notifBody .nt-row.neu{background:rgba(255,45,118,.07);border:0}
     #notifBody .nt-row:active{background:rgba(255,255,255,.05)}
     /* Der Text bekommt immer mindestens 120 px – reicht es daneben nicht,
