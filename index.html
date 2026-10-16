@@ -9587,6 +9587,7 @@ async function kontoWegLoeschen(){
     const{data:weg,error:serverFehler}=await sb.functions.invoke('konto-loeschen',{body:{}});
     if(!serverFehler&&weg?.ok){
       try{ kontenSchreiben(kontenLesen().filter(k=>k.id!==uid)); }catch(e){}
+      kontoCacheWeg(uid);
       zurueckZurAnmeldung();
       try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
           setTimeout(()=>location.reload(),800);
@@ -9627,9 +9628,10 @@ async function clearSearchHistory(){
 }
 
 async function init(){
-  checkProSuccess();
+  /* Abgelaufener oder schon benutzter Link: verifyOtp wirft nicht, es
+     liefert einen Fehler – frueher landete man still auf der Anmeldung. */
   if(PW_LINK.tokenHash){
-    try{ await sb.auth.verifyOtp({token_hash:PW_LINK.tokenHash,type:'recovery'}); }catch(e){}
+    try{ const{error}=await sb.auth.verifyOtp({token_hash:PW_LINK.tokenHash,type:'recovery'}); if(error)PW_LINK.abgelaufen=true; }catch(e){ PW_LINK.abgelaufen=true; }
   }
   const{data:{session}}=await sb.auth.getSession();
   if(PW_LINK.neu||PW_LINK.abgelaufen){
@@ -9658,7 +9660,11 @@ async function init(){
     if(gemerkt){
       cProfile=gemerkt;updNavAv();navFuerKontoart();vereinHomeUmschalten();
       kontoMerken();enterApp();
-      loadProf().then(()=>{ document.body.classList.toggle('veranstalter',!!cProfile?.verified); }).catch(e=>console.warn('[profil]',e));
+      loadProf().then(()=>{
+        document.body.classList.toggle('veranstalter',!!cProfile?.verified);
+        // Push mit dem frischen Stand nochmals pruefen (der gemerkte kann veraltet sein)
+        try{ nativePushAnmelden(); }catch(e){}
+      }).catch(e=>console.warn('[profil]',e));
     }else{
       await loadProf();kontoMerken();enterApp();
     }
@@ -9666,7 +9672,11 @@ async function init(){
   sb.auth.onAuthStateChange(async(ev,s)=>{
     if(ev==='PASSWORD_RECOVERY'&&s){cUser=s.user;pwAnsicht('neu');return;}
     // Supabase erneuert den Zugang stuendlich – die Kontoliste muss den neuen kennen
-    if(ev==='TOKEN_REFRESHED'&&s){ try{ kontoMerken(); }catch(e){} return; }
+    /* Nur merken, wenn es wirklich das angemeldete Konto ist – mitten im
+       Kontowechsel erneuert Supabase den Zugang des NEUEN Kontos, waehrend
+       cUser noch das alte ist. Vorher landeten so die Schluessel von B
+       unter A, und wer danach A waehlte, war in B. */
+    if(ev==='TOKEN_REFRESHED'&&s){ if(!kontoWechselLaeuft&&cUser?.id===s.user.id){ try{ kontoMerken(); }catch(e){} } return; }
     // Solange das neue Passwort noch nicht gesetzt ist, bleibt man hier.
     if(pwNeuOffen&&ev!=='SIGNED_OUT')return;
     if(ev==='SIGNED_IN'&&s){
@@ -9691,8 +9701,13 @@ async function init(){
 async function loadProf(){
   // Die Tabelle gibt fremde Profile nur noch in den oeffentlichen Spalten heraus.
   // Das eigene kommt vollstaendig ueber mein_profil.
-  const{data:eigen}=await sb.rpc('mein_profil');
+  const{data:eigen,error:profFehler}=await sb.rpc('mein_profil');
   const data=Array.isArray(eigen)?eigen[0]:eigen;
+  /* Kein Netz oder Serverfehler: ein vorhandenes (gemerktes) Profil
+     behalten statt es durch "nichts" zu ersetzen – sonst war die
+     Profilseite leer und Bearbeiten stuerzte ab. */
+  if(profFehler){ console.warn('[profil]',profFehler.message); if(cProfile)return; throw profFehler; }
+  if(!data){ try{ await sb.auth.signOut({scope:'local'}); }catch(e){} return; }
   /* Geschlecht und Geburtsdatum stehen beim allerersten Anmelden nur
      im Konto, noch nicht im Profil – dann werden sie nachgetragen.
      Frueher wurde das Profil danach *immer* ein zweites Mal geholt,
@@ -9734,10 +9749,20 @@ async function loadProf(){
 function profilMerken(){
   try{
     if(!cUser||!cProfile)return;
-    const {birthdate,gender,...rest}=cProfile;
-    localStorage.setItem('spotout_prof_'+cUser.id,JSON.stringify(rest));
+    /* Vollstaendig: fehlten Geburtsdatum und Geschlecht, konnte ein zu
+       frueh geoeffnetes Bearbeiten das Geschlecht leeren. Liegt nur auf
+       diesem Geraet und wird beim Abmelden/Loeschen entfernt. */
+    localStorage.setItem('spotout_prof_'+cUser.id,JSON.stringify(cProfile));
   }catch(e){}
 }
+function kontoCacheWeg(id){
+  try{ localStorage.removeItem('spotout_prof_'+id); localStorage.removeItem('spotout_evts_'+id); }catch(e){}
+}
+/* Jede Aenderung am Profil (Bild, Name, Privatsphaere, Push …) landet im
+   gemerkten Stand, sobald die App in den Hintergrund geht – statt dass
+   jede einzelne Stelle daran denken muss. */
+document.addEventListener('visibilitychange',()=>{ if(document.hidden)profilMerken(); });
+window.addEventListener('pagehide',()=>profilMerken());
 function profilGemerkt(id){
   try{ return JSON.parse(localStorage.getItem('spotout_prof_'+id)||'null'); }catch(e){ return null; }
 }
@@ -9757,7 +9782,7 @@ function updNavAv(){
   if(!alle.length)return;
   const buchstabe=anfangRoh(cProfile?.full_name||cProfile?.username||'?');
   alle.forEach(av=>{
-    if(cProfile?.avatar_url)av.innerHTML=`<img alt="" loading="lazy" decoding="async" src="${cProfile.avatar_url}"/>`;
+    if(cProfile?.avatar_url)av.innerHTML=`<img alt="" loading="lazy" decoding="async" src="${escAttr(cProfile.avatar_url)}"/>`;
     else av.textContent=buchstabe;
   });
 }
@@ -10461,6 +10486,7 @@ async function kontoMerken(){
     const{data}=await sb.auth.getSession();
     const sitz=data&&data.session;
     if(!sitz)return;
+    if(sitz.user?.id!==cUser.id)return;   // nie fremde Schluessel unter diesem Konto
     const liste=kontenLesen().filter(k=>k.id!==cUser.id);
     liste.unshift({
       id:cUser.id,
@@ -10736,7 +10762,7 @@ function enterApp(){
   loadEvts().then(()=>stelleOrtHer());
   autoLoc();
   initFyModus();
-  checkJoinLink();checkFeeSuccess();checkEventLink();checkProfilLink();startNotifPolling();
+  checkJoinLink();checkFeeSuccess();checkProSuccess();checkEventLink();checkProfilLink();startNotifPolling();
   netzWaechterAn();
   proTourPruefen();
   nativePushAnmelden();
@@ -11137,6 +11163,7 @@ function regPruefen(){
 }
 
 function regWeiter(){
+  if(document.getElementById('rWeiter')?.disabled)return;   // kein zweites Konto per doppeltem Return
   const fehler=regPruefen();
   if(fehler){ regFehler(fehler); return; }
   if(rSchritt>=rMax()){ doRegister(); return; }
@@ -11423,6 +11450,7 @@ async function doLogout(){
   // ueber der Anmeldeseite und es sieht aus, als waere nichts passiert.
   const warId=cUser?.id;
   await pushTokenLoesen();
+  if(warId)kontoCacheWeg(warId);
   zurueckZurAnmeldung();
   // Nur dieses Geraet – vorher flog man ueberall raus
   try{ await sb.auth.signOut({scope:'local'}); }catch(e){}
@@ -11450,8 +11478,8 @@ function spurenLoeschen(){
   try{ notifSeen&&notifSeen.clear&&notifSeen.clear(); }catch(e){}
   try{ freundeMap&&freundeMap.clear&&freundeMap.clear(); }catch(e){}
   try{ clearTimeout(notifTimer); }catch(e){}
-  try{ convSub_&&convSub_.unsubscribe&&convSub_.unsubscribe(); }catch(e){}
-  convId=null; convUser=null; convSub_=null;
+  { const k=convSub_; convSub_=null; if(k)sb.removeChannel(k).catch(()=>{}); }
+  convId=null; convUser=null;
   // Was vom alten Konto sonst stehen blieb: Chat-Punkt, angefangener Text,
   // Benachrichtigungs-Stand, Blockliste und Partyliste
   const ub=document.getElementById('unreadBadge'); if(ub)ub.style.display='none';
@@ -11467,6 +11495,11 @@ function spurenLoeschen(){
   }catch(e){}
   window.__blocked=new Set();
   try{ evts=[]; }catch(e){}
+  // Der schnelle Start merkt sich Blockliste und Abfragen – fuers naechste Konto neu
+  blocksBereit=null; evtsVorab=null; evtsZeit=0;
+  try{ if(bearbeiteId)bearbeitenAbbrechen(); }catch(e){}
+  bearbeiteId=null;
+  try{ chatGeloescht=new Map(); chatGeloeschtFuer=null; }catch(e){}
   try{ ntFolge.clear(); window.__anfragen=[]; abzCache={eigene:[],stand:{}}; upStapel=[]; upUser=null; }catch(e){}
   ['reg-pw','reg-em','pwMail','login-pw'].forEach(id=>{ const f=document.getElementById(id); if(f)f.value=''; });
   ['convMsgs','chatList','profContent','calContent'].forEach(id=>{
@@ -11979,8 +12012,7 @@ function showPage(name,richtung){
   const jetzt=document.querySelector('.page.active')?.id?.replace('page-','');
   // Wer den Chat verlaesst, braucht dessen Live-Verbindung nicht mehr
   if(jetzt==='conv'&&name!=='conv'){
-    try{ convSub_?.unsubscribe?.(); }catch(e){}
-    convSub_=null;
+    { const k=convSub_; convSub_=null; if(k)sb.removeChannel(k).catch(()=>{}); }
   }
   if(jetzt&&jetzt!==name){
     seitenVorher.push(jetzt);
@@ -15448,14 +15480,14 @@ async function startChat(uid,name,un){
 async function startChatInnen(uid,name,un){
   if(!cUser){kontoNoetig();return;}
   if(uid===cUser.id)return;
-  if(!cProfile?.is_pro){showPage('pro');toast('Nur Pro-Nutzer können ein Gespräch beginnen','warn');return;}
-  closeDetail();
-  // Check target user's message setting
-  // Gibt es das Gespraech schon, geht es direkt hinein – auch bei "Nur Anfragen"
+  // Gibt es das Gespraech schon, geht es direkt hinein – auch ohne Pro
+  // ("Antworten kannst du immer") und auch bei "Nur Anfragen"
   const{data:schon}=await sb.from('conversations').select('*')
     .or(`and(user1_id.eq.${cUser.id},user2_id.eq.${uid}),and(user1_id.eq.${uid},user2_id.eq.${cUser.id})`)
     .maybeSingle();
-  if(schon){ await openConv(schon.id,{id:uid,full_name:name,username:un}); return; }
+  if(schon){ closeDetail(); await openConv(schon.id,{id:uid,full_name:name,username:un}); return; }
+  if(!cProfile?.is_pro){showPage('pro');toast('Ein neues Gespräch beginnen kann nur, wer Pro hat','warn');return;}
+  closeDetail();
   const{data:target}=await sb.from('profiles').select('allow_messages').eq('id',uid).single();
   if(target?.allow_messages==='nobody'){toast('Diese Person nimmt keine Nachrichten an','warn');return;}
   const{data:alt}=target?.allow_messages==='requests'
@@ -15762,7 +15794,12 @@ async function checkFeeSuccess(){
 async function verifyProStatus(){
   if(!cUser||!cProfile)return;
   // Re-fetch from DB to ensure latest status
-  const{data}=await sb.from('profiles').select('is_pro,pro_probe,probe_verbraucht,subscription_current_period_end,subscription_status,pro_updated_at').eq('id',cUser.id).single();
+  /* Ueber mein_profil: die Abo-Spalten der Tabelle sind fuer Nutzer
+     gesperrt – die direkte Abfrage scheiterte immer still, und ein
+     abgelaufenes Abo blieb bis zum naechsten Kaltstart "Pro". */
+  const{data:eigen,error}=await sb.rpc('mein_profil');
+  if(error)return;
+  const data=Array.isArray(eigen)?eigen[0]:eigen;
   if(data&&data.is_pro!==cProfile.is_pro){
     const verloren=cProfile.is_pro&&!data.is_pro;
     cProfile={...cProfile,...data};
@@ -15844,9 +15881,14 @@ function chatProSchliessen(ev){
    wird die eigene Sicht, nicht seine. Schreibt er neu, ist der Chat
    wieder da, weil die neue Nachricht nach dem Zeitpunkt liegt. */
 let chatGeloescht=new Map();
+let chatGeloeschtFuer=null;
+/* Vorschau in der Chatliste: eine Zusage-Zeile ("[[zusage:…]]") ist keine
+   Nachricht – sie stand dort roh. */
+function chatVorschau(t){ return /^\[\[zusage:/.test(String(t||'').trim())?'Neue Zusage':esc(t||''); }
 async function chatGeloeschtLaden(){
   chatGeloescht=new Map();
   if(!cUser)return;
+  chatGeloeschtFuer=cUser.id;
   try{
     const{data}=await sb.from('chat_geloescht').select('conversation_id,ab').eq('user_id',cUser.id);
     (data||[]).forEach(z=>chatGeloescht.set(z.conversation_id,new Date(z.ab).getTime()));
@@ -15941,7 +15983,7 @@ async function chatListeZeichnen(list){
         +'<div class="chat-info"><div class="chat-name">'+esc(gname)+'</div>'
         +'<div class="chat-preview">'+(lastG
             ?((lastG.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')
-              +(lastG.image_url&&!lastG.content?'Bild':esc(lastG.content||'')))
+              +(lastG.image_url&&!lastG.content?'Bild':chatVorschau(lastG.content)))
             :'Noch keine Nachrichten')+'</div></div>'
         +'<div class="chat-meta"><div class="chat-time">'+(lastG?listenZeit(lastG.created_at):'')+'</div>'
         +(unreadG?'<div class="unread-dot">·</div>':'')+'</div></div>';
@@ -15958,9 +16000,9 @@ async function chatListeZeichnen(list){
     const offeneZahl=(c.messages||[]).filter(m=>!m.read&&m.sender_id!==cUser.id).length;
     const unread=offeneZahl>0;
     const av=o?.avatar_url?('<img alt="" loading="lazy" decoding="async" src="'+escAttr(o.avatar_url)+'"/>'):anfang(o?.full_name||o?.username||'?');
-    return`<div class="chat-item ${unread?'unread':''}" onclick="openConv('${c.id}',${JSON.stringify(o).replace(/"/g,'&quot;')})">
+    return`<div class="chat-item ${unread?'unread':''}" onclick="openConv('${c.id}',${escAttr(JSON.stringify(o))})">
       <div class="chat-av">${av}</div>
-      <div class="chat-info"><div class="chat-name">${esc(o?.full_name||o?.username||'Unbekannt')}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':esc(last.content))):'Noch keine Nachrichten'}</div></div>
+      <div class="chat-info"><div class="chat-name">${esc(o?.full_name||o?.username||'Unbekannt')}</div><div class="chat-preview">${last?((last.sender_id===cUser.id?'<span class="chat-du">Du:</span> ':'')+(last.image_url&&!last.content?'Bild':chatVorschau(last.content))):'Noch keine Nachrichten'}</div></div>
       <div class="chat-meta"><div class="chat-time">${last?listenZeit(last.created_at):''}</div>${unread?'<div class="unread-dot">'+(offeneZahl>9?'9+':offeneZahl)+'</div>':''}</div>
     </div>`;
   }).join(''));
@@ -16047,11 +16089,17 @@ function convZurueck(){
 
 /* Meldungen zu einem Gespraech gelten als gelesen, sobald man es offen hat –
    sonst bleiben Glocke und App-Symbol auf einer Zahl stehen. */
+/* Immer beim Server, nicht nur wenn die Meldung schon im Zwischen-
+   speicher steht: eine eben eingetroffene Nachricht hat ihre Meldung
+   dort noch nicht – Gruppen blieben sonst "ungelesen". Hoechstens alle
+   2 s je Gespraech. */
+const ntGelesenZeit=new Map();
 function ntGespraechGelesen(cid){
   if(!cUser||!cid)return;
-  const offen=(window.__notifs||[]).filter(n=>n.conversation_id===cid&&!n.gelesen);
-  if(!offen.length)return;
-  offen.forEach(n=>n.gelesen=true);
+  (window.__notifs||[]).forEach(n=>{ if(n.conversation_id===cid)n.gelesen=true; });
+  const jetzt=Date.now();
+  if(jetzt-(ntGelesenZeit.get(cid)||0)<2000)return;
+  ntGelesenZeit.set(cid,jetzt);
   sb.from('notifications').update({gelesen:true}).eq('user_id',cUser.id).eq('conversation_id',cid).eq('gelesen',false)
     .then(()=>loadNotifs(),()=>{});
 }
@@ -16067,6 +16115,9 @@ async function openConv(cid,other){
   /* Ein anderes Gespraech: die Blasen des vorherigen sofort weg. Sonst
      standen sie da, bis die neuen geladen waren. */
   if(convId!==cid){ const alt=document.getElementById('convMsgs'); if(alt)alt.innerHTML=''; }
+  // Ein angefangenes Bearbeiten gehoert zum alten Gespraech – sonst ueberschrieb
+  // Senden im neuen Chat die Nachricht im alten.
+  if(convId!==cid&&bearbeiteId)bearbeitenAbbrechen();
   convId=cid;convUser=other;
   convGruppe=!!other?.gruppe;
   const trKnopf=document.getElementById('convTreffen');
@@ -16083,25 +16134,37 @@ async function openConv(cid,other){
   if(elSub)elSub.textContent=convGruppe?'Gruppenchat':('@'+(other?.username||''));
   showOnly('conv');
   grpNaechsteZeigen();          // leert sofort, fuellt gleich nach
+  // Geloeschte Chats kennen, auch wenn man direkt aus einer Mitteilung kommt
+  if(chatGeloeschtFuer!==cUser?.id)await chatGeloeschtLaden();
   await loadMsgs();
+  /* Wer waehrend des Ladens schon weiter ist (zurueck, anderes Gespraech),
+     bekommt hier keine Live-Verbindung und kein "gelesen" mehr – sonst
+     blieb ein Kanal offen und markierte Nachrichten im Hintergrund. */
+  const nochHier=()=>convId===cid&&document.getElementById('page-conv')?.classList.contains('active');
+  if(!nochHier())return;
   /* Nur im Zweiergespraech: "read" ist eine Spalte fuer alle, in einer
      Gruppe waere das Lesen des Ersten das Lesen aller. Dort zaehlen die
      Benachrichtigungen, die ntGespraechGelesen() gleich abraeumt. */
   if(!convGruppe)await sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser.id);
   loadUnread();
-  try{ if(convSub_)await sb.removeChannel(convSub_); }catch(e){console.warn('[chat] unsubscribe',e);}
+  const altKanal=convSub_; convSub_=null;
+  try{ if(altKanal)await sb.removeChannel(altKanal); }catch(e){console.warn('[chat] unsubscribe',e);}
+  if(!nochHier())return;
   ntGespraechGelesen(cid);
+  const gruppeHier=convGruppe;
   /* Alle Änderungen, nicht nur neue: bearbeitete und selbstgelöschte
      Nachrichten kamen beim Gegenüber sonst erst nach dem Neuöffnen an. */
   convSub_=sb.channel('conv-'+cid).on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},(pl)=>{
+    if(convId!==cid)return;
     loadMsgs();
     if(pl&&pl.eventType&&pl.eventType!=='INSERT')return;
     // Wer im Gespraech sitzt, hat die neue Nachricht gesehen
-    if(!convGruppe)sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
+    if(!gruppeHier)sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
     ntGespraechGelesen(cid);
   }).subscribe();
 }
 
+let msgsSeq=0;
 async function loadMsgs(){
   // Wer diesen Chat geloescht hat, sieht nur, was danach geschrieben wurde
   const ab=chatGeloescht.get(convId);
@@ -16110,8 +16173,11 @@ async function loadMsgs(){
   /* Die neusten 150, nicht der ganze Verlauf seit dem ersten Tag – der
      wurde bei jeder neuen Nachricht zweimal komplett geholt. */
   const fuer=convId;
+  /* Mehrere Ladevorgaenge gleichzeitig (Live, Senden, Bearbeiten): nur
+     der neuste darf zeichnen, sonst rollt eine aeltere Antwort zurueck. */
+  const seq=++msgsSeq;
   const{data:neuste,error:ladeFehler}=await abfrage.order('created_at',{ascending:false}).limit(150);
-  if(fuer!==convId)return;          // inzwischen ein anderes Gespräch offen
+  if(fuer!==convId||seq!==msgsSeq)return;          // inzwischen ein anderes Gespräch / neuere Antwort
   const c=document.getElementById('convMsgs');
   if(ladeFehler){
     console.warn('[chat] laden',ladeFehler);
@@ -16127,6 +16193,7 @@ async function loadMsgs(){
     const fehlen=[...new Set(msgs.map(m=>m.sender_id).filter(id=>id&&id!==cUser.id&&!convLeute.has(id)))];
     if(fehlen.length){
       const{data:ppl}=await sb.from('profiles').select('id,username,full_name,avatar_url').in('id',fehlen);
+      if(fuer!==convId||seq!==msgsSeq)return;
       (ppl||[]).forEach(x=>convLeute.set(x.id,x));
     }
   }
@@ -16272,8 +16339,10 @@ async function grpNaechsteZeigen(){
   grpNaechsteEv=null;
   leiste.hidden=true;
   if(!convGruppe||!convUser?.id)return;
+  const gid=convUser.id;
   try{
-    const{data}=await sb.rpc('gruppe_ansehen',{p_group:convUser.id});
+    const{data}=await sb.rpc('gruppe_ansehen',{p_group:gid});
+    if(!convGruppe||convUser?.id!==gid)return;   // inzwischen anderes Gespraech
     if(data?.status!=='ok')return;
     // Die Liste kommt nach Datum sortiert – die erste ist die naechste.
     const e=(data.partys||[])[0];
@@ -16424,7 +16493,7 @@ async function treffenZusagen(id,knopf){
   const leute=treffenDabei.get(id)||new Set();
   if(ich)leute.delete(cUser.id); else leute.add(cUser.id);
   treffenDabei.set(id,leute);
-  const e=partyKartenGemerkt.get(id)||{id};
+  const e=partyKartenGemerkt.get(id)||evts.find(x=>x.id===id)||{id};
   document.querySelectorAll('.bub-party.bp-treffen[data-ev="'+id+'"]').forEach(k=>treffenKarteZeichnen(k,e));
   nativeHaptik(ich?'leicht':'erfolg');
   try{
@@ -18217,10 +18286,14 @@ function setProfilUI(privat){
 
 async function setProfilPrivat(privat){
   if(!cUser)return;
-  setProfilUI(privat);
+  /* Sofort im Profil – sonst zeigte die Einstellungszeile noch den alten
+     Wert, weil sie gezeichnet wird, bevor der Server antwortet. */
+  const vorher=!!cProfile.privat;
+  cProfile.privat=privat; setProfilUI(privat);
+  try{ setEinstellungWerte(); }catch(e){}
   const{error}=await sb.from('profiles').update({privat}).eq('id',cUser.id);
-  if(error){toast(fehlerText(error),'error');setProfilUI(!privat);return;}
-  cProfile.privat=privat;
+  if(error){ cProfile.privat=vorher; setProfilUI(vorher); try{ setEinstellungWerte(); }catch(e){} toast(fehlerText(error),'error'); return; }
+  profilMerken();
 }
 
 /* ── Offene Anfragen im eigenen Profil ─────────────────────────── */
@@ -18961,6 +19034,7 @@ async function gruppeOeffnen(id){
   ov.classList.add('open');
   body.innerHTML=skelett(4,64);
   const{data,error}=await sb.rpc('gruppe_ansehen',{p_group:id});
+  if(grpOffen!==id)return;
   if(error){body.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>';return;}
   if(data?.status!=='ok'){body.innerHTML='<div class="up-empty">'+esc(grpSagen(data?.status))+'</div>';return;}
   gruppeZeichnen(data);
@@ -19219,6 +19293,7 @@ async function gruppeVerlassen(gid){
   if(error){toast(fehlerText(error),'error');return;}
   if(data?.status!=='ok'&&data?.status!=='aufgeloest'){toast(grpSagen(data?.status),'warn');return;}
   closeOverlay('gruppeOverlay');
+  if(convGruppe&&convUser?.id===gid)showPage('chat');
   gruppenLaden();
 }
 
@@ -19385,7 +19460,7 @@ function treffenOeffnen(gid){
   // Wo: "bei mir" mit dem eigenen Vornamen
   const vorname=String(cProfile?.full_name||cProfile?.username||'').trim().split(/\s+/)[0];
   document.getElementById('trOrtChips').innerHTML=
-    '<button class="tr-chip" onclick="treffenOrt(\'bei '+escAttr(vorname||'mir').replace(/'/g,'')+'\')">bei mir</button>'
+    '<button class="tr-chip" onclick="treffenOrt(\'bei '+escAttr(String(vorname||'mir').replace(/['"\\<>&]/g,''))+'\')">bei mir</button>'
     +'<button class="tr-chip" onclick="treffenOrt(\'\')">Ort folgt</button>';
   // Vorschlag: heute, nächste volle Stunde – oder morgen, wenn es spät ist
   const jetzt=new Date();
@@ -26923,7 +26998,8 @@ function notifTakt(){
   notifTimer=setTimeout(async()=>{
     // Geschlossene oder verdeckte App fragt gar nicht
     if(!document.hidden&&cUser)await loadNotifs();
-    notifTakt();
+    // Nach dem Abmelden nicht weiter fragen (der Zeitgeber war schon abgelaufen)
+    if(cUser)notifTakt();
   },notifAbstand);
 }
 
@@ -28362,7 +28438,8 @@ function mapPasst(e, now){
 
   // Und derselbe Umkreis wie in der Liste – sonst zeigen Karte und
   // Liste Verschiedenes.
-  if(typeof imUmkreis==='function'&&!imUmkreis(e))return false;
+  // Einladungen gelten ueberall – wie in der Liste
+  if(e.type!=='private'&&typeof imUmkreis==='function'&&!imUmkreis(e))return false;
 
   return true;
 }
@@ -29378,27 +29455,34 @@ function setMsgSettingUI(val){
 async function setMsgSetting(val){
   if(!cUser)return;
   const vorher=cProfile?.allow_messages||'everyone';
+  cProfile={...cProfile,allow_messages:val};
   setMsgSettingUI(val);
+  try{ setEinstellungWerte(); }catch(e){}
   /* Vorher kam immer "aktiviert", auch wenn das Speichern scheiterte –
      die Einstellung sah umgestellt aus und war es nicht. */
   const{error}=await sb.from('profiles').update({allow_messages:val}).eq('id',cUser.id);
-  if(error){ setMsgSettingUI(vorher); toast(fehlerText(error),'error'); return; }
-  cProfile={...cProfile,allow_messages:val};
+  if(error){ cProfile={...cProfile,allow_messages:vorher}; setMsgSettingUI(vorher); try{ setEinstellungWerte(); }catch(e){} toast(fehlerText(error),'error'); return; }
+  profilMerken();
 }
 
 // ── UNREAD BADGE ──
 async function loadUnread(){
   if(!cUser)return;
   try{
-    const{data}=await sb.from('messages').select('id,conversation_id,read,sender_id,conversations!inner(user1_id,user2_id)').eq('read',false).neq('sender_id',cUser.id).limit(50);
-    const unread=(data||[]).filter(m=>m.conversations?.user1_id===cUser.id||m.conversations?.user2_id===cUser.id);
-    // Gruppen: "gelesen" gilt dort pro Person, also aus den Meldungen
-    if(!unread.length){
-      const{data:gnt}=await sb.from('notifications').select('id')
-        .eq('user_id',cUser.id).eq('gelesen',false).eq('art','nachricht')
-        .not('conversation_id','is',null).limit(1);
-      if((gnt||[]).length)unread.push({id:'gruppe'});
-    }
+    /* Gruppennachrichten werden nie "read" – ohne Filter am Server
+       fuellten sie die 50 Zeilen, und der Punkt fuer Zweiergespraeche
+       verschwand. Gruppen zaehlen ueber ihre Meldungen, immer. */
+    const uid=cUser.id;
+    const [{data},{data:gnt}]=await Promise.all([
+      sb.from('messages').select('id,conversation_id,conversations!inner(user1_id,user2_id,group_id)')
+        .eq('read',false).neq('sender_id',uid).is('conversations.group_id',null).limit(50),
+      sb.from('notifications').select('conversation_id')
+        .eq('user_id',uid).eq('gelesen',false).eq('art','nachricht')
+        .not('conversation_id','is',null).limit(50),
+    ]);
+    if(cUser?.id!==uid)return;
+    const unread=(data||[]).filter(m=>m.conversations?.user1_id===uid||m.conversations?.user2_id===uid);
+    (gnt||[]).forEach(n=>unread.push({conversation_id:n.conversation_id}));
     /* Wie viele Gespraeche warten - nicht wie viele Nachrichten. Zehn
        Zeilen von einer Person sind ein Gespraech, kein Zehnfaches. */
     const wartende=new Set(unread.map(m=>m.conversation_id||m.id)).size;
