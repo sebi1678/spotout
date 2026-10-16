@@ -1021,7 +1021,11 @@
     .modal-hdr::after{
       content:'';position:absolute;left:0;right:0;top:100%;height:12px;pointer-events:none;
       background:linear-gradient(rgb(15,20,50),rgba(15,20,50,0));
+      /* Nur sichtbar, wenn Inhalt darunter durchlaeuft. Immer sichtbar lag
+         der Auslauf ueber der oberen Kante der ersten Karte jedes Blatts. */
+      opacity:0;transition:opacity 120ms ease;
     }
+    .modal.gerollt .modal-hdr::after{opacity:1}
     .modal-title{font-size:1.1rem;font-weight:700;color:#fff;
       display:flex;align-items:center;min-height:34px}
     /* Safari gibt einem <svg> ohne width/height im Flex-Container die Breite 0.
@@ -7003,6 +7007,26 @@
       .toast{background:#141834;border-color:rgba(255,255,255,.45)}
     }
 
+    /* Kontowechsel: ruhiges Zwischenbild mit dem Ziel-Konto */
+    #kontoWechselBild{
+      position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:0;background:#090D24;
+      opacity:0;pointer-events:none;transition:opacity 160ms ease;
+    }
+    #kontoWechselBild.da{opacity:1;pointer-events:auto}
+    #kontoWechselBild.weg{opacity:0;transition:opacity 260ms ease}
+    .kwb-av{width:88px;height:88px;border-radius:50%;overflow:hidden;display:flex;
+      align-items:center;justify-content:center;background:var(--grad-cta);color:#fff;
+      font-size:2rem;font-weight:800;box-shadow:0 0 0 4px rgba(255,45,118,.18)}
+    .kwb-av img{width:100%;height:100%;object-fit:cover}
+    #kontoWechselBild.da .kwb-av{animation:kwbRein 320ms var(--kurve) both}
+    @keyframes kwbRein{from{transform:scale(.92);opacity:.4}to{transform:none;opacity:1}}
+    .kwb-name{margin-top:16px;font-size:1.15rem;font-weight:800;color:#fff}
+    .kwb-handle{margin-top:3px;font-size:.86rem;color:var(--muted)}
+    .kwb-lade{margin-top:22px;width:22px;height:22px;border-radius:50%;
+      border:2px solid rgba(255,255,255,.12);border-top-color:#FF2D76;animation:spin var(--dreh) linear infinite}
+    @media (prefers-reduced-motion:reduce){ #kontoWechselBild.da .kwb-av{animation:none} }
+
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -10675,11 +10699,40 @@ function wechselNotieren(schritt,text){
   try{ sb.rpc('wechsel_notieren',{p_schritt:String(schritt),p_text:text?String(text):null}).then(()=>{},()=>{}); }catch(e){}
 }
 
+/* Waehrend des Wechsels: ein ruhiges Bild mit dem Ziel-Konto, wie bei
+   Instagram. Vorher ging nur das Blatt zu, das alte Konto blieb stehen
+   und sprang irgendwann um – man wusste nicht, ob der Tipp gewirkt hat. */
+function wechselBildZeigen(k){
+  let el=document.getElementById('kontoWechselBild');
+  if(!el){
+    el=document.createElement('div'); el.id='kontoWechselBild';
+    el.setAttribute('role','status'); el.setAttribute('aria-live','polite');
+    document.body.appendChild(el);
+  }
+  const av=k.avatar
+    ? '<img src="'+escAttr(k.avatar)+'" alt="">'
+    : esc(((k.name||'?').trim()[0]||'?').toUpperCase());
+  el.innerHTML='<div class="kwb-av">'+av+'</div>'
+    +'<div class="kwb-name">'+esc(k.name||'Konto')+'</div>'
+    +(k.username?'<div class="kwb-handle">@'+esc(k.username)+'</div>':'')
+    +'<div class="kwb-lade" aria-hidden="true"></div>';
+  el.classList.remove('weg'); void el.offsetWidth; el.classList.add('da');
+}
+function wechselBildWeg(){
+  const el=document.getElementById('kontoWechselBild');
+  if(!el)return;
+  el.classList.add('weg'); el.classList.remove('da');
+}
+
 let kontoWechselLaeuft=false,kontoNeuLaeuft=false;
 async function kontoWechseln(id){
   if(id===cUser?.id){ closeOverlay('kontenOverlay'); return; }
   const k=kontenLesen().find(x=>x.id===id);
   if(!k)return;
+  if(kontoWechselLaeuft)return;
+  const vonSeite=document.querySelector('.page.active')?.id?.replace('page-','')||'main';
+  nativeHaptik('leicht');
+  wechselBildZeigen(k);
   closeOverlay('kontenOverlay');
   kontoWechselLaeuft=true;
   alleFensterZu();
@@ -10689,10 +10742,11 @@ async function kontoWechseln(id){
      erneuert den Zugang laufend und wirft den alten Schluessel dabei
      weg. Stand in der Liste noch der Schluessel von vorhin, war der
      Weg zurueck versperrt - und das sah aus wie "Wechsel kaputt". */
-  try{ await kontoMerken(); }catch(e){}
   wechselNotieren('start','ziel='+String(id).slice(0,8)
     +' alter='+Math.round((Date.now()-(k.zeit||0))/3600000)+'h');
-  await pushTokenLoesen();
+  /* Beides braucht noch die alte Sitzung, aber nicht einander – also
+     gleichzeitig statt nacheinander. */
+  await Promise.all([kontoMerken().catch(()=>{}), pushTokenLoesen().catch(()=>{})]);
   try{
     let sitzung=null;
     try{
@@ -10719,10 +10773,28 @@ async function kontoWechseln(id){
     // Anmeldung – inklusive Aufraeumen der alten Ansicht.
     spurenLoeschen();
     cUser=data.session.user;
-    await loadProf();
-    await kontoMerken();
+    /* Wie beim Start: Partys und Blockliste laufen sofort los, und ein
+       gemerktes Profil steht gleich da – das frische ersetzt es still. */
+    evtsVorab=evtsAbfrage();
+    blocksBereit=loadBlocks().catch(()=>{});
+    const gemerkt=profilGemerkt(cUser.id);
+    if(gemerkt){
+      cProfile=gemerkt;updNavAv();navFuerKontoart();vereinHomeUmschalten();
+      loadProf().then(()=>{
+        document.body.classList.toggle('veranstalter',!!cProfile?.verified);
+        try{ updNavAv(); if(document.getElementById('page-profile')?.classList.contains('active'))renderProf(); }catch(e){}
+        try{ nativePushAnmelden(); }catch(e){}
+      }).catch(e=>console.warn('[profil]',e));
+    }else{
+      await loadProf();
+    }
+    kontoMerken();
     enterApp();
+    // Dort weitermachen, wo man gewechselt hat (meist das Profil)
+    if(vonSeite==='profile'&&!istVerein())showPage('profile');
     wechselNotieren('fertig','Konto gewechselt');
+    setTimeout(wechselBildWeg,180);
+    toast('Du bist jetzt '+(cProfile?.username?'@'+cProfile.username:(cProfile?.full_name||'im anderen Konto')),'success');
     }catch(err){
     console.warn('[konten]',err);
     /* Nur wirklich verbrauchte Schluessel fliegen aus der Liste. Vorher
@@ -10760,6 +10832,7 @@ async function kontoWechseln(id){
     toast('Bitte melde dich für dieses Konto neu an','warn');
   }finally{
     kontoWechselLaeuft=false;
+    wechselBildWeg();
   }
 }
 
@@ -25170,6 +25243,12 @@ document.addEventListener('DOMContentLoaded',()=>{
    laeuft. Das faengt genau den Fall ab, in dem die Verbindung haengt
    und jemand fuenfmal auf denselben Knopf tippt. */
 window.__laeuftGerade = new Set();
+
+/* Blatt gescrollt? Dann zeigt der Kopf seinen weichen Auslauf. */
+document.addEventListener('scroll',ev=>{
+  const m=ev.target;
+  if(m&&m.classList&&m.classList.contains('modal'))m.classList.toggle('gerollt',m.scrollTop>2);
+},{capture:true,passive:true});
 
 (function(){
   const SCHREIBEND = [
