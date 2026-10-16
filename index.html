@@ -972,7 +972,8 @@
     .modal textarea:focus,.modal select:focus{outline:none;border-color:rgba(255,45,118,.45)}
     .modal{
       width:100%;max-width:520px;
-      background:linear-gradient(180deg,rgba(15,20,50,.98),rgba(9,13,36,.99));
+      /* Deckend: bei 98 % schimmerten helle Bilder der Seite durchs Blatt */
+      background:linear-gradient(180deg,rgb(15,20,50),rgb(9,13,36));
       border:1px solid rgba(255,255,255,.10);
       border-radius:28px 28px 0 0;
       max-height:90vh;max-height:90dvh;overflow-y:auto;
@@ -1953,7 +1954,7 @@
     .addr-wrap{position:relative}
     .addr-drop{
       position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:99;
-      background:rgba(15,20,50,.98);border:1px solid rgba(255,255,255,.12);
+      background:rgb(15,20,50);border:1px solid rgba(255,255,255,.12);
       border-radius:12px;overflow:hidden;display:none;
     }
     .addr-drop.show{display:block}
@@ -3171,7 +3172,7 @@
     .attend-btn{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 8px;line-height:1.25}
     .attend-btn:disabled{opacity:.65;cursor:default}
     .attend-btn.is-busy{transform:none!important}
-    .attend-sub{flex-basis:100%;font-size:.7rem;font-weight:700;opacity:.62;letter-spacing:.02em}
+    .attend-sub{flex-basis:100%;text-align:center;font-size:.7rem;font-weight:700;opacity:.62;letter-spacing:.02em}
     .attend-btn-in{
       background:rgba(74,222,128,.12);color:#4ade80;
       border:1px solid rgba(74,222,128,.35);
@@ -5041,8 +5042,8 @@
       background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);
     }
     .offl-code{
-      flex:1;min-width:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-      font-size:.86rem;font-weight:700;color:#fff;letter-spacing:.06em;
+      flex:1;min-width:0;font-family:var(--font);font-variant-numeric:tabular-nums;
+      font-size:.86rem;font-weight:700;color:#fff;letter-spacing:0;
       overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
     }
     .offl-btns{display:flex;gap:8px;margin-top:10px}
@@ -7699,7 +7700,7 @@
   <div class="modal create-modal no-swipe">
     <div class="modal-handle"></div>
     <button class="modal-x modal-x-float" onclick="closeCreate()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <button class="entwurf-knopf" id="entwurfKnopf" onclick="entwurfSichern()">Entwurf</button>
+    <button class="entwurf-knopf" id="entwurfKnopf" onclick="entwurfSichern()">Entwurf sichern</button>
     <div class="cprog">
       <div class="cprog-head">
         <div class="cprog-step">Schritt <b id="cStepNum">1</b> von 9</div>
@@ -13777,7 +13778,7 @@ async function openDetail(id){
         </div>
         <div class="d-info-cell">
           <div class="d-info-cell-lbl">${D_SYM.zeit} Uhrzeit</div>
-          <div class="d-info-cell-val">${e.time?(zeitText(e.time)+(e.end_time?(' – '+zeitText(e.end_time)):'')):'–'}</div>
+          <div class="d-info-cell-val">${e.time?(e.end_time?(String(e.time).slice(0,5)+' – '+zeitText(e.end_time)):zeitText(e.time)):'–'}</div>
         </div>
         <div class="d-info-cell full${e.address?' d-info-tipp':''}"
              ${e.address?`role="button" tabindex="0" onclick="openRoute('${e.id}')"`:''}>
@@ -22863,7 +22864,7 @@ async function saveManage(){
 
 /* ══════════ MITBRINGLISTE ══════════ */
 
-const BRING_QUICK=['Bier','Wein','Chips','Salat','Dessert','Glace','Eis','Musikbox'];
+const BRING_QUICK=['Bier','Wein','Chips','Salat','Dessert','Glace','Musikbox','Eiswürfel'];
 
 /* ── Die Playlist auf der Partyseite ──────────────────────────────
    Nur wer dabei ist, sieht sie. Sonst könnte jeder mit dem Partylink
@@ -23314,7 +23315,7 @@ async function renderBringList(eventId,isHost){
     const taken=!!i.claimed_by;
     const who=taken
       ?(mine?'Du bringst das mit':'<b>'+esc(i.profiles?.full_name||i.profiles?.username||'Jemand')+'</b> bringt das mit')
-      :'Noch frei – tipp an, wenn du das übernimmst';
+      :'Noch frei – tipp an zum Übernehmen';
     const clickable=!taken||mine;
     return '<div class="bring-row'+(taken?' taken':'')+(mine?' mine-row':'')+'">'
       +'<div class="bring-box'+(mine?' mine':(taken?' on':''))+(clickable?'':' locked')+'" '
