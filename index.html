@@ -4218,7 +4218,10 @@
     /* Eine Zeile statt zwei: links wonach sortiert wird, rechts
        Filter und Aktualisieren. Vorher stand der Filter allein
        darunter und sah aus, als gehoere er zu nichts. */
-    .fy-zeile{display:flex;align-items:stretch;gap:8px;margin:0 0 14px}
+    /* Feste Hoehe: bei "Privat" fallen Modus und Filter weg, und der Feed
+       darunter sprang beim Umschalten um 27 px nach oben. */
+    .fy-zeile{display:flex;align-items:stretch;gap:8px;margin:0 0 14px;min-height:44px}
+    .fy-zeile .fy-neu{margin-left:auto}
     .fy-modus{
       flex:1;min-width:0;
       display:flex;gap:4px;padding:4px;margin:0;
@@ -7037,6 +7040,10 @@
       border:1px solid rgba(255,255,255,.12);color:#fff;font-family:var(--font);font-size:.8rem;font-weight:700}
     .ep-av-weg{color:#ff8a8c}
     .ep-av-k:active{transform:scale(var(--druck))}
+    /* Fremde Profile wie bei Instagram: die Leiste der App bleibt stehen
+       (die App laesst sie bei .mit-leiste sichtbar). Unten Platz, damit
+       nichts darunter verschwindet. */
+    html.in-app .mit-leiste .up-rolle{padding-bottom:calc(var(--bnav-h) + var(--safe-bottom))}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -8246,7 +8253,7 @@
 </div>
 
 <!-- ════ FREMDES PROFIL ════ -->
-<div class="overlay up-vollseite" id="userProfOverlay">
+<div class="overlay up-vollseite mit-leiste" id="userProfOverlay">
   <div class="modal no-swipe">
     <div class="up-kopf">
       <button class="up-zurueck" onclick="closeUserProf()" aria-label="Zurück">
@@ -20975,6 +20982,10 @@ function nativeHaptik(art){ if(istApp())nativeCall('haptik',{art},3000); }
    scrollt in seinem Koerper, sonst die Seite selbst. */
 window.__huelleNachOben=function(){
   try{
+    /* Wie Instagram: steht ein fremdes Profil ueber dem Tab, bringt ein
+       Tipp auf den Tab zurueck zu dessen Anfang – erst dann wird gescrollt. */
+    const gestapelt=document.querySelector('.overlay.open.mit-leiste');
+    if(gestapelt){ closeOverlay(gestapelt.id); nativeHaptik('leicht'); return; }
     const offen=document.querySelector('.overlay.open');
     const ziel=offen
       ? (offen.querySelector('.modal-body')||offen.querySelector('.modal'))
