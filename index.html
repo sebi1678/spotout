@@ -10991,6 +10991,7 @@ function enterApp(){
   autoLoc();
   initFyModus();
   checkJoinLink();checkFeeSuccess();checkProSuccess();checkEventLink();checkProfilLink();startNotifPolling();
+  posteingangStarten();
   netzWaechterAn();
   proTourPruefen();
   nativePushAnmelden();
@@ -11693,6 +11694,7 @@ async function doLogout(){
    das Bild oben rechts noch die Zahl am Gloeckchen noch die Liste der
    Gespraeche. Wer das sieht, glaubt zu Recht, er sei noch angemeldet. */
 function spurenLoeschen(){
+  posteingangStoppen();
   cProfile=null;
   document.querySelectorAll('.js-nav-av').forEach(av=>{
     av.innerHTML='';
@@ -22607,6 +22609,30 @@ async function alleGelesen(){
 let notifAbstand=45000;          // startet schnell
 const NOTIF_MAX=300000;          // und wird hoechstens fuenf Minuten traege
 let notifStand='';
+
+/* Live-Posteingang: neue Nachrichten in irgendeinem eigenen Chat.
+   Die Datenbank liefert nur, was man lesen darf (RLS). Auf der Chatliste
+   rutscht das Gespraech sofort nach oben, die Zahl am Tab stimmt sofort –
+   vorher erst nach dem naechsten Oeffnen. */
+let posteingang=null, posteingangUhr=null;
+function posteingangStarten(){
+  if(!cUser||posteingang)return;
+  const uid=cUser.id;
+  posteingang=sb.channel('posteingang-'+uid)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},(pl)=>{
+      if(cUser?.id!==uid)return;
+      const m=pl?.new; if(!m||m.sender_id===uid)return;
+      clearTimeout(posteingangUhr);
+      posteingangUhr=setTimeout(()=>{
+        try{ loadUnread(); }catch(e){}
+        if(document.getElementById('page-chat')?.classList.contains('active'))loadChats();
+      },250);
+    }).subscribe();
+}
+function posteingangStoppen(){
+  const k=posteingang; posteingang=null; clearTimeout(posteingangUhr);
+  if(k)sb.removeChannel(k).catch(()=>{});
+}
 
 function startNotifPolling(){
   clearTimeout(notifTimer);
