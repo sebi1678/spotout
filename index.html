@@ -8668,11 +8668,11 @@
       <div class="pro-ang-ic">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>
       </div>
-      <div class="pro-ang-t">Noch eine Sache</div>
-      <div class="pro-ang-s">Mit Pro schreibst du zuerst, siehst, wer kommt und wer dein Profil besucht hat – und deine Partys stehen weiter oben.</div>
+      <div class="pro-ang-t">Wer von deinen Leuten geht auch?</div>
+      <div class="pro-ang-s">Mit Pro siehst du auf jeder Party, wer aus deinen Kontakten dabei ist – mit Namen. Und du kannst alle zuerst anschreiben.</div>
       <div class="pro-ang-preis" id="proAngebotPreis"></div>
       <button class="sub-btn sub-public" id="proAngebotBtn" onclick="proAngebotJa()">7 Tage gratis testen</button>
-      <button class="pro-ang-nein" onclick="proAngebotNein()">Ohne Pro fortfahren</button>
+      <button class="pro-ang-nein" onclick="proAngebotNein()">Nicht jetzt</button>
     </div>
   </div>
 </div>
@@ -9619,6 +9619,7 @@ function initSwipeToClose(){
              zweites Ausblenden schliessen, sonst blitzt sie nochmal auf. */
           overlay.style.transition='none';
           overlay.classList.remove('open');
+          if(overlay.id==='detailOverlay'&&proNachZusage){ proNachZusage=false; proAngebotZeigen(); }
           aufraeumen();
           void overlay.offsetWidth;
           overlay.style.transition='';
@@ -10529,7 +10530,6 @@ async function einstiegFertig(){
   }
   cProfile={...cProfile,...patch};
   try{ setMsgSettingUI(cProfile.allow_messages||'everyone'); setProfilUI(!!cProfile.privat); }catch(e){}
-  proAngebotZeigen();
 }
 
 /* ── Pro zum Schluss, einmal ──────────────────────────────────────
@@ -10537,17 +10537,25 @@ async function einstiegFertig(){
    man erst, wenn man gegen eine Sperre lief. Das ist der falsche
    Moment: da will jemand gerade etwas tun und wird aufgehalten.
 
-   Hier steht es am Ende des Einstiegs, mit einem ehrlichen zweiten
-   Knopf daneben. Wer nein sagt, wird nicht noch einmal gefragt. */
-const PRO_ANGEBOT_SCHLUESSEL='spotout_pro_angebot_v1';
+   Neu (16.10., Paywall-Regeln): nicht mehr am Ende des Einstiegs –
+   "waehrend des Onboardings" ist der klassische Fehler, da hat noch
+   niemand etwas erlebt. Jetzt nach der ersten Zusage, wenn man das
+   Party-Fenster schliesst: genau dann will man wissen, wer noch geht,
+   und genau das kann Pro. Hoechstens zweimal, mit zwei Wochen Pause,
+   und "Nicht jetzt" ist gleich gross daneben. */
+const PRO_ANGEBOT_SCHLUESSEL='spotout_pro_angebot_v2';
+let proNachZusage=false;
 function proAngebotZeigen(){
   if(!cUser||cProfile?.is_pro||istVerein())return;
-  try{ if(localStorage.getItem(PRO_ANGEBOT_SCHLUESSEL))return; }catch(e){}
-  try{ localStorage.setItem(PRO_ANGEBOT_SCHLUESSEL,'1'); }catch(e){}
+  let st={n:0,zeit:0};
+  try{ st=JSON.parse(localStorage.getItem(PRO_ANGEBOT_SCHLUESSEL)||'{"n":0,"zeit":0}'); }catch(e){}
+  if(st.n>=2)return;
+  if(st.n===1&&Date.now()-st.zeit<14*864e5)return;
+  try{ localStorage.setItem(PRO_ANGEBOT_SCHLUESSEL,JSON.stringify({n:st.n+1,zeit:Date.now()})); }catch(e){}
   appleAngebotLaden();
   setTimeout(()=>{
     const ov=document.getElementById('proAngebotOverlay');
-    if(!ov)return;
+    if(!ov||document.querySelector('.overlay.open'))return;   // nie ueber ein anderes Fenster
     const t=document.getElementById('proAngebotPreis');
     if(t)t.textContent=probeFrei()
       ? '7 Tage gratis, danach CHF 3.00 im Monat. Jederzeit kündbar.'
@@ -10555,7 +10563,7 @@ function proAngebotZeigen(){
     const b=document.getElementById('proAngebotBtn');
     if(b)b.textContent=probeFrei()?'7 Tage gratis testen':'Pro holen';
     ov.classList.add('open');
-  },420);
+  },380);
 }
 function proAngebotJa(){
   closeOverlay('proAngebotOverlay');
@@ -14146,7 +14154,7 @@ async function toggleAtt(id,isAtt){
        sich anfuehlen wie etwas, das geklappt hat – und zwar in dem
        Moment, in dem man es sieht (der Knopf zeigt jetzt "dabei"),
        nicht schon vorher, waehrend noch der Ladekreis dreht. */
-    if(!isAtt){ nativeHaptik('erfolg'); zusageFeiern(document.getElementById('attendBtn')); }
+    if(!isAtt){ nativeHaptik('erfolg'); zusageFeiern(document.getElementById('attendBtn')); proNachZusage=true; }
     if(document.getElementById('page-calendar')?.classList.contains('active'))renderCalendar();
     if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
     // Frisch angemeldet? Dann gleich fragen, was man mitbringt – sofern es
@@ -24803,7 +24811,11 @@ function closeIfOutside(e,id){
   }
   document.getElementById(id).classList.remove('open');
 }
-function closeOverlay(id){document.getElementById(id)?.classList.remove('open');}
+function closeOverlay(id){
+  document.getElementById(id)?.classList.remove('open');
+  // Nach der ersten Zusage: beim Schliessen des Party-Fensters einmal Pro zeigen
+  if(id==='detailOverlay'&&proNachZusage){ proNachZusage=false; proAngebotZeigen(); }
+}
 /* Alles zu, was ueber der Seite liegt. */
 function alleFensterZu(){
   /* Das Tutorial ist kein .overlay, sondern eine eigene Ebene. Es blieb
