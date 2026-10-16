@@ -10391,16 +10391,9 @@ function einstiegKarten(){
         {wert:'',          ic:'keiner',    t:'Brauch ich nicht', s:'Kein Knopf in der Leiste'},
       ],
     },
-    {
-      feld:'schreiben',
-      frage:'Wer darf dir schreiben?',
-      hilfe:'Kannst du jederzeit ändern – und einzelne Leute blockieren geht sowieso immer.',
-      wahl:[
-        {wert:'everyone', ic:'alle',    t:'Jeder',        s:'Nachrichten kommen direkt an'},
-        {wert:'requests', ic:'frage',   t:'Nur Anfragen', s:'Du entscheidest, wer durchkommt'},
-        {wert:'nobody',   ic:'niemand', t:'Niemand',      s:'Gar keine Nachrichten'},
-      ],
-    },
+    /* "Wer darf dir schreiben?" ist raus (Onboarding-Regel: nur fragen,
+       was man vor dem ersten Nutzen wirklich braucht). Die Voreinstellung
+       "Jeder" bleibt, umstellen geht in den Einstellungen. */
     {
       feld:'ort',
       frage:'Partys in deiner Nähe?',
