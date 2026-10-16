@@ -7071,6 +7071,22 @@
        Feld um 4 px auf – feste Hoehe, das Kreuz passt hinein. */
     #page-search .search-bar{height:42px;box-sizing:border-box}
     #page-search #searchClear{margin-top:-4px;margin-bottom:-4px}
+    /* Platzhalter-Listen: Bild + Zeilen, mit derselben Lichtwelle */
+    .sk-liste,.sk-profil{display:flex;flex-direction:column;gap:14px;padding:6px 0}
+    .sk-profil{padding:18px 16px}
+    .up-rolle>.sk-liste{padding:12px 16px}
+    .sk-zeile{display:flex;align-items:center;gap:12px}
+    .sk-text{flex:1;display:flex;flex-direction:column;gap:8px}
+    .sk{display:block;position:relative;overflow:hidden;background:rgba(255,255,255,.07);border-radius:8px}
+    .sk::after{content:'';position:absolute;inset:0;transform:translateX(-100%);
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:skelettWelle 1.3s infinite}
+    .sk-rund{width:44px;height:44px;border-radius:50%;flex:none}
+    .sk-gross{width:78px;height:78px}
+    .sk-l1{height:12px}.sk-l2{height:10px;opacity:.7}
+    .sk-block{height:12px;width:90%}.sk-kurz{width:55%}
+    .sk-kacheln{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:10px}
+    .sk-kacheln .sk{aspect-ratio:1;border-radius:6px}
+    @media(prefers-reduced-motion:reduce){.sk::after{animation:none}}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -8295,7 +8311,7 @@
       <div class="up-kopf-titel" id="upTitel"></div>
       <div class="up2-kopfaktion" id="upMehr"></div>
     </div>
-    <div class="up-rolle" id="userProfBody"><div class="loading"><div class="spinner"></div> Wird geladen…</div></div>
+    <div class="up-rolle" id="userProfBody"></div>
   </div>
 </div>
 
@@ -11811,6 +11827,20 @@ async function stelleOrtHer(){
 }
 
 /* Platzhalter in der Form dessen, was gleich kommt. */
+/* Platzhalter in der Form einer Personen-Liste (Bild + zwei Zeilen) und
+   eines Profils – statt Kreisel und "Wird geladen…" (microinteractions:
+   die Form dessen zeigen, was gleich kommt). */
+function skelettZeilen(n){
+  let h='<div class="sk-liste" aria-busy="true" aria-label="Wird geladen">';
+  for(let i=0;i<(n||5);i++)h+='<div class="sk-zeile"><span class="sk sk-rund"></span><span class="sk-text"><span class="sk sk-l1" style="width:'+(46+((i*17)%30))+'%"></span><span class="sk sk-l2" style="width:'+(28+((i*11)%22))+'%"></span></span></div>';
+  return h+'</div>';
+}
+function skelettProfil(){
+  return '<div class="sk-profil" aria-busy="true" aria-label="Wird geladen">'
+    +'<div class="sk-zeile"><span class="sk sk-rund sk-gross"></span><span class="sk-text"><span class="sk sk-l1" style="width:60%"></span><span class="sk sk-l2" style="width:40%"></span></span></div>'
+    +'<span class="sk sk-block"></span><span class="sk sk-block sk-kurz"></span>'
+    +'<div class="sk-kacheln"><span class="sk"></span><span class="sk"></span><span class="sk"></span></div></div>';
+}
 function skelett(n,hoehe){
   let h='';
   for(let i=0;i<(n||3);i++)h+='<div class="skelett" style="height:'+(hoehe||62)+'px"></div>';
@@ -13457,7 +13487,7 @@ function setzeHTML(el,html){
   /* Stand vorher ein Ladekreis oder Platzhalter da, blendet der echte
      Inhalt kurz ein (die ersten sechs leicht versetzt) statt
      aufzuspringen. Sonst – bei jedem weiteren Zeichnen – nichts. */
-  const kamVomLaden=!!el.querySelector(':scope>.loading,:scope>.skelett');
+  const kamVomLaden=!!el.querySelector(':scope>.loading,:scope>.skelett,:scope>.sk-liste,:scope>.sk-profil');
   el.innerHTML=html;
   if(kamVomLaden){
     [...el.children].slice(0,7).forEach((c,i)=>c.style.setProperty('--i',i));
@@ -18505,7 +18535,7 @@ async function openUserProf(userId,zurueck){
   const body=document.getElementById('userProfBody');
   const kopfLeer=document.getElementById('upMehr');
   if(kopfLeer)kopfLeer.innerHTML='';
-  body.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  body.innerHTML=skelettProfil();
 
   // Über die Funktion statt direkt: sie entscheidet, was ein privates
   // Profil einem Fremden zeigt – und zwar in der Datenbank, nicht hier.
@@ -18892,7 +18922,7 @@ async function openFollowList(userId,mode){
   document.getElementById('followListOverlay').classList.add('open');
   document.getElementById('flTitle').textContent=mode==='followers'?'Follower':'Folgt';
   const body=document.getElementById('flBody');
-  body.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  body.innerHTML=skelettZeilen(6);
 
   const col=mode==='followers'?'follower_id':'following_id';
   const other=mode==='followers'?'following_id':'follower_id';
@@ -20245,7 +20275,7 @@ async function openBringSheet(eventId){
   const ov=document.getElementById('bringSheetOverlay');
   const body=document.getElementById('bringSheetBody');
   ov.classList.add('open');
-  body.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  body.innerHTML=skelettZeilen(3);
   await renderBringSheet(eventId);
 }
 
@@ -20390,7 +20420,7 @@ async function openShare(eventId,opts){
 
   body.innerHTML=kopf
     +(priv&&!istHost?'':'<div class="mg-sec">'+((priv||!pro)?'Direkt einladen':'In SPOTOUT senden')+'</div>'
-      +'<div id="shareList"><div class="loading"><div class="spinner"></div> Kontakte werden geladen…</div></div>')
+      +'<div id="shareList">'+skelettZeilen(4)+'</div>')
     +aussen
     +(nachErstellen?'<button class="sub-btn sub-public" style="margin-top:18px" onclick="closeShare()">Fertig</button>':'');
 
@@ -21940,7 +21970,7 @@ async function moderationOeffnen(){
   const box=document.getElementById('moderationListe');
   if(!ov||!box)return;
   ov.classList.add('open');
-  box.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  box.innerHTML=skelettZeilen(4);
   const{data,error}=await sb.rpc('moderation_uebersicht');
   if(error){ box.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>'; return; }
   const m=data?.meldungen||[], sk=data?.sanktionen||[];
@@ -22934,7 +22964,7 @@ async function openManage(eventId){
   const ov=document.getElementById('manageOverlay');
   const body=document.getElementById('manageBody');
   ov.classList.add('open');
-  body.innerHTML='<div class="loading"><div class="spinner"></div> Wird geladen…</div>';
+  body.innerHTML=skelettZeilen(4);
 
   const[{data:ev},{data:atts},{data:reqs},{data:items},{data:beitritte}]=await Promise.all([
     sb.from('events').select('*').eq('id',eventId).maybeSingle(),
