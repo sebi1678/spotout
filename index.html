@@ -9669,6 +9669,15 @@ async function init(){
       await loadProf();kontoMerken();enterApp();
     }
   }
+  /* Ohne Konto auf einen Einladungslink getippt: die Einladung zeigen
+     und merken – nach Registrierung und Bestaetigung loest enterApp sie
+     ein. Vorher landete man auf der Anmeldung, und der Link war weg. */
+  if(!session){
+    try{
+      const q=new URLSearchParams(location.search), jc=q.get('join')||q.get('j');
+      if(jc){ try{ localStorage.setItem('spotout_join',jc); }catch(_){} openJoinOverlay(jc).catch(()=>{}); }
+    }catch(e){}
+  }
   sb.auth.onAuthStateChange(async(ev,s)=>{
     if(ev==='PASSWORD_RECOVERY'&&s){cUser=s.user;pwAnsicht('neu');return;}
     // Supabase erneuert den Zugang stuendlich – die Kontoliste muss den neuen kennen
@@ -12059,7 +12068,7 @@ function openChatOrUpgrade(){ showPage('chat'); }
 /* Die Partys-Abfrage als eigene Funktion: der Start kann sie schon
    losschicken, waehrend noch das Profil laedt (evtsVorab). supabase-js
    sendet erst bei .then – darum hier ausdruecklich. */
-let evtsVorab=null, blocksBereit=null, evtsZeit=0;
+let evtsVorab=null, blocksBereit=null, evtsZeit=0, evtsSeq=0;
 function evtsAbfrage(){
   /* Nur was noch kommt. Vergangenes gehoert in den Kalender und ins
      Profil, nicht in die Uebersicht – und es kostet sonst mit jedem
@@ -12096,7 +12105,9 @@ async function loadEvts(opt){
   // stehen, bis die neue da ist – sonst springt die Seite nach jeder Aktion nach oben.
   if(!evts.length)['events','public','private'].forEach(t=>document.getElementById('grid-'+t).innerHTML=skelett(4,180));
   const abfrage=evtsVorab||evtsAbfrage(); evtsVorab=null;
+  const seq=++evtsSeq;
   const [{data,error}]=await Promise.all([abfrage,blocksBereit||Promise.resolve()]);
+  if(seq!==evtsSeq)return;   // eine neuere Abfrage laeuft schon
   if(error){
     /* Vorher blieben hier drei Drehraedchen fuer immer stehen. Wer im
        Keller steht, hat kein Netz – und sah eine App, die ewig laedt.
@@ -12571,7 +12582,7 @@ function fyReason(e){
 
   if(e._dist!=null&&e._dist<=3)
     return{ic:pin,txt:entfernungText(e._dist),roh:true};
-  if(e._hUntil>=0&&e._hUntil<=8)   return{ic:bolt,txt:'Heute'};
+  if(e._hUntil>=0&&e._start.toDateString()===new Date().toDateString())   return{ic:bolt,txt:'Heute'};
   if(e._fillRate>=.8&&e._fillRate<1) return{ic:fire,txt:'Fast voll'};
   if((e.attending||0)>=20)         return{ic:fire,txt:'Beliebt'};
   if(e._dist!=null&&e._dist<=15)   return{ic:pin,txt:entfernungText(e._dist),roh:true};
@@ -12586,6 +12597,7 @@ function fyWhen(e){
   // Karte "17:00" und auf der naechsten "18:00 Uhr".
   const t=zeitText(d.toTimeString().slice(0,5));
   const sameDay=(a,b)=>a.toDateString()===b.toDateString();
+  if(d<=now)                                      return'Läuft gerade · seit '+t;
   if(sameDay(d,now))                              return'Heute · '+t;
   if(sameDay(d,new Date(now.getTime()+864e5)))    return'Morgen · '+t;
   if((d-now)/864e5<7)
@@ -12774,10 +12786,13 @@ function renderFeed(){
       _dist:(userLat!=null&&userLng!=null&&e.lat!=null&&e.lng!=null)?distKm(userLat,userLng,e.lat,e.lng):null,
       _fillRate:cap>0?Math.min(1,(e.attending||0)/cap):0
     };
-  }).filter(e=>e&&e.type===col&&e._hUntil>-6
+  }).filter(e=>e&&e.type===col&&!istVorbei(e)
               // Die eigene Party muss man sich nicht empfehlen lassen –
               // unter "Meine Partys" und im Kalender steht sie weiterhin.
-              && e.created_by!==cUser?.id);
+              && e.created_by!==cUser?.id
+              // Dieselben Filter wie die Liste darunter (Gratis, Umkreis …)
+              && (col!=='public'||typeof oePasst!=='function'||oePasst(e))
+              && (col==='private'||typeof imUmkreis!=='function'||imUmkreis(e)));
 
   if(!pool.length){
     wrap.innerHTML=`<div class="fy-empty">
@@ -13418,6 +13433,13 @@ function attNote(txt,tone){
 
 function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attCount,aufWarteliste){
   if(isOver)return attNote('Diese Party ist vorbei');
+  // Wer die Party macht, ist dabei – vor Frist, voll und Verein pruefen,
+  // sonst sah der Gastgeber auf der eigenen Party "Auf die Warteliste".
+  if(e.created_by===cUser?.id){
+    return '<div class="attend-btn attend-btn-in" style="cursor:default">'
+      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px;height:16px"><path d="M20 6 9 17l-5-5"/></svg>'
+      +'Deine Party<span class="attend-sub">Du bist als Gastgeber dabei</span></div>';
+  }
   // Ein Vereinskonto steht auf keiner Gästeliste – es veranstaltet.
   if(istVerein())return attNote('Vereinskonten melden sich nicht an');
 
@@ -13558,7 +13580,7 @@ async function openDetail(id){
   else if(deadline&&!deadlinePassed){const h=Math.floor(hoursUntilDeadline);const m=Math.floor((hoursUntilDeadline%1)*60);statusBanner=`<div class="d-banner info">${pikto('zeit',16)}<span>${anmeldungRest(hoursUntilDeadline)}</span></div>`;}
   // Die Gästeliste ist ein Pro-Merkmal – auch im Rückblick. Ohne Pro
   // bleibt sie zu, sonst wäre Pro nach der Party wertlos.
-  const showFullList=(deadlinePassed||isOver)&&!!cProfile?.is_pro;
+  const showFullList=e.created_by===cUser?.id||((deadlinePassed||isOver)&&!!cProfile?.is_pro);
   const attLabel=isOver?'Wer war dabei':deadlinePassed?'Angemeldete Gäste':'Wer ist dabei';
   function buildAttRow(a){
     const av=a.profiles?.avatar_url?('<img alt="" loading="lazy" decoding="async" src="'+escAttr(a.profiles.avatar_url)+'"/>'):anfang(a.profiles?.full_name||a.profiles?.username||'?');
@@ -13738,7 +13760,7 @@ async function openDetail(id){
           <div class="d-info-cell-val" style="color:${free?'#4ade80':'#fff'}">${free?'Gratis':chf(e.price)}</div>
           ${free?'':'<div class="d-info-sub">'+zahlartenText(e.zahlarten)+'</div>'}
         </div>`}
-        ${hasDrink&&!isPrivEv?('<div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.glas+' Getränke</div><div class="d-info-cell-val">CHF '+e.drink_price+'</div></div><div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.summe+' Total</div><div class="d-info-cell-val" style="color:'+w.accent+'">CHF '+tot+'</div></div>'):''}
+        ${hasDrink&&!isPrivEv?('<div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.glas+' Getränke</div><div class="d-info-cell-val">'+chf(e.drink_price)+'</div></div><div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.summe+' Total</div><div class="d-info-cell-val" style="color:'+w.accent+'">'+chf(tot)+'</div></div>'):''}
       </div>
       ${e.description?('<div class="d-desc">'+esc(e.description)+'</div>'):''}
       ${dressZeile(e.dresscode)}
@@ -13955,7 +13977,7 @@ async function toggleAtt(id,isAtt){
        anpassen, das Fenster frisch zeichnen, und die Liste im
        Hintergrund nachziehen. */
     const ev=evts.find(x=>x.id===id);
-    if(ev)ev.attending=Math.max(0,(ev.attending||0)+(isAtt?-1:1));
+    if(ev&&!isAtt)ev.attending=(ev.attending||0)+1;   // beim Austragen kommt die genaue Zahl gleich vom Server
     await openDetail(id);
     loadEvts();
     /* Zusagen ist die wichtigste Handlung in dieser App. Sie darf
@@ -17794,6 +17816,11 @@ async function submitEventInner(){
   const date=document.getElementById('fDate').value;
   const addr=document.getElementById('fAddr').value.trim();
   if(!name||!date||!addr){toast('Name, Datum und Adresse ausfüllen','warn');return;}
+  // Ein fortgesetzter Entwurf kann in der Vergangenheit liegen
+  const tZeit=document.getElementById('fTime')?.value||'20:00';
+  if(new Date(date+'T'+tZeit).getTime()<Date.now()-5*60000){
+    toast('Datum und Zeit liegen in der Vergangenheit – bitte anpassen.','warn'); goCreateStep(4,true); return;
+  }
   if(currentType==='events'&&!bizVerified){toast('Bitte zuerst verifizieren','warn');return;}
   // Letzte Sicherung: ohne Koordinaten wäre die Party auf der Karte unsichtbar
   if(selLat==null&&!(await ensureGeo())){
@@ -18738,8 +18765,8 @@ async function renderInviteCard(eventId){
     +'<div class="inv-s">Jeder Link gilt für genau eine Person.</div></div></div>'
     +'<div class="ein-neu">'
       +'<input id="einName" maxlength="40" placeholder="Für wen? z.B. Anna" '
-        +'onkeydown="if(event.key===\'Enter\'){event.preventDefault();neueEinladung(\''+eventId+'\')}"/>'
-      +'<button id="einBtn" onclick="neueEinladung(\''+eventId+'\')">Einladen</button>'
+        +'onkeydown="if(event.key===\'Enter\'){event.preventDefault();neueEinladung(\''+eventId+'\',this)}"/>'
+      +'<button id="einBtn" onclick="neueEinladung(\''+eventId+'\',this)">Einladen</button>'
     +'</div>'
     +(links.length
         ? zeilen
@@ -18798,10 +18825,13 @@ async function offenenLinkErneuern(eventId){
 }
 
 let einBusy=false;
-async function neueEinladung(eventId){
+async function neueEinladung(eventId,quelle){
   if(einBusy)return;
-  const btn=document.getElementById('einBtn');
-  const feld=document.getElementById('einName');
+  /* Feld und Knopf neben dem, was man angetippt hat – die Karte steht
+     im Party-Fenster und in Verwalten, die ids gibt es dann doppelt. */
+  const kasten=quelle?.closest('.ein-neu');
+  const btn=kasten?.querySelector('button')||document.getElementById('einBtn');
+  const feld=kasten?.querySelector('input')||document.getElementById('einName');
   const label=(feld?.value||'').trim();
   einBusy=true;
   if(btn){btn.disabled=true;btn.textContent='Moment…';}
@@ -19814,7 +19844,10 @@ async function openJoinOverlay(code){
     +(e.link_fuer?'<div class="join-fuer">Persönliche Einladung für '+esc(e.link_fuer)+'</div>':'')
     +'<div class="join-name">'+esc(e.name||'Private Party')+'</div>'
     +'<div class="join-meta">'+fmtD(e.ev_date)+' · '+zeitText(e.ev_time)+'<br>'
-    +esc(e.address||'')+'<br>'+(e.type==='private'
+    /* Bei privaten Partys steht die Adresse erst nach der Bestaetigung –
+       sonst reichte ein weitergeleiteter Link, um sie zu sehen. */
+    +((e.type!=='private'||e.already_in||e.created_by===cUser?.id)?esc(e.address||''):'Adresse siehst du, sobald du dabei bist')
+    +'<br>'+(e.type==='private'
         ?((e.attending||0)+(e.attending===1?' Gast':' Gäste')+' dabei')
         :((e.attending||0)+' von '+(e.capacity||'–')+' dabei'))+'</div>'
     +action;
@@ -19837,7 +19870,8 @@ async function doJoin(){
   if(error||!r){toast('Das hat nicht geklappt. Versuch es nochmals.','error');if(btn){btn.disabled=false;btn.textContent=btn.dataset.text||'Dabei sein';}return;}
   if(r.ergebnis==='angefragt'){
     closeJoin();
-      return;
+    toast('Anfrage gesendet – der Gastgeber bestätigt dich','success');
+    return;
   }
   const meldung={
     beigetreten:'Du bist dabei!',
@@ -20174,10 +20208,11 @@ async function shareAnAlle(){
     .filter(b=>!b.disabled);
   if(!offen.length){toast('Schon alle dran','warn');return;}
   if(btn){btn.disabled=true;btn.textContent='…';}
-  let fehler=0;
+  /* Nacheinander und jeweils abwarten: vorher alle 220 ms ein Klick –
+     dauerte eine Einladung laenger, schluckte die Doppeltipp-Sperre den
+     naechsten, und die Person blieb uneingeladen. */
   for(const b of offen){
-    try{ b.click(); }catch(e){ fehler++; }
-    await new Promise(r=>setTimeout(r,220));
+    try{ const id=b.closest('.mg-guest')?.id?.replace(/^sh-/,''); if(id)await window.inviteToEvent(id); else b.click(); }catch(e){}
   }
   if(btn){btn.textContent='Fertig';}
 }
@@ -25915,6 +25950,8 @@ async function warteAufFreischaltung(eventId){
     await new Promise(r=>setTimeout(r,1500));
     const{data}=await sb.from('events').select('status').eq('id',eventId).maybeSingle();
     if(data?.status==='live'){
+      // Bezahlt und frei: die "Zahlung unterwegs"-Sperre gilt nicht mehr
+      if(cProfile){ cProfile.pending_fee_event_id=null; cProfile.pending_fee_at=null; }
       await loadEvts();
       await openDetail(eventId);
       return;
@@ -29693,7 +29730,7 @@ window.__laeuftGerade = new Set();
     'sendMsg','startChat','answerMsgReq',
     'toggleFollow','folgenOderAnfragen','beantworteAnfrage',
     'neueEinladung','einladungLoeschen','doJoin','inviteToEvent','sendEventTo',
-    'sendPlusRequest','cancelPlusRequest','decideRequest',
+    'sendPlusRequest','cancelPlusRequest',
     'addBring','delBring','toggleBring','claimFromSheet',
     'sendReport','blockUser','unblockUser','deleteAccount',
     'alleGelesen','castVote','confirmSuggest',
