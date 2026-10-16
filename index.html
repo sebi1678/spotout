@@ -7102,6 +7102,35 @@
     .tour-echt.te-kopf .nav-right-group>*{transform:scale(.9)}
     .tour-echt.te-start>*{width:100%;margin:0!important;padding:0!important}
     .tour-echt.te-start .search-bar{flex:1}
+    /* Pro-Tour: echte Stuecke */
+    .te-pro{display:flex;flex-direction:column;align-items:center;gap:12px}
+    .te-pro-av{width:84px!important;height:84px!important}
+    .te-pro .prof-name-row{justify-content:center}
+    .te-liste{width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;text-align:left}
+    .te-liste .att-row{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:8px 12px}
+    .te-chat{width:100%;max-width:330px}
+    .te-chat .conv-input-wrap{position:static;border-radius:18px;background:rgba(255,255,255,.04)}
+    /* Pro-Kauf als Erlebnis */
+    #proErlebnis{position:fixed;inset:0;z-index:100001;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:10px;padding:0 32px;text-align:center;background:radial-gradient(120% 80% at 50% 30%,#2B1E66,#090D24);
+      opacity:0;transition:opacity .3s ease}
+    #proErlebnis.da{opacity:1}
+    .pe-krone{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;
+      background:linear-gradient(135deg,#FF2D76,#C23BD4 55%,#7C5CFC);box-shadow:0 0 0 10px rgba(255,45,118,.12);margin-bottom:12px}
+    .pe-krone svg{width:44px;height:44px;color:#fff}
+    .pe-krone svg *{fill:#fff}
+    .pe-warten .pe-krone{animation:peAtmen 1.6s ease-in-out infinite}
+    .pe-fertig .pe-krone{animation:peSprung .6s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes peAtmen{50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(255,45,118,.08)}}
+    @keyframes peSprung{0%{transform:scale(.7)}100%{transform:scale(1)}}
+    .pe-titel{font-size:1.45rem;font-weight:900;color:#fff;letter-spacing:-.02em}
+    .pe-text{font-size:.92rem;color:var(--text2);max-width:300px;line-height:1.5}
+    .pe-konfetti{position:absolute;left:50%;top:38%;width:0;height:0;pointer-events:none}
+    .pe-konfetti i{position:absolute;width:9px;height:14px;border-radius:2px;opacity:0;
+      animation:peFlug 1.4s cubic-bezier(.15,.7,.3,1) var(--v) forwards}
+    @keyframes peFlug{0%{opacity:1;transform:rotate(var(--w)) translateY(0) rotate(0)}
+      100%{opacity:0;transform:rotate(var(--w)) translateY(calc(var(--d) * -1)) rotate(540deg)}}
+    @media(prefers-reduced-motion:reduce){.pe-warten .pe-krone,.pe-fertig .pe-krone{animation:none}.pe-konfetti{display:none}}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -10291,13 +10320,40 @@ const TOUR_ECHT={
   3:()=>tourEcht(tourKlon('#page-main .top-nav'),'te-kopf'),
 };
 
+/* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
+   Kontakte in derselben Zeile wie auf der Gaesteliste, das echte
+   Chat-Feld, deine echten Kanaele. Kontakte werden vor der Tour geladen. */
+let tourKontakte=[];
+async function tourKontakteLaden(){
+  if(!cUser)return;
+  try{
+    const{data}=await sb.from('follows').select('profiles:following_id(id,username,full_name,avatar_url)').eq('follower_id',cUser.id).limit(3);
+    tourKontakte=(data||[]).map(r=>r.profiles).filter(Boolean);
+  }catch(e){ tourKontakte=[]; }
+}
+function tourAttZeile(p){
+  const av=p.avatar_url?'<img src="'+escAttr(p.avatar_url)+'" alt="">':anfang(p.full_name||p.username||'?');
+  return '<div class="att-row"><div class="att-left"><div class="av-sm">'+av+'</div>'
+    +'<div style="min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'')+'</div><div class="att-user">@'+esc(p.username||'')+'</div></div></div>'
+    +'<span class="att-tag">geht hin</span></div>';
+}
+const TOUR_ECHT_PRO={
+  0:()=>{ if(!cProfile)return '';
+    const av=cProfile.avatar_url?'<img src="'+escAttr(cProfile.avatar_url)+'" alt="">':anfang(cProfile.full_name||cProfile.username||'?');
+    return tourEcht('<div class="te-pro"><div class="insta-av pro-glow te-pro-av">'+av+'</div>'
+      +'<div class="prof-name-row"><span class="insta-name">'+esc(cProfile.full_name||cProfile.username||'')+'</span>'+proMarke()+'</div></div>','te-spalte'); },
+  1:()=>tourKontakte.length?tourEcht('<div class="te-liste">'+tourKontakte.map(tourAttZeile).join('')+'</div>','te-spalte'):'',
+  2:()=>{ const f=tourKlon('#page-conv .conv-input-wrap'); return f?tourEcht('<div class="te-chat">'+f+'</div>','te-spalte'):''; },
+  3:()=>{ const l=cProfile?buildSocialLinks({...cProfile,is_pro:true},{bunt:true}):''; return l?tourEcht(l,'te-spalte'):''; },
+};
+
 function tourAufbauen(){
   const karten=TOUREN[tourSatz]||[];
   const buehne=document.getElementById('tourBuehne');
   if(!buehne)return;
   buehne.innerHTML=karten.map((k,i)=>
     '<div class="tour-karte'+(i===0?' on':'')+'" data-tk="'+i+'">'
-    +'<div class="tour-bild">'+((tourSatz==='start'&&TOUR_ECHT[i]&&TOUR_ECHT[i]())||k.b())+'</div>'
+    +'<div class="tour-bild">'+((tourSatz==='start'&&TOUR_ECHT[i]&&TOUR_ECHT[i]())||(tourSatz==='pro'&&TOUR_ECHT_PRO[i]&&TOUR_ECHT_PRO[i]())||k.b())+'</div>'
     +'<div class="tour-t">'+k.t+'</div>'
     +'<div class="tour-s">'+k.s+'</div>'
     +'</div>').join('');
@@ -10717,7 +10773,7 @@ function tourNochmal(satz){
 function proTourPruefen(){
   if(!cProfile?.is_pro)return;
   if(tourGelaufen('pro'))return;
-  setTimeout(()=>tourStarten('pro'),600);
+  tourKontakteLaden().finally(()=>setTimeout(()=>tourStarten('pro'),600));
 }
 
 /* Der Scheinwerfer-Coach ist ausgebaut. Er zeigte auf echte Elemente
@@ -21660,7 +21716,7 @@ async function proKaufenApple(){
     return;
   }
   if(a.pro){
-    toast('Danke – Pro wird freigeschaltet…','info');
+    proErlebnisZeigen();
     await warteAufPro();
   }else{
     // Kauf ist durch, aber noch nicht freigegeben (z. B. Kaufanfrage an die Eltern)
@@ -21713,6 +21769,37 @@ function proFeiern(){
   });
 }
 
+/* Der Kauf als Erlebnis: statt eines Hinweises unten ein ganzes Bild –
+   die Pro-Krone leuchtet, waehrend freigeschaltet wird; dann springt
+   Konfetti, "Willkommen bei Pro" mit deinem Namen, die Haptik meldet
+   Erfolg, und das Bild gibt die Pro-Seite frei. Weniger Bewegung: ohne
+   Konfetti und Pulsieren, nur Ueberblenden. */
+function proErlebnisZeigen(){
+  let el=document.getElementById('proErlebnis');
+  if(!el){ el=document.createElement('div'); el.id='proErlebnis'; el.setAttribute('role','status'); el.setAttribute('aria-live','polite'); document.body.appendChild(el); }
+  el.className='pe-warten';
+  el.innerHTML='<div class="pe-krone">'+PRO_STERN+'</div><div class="pe-titel">Pro wird freigeschaltet</div><div class="pe-text">Einen Moment – Apple bestätigt den Kauf.</div><div class="pe-konfetti" aria-hidden="true"></div>';
+  requestAnimationFrame(()=>el.classList.add('da'));
+}
+function proErlebnisFeiern(){
+  const el=document.getElementById('proErlebnis'); if(!el)return;
+  const vorname=(cProfile?.full_name||cProfile?.username||'').split(' ')[0];
+  el.classList.remove('pe-warten'); el.classList.add('pe-fertig');
+  el.querySelector('.pe-titel').textContent='Willkommen bei Pro'+(vorname?', '+vorname:'');
+  el.querySelector('.pe-text').textContent='Ab jetzt siehst du, wer von deinen Leuten hingeht.';
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const k=el.querySelector('.pe-konfetti'); const farben=['#FF2D76','#FF5A45','#8B6BFF','#54A7FF','#FFE08A','#ffffff'];
+    let h=''; for(let i=0;i<46;i++){ const w=(Math.random()*360).toFixed(0), d=(160+Math.random()*220).toFixed(0);
+      h+='<i style="--w:'+w+'deg;--d:'+d+'px;--v:'+(Math.random()*.25).toFixed(2)+'s;background:'+farben[i%farben.length]+';'+(i%3?'':'border-radius:50%;')+'"></i>'; }
+    k.innerHTML=h;
+  }
+  setTimeout(proErlebnisWeg,2300);
+}
+function proErlebnisWeg(){
+  const el=document.getElementById('proErlebnis'); if(!el)return;
+  el.classList.remove('da'); setTimeout(()=>el.remove(),360);
+}
+
 async function warteAufPro(){
   for(let i=0;i<10;i++){
     await new Promise(r=>setTimeout(r,1500));
@@ -21723,13 +21810,15 @@ async function warteAufPro(){
       renderProPage();
       /* Fuehlbar in dem Moment, in dem Pro sichtbar da ist. */
       nativeHaptik('erfolg');
-      proFeiern();
+      if(document.getElementById('proErlebnis')){ proErlebnisFeiern(); setTimeout(proFeiern,2400); }
+      else proFeiern();
       // Einmal zeigen, was jetzt anders ist – sonst merkt kaum
-      // jemand, wofuer er bezahlt hat.
-      proTourPruefen();
+      // jemand, wofuer er bezahlt hat. Nach der Feier.
+      setTimeout(proTourPruefen,2600);
       return;
     }
   }
+  proErlebnisWeg();
   toast('Pro ist gleich da – schliess die App kurz und öffne sie neu.','warn');
 }
 
