@@ -45,6 +45,15 @@ letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px}
 footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);
 font-size:.82rem;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
 footer a{color:var(--muted)}
+  /* Nichts darf breiter sein als der Bildschirm: sonst liess sich die
+     Seite in der App seitwaerts verschieben (Tabellen, lange Adressen). */
+  html,body{max-width:100%;overflow-x:hidden}
+  html{touch-action:pan-y;-webkit-text-size-adjust:100%}
+  body{overflow-wrap:anywhere}
+  table{table-layout:fixed}
+  th,td{word-break:break-word;hyphens:auto}
+  /* Im Fenster der App: kein Weg zurueck auf die Startseite */
+  .eingebettet footer a[href="/"]{display:none}
 </style>
 </head>
 <body>
@@ -349,5 +358,15 @@ Bestimmungen. Bei Widerspruch gehen sie den übrigen Ziffern für die App vor.</
 </footer>
 
 </div>
+<script>
+/* Im Fenster der App eingebettet: Startseiten-Link weg, Titel oben
+   im Fenster an diese Seite anpassen (Datenschutz, Impressum, …). */
+(function(){try{
+  if(window.self===window.top)return;
+  document.documentElement.classList.add('eingebettet');
+  var t=window.parent.document.getElementById('rechtTitel'), h=document.querySelector('h1');
+  if(t&&h)t.textContent=h.textContent.replace('erklärung','').trim()==='Datenschutz'?'Datenschutz':h.textContent.trim();
+}catch(e){}})();
+</script>
 </body>
 </html>
