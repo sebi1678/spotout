@@ -8291,6 +8291,7 @@
         Alles wird gelöscht: dein Profil, deine Partys, deine Anmeldungen, deine Fotos
         und deine Nachrichten. Rückgängig geht das nicht. Ein Pro-Abo über Apple
         kündigst du vorher in den iPhone-Einstellungen unter „Abonnements“.
+        <button class="pro2-verwalten" id="kontoWegAbos" onclick="abosBeiApple()" hidden>Abos bei Apple öffnen</button>
       </div>
       </div>
 
@@ -9550,8 +9551,13 @@ function kontoWeg(){
     if(label)label.textContent='Wirklich löschen? Nochmal tippen';
     if(btn)btn.classList.add('armed');
     if(hinweis)hinweis.hidden=false;
+    // Wer Pro über Apple hat, kommt von hier direkt zur Kündigung – und
+    // bekommt dafür mehr Zeit, bevor sich der Knopf entwaffnet.
+    const abo=istApp()&&!!cProfile?.is_pro;
+    const abos=document.getElementById('kontoWegAbos');
+    if(abos)abos.hidden=!abo;
     clearTimeout(kontoWegUhr);
-    kontoWegUhr=setTimeout(kontoWegAbbrechen,4000);
+    kontoWegUhr=setTimeout(kontoWegAbbrechen,abo?10000:4000);
     return;
   }
   clearTimeout(kontoWegUhr);
@@ -10434,6 +10440,7 @@ function proAngebotZeigen(){
   if(!cUser||cProfile?.is_pro||istVerein())return;
   try{ if(localStorage.getItem(PRO_ANGEBOT_SCHLUESSEL))return; }catch(e){}
   try{ localStorage.setItem(PRO_ANGEBOT_SCHLUESSEL,'1'); }catch(e){}
+  appleAngebotLaden();
   setTimeout(()=>{
     const ov=document.getElementById('proAngebotOverlay');
     if(!ov)return;
@@ -15615,7 +15622,30 @@ function probeTageOffen(){
 /* Steht die Testwoche diesem Konto noch zu? Die Wahrheit steht in der
    Datenbank (probe_verbraucht), gesetzt vom Webhook bzw. von einem
    Trigger – der Browser kann sie nicht zuruecksetzen. */
-function probeFrei(){ return !cProfile?.probe_verbraucht; }
+function probeFrei(){
+  // Apple entscheidet in der App, ob es die Testwoche gibt (pro Apple-ID).
+  if(appleProbe===false)return false;
+  return !cProfile?.probe_verbraucht;
+}
+/* Preis und Testwoche kommen in der App von Apple, nicht aus unserem
+   Text. Die Texte nennen CHF 3.00; nennt Apple etwas anderes (anderes
+   Land, Preisänderung), ersetzt preisEinsetzen das überall beim Zeichnen –
+   auch in den Übersetzungen. Ohne Antwort bleibt CHF 3.00 stehen. */
+let applePreis=null, appleProbe=null, appleAngebotLaeuft=null;
+function preisEinsetzen(s){
+  return (applePreis&&applePreis!=='CHF 3.00'&&s.indexOf('CHF 3.00')>=0)?s.split('CHF 3.00').join(applePreis):s;
+}
+function appleAngebotLaden(){
+  if(!istApp()||applePreis||appleAngebotLaeuft)return appleAngebotLaeuft||Promise.resolve();
+  appleAngebotLaeuft=nativeCall('pro_angebot',null,8000).then(a=>{
+    if(!a||a.fehler){ if(a?.fehler&&a.fehler!=='kein_native')console.warn('[pro] Angebot',a.fehler); return; }
+    if(a.preis)applePreis=String(a.preis);
+    if(a.probe_moeglich===true||a.probe_moeglich===false)appleProbe=a.probe_moeglich;
+    if(document.getElementById('page-pro')?.classList.contains('active'))renderProPage();
+    applyLang();
+  }).catch(e=>console.warn('[pro] Angebot',e)).finally(()=>{ appleAngebotLaeuft=null; });
+  return appleAngebotLaeuft;
+}
 
 function probeLaeuft(){
   return !!(cProfile?.is_pro && cProfile?.pro_probe);
@@ -15633,6 +15663,7 @@ function renderProPage(){
   const el=document.getElementById('proPageContent');
   if(!el)return;
   const isPro=!!cProfile?.is_pro;
+  if(!isPro)appleAngebotLaden();
 
   if(isPro){
     const bis=cProfile.subscription_current_period_end
@@ -15705,7 +15736,7 @@ function renderProPage(){
         ${probeFrei()?'<div class="pro2-testwoche">7 Tage gratis testen</div>'
                      :'<div class="pro2-testwoche pro2-testwoche-weg">Testwoche schon genutzt</div>'}
         <div class="pro2-price">
-          ${probeFrei()?'<span class="p-per" style="margin-right:6px">danach</span>':''}<span class="p-cur">CHF</span><span class="p-num">3.00</span><span class="p-per">/ Monat</span>
+          ${probeFrei()?'<span class="p-per" style="margin-right:6px">danach</span>':''}${applePreis&&applePreis!=='CHF 3.00'?'<span class="p-num">'+esc(applePreis)+'</span>':'<span class="p-cur">CHF</span><span class="p-num">3.00</span>'}<span class="p-per">/ Monat</span>
         </div>
         <button class="pro2-cta" onclick="startProUpgrade()">${probeFrei()?'Gratis testen':'Pro holen'}</button>
         ${istApp()?'<button class="pro2-restore" onclick="proWiederherstellen()">Kauf wiederherstellen</button>':''}
@@ -25305,7 +25336,7 @@ function applyLang(){
     let n; while((n=gehe.nextNode()))treffer.push(n);
     treffer.forEach(t=>{
       const quelle=langOrig.has(t)?langOrig.get(t):t.nodeValue;
-      const neu=(LANG==='de')?quelle:tr(quelle);
+      const neu=preisEinsetzen((LANG==='de')?quelle:tr(quelle));
       if(neu!==t.nodeValue){
         if(!langOrig.has(t))langOrig.set(t,quelle);
         t.nodeValue=neu;
