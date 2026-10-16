@@ -6871,6 +6871,11 @@
     .eins-karte.zurueck{animation-name:reinLinks}
     #einsBuehne,#tourBuehne{touch-action:pan-y}
 
+    /* Seite weicht hinter einem Fenster zurueck (siehe fensterOffenPruefen) */
+    .page{transform-origin:50% 0;transition:transform var(--feder-dauer) var(--feder),border-radius var(--feder-dauer) var(--feder)}
+    body.fenster-offen:not(.tastatur-offen) .page.active{transform:scale(.94);border-radius:18px}
+    @media(prefers-reduced-motion:reduce){ body.fenster-offen .page.active{transform:none;border-radius:0} }
+
     /* ══════════ ANMELDUNG (15.10.) ══════════ */
     .auth-field{position:relative}
     .auth-field .pw-auge{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:44px;height:44px;
@@ -9308,6 +9313,27 @@ function evIconKey(e){
   return'home';
 }
 
+/* ── Die Seite weicht hinter einem Fenster zurueck ───────────────────
+   Wie bei iOS-Blaettern: ist ein Fenster offen, wird die Seite dahinter
+   etwas kleiner und runder – man sieht, dass sie noch da ist und man
+   gleich dorthin zurueckkehrt (Apple: "Dim to focus, push back").
+   Beim Herunterziehen des Fensters kommt sie dem Finger folgend wieder
+   nach vorne (seiteZurueck(anteil)). Nicht bei Vollseiten-Fenstern,
+   nicht mit offener Tastatur, nicht bei "Weniger Bewegung". */
+function fensterOffenPruefen(){
+  const offen=[...document.querySelectorAll('.overlay.open')].some(o=>!o.classList.contains('up-vollseite'));
+  document.body.classList.toggle('fenster-offen',offen);
+}
+function seiteZurueck(anteil){
+  const s=document.querySelector('.page.active');
+  if(!s)return;
+  if(anteil==null){ s.style.transform=''; s.style.transition=''; return; }
+  s.style.transition='none';
+  s.style.transform='scale('+(.94+.06*anteil).toFixed(4)+')';
+}
+{ const beob=new MutationObserver(fensterOffenPruefen);
+  document.querySelectorAll('.overlay').forEach(o=>beob.observe(o,{attributes:true,attributeFilter:['class']})); }
+
 // ── SWIPE DOWN TO CLOSE MODALS ──
 function initSwipeToClose(){
   document.querySelectorAll('.modal').forEach(modal=>{
@@ -9352,11 +9378,14 @@ function initSwipeToClose(){
       modal.style.transform=Math.abs(y)<0.01?'translateY(0)':'translateY('+y.toFixed(2)+'px)';
       const anteil=Math.max(0,Math.min(1,y/hoehe));
       overlay.style.backgroundColor='rgba(0,0,0,'+(grundAlpha*(1-anteil)).toFixed(3)+')';
+      // Die Seite dahinter kommt dem Finger folgend wieder nach vorne.
+      seiteZurueck(anteil);
     };
     /* Alles Eigene wieder weg – danach gelten die Klassen wie zuvor. */
     const aufraeumen=()=>{
       modal.style.transition='';modal.style.transform='';
       overlay.style.backgroundColor='';
+      seiteZurueck(null);
     };
     const laufZu=(ziel,v,daempfung,fertig)=>{
       if(lauf)lauf.stop();
@@ -27721,18 +27750,78 @@ async function fotoSichern(){
 }
 
 (function fotoGesten(){
+  /* Wie in der Fotos-App (Apple: direkte Manipulation, Schwung,
+     Gummiband): das Foto klebt am Finger. Seitlich geworfen blaettert
+     es – das naechste kommt von der Seite, in die man geworfen hat.
+     Nach unten gezogen wird es kleiner und der Grund heller; mit Schwung
+     oder ab einem Viertel geht der Betrachter zu, sonst federt alles
+     zurueck. Vorher passierte erst beim Loslassen etwas (ab 50/90 px). */
   const buehne=document.getElementById('fotoVollBuehne');
-  let x0=null,y0=null;
-  if(buehne){
-    buehne.addEventListener('touchstart',e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; },{passive:true});
-    buehne.addEventListener('touchend',e=>{
-      if(x0==null)return;
-      const t=e.changedTouches[0];
-      const dx=t.clientX-x0, dy=t.clientY-y0;
-      x0=null;
-      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))fotoBlaettern(dx<0?1:-1);
-      else if(dy>90&&Math.abs(dy)>Math.abs(dx))fotoZu();
+  const voll=document.getElementById('fotoVoll');
+  let x0=0,y0=0,dx=0,dy=0,achse=null,an=false,lauf=null;
+  const mess=Bewegung.messer();
+  const bild=()=>document.getElementById('fotoVollBild');
+  const setzeX=(x)=>{ const b=bild(); if(b)b.style.transform=x?'translateX('+x.toFixed(1)+'px)':''; };
+  const setzeY=(y)=>{
+    const b=bild(), h=buehne.clientHeight||700, a=Math.max(0,Math.min(1,y/h));
+    if(b)b.style.transform=y?'translateY('+y.toFixed(1)+'px) scale('+(1-a*.3).toFixed(4)+')':'';
+    voll.style.background=y>0?'rgba(3,5,16,'+(.97*(1-a*1.4)).toFixed(3)+')':'';
+    voll.querySelectorAll('.foto-voll-kopf,.foto-voll-leiste').forEach(el=>el.style.opacity=y>0?String(Math.max(0,1-a*4)):'');
+  };
+  const aufraeumen=()=>{ setzeX(0); setzeY(0); };
+  if(buehne&&voll){
+    buehne.style.touchAction='none';
+    buehne.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1)return;
+      if(lauf){ lauf.stop(); lauf=null; aufraeumen(); }
+      x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=dy=0;achse=null;an=true;mess.reset();
     },{passive:true});
+    buehne.addEventListener('touchmove',e=>{
+      if(!an)return;
+      const x=e.touches[0].clientX-x0,y=e.touches[0].clientY-y0;
+      if(!achse){
+        if(Math.abs(x)<10&&Math.abs(y)<10)return;
+        achse=Math.abs(x)>Math.abs(y)?'x':'y';
+        x0+=achse==='x'?Math.sign(x)*10:0; y0+=achse==='y'?Math.sign(y)*10:0;
+      }
+      const w=buehne.clientWidth||390, viele=(fotoStand?.fotos?.length||0)>1;
+      if(achse==='x'){
+        const xx=e.touches[0].clientX-x0;
+        dx=viele?xx:Bewegung.gummiband(xx,w);
+        setzeX(dx); mess.add(dx);
+      }else{
+        const yy=e.touches[0].clientY-y0;
+        dy=yy<0?Bewegung.gummiband(yy,buehne.clientHeight||700):yy;
+        setzeY(dy); mess.add(dy);
+      }
+    },{passive:true});
+    const los=()=>{
+      if(!an||!achse){an=false;return;}
+      an=false;
+      const v=mess.v(), w=buehne.clientWidth||390, h=buehne.clientHeight||700;
+      if(achse==='x'){
+        const wohin=dx+Bewegung.projiziere(v,.99), viele=(fotoStand?.fotos?.length||0)>1;
+        const richtung=(v<-400||wohin<-w/3)?1:(v>400||wohin>w/3)?-1:0;
+        if(viele&&richtung){
+          lauf=Bewegung.feder({von:dx,nach:-richtung*w,v,antwort:.28,schritt:setzeX,fertig:()=>{
+            fotoBlaettern(richtung);
+            /* Das neue Foto kommt von der Gegenseite herein. */
+            lauf=Bewegung.feder({von:richtung*w*.35,nach:0,antwort:.32,schritt:setzeX,fertig:()=>{lauf=null;setzeX(0);}});
+          }});
+        }else{
+          lauf=Bewegung.feder({von:dx,nach:0,v,daempfung:Math.abs(v)>300?.8:1,antwort:.3,schritt:setzeX,fertig:()=>{lauf=null;setzeX(0);}});
+        }
+      }else{
+        const wohin=dy+Bewegung.projiziere(v,.99);
+        if(v>500||wohin>h/4){
+          lauf=Bewegung.feder({von:dy,nach:h,v,antwort:.3,schritt:setzeY,fertig:()=>{lauf=null;fotoZu();aufraeumen();}});
+        }else{
+          lauf=Bewegung.feder({von:dy,nach:0,v,daempfung:Math.abs(v)>300?.8:1,antwort:.3,schritt:setzeY,fertig:()=>{lauf=null;aufraeumen();}});
+        }
+      }
+    };
+    buehne.addEventListener('touchend',los,{passive:true});
+    buehne.addEventListener('touchcancel',los,{passive:true});
   }
   document.addEventListener('keydown',e=>{
     const v=document.getElementById('fotoVoll');
@@ -27965,16 +28054,30 @@ function mapWischEinrichten(){
   const kopf=document.querySelector('.map-kopf');
   if(!kopf||kopf.dataset.wischt)return;
   kopf.dataset.wischt='1';
+  /* Die Karte folgt dem Finger nach unten; mit Schwung oder ab einem
+     Viertel wird sie klein, sonst federt sie zurueck. */
   let startY=0,zieht=false,dy=0;
+  const mess=Bewegung.messer();
+  const wrap=()=>document.getElementById('mapWrap');
+  const setze=(y)=>{ const w=wrap(); if(w)w.style.transform=y>0?'translateY('+y.toFixed(1)+'px) scale('+(1-Math.min(y/(w.clientHeight||700),1)*.08).toFixed(4)+')':''; };
   kopf.addEventListener('touchstart',e=>{
     if(!mapVoll)return;
-    zieht=true;dy=0;startY=e.touches[0].clientY;
+    zieht=true;dy=0;startY=e.touches[0].clientY;mess.reset();
+    const w=wrap(); if(w)w.style.animation='none';
   },{passive:true});
   kopf.addEventListener('touchmove',e=>{
     if(!zieht)return;
-    dy=e.touches[0].clientY-startY;
+    const y=e.touches[0].clientY-startY;
+    dy=y<0?0:y; setze(dy); mess.add(dy);
   },{passive:true});
-  const los=()=>{ if(zieht&&dy>70)mapVollbild(false); zieht=false;dy=0; };
+  const los=()=>{
+    if(!zieht)return;
+    zieht=false;
+    const v=mess.v(), h=wrap()?.clientHeight||700;
+    if(v>500||dy+Bewegung.projiziere(v,.99)>h/4){ setze(0); mapVollbild(false); }
+    else Bewegung.feder({von:dy,nach:0,v,antwort:.3,schritt:setze,fertig:()=>setze(0)});
+    dy=0;
+  };
   kopf.addEventListener('touchend',los);
   kopf.addEventListener('touchcancel',los);
 }
@@ -29166,12 +29269,28 @@ function toastWeg(){
 (function toastGesten(){
   const t=document.getElementById('toast');
   if(!t)return;
-  let y0=null;
+  /* Der Hinweis klebt beim Wegwischen am Finger (nach oben zaeh), und
+     mit Schwung oder ab 30 px geht er – sonst federt er zurueck. */
+  let y0=null, dy=0;
+  const mess=Bewegung.messer();
+  const setze=(y)=>{ t.style.transform=y?'translate(-50%,'+y.toFixed(1)+'px)':''; t.style.opacity=y>0?String(Math.max(0,1-y/90)):''; };
   t.addEventListener('click',toastWeg);
-  t.addEventListener('touchstart',e=>{ y0=e.touches[0].clientY; },{passive:true});
-  t.addEventListener('touchend',e=>{
-    if(y0!=null&&e.changedTouches[0].clientY-y0>16)toastWeg();
+  t.addEventListener('touchstart',e=>{ y0=e.touches[0].clientY; dy=0; mess.reset(); clearTimeout(toastUhr); t.style.transition='none'; },{passive:true});
+  t.addEventListener('touchmove',e=>{
+    if(y0==null)return;
+    const y=e.touches[0].clientY-y0;
+    dy=y<0?Bewegung.gummiband(y,120):y;
+    setze(dy); mess.add(dy);
+  },{passive:true});
+  t.addEventListener('touchend',()=>{
+    if(y0==null)return;
     y0=null;
+    const v=mess.v();
+    if(v>300||dy>30){
+      Bewegung.feder({von:dy,nach:dy+120,v,antwort:.25,schritt:setze,fertig:()=>{ t.style.transition='none'; toastWeg(); setze(0); requestAnimationFrame(()=>{t.style.transition='';}); }});
+    }else{
+      Bewegung.feder({von:dy,nach:0,v,daempfung:Math.abs(v)>300?.8:1,antwort:.3,schritt:setze,fertig:()=>{ setze(0); t.style.transition=''; toastUhr=setTimeout(toastWeg,2200); }});
+    }
   },{passive:true});
 })();
 
