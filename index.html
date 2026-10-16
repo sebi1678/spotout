@@ -990,7 +990,7 @@
       .overlay .modal{transform:none;transition:opacity var(--feder-dauer) ease}
       .overlay:not(.open) .modal{opacity:0}
     }
-    .modal{overscroll-behavior:contain}
+    .modal{overscroll-behavior:contain;overscroll-behavior-y:none}
     /* Nie seitlich wischen: Fenster, Seiten und die App selbst scrollen nur
        nach oben und unten. Was seitlich scrollen soll (Chip-Leisten), hat
        dafuer eigens overflow-x:auto und bleibt davon unberuehrt. */
@@ -1006,7 +1006,14 @@
     .modal-hdr{
       display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;
       position:sticky;top:0;z-index:6;
-      background:linear-gradient(180deg,rgba(15,20,50,.99) 60%,rgba(15,20,50,.94));
+      /* Deckend: vorher 6 % durchsichtig – beim Scrollen schien der Text
+         darunter als Geisterschrift durch ("Passwort aendern" hinter
+         "Einstellungen"). Darunter ein weicher Uebergang statt einer Kante. */
+      background:rgb(15,20,50);
+    }
+    .modal-hdr::after{
+      content:'';position:absolute;left:0;right:0;top:100%;height:12px;pointer-events:none;
+      background:linear-gradient(rgb(15,20,50),rgba(15,20,50,0));
     }
     .modal-title{font-size:1.1rem;font-weight:700;color:#fff;
       display:flex;align-items:center;min-height:34px}
@@ -9405,12 +9412,23 @@ function initSwipeToClose(){
       return (scrollerVon(ziel).scrollTop||0)<=0;
     };
 
+    /* Uebergabe vom Scrollen ans Blatt (wie bei iOS): wer in der Liste
+       nach oben scrollt und am Anfang angekommen weiterzieht, zieht ab
+       dort das Blatt nach unten – statt dass nur der Inhalt nachfedert
+       und oben eine leere Flaeche entsteht (Bildschirmfoto "Folgt"). */
+    let uebergabe=null;
     modal.addEventListener('touchstart',e=>{
       entschieden=false;
+      uebergabe=null;
       /* Laeuft das Blatt gerade (nach einem Wisch), faengt der Finger es
          genau dort, wo es steht – auch auf einem Knopf. */
       const imFlug=!!lauf;
       zieht=imFlug||darfHier(e.target);
+      if(!zieht&&overlay.classList.contains('open')
+         &&!e.target.closest('input,textarea,select,[contenteditable]')){
+        uebergabe=scrollerVon(e.target);
+        hoehe=modal.offsetHeight||1;
+      }
       if(!zieht||!overlay.classList.contains('open'))return;
       if(lauf){ basis=lauf.stop().wert; lauf=null; }
       else basis=Bewegung.live(modal,'y');   // auch mitten im Aufgehen
@@ -9431,6 +9449,23 @@ function initSwipeToClose(){
     },{passive:true});
 
     modal.addEventListener('touchmove',e=>{
+      if(!zieht&&uebergabe){
+        const yy=e.touches[0].clientY;
+        if(uebergabe.scrollTop<=0&&e.touches.length===1){
+          if(uebergabe.__letztY!=null&&yy>uebergabe.__letztY){
+            // Ab hier gehoert die Bewegung dem Blatt
+            zieht=true;entschieden=true;basis=0;dy=0;
+            startY=yy;startX=e.touches[0].clientX;
+            kannScrollen=true;
+            const m=/rgba?\([^,]+,[^,]+,[^,]+,\s*([\d.]+)\)/.exec(getComputedStyle(overlay).backgroundColor);
+            if(!overlay.style.backgroundColor)grundAlpha=m?parseFloat(m[1]):.7;
+            mess.reset();mess.add(0);
+            modal.style.transition='none';
+            uebergabe=null;
+          }else uebergabe.__letztY=yy;
+        }else uebergabe.__letztY=yy;
+        if(!zieht)return;
+      }
       if(!zieht)return;
       let y=e.touches[0].clientY-startY;
       const x=e.touches[0].clientX-startX;
