@@ -7991,7 +7991,7 @@
       <div class="csec">Tag</div>
       <div class="chipset" id="datePresets"></div>
       <div class="fg" id="fgDate" style="display:none">
-        <input type="date" id="fDate" onchange="onCustomDate()"/>
+        <input type="date" id="fDate" aria-label="Datum der Party" onchange="onCustomDate()"/>
         <div class="fg-err">Datum wählen</div>
       </div>
 
@@ -8004,7 +8004,7 @@
         <button class="cset" onclick="setTime(null,this)">Anderes</button>
       </div>
       <div class="fg" id="fgTime" style="display:none">
-        <input type="time" id="fTime" value="20:00" onchange="onCustomTime()"/>
+        <input type="time" id="fTime" value="20:00" aria-label="Beginn" onchange="onCustomTime()"/>
         <div class="fg-err">Uhrzeit wählen</div>
       </div>
 
@@ -8017,7 +8017,7 @@
         <button class="cset" onclick="setEnde(null,this)">Anderes</button>
       </div>
       <div class="fg" id="fgEnde" style="display:none">
-        <input type="time" id="fEnde" onchange="onEigenesEnde()"/>
+        <input type="time" id="fEnde" aria-label="Ende" onchange="onEigenesEnde()"/>
         <div class="fg-err">Schluss wählen</div>
       </div>
     </div>
@@ -8967,8 +8967,8 @@
       <div class="tr-chips tr-scroll" id="trTagChips"></div>
       <div class="tr-chips" id="trZeitChips"></div>
       <div class="tr-eigen" id="trEigen" hidden>
-        <input class="tr-feld" type="date" id="trDatum" onchange="treffenWahl('tag',this.value,true)"/>
-        <input class="tr-feld" type="time" id="trZeit" onchange="treffenWahl('zeit',this.value,true)"/>
+        <input class="tr-feld" type="date" id="trDatum" aria-label="Datum des Treffens" onchange="treffenWahl('tag',this.value,true)"/>
+        <input class="tr-feld" type="time" id="trZeit" aria-label="Uhrzeit des Treffens" onchange="treffenWahl('zeit',this.value,true)"/>
       </div>
 
       <div class="tr-frage">Wo? <span class="tr-opt">freiwillig</span></div>
