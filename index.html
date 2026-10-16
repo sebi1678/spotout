@@ -7044,6 +7044,16 @@
        (die App laesst sie bei .mit-leiste sichtbar). Unten Platz, damit
        nichts darunter verschwindet. */
     html.in-app .mit-leiste .up-rolle{padding-bottom:calc(var(--bnav-h) + var(--safe-bottom))}
+    /* Teilen-Ziele in einer Reihe, wie bei Instagram */
+    .teil-reihe{display:flex;gap:8px;margin-top:12px}
+    .teil-ziel{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;padding:4px 0;
+      background:none;border:none;cursor:pointer;color:rgba(255,255,255,.8);
+      font-family:var(--font);font-size:.74rem;font-weight:600}
+    .teil-rund{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff}
+    .teil-rund svg{width:22px;height:22px}
+    .teil-wa{background:#25D366;border-color:transparent}
+    .teil-ziel:active .teil-rund{transform:scale(var(--druck))}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -19141,34 +19151,26 @@ async function einladungLoeschen(id,eventId){
    steht am Schluss, wo er hingehört: der persönliche Link sagt „nur für
    dich", der offene sagt ausdrücklich „gib weiter" – sonst traut sich
    niemand, und genau dafür hat der Gastgeber ihn gewählt. */
+/* Die Einladung, wie sie in WhatsApp ankommt. Neu (16.10.): kurz, wie man
+   es selbst schreiben wuerde – wer, was, wann, ein Schritt. Die genaue
+   Adresse steht nicht mehr drin: die App zeigt sie erst nach der Zusage,
+   und eine weitergeleitete Nachricht haette sie sonst verraten. Nur der
+   Ort (PLZ/Gemeinde) gibt eine Vorstellung, wo es ist. */
 function inviteText(e,code,label,ohneLink){
   const when=wannText(e.date,e.time);
-  const host=cProfile?.full_name||cProfile?.username||'Ich';
+  const host=(cProfile?.full_name||cProfile?.username||'').split(' ')[0]||'Jemand';
   code=code||e.invite_code;
   const offen=e.nur_persoenliche_links===false;
   const url=einladungUrl(code);
+  const ort=(()=>{ const m=String(e.address||'').match(/\b(\d{4})\s+([^,]+)/); return m?m[2].trim():''; })();
 
-  const kopf='*'+(e.name||'Private Party')+'*'
-    +'\n'+when
-    +(e.address?('\n'+e.address):'');
-
-  const schluss=offen
-    ? 'Der Link gilt für alle, die ihn bekommen – gib ihn ruhig weiter.'
-    : 'Der Link gilt nur für dich – bitte nicht weitergeben.';
-
-  const einleitung=offen
-    ? host+' lädt dich ein.'
-    : host+' lädt dich persönlich ein'+(label?(', '+label):'')+'.';
-
-  const text='Du bist eingeladen'
-    +'\n\n'+kopf
-    +'\n\n'+einleitung
-    +'\nLink öffnen, kurz anmelden – gratis, dauert eine halbe Minute – und du stehst auf der Gästeliste.'
-    +'\n\n'+schluss;
+  const text='*'+host+' lädt dich '+(offen?'':'persönlich ')+'ein: '+(e.name||'Private Party')+'*'
+    +'\n'+when+(ort?' · '+ort:'')
+    +'\n\nSag zu, dann stehst du auf der Gästeliste und siehst die Adresse:'
+    +(offen?'':'\n_Der Link gilt nur für dich._');
 
   return ohneLink ? text : (text+'\n'+url);
 }
-
 
 /* ══════════ GRUPPEN ══════════
    Eine Gruppe verwaltet nichts Eigenes. Wer zu einer Party kommt, steht
@@ -20275,6 +20277,14 @@ async function openShare(eventId,opts){
      der Weg auf die Partyseite. Vorher stand hier immer der zweite Text,
      auch wenn der offene Link längst bereitlag. */
   const offenerLink = priv && e.nur_persoenliche_links===false && e.invite_code;
+  /* Wie das Teilen-Blatt von Instagram: runde Ziele in einer Reihe.
+     WhatsApp zuerst – darueber laufen in der Schweiz fast alle Partys. */
+  const WA_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a9.7 9.7 0 0 0-8.4 14.6L2.3 21.8l5.1-1.3A9.7 9.7 0 1 0 12 2.2zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 19.9zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8.9c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.5-.3z"/></svg>';
+  const zielReihe=(kopieren)=>'<div class="teil-reihe">'
+    +'<button class="teil-ziel" onclick="shareVia(\'whatsapp\')"><span class="teil-rund teil-wa">'+WA_SVG+'</span>WhatsApp</button>'
+    +'<button class="teil-ziel" onclick="'+kopieren+'"><span class="teil-rund">'+cp+'</span>Link kopieren</button>'
+    +'<button class="teil-ziel" onclick="shareVia(\'share\')"><span class="teil-rund">'+shareIc+'</span>Mehr</button>'
+    +'</div>';
   const aussen=priv
     ? (offenerLink
       ? '<div class="mg-sec">Dein Einladungslink</div>'
@@ -20282,10 +20292,7 @@ async function openShare(eventId,opts){
         +'Erneuern kannst du ihn jederzeit auf der Partyseite.</div>'
         +'<div class="offl" style="margin-top:10px"><div class="offl-code">'
           +esc(einladungUrl(e.invite_code))+'</div></div>'
-        +'<div class="inv-btns" style="margin-top:10px">'
-        +'<button class="inv-btn inv-share" onclick="shareVia(\'share\')">'+shareIc+'Teilen</button>'
-        +'<button class="inv-btn inv-copy" onclick="einladungKopieren(\''+e.invite_code+'\')">'+cp+'Link</button>'
-        +'</div>'
+        +zielReihe('einladungKopieren(\''+e.invite_code+'\')')
       : '<div class="mg-sec">Persönlich einladen</div>'
         +'<div class="ein-leer">Jede Einladung ist ein eigener Link. Du findest sie auf der '
         +'Partyseite unter <b style="color:#fff">Einladungen</b> – dort einen Namen eintippen, '
@@ -20293,10 +20300,7 @@ async function openShare(eventId,opts){
         +'<button class="sub-btn sub-private" style="margin-top:12px" '
         +'onclick="closeShare();openDetail(\''+e.id+'\')">Zu den Einladungen</button>')
     : '<div class="mg-sec">Anderswo teilen</div>'
-      +'<div class="inv-btns">'
-      +'<button class="inv-btn inv-share" onclick="shareVia(\'share\')">'+shareIc+'Teilen</button>'
-      +'<button class="inv-btn inv-copy" onclick="shareVia(\'copy\')">'+cp+'Link</button>'
-      +'</div>';
+      +zielReihe("shareVia('copy')");
 
   // Bei privaten Partys lädt nur der Host ein – und die Einladung ist echt:
   // sie schaltet die Party für die Person frei und löst eine Meldung aus.
@@ -20527,6 +20531,13 @@ async function shareVia(art){
   // das haengt ihn selbst an. Sonst kam er zweimal an.
   const txt   =shareEv.type==='private'?inviteText(shareEv)     :shareText(shareEv);
   const txtRoh=shareEv.type==='private'?inviteText(shareEv,null,null,true):shareText(shareEv,true);
+  if(art==='whatsapp'){
+    /* wa.me oeffnet WhatsApp mit fertigem Text (Link steht darin). In der
+       App reicht die Huelle fremde Adressen an iOS weiter. */
+    const wa='https://wa.me/?text='+encodeURIComponent(txt);
+    if(istApp())location.href=wa; else window.open(wa,'_blank','noopener');
+    return;
+  }
   if(art==='share'){
     if(istApp()){
       const a=await nativeCall('teilen',{text:txtRoh,url},30000);
@@ -25354,10 +25365,17 @@ function avFaerben(wurzel){
     // Nur der erste Text im Namensfeld – Marken (PRO, DAY ONE) daneben
     // zaehlen nicht, sonst haette dieselbe Person verschiedene Farben.
     let name='';
-    if(nameEl){
-      const tw=document.createTreeWalker(nameEl,NodeFilter.SHOW_TEXT);
-      let n; while((n=tw.nextNode())){ const v=n.nodeValue.trim(); if(v){ name=v.slice(0,40); break; } }
-    }
+    const ersterText=(wurzel,ausser)=>{
+      const tw=document.createTreeWalker(wurzel,NodeFilter.SHOW_TEXT);
+      let n; while((n=tw.nextNode())){
+        if(ausser&&ausser.contains(n))continue;
+        const v=n.nodeValue.trim(); if(v.length>1)return v.slice(0,40);
+      }
+      return '';
+    };
+    if(nameEl)name=ersterText(nameEl);
+    // Kein Namensfeld: der erste laengere Text in der Zeile neben dem Bild
+    if(!name&&el.parentElement)name=ersterText(el.parentElement,el);
     name=name||t;
     if(el.dataset.avf===name)return;
     el.dataset.avf=name;
