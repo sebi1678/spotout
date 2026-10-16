@@ -7087,6 +7087,21 @@
     .sk-kacheln{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:10px}
     .sk-kacheln .sk{aspect-ratio:1;border-radius:6px}
     @media(prefers-reduced-motion:reduce){.sk::after{animation:none}}
+    /* Tour: echte Ausschnitte der App, stumm und zentriert */
+    .tour-echt{pointer-events:none;display:flex;justify-content:center;align-items:center;width:100%}
+    .tour-echt.te-karte>*{width:200px;max-width:70%;margin:0 auto}
+    .tour-echt.te-knopf>*{width:100%;max-width:300px}
+    .tour-echt.te-spalte{flex-direction:column;gap:16px}
+    .tour-echt .te-menue{max-width:300px}
+    .tour-echt .te-plus .bnav-btn{position:static}
+    .tour-echt.te-kopf>*{position:relative!important;top:auto!important;width:100%;border-radius:16px;
+      background:rgba(255,255,255,.04)!important;padding:12px 14px!important}
+    .tour-echt.te-kopf .nav-raus{display:inline-flex!important;box-shadow:0 0 0 3px rgba(255,45,118,.5)}
+    .tour-echt.te-kopf>img,.tour-echt.te-kopf img:first-child{height:22px!important;width:auto}
+    .tour-echt.te-kopf .nav-right-group{gap:6px}
+    .tour-echt.te-kopf .nav-right-group>*{transform:scale(.9)}
+    .tour-echt.te-start>*{width:100%;margin:0!important;padding:0!important}
+    .tour-echt.te-start .search-bar{flex:1}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -10040,7 +10055,7 @@ const TOUREN={
     },
     {
       t:'Angst vor Smalltalk?',
-      s:'Die Party ist zäh, gehen willst du noch nicht. Ein Tipp oben rechts – und du bist in TikTok, Reels oder Shorts. Gleich nachher wählst du, wohin.',
+      s:'Die Party ist zäh, gehen willst du noch nicht. Ein Tipp oben rechts neben der Glocke – und du bist in TikTok, Reels oder Shorts. Gleich nachher wählst du, wohin.',
       /* Gewaehlt wird erst nach dieser Tour. Ist hier schon etwas
          markiert, hat jemand die Tour spaeter nochmals aufgerufen. */
       b:()=>{
@@ -10115,9 +10130,25 @@ let tourSatz='start';
 let tourIndex=0;
 let tourRichtung=1;
 
+/* Einmal pro Konto, nicht pro Geraet (Wunsch Sebastian, 17.10.): wer
+   die Tour gesehen oder uebersprungen hat, bekommt sie auch auf einem
+   neuen Handy nicht nochmals. Gemerkt wird es in den Konto-Daten von
+   Supabase (user_metadata) – keine Datenbank-Aenderung noetig – und wie
+   bisher auf dem Geraet, falls man ohne Netz ist. */
+function kontoMerkmal(k){ try{ return !!cUser?.user_metadata?.[k]; }catch(e){ return false; } }
+function kontoMerkmalSetzen(k){
+  if(!cUser||kontoMerkmal(k))return;
+  try{ cUser.user_metadata={...(cUser.user_metadata||{}),[k]:true}; }catch(e){}
+  sb.auth.updateUser({data:{[k]:true}}).then(({error})=>{ if(error)console.warn('[tour] merken',error.message); }).catch(()=>{});
+}
 function tourGelaufen(satz){
-  try{ return localStorage.getItem(satz==='pro'?TOUR_PRO_SCHLUESSEL:TOUR_SCHLUESSEL)==='1'; }
-  catch(e){ return true; }
+  const k=satz==='pro'?'tour_pro':'tour_start';
+  if(kontoMerkmal(k))return true;
+  let geraet=false;
+  try{ geraet=localStorage.getItem(satz==='pro'?TOUR_PRO_SCHLUESSEL:TOUR_SCHLUESSEL)==='1'; }catch(e){ return true; }
+  // Auf diesem Geraet schon gesehen, im Konto noch nicht vermerkt: nachtragen
+  if(geraet&&cUser)kontoMerkmalSetzen(k);
+  return geraet;
 }
 
 function tourStarten(satz,erzwingen){
@@ -10226,13 +10257,47 @@ function tourWischenEinrichten(buehneId,weiter,zurueck,index,anzahl){
 
 /* Einmal alles bauen. Danach wird beim Weiterblaettern nichts mehr
    erzeugt und nichts mehr uebersetzt - nur eine Klasse umgehaengt. */
+/* ── Echte Ausschnitte statt Zeichnungen (Wunsch Sebastian, 17.10.) ──
+   Was die Tour zeigt, muss 1:1 so in der App zu finden sein. Darum
+   bauen die Karten mit denselben Funktionen, die auch die App zeichnen
+   (cardHTML, buildAttendBtn) oder klonen das echte Element (Kopfleiste,
+   Plus-Knopf). Klone sind stumm: keine Kennungen, kein onclick, nicht
+   antippbar. Fehlt etwas (noch keine Party im Feed), bleibt fuer diese
+   eine Karte das bisherige Bild. */
+function tourKlon(sel){
+  const el=document.querySelector(sel); if(!el)return '';
+  const k=el.cloneNode(true);
+  k.removeAttribute('hidden');
+  [k,...k.querySelectorAll('*')].forEach(x=>{ x.removeAttribute('id'); x.removeAttribute('onclick'); });
+  return k.outerHTML;
+}
+function tourEcht(html,klasse){ return html?'<div class="tour-echt '+(klasse||'')+'" aria-hidden="true">'+html+'</div>':''; }
+function tourParty(){
+  const alle=(typeof evts!=='undefined'&&evts)||[];
+  const passt=alle.filter(e=>!istVorbei(e)&&e.type!=='private'&&e.created_by!==cUser?.id);
+  return passt[0]||alle.find(e=>!istVorbei(e))||null;
+}
+const TOUR_ECHT={
+  0:()=>{ const p=tourParty(); if(p)return tourEcht(cardHTML(p),'te-karte');
+    // Noch keine Party: die echte Such- und Kategorie-Leiste der Startseite
+    const such=tourKlon('#searchWrap'), seg=tourKlon('#segWrap');
+    return (such||seg)?tourEcht(such+seg,'te-spalte te-start'):''; },
+  1:()=>{ let p=tourParty(); if(!p||p.created_by===cUser?.id)p={id:'tour',type:'public',created_by:null,price:0,drink_price:0,attending:0};
+    try{ return tourEcht(buildAttendBtn(p,false,false,false,null,false,(p.price||0)+(p.drink_price||0),worldVars(p.type),p.attending||0,false),'te-knopf'); }catch(e){ return ''; } },
+  2:()=>{ const plus=tourKlon('#bnav-create'); if(!plus)return '';
+    return tourEcht('<div class="te-plus">'+plus+'</div>'
+      +'<div class="plus-gross te-menue"><span class="plus-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>'
+      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div>','te-spalte'); },
+  3:()=>tourEcht(tourKlon('#page-main .top-nav'),'te-kopf'),
+};
+
 function tourAufbauen(){
   const karten=TOUREN[tourSatz]||[];
   const buehne=document.getElementById('tourBuehne');
   if(!buehne)return;
   buehne.innerHTML=karten.map((k,i)=>
     '<div class="tour-karte'+(i===0?' on':'')+'" data-tk="'+i+'">'
-    +'<div class="tour-bild">'+k.b()+'</div>'
+    +'<div class="tour-bild">'+((tourSatz==='start'&&TOUR_ECHT[i]&&TOUR_ECHT[i]())||k.b())+'</div>'
     +'<div class="tour-t">'+k.t+'</div>'
     +'<div class="tour-s">'+k.s+'</div>'
     +'</div>').join('');
@@ -10355,6 +10420,7 @@ function tourZurueck(){
 
 function tourFertig(){
   try{ localStorage.setItem(tourSatz==='pro'?TOUR_PRO_SCHLUESSEL:TOUR_SCHLUESSEL,'1'); }catch(e){}
+  kontoMerkmalSetzen(tourSatz==='pro'?'tour_pro':'tour_start');
   const t=document.getElementById('tour');
   if(!t)return;
   t.classList.remove('sichtbar');
@@ -10382,6 +10448,7 @@ function tourFertig(){
 const EINSTIEG_SCHLUESSEL='spotout_einstieg_v1';
 
 function einstiegGelaufen(){
+  if(kontoMerkmal('einstieg'))return true;
   try{ return localStorage.getItem(EINSTIEG_SCHLUESSEL)==='1'; }catch(e){ return true; }
 }
 
@@ -10563,6 +10630,7 @@ async function einstiegFertig(){
     setTimeout(()=>el.classList.remove('open'),320);
   }
   try{ localStorage.setItem(EINSTIEG_SCHLUESSEL,'1'); }catch(e){}
+  kontoMerkmalSetzen('einstieg');
 
   /* Nur speichern, wenn wirklich getippt wurde. Sonst bleibt es beim
      bisherigen Stand – "Später" darf nichts abschalten. */
