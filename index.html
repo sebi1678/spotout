@@ -79,7 +79,7 @@
       /* Text */
       --text:#FFFFFF;
       --text2:rgba(255,255,255,.70);
-      --muted:rgba(255,255,255,.45);
+      --muted:rgba(255,255,255,.58);
 
       /* Glow accents */
       --glow-purple:rgba(106,17,203,.35);
@@ -2528,6 +2528,12 @@
       box-shadow:0 8px 26px rgba(196,20,79,0.20);transition:transform var(--takt-kurz);
     }
     .plus-gross:active{transform:scale(var(--druck-gross))}
+    /* Ein Hauptknopf pro Blatt: die Gruppe ist die zweite Wahl und
+       bekommt die Zweitfarbe – dunkel genug fuer die kleine Zeile. */
+    .plus-gross.plus-zweit{
+      margin-top:10px;background:linear-gradient(135deg,#4A2AD9,#2F7BD6);
+      box-shadow:0 8px 26px rgba(74,42,217,0.20);
+    }
     .plus-ic{
       width:38px;height:38px;border-radius:13px;flex:none;
       background:rgba(255,255,255,.24);
@@ -2624,17 +2630,18 @@
     .plus-card.ok{background:rgba(74,222,128,.09);border-color:rgba(74,222,128,.32)}
     .plus-card.no{background:rgba(255,69,86,.07);border-color:rgba(255,69,86,.26)}
     .plus-hdr{display:flex;align-items:center;gap:11px}
-    .plus-ic{
+    /* Nur in der Begleit-Karte. Ungebunden ueberschrieben diese Regeln
+       die gleichnamigen im Plus-Menue – dort wurde das Symbol grau. */
+    .plus-card .plus-ic{
       width:38px;height:38px;flex:0 0 38px;border-radius:12px;
       display:flex;align-items:center;justify-content:center;
       background:rgba(255,255,255,.08);color:var(--text2);
     }
-    .plus-ic svg{width:19px;height:19px}
     .plus-card.ok .plus-ic{background:rgba(74,222,128,.18);color:#4ade80}
     .plus-card.wait .plus-ic{background:rgba(255,176,32,.18);color:#FFB020}
     .plus-card.no .plus-ic{background:rgba(255,69,86,.16);color:#FF6B7A}
-    .plus-t{display:block;font-size:.9rem;font-weight:800;color:#fff;letter-spacing:-.015em}
-    .plus-s{display:block;font-size:.77rem;color:var(--muted);margin-top:2px;line-height:1.45}
+    .plus-card .plus-t{font-size:.9rem;color:#fff;letter-spacing:-.015em}
+    .plus-card .plus-s{color:var(--muted);line-height:1.45}
     .plus-note{
       width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
       border-radius:13px;color:#fff;font-family:var(--font);font-size:.85rem;
@@ -16687,7 +16694,7 @@ function plusZeigen(meine){
     +'</button>'
     /* Gruppen stehen hier, weil die untere Leiste voll ist – und weil
        man hier ohnehin ist, wenn man etwas mit Leuten vorhat. */
-    +'<button class="plus-gross" style="margin-top:10px" onclick="closeOverlay(\'plusOverlay\');gruppeNeuOeffnen()">'
+    +'<button class="plus-gross plus-zweit" onclick="closeOverlay(\'plusOverlay\');gruppeNeuOeffnen()">'
     +'<span class="plus-ic">'+leute+'</span>'
     +'<span><span class="plus-t">Gruppe gründen</span>'
     +'<span class="plus-s">Gemeinsam hingehen, eigener Chat</span></span>'
