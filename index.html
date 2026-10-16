@@ -25000,6 +25000,9 @@ function splashAb(fruehestensNach){
   const warten=Math.max(0,(fruehestensNach||0)-(Date.now()-splashStart));
   setTimeout(()=>{
     if(splashWeg)return; splashWeg=true;
+    /* Der App sagen, dass die Seite steht. Sonst wartete ihr Startbild
+       auf das load-Ereignis – also auf jedes Bild im Feed. */
+    try{ window.ReactNativeWebView?.postMessage(JSON.stringify({__huelle:'bereit'})); }catch(_){}
     const el=document.getElementById('splash');
     if(!el)return;
     el.classList.add('hide');
