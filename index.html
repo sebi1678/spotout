@@ -2837,6 +2837,7 @@
     .ep-ig .ep-social-ic{color:#E1306C}
     .ep-sc .ep-social-ic{color:#FFD400}
     .ep-fb .ep-social-ic{color:#4A8CFF}
+    .ep-tt .ep-social-ic{color:#fff}
     .ep-help{font-size:.73rem;color:var(--muted);margin-top:6px;line-height:1.45}
     /* Gesperrt heisst: sichtbar, lesbar, aber nicht anfassbar. Ein
        ausgegrautes Feld ohne Erklaerung wirkt wie ein Fehler. */
@@ -3752,6 +3753,7 @@
     .social-link svg{width:15px;height:15px;flex-shrink:0}
     .sl-ig{color:#E1306C;border-color:rgba(225,48,108,.3);background:rgba(225,48,108,.10)}
     .sl-sc{color:#FFD400;border-color:rgba(255,212,0,.32);background:rgba(255,212,0,.10)}
+    .sl-tt{color:#fff;border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.08)}
     .sl-fb{color:#4A8CFF;border-color:rgba(74,140,255,.3);background:rgba(74,140,255,.10)}
     .insta-socials{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:10px}
     .social-lock{
@@ -7027,6 +7029,8 @@
       border:2px solid rgba(255,255,255,.12);border-top-color:#FF2D76;animation:spin var(--dreh) linear infinite}
     @media (prefers-reduced-motion:reduce){ #kontoWechselBild.da .kwb-av{animation:none} }
 
+    .up2-abschnitt{margin:8px 16px 12px;font-size:.7rem;font-weight:800;letter-spacing:.08em;
+      text-transform:uppercase;color:var(--muted)}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -7613,7 +7617,7 @@
 <div class="bnav hidden" id="bnav">
   <button class="bnav-btn active" id="bnav-main" onclick="showPage('main')">
     <svg class="pk pk-bunt" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 10.6 12 4.8l6.8 5.8V19a1.6 1.6 0 0 1-1.6 1.6H6.8A1.6 1.6 0 0 1 5.2 19z" fill="url(#pkPink)"/><path d="M3.4 11.3 12 4l8.6 7.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.2 10v9a1.6 1.6 0 0 0 1.6 1.6h10.4a1.6 1.6 0 0 0 1.6-1.6v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20.6v-3.8a2 2 0 0 1 4 0v3.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Home
+    Start
   </button>
   <button class="bnav-btn" id="bnav-calendar" onclick="showPage('calendar')">
     <svg class="pk pk-bunt" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/><path d="M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z" fill="url(#pkViolett)"/><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3v3.5M16 3v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/><circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/></svg>
@@ -7752,6 +7756,9 @@
         </div>
         <div class="fg"><label>Instagram</label>
           <div class="ep-at ep-ig"><span class="ep-social-ic"></span><input type="text" id="ep-instagram" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
+        </div>
+        <div class="fg" id="ep-tiktok-fg" hidden><label>TikTok</label>
+          <div class="ep-at ep-tt"><span class="ep-social-ic"></span><input type="text" id="ep-tiktok" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
         </div>
         <div class="fg"><label>Snapchat</label>
           <div class="ep-at ep-sc"><span class="ep-social-ic"></span><input type="text" id="ep-snapchat" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
@@ -13552,6 +13559,8 @@ function distKm(a,b,c,d){const R=6371,dl=(c-a)*Math.PI/180,dg=(d-b)*Math.PI/180;
 /* ══════════ SOCIAL-ICONS ══════════ */
 // Erkennbare Glyphen statt der behelfsmässigen Kreise von vorher
 const SOCIAL_SVG={
+  /* TikTok: die Note als klare Silhouette auf dem 24er-Raster */
+  tiktok:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M14.2 3h2.9c.2 1.9 1.6 3.4 3.5 3.6v2.9c-1.3 0-2.5-.4-3.5-1v6.3a5.4 5.4 0 1 1-5.4-5.4c.3 0 .6 0 .9.1v3a2.5 2.5 0 1 0 1.6 2.3z"/></svg>',
   instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5.4"/><circle cx="12" cy="12" r="4.3"/><circle cx="17.4" cy="6.6" r="1.15" fill="currentColor" stroke="none"/></svg>',
   /* Neu gezeichnet am 22.09. Die alte Fassung war ein Geist mit
      ausgefransten Rundungen: auf 13 px sah das aus wie ein Fleck.
@@ -13568,6 +13577,7 @@ function buildSocialLinks(p,opts){
   if(!p?.is_pro)return'';
   const items=[
     p.instagram_handle&&{k:'instagram',url:'https://instagram.com/'+p.instagram_handle,txt:p.instagram_handle,cls:'sl-ig'},
+    p.tiktok_handle   &&{k:'tiktok',   url:'https://www.tiktok.com/@'+p.tiktok_handle,txt:p.tiktok_handle,cls:'sl-tt'},
     p.snapchat_handle &&{k:'snapchat', url:'https://snapchat.com/add/'+p.snapchat_handle,txt:p.snapchat_handle,cls:'sl-sc'},
     p.facebook_handle &&{k:'facebook', url:'https://facebook.com/'+p.facebook_handle, txt:p.facebook_handle,cls:'sl-fb'}
   ].filter(Boolean);
@@ -15529,6 +15539,12 @@ function openEditProfile(){
     document.getElementById('ep-instagram').value=cProfile.instagram_handle||'';
     document.getElementById('ep-snapchat').value=cProfile.snapchat_handle||'';
     document.getElementById('ep-facebook').value=cProfile.facebook_handle||'';
+    /* TikTok erscheint, sobald die Datenbank die Spalte tiktok_handle hat
+       (mein_profil liefert dann das Feld mit). Bis dahin bleibt es weg,
+       statt einen Wert anzunehmen, der nirgends gespeichert wird. */
+    const ttFg=document.getElementById('ep-tiktok-fg');
+    if(ttFg)ttFg.hidden=!('tiktok_handle' in cProfile);
+    const tt=document.getElementById('ep-tiktok'); if(tt)tt.value=cProfile.tiktok_handle||'';
     epCount();
   }
   fillEpSocialIcons();
@@ -15538,7 +15554,7 @@ function openEditProfile(){
 function closeEditProfile(){document.getElementById('editProfOverlay').classList.remove('open');}
 
 function fillEpSocialIcons(){
-  const map={'ep-ig':'instagram','ep-sc':'snapchat','ep-fb':'facebook'};
+  const map={'ep-ig':'instagram','ep-tt':'tiktok','ep-sc':'snapchat','ep-fb':'facebook'};
   Object.entries(map).forEach(([cls,key])=>{
     const el=document.querySelector('#ep-pro-section .'+cls+' .ep-social-ic');
     if(el&&SOCIAL_SVG[key])el.innerHTML=SOCIAL_SVG[key];
@@ -15556,7 +15572,7 @@ function cleanHandle(v){
   let x=String(v||'').trim();
   if(!x)return'';
   x=x.replace(/^https?:\/\//i,'').replace(/^www\./i,'');
-  x=x.replace(/^(instagram\.com|snapchat\.com\/add|snapchat\.com|facebook\.com|m\.facebook\.com)\//i,'');
+  x=x.replace(/^(instagram\.com|snapchat\.com\/add|snapchat\.com|facebook\.com|m\.facebook\.com|tiktok\.com|vm\.tiktok\.com)\//i,'');
   x=x.split(/[?#]/)[0];
   x=x.replace(/\/+$/,'').replace(/^@+/,'');
   return x.replace(/[^A-Za-z0-9._-]/g,'');
@@ -15642,6 +15658,7 @@ async function saveProfileEdit(){
       updates.instagram_handle=cleanHandle(document.getElementById('ep-instagram')?.value)||null;
       updates.snapchat_handle =cleanHandle(document.getElementById('ep-snapchat')?.value)||null;
       updates.facebook_handle =cleanHandle(document.getElementById('ep-facebook')?.value)||null;
+      if('tiktok_handle' in cProfile)updates.tiktok_handle=cleanHandle(document.getElementById('ep-tiktok')?.value)||null;
     }
     const{error}=await sb.from('profiles').update(updates).eq('id',cUser.id);
     if(error){toast(fehlerText(error),'error');return;}
@@ -18490,9 +18507,9 @@ async function openUserProf(userId,zurueck){
         +'<b>Dieses Profil ist privat</b>'
         +'<span>Stell eine Anfrage. Sobald '+esc((p.full_name||p.username||'die Person').split(' ')[0])
         +' zustimmt, siehst du Angaben und Partys – und ihr könnt euch gegenseitig einladen.</span></div>'
-      : '<div class="insta-tabs"><button class="insta-tab active" style="cursor:default">'
-        +'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>'
-        +(istV?'Kommende Anlässe':'Kommende Partys')+'</button></div>'+kacheln)
+      /* Ein einziger "Reiter" mit pinker Linie sah nach Umschalter aus,
+         liess sich aber nicht umschalten – jetzt eine schlichte Ueberschrift. */
+      : '<div class="up2-abschnitt">'+(istV?'Kommende Anlässe':'Kommende Partys')+'</div>'+kacheln)
     +'<div style="height:calc(40px + env(safe-area-inset-bottom))"></div>'
     +'</div>';
 }
@@ -18658,7 +18675,7 @@ function buildAnfrageBtn(userId,laeuft,folgtDir){
   const uhr='<svg class="fb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   return '<button class="follow-btn fb-anfrage'+(laeuft?' following':'')+'" id="followBtn" data-uid="'+userId+'" '
     +'onclick="folgenOderAnfragen(\''+userId+'\',this)">'
-    +'<span class="fb-face fb-off">'+plus+(folgtDir?'Auch folgen':'Folgen anfragen')+'</span>'
+    +'<span class="fb-face fb-off">'+plus+(folgtDir?'Zurückfolgen':'Folgen anfragen')+'</span>'
     +'<span class="fb-face fb-on">'+uhr+'Angefragt</span>'
     +'<span class="fb-spin"><span class="btn-spin"></span></span>'
     +'</button>';
@@ -18671,7 +18688,7 @@ function buildFollowBtn(userId,iFollow,folgtDir){
   // Beide Zustände sind immer im DOM – gewechselt wird nur die Klasse
   return '<button class="follow-btn'+(iFollow?' following':'')+'" id="followBtn" data-uid="'+userId+'" '
     +'onclick="toggleFollow(this)">'
-    +'<span class="fb-face fb-off">'+plus+(folgtDir?'Auch folgen':'Folgen')+'</span>'
+    +'<span class="fb-face fb-off">'+plus+(folgtDir?'Zurückfolgen':'Folgen')+'</span>'
     +'<span class="fb-face fb-on">'+check+'Gefolgt</span>'
     +'<span class="fb-spin"><span class="btn-spin"></span></span>'
     +'</button>';
@@ -18787,13 +18804,13 @@ async function openFollowList(userId,mode){
 /* Ein Knopf fuer Listen und Benachrichtigungen: Folgen, Auch folgen,
    Gefolgt, Angefragt. Tipp auf "Gefolgt" entfolgt wieder. */
 function flKnopf(uid,stand,folgtMir){
-  const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Auch folgen',folgen:'Folgen'}[stand]||'Folgen';
+  const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Zurückfolgen',folgen:'Folgen'}[stand]||'Folgen';
   const haupt=(stand==='auch'||stand==='folgen');
   return '<button class="fl-knopf'+(haupt?' haupt':'')+'" data-stand="'+stand+'" data-folgt-mir="'+(folgtMir?'1':'')+'"'
     +' onclick="event.stopPropagation();flFolgen(this,\''+uid+'\')">'+text+'</button>';
 }
 function flKnopfSetzen(btn,stand){
-  const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Auch folgen',folgen:'Folgen'}[stand];
+  const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Zurückfolgen',folgen:'Folgen'}[stand];
   btn.dataset.stand=stand;
   btn.textContent=text;
   btn.classList.toggle('haupt',stand==='auch'||stand==='folgen');
@@ -21942,7 +21959,9 @@ async function blockAufheben(btn,id){
 function moreBtn(art,id,name){
   return '<button class="more-btn" onclick="event.stopPropagation();openReport(\''+art+'\',\''+id+'\',\''
     +String(name||'').replace(/['"\\<>&]/g,'')+'\')" aria-label="Melden">'
-    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.6v5.2"/><circle cx="12" cy="16.3" r=".6" fill="currentColor"/></svg></button>';
+    /* Eine Flagge, wie es der Kommentar verspricht – das Ausrufezeichen im
+     Kreis las sich wie eine Warnung ueber die Person. */
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 21V4.5"/><path d="M5.5 4.5h10.2l-1.6 3.9 1.6 3.9H5.5"/></svg></button>';
 }
 
 /* ══════════ BENACHRICHTIGUNGEN ══════════
@@ -25255,6 +25274,57 @@ document.addEventListener('DOMContentLoaded',()=>{
    laeuft. Das faengt genau den Fall ab, in dem die Verbindung haengt
    und jemand fuenfmal auf denselben Knopf tippt. */
 window.__laeuftGerade = new Set();
+
+/* ── Eine feste Farbe pro Person ──────────────────────────────────
+   Wer kein Foto hat, bekam ueberall denselben pinken Kreis – fuenf
+   gleiche Kreise untereinander in der Chatliste, wie ein Baukasten.
+   Wie bei iOS-Kontakten bekommt jetzt jede Person ihre eigene, immer
+   gleiche Farbe (aus Name bzw. Initiale berechnet), alle aus der
+   Palette der App. Fotos bleiben unberuehrt. */
+const AV_FARBEN=[
+  'linear-gradient(135deg,#FF2D76,#FF5A45)',
+  'linear-gradient(135deg,#633BFF,#54A7FF)',
+  'linear-gradient(135deg,#F97316,#FBBF24)',
+  'linear-gradient(135deg,#0EA5A4,#34D399)',
+  'linear-gradient(135deg,#8B5CF6,#EC4899)',
+  'linear-gradient(135deg,#2563EB,#22D3EE)',
+  'linear-gradient(135deg,#DB2777,#A855F7)',
+];
+const AV_KLASSEN='.chat-av,.sr-av,.nt-av-bild,.kz-av,.cm-av,.kwb-av,.insta-av,.fr-av,.vh-av,.tb-av,.nt-anfr-av,.av-sm';
+function avFarbeFuer(text){
+  let h=0; const t=String(text||'?');
+  for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;
+  return AV_FARBEN[h%AV_FARBEN.length];
+}
+function avFaerben(wurzel){
+  (wurzel||document).querySelectorAll(AV_KLASSEN).forEach(el=>{
+    if(el.querySelector('img'))return;
+    if(el.classList.contains('konto-neu')||el.closest('.konto-neu'))return;
+    const t=(el.textContent||'').trim();
+    if(!t||t.length>2||t==='+')return;
+    // Der volle Name (falls in der Naehe) macht die Farbe eindeutiger als die Initiale
+    // Name aus der Zeile daneben (z. B. .chat-name, .sr-name) – nicht der
+    // ganze Zeilentext, sonst wechselte die Farbe mit jeder neuen Nachricht.
+    const nameEl=el.parentElement?.querySelector('[class*="name"]:not([class*="av"])')
+      ||el.parentElement?.parentElement?.querySelector('[class*="name"]:not([class*="av"])');
+    // Nur der erste Text im Namensfeld – Marken (PRO, DAY ONE) daneben
+    // zaehlen nicht, sonst haette dieselbe Person verschiedene Farben.
+    let name='';
+    if(nameEl){
+      const tw=document.createTreeWalker(nameEl,NodeFilter.SHOW_TEXT);
+      let n; while((n=tw.nextNode())){ const v=n.nodeValue.trim(); if(v){ name=v.slice(0,40); break; } }
+    }
+    name=name||t;
+    if(el.dataset.avf===name)return;
+    el.dataset.avf=name;
+    el.style.background=avFarbeFuer(name);
+  });
+}
+{ let avPlan=0;
+  const avBeob=new MutationObserver(()=>{ if(avPlan)return; avPlan=requestAnimationFrame(()=>{ avPlan=0; avFaerben(); }); });
+  const los=()=>{ avFaerben(); avBeob.observe(document.body,{childList:true,subtree:true}); };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',los); else los();
+}
 
 /* Blatt gescrollt? Dann zeigt der Kopf seinen weichen Auslauf. */
 document.addEventListener('scroll',ev=>{
