@@ -7131,6 +7131,12 @@
     @keyframes peFlug{0%{opacity:1;transform:rotate(var(--w)) translateY(0) rotate(0)}
       100%{opacity:0;transform:rotate(var(--w)) translateY(calc(var(--d) * -1)) rotate(540deg)}}
     @media(prefers-reduced-motion:reduce){.pe-warten .pe-krone,.pe-fertig .pe-krone{animation:none}.pe-konfetti{display:none}}
+    .pro2-fehlt{margin:6px 0 10px;font-size:.84rem;color:#FDE68A;text-align:center}
+    .rzustimmung{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px;border-radius:14px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);font-size:.78rem;line-height:1.5;color:var(--text2);text-align:left;cursor:pointer}
+    .rzustimmung input{flex:none;width:20px;height:20px;margin-top:1px;accent-color:#FF2D76}
+    .rzustimmung a{color:#FF7FA5}
+    .rzustimmung.fehlt{border-color:rgba(255,80,80,.6);animation:ruck 260ms ease-out}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -7338,10 +7344,14 @@
           </button>
           <button class="auth-submit-btn rweiter" id="rWeiter" onclick="regWeiter()">Weiter</button>
         </div>
-        <p class="rdatenschutz">
-          Mit der Registrierung stimmst du den <a href="/nutzungsbedingungen" target="_blank" rel="noopener">Nutzungsbedingungen</a>
-          und der <a href="/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> zu.
-        </p>
+        <!-- Aktive Zustimmung (Apple 1.2): nicht vorausgewaehlt, ohne Haken
+             geht "Konto erstellen" nicht. -->
+        <label class="rzustimmung" id="regZustimmungZeile">
+          <input type="checkbox" id="regZustimmung"/>
+          <span>Ich akzeptiere die <a href="/nutzungsbedingungen" target="_blank" rel="noopener">Nutzungsbedingungen</a>
+          mit den Community-Regeln und habe die <a href="/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen.
+          Für anstössige Inhalte und Belästigung gibt es keine Toleranz.</span>
+        </label>
       </div>
       <!-- E-MAIL BESTÄTIGEN – nach der Registrierung -->
       <div id="auth-bestaetigen" class="auth-section pw-sektion">
@@ -10559,9 +10569,9 @@ function einstiegKarten(){
     {
       feld:'ort',
       frage:'Partys in deiner Nähe?',
-      hilfe:'Mit Standort sortiert SPOTOUT nach Entfernung und zeigt, wie weit es hin ist. Ohne ihn nach Zeit. Du kannst es jederzeit umstellen.',
+      hilfe:'Mit Standort sortiert SPOTOUT nach Entfernung und zeigt, wie weit es hin ist. Für den Ortsnamen geht nur ein auf rund einen Kilometer gerundeter Wert an OpenStreetMap. Ohne Standort sortiert die App nach Zeit.',
       wahl:[
-        {wert:true,  ic:'ort',      t:'Standort nutzen', s:'Sortiert nach Nähe – dein Standort verlässt das Gerät nicht'},
+        {wert:true,  ic:'ort',      t:'Standort nutzen', s:'Sortiert nach Nähe – gespeichert wird er nicht'},
         {wert:false, ic:'keiner',   t:'Lieber nicht',    s:'Sortiert nach Zeit'},
       ],
     },
@@ -11668,6 +11678,12 @@ let nameBestaetigt=false;
 async function doRegister(){
   const em=document.getElementById('reg-em')?.value.trim()||'';
   const pw=document.getElementById('reg-pw')?.value||'';
+  if(!document.getElementById('regZustimmung')?.checked){
+    const z=document.getElementById('regZustimmungZeile');
+    if(z){ z.classList.remove('fehlt'); void z.offsetWidth; z.classList.add('fehlt'); }
+    toast('Bitte bestätige die Nutzungsbedingungen','warn');
+    return;
+  }
 
   if(regArt==='verein')return registriereVerein(em,pw);
 
@@ -16018,22 +16034,29 @@ function probeTageOffen(){
    Datenbank (probe_verbraucht), gesetzt vom Webhook bzw. von einem
    Trigger – der Browser kann sie nicht zuruecksetzen. */
 function probeFrei(){
-  // Apple entscheidet in der App, ob es die Testwoche gibt (pro Apple-ID).
-  if(appleProbe===false)return false;
+  /* In der App entscheidet allein Apple, ob es die Testwoche gibt (pro
+     Apple-ID). Nur wenn Apple sie ausdruecklich bestaetigt, steht
+     "7 Tage gratis" da – ohne Antwort lieber kein Versprechen. */
+  if(istApp())return appleProbe===true&&!cProfile?.probe_verbraucht;
   return !cProfile?.probe_verbraucht;
 }
 /* Preis und Testwoche kommen in der App von Apple, nicht aus unserem
    Text. Die Texte nennen CHF 3.00; nennt Apple etwas anderes (anderes
    Land, Preisänderung), ersetzt preisEinsetzen das überall beim Zeichnen –
    auch in den Übersetzungen. Ohne Antwort bleibt CHF 3.00 stehen. */
-let applePreis=null, appleProbe=null, appleAngebotLaeuft=null;
+let applePreis=null, appleProbe=null, appleAngebotLaeuft=null, appleAngebotFehlt=false;
 function preisEinsetzen(s){
   return (applePreis&&applePreis!=='CHF 3.00'&&s.indexOf('CHF 3.00')>=0)?s.split('CHF 3.00').join(applePreis):s;
 }
 function appleAngebotLaden(){
   if(!istApp()||applePreis||appleAngebotLaeuft)return appleAngebotLaeuft||Promise.resolve();
   appleAngebotLaeuft=nativeCall('pro_angebot',null,8000).then(a=>{
-    if(!a||a.fehler){ if(a?.fehler&&a.fehler!=='kein_native')console.warn('[pro] Angebot',a.fehler); return; }
+    if(!a||a.fehler){
+      if(a?.fehler&&a.fehler!=='kein_native'){ console.warn('[pro] Angebot',a.fehler); appleAngebotFehlt=true;
+        if(document.getElementById('page-pro')?.classList.contains('active'))renderProPage(); }
+      return;
+    }
+    appleAngebotFehlt=false;
     if(a.preis)applePreis=String(a.preis);
     if(a.probe_moeglich===true||a.probe_moeglich===false)appleProbe=a.probe_moeglich;
     if(document.getElementById('page-pro')?.classList.contains('active'))renderProPage();
@@ -16134,7 +16157,9 @@ function renderProPage(){
         <div class="pro2-price">
           ${probeFrei()?'<span class="p-per" style="margin-right:6px">danach</span>':''}${applePreis&&applePreis!=='CHF 3.00'?'<span class="p-num">'+esc(applePreis)+'</span>':'<span class="p-cur">CHF</span><span class="p-num">3.00</span>'}<span class="p-per">/ Monat</span>
         </div>
-        <button class="pro2-cta" onclick="startProUpgrade()">${probeFrei()?'Gratis testen':'Pro holen'}</button>
+        ${istApp()&&appleAngebotFehlt&&!applePreis
+          ? '<div class="pro2-fehlt">Das Angebot von Apple lädt gerade nicht. Prüf deine Verbindung.</div><button class="pro2-cta" onclick="appleAngebotFehlt=false;renderProPage()">Nochmals laden</button>'
+          : '<button class="pro2-cta" onclick="startProUpgrade()">'+(probeFrei()?'Gratis testen':'Pro holen')+'</button>'}
         ${istApp()?'<button class="pro2-restore" onclick="proWiederherstellen()">Kauf wiederherstellen</button>':''}
         <div class="pro2-note">${probeFrei()
           ?'7 Tage gratis testen, danach Laufzeit 1 Monat für CHF 3.00 · verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst · in der Testwoche jederzeit kostenlos kündbar'
@@ -24440,7 +24465,10 @@ let ortNameGeholt=false;
 function ortNamen(lat,lng){
   if(ortNameGeholt)return;
   ortNameGeholt=true;
-  fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&accept-language=de')
+  /* Nur gerundet (2 Stellen ≈ 1 km) an OpenStreetMap – so steht es in
+     der Datenschutzerklaerung. Fuer den Ortsnamen reicht das. */
+  const rLat=(Math.round(lat*100)/100).toFixed(2), rLng=(Math.round(lng*100)/100).toFixed(2);
+  fetch('https://nominatim.openstreetmap.org/reverse?lat='+rLat+'&lon='+rLng+'&format=json&accept-language=de&zoom=12')
     .then(r=>r.json())
     .then(d=>{
       const el=document.getElementById('locName');
