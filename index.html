@@ -404,7 +404,7 @@
        ein Text eine Zeile laenger ist. */
     .tour-t{min-height:var(--tour-titel-h,auto);flex-shrink:0}
     .tour-s{min-height:var(--tour-text-h,auto);flex-shrink:0;padding-bottom:4px}
-    .tour-bild svg{width:100%;height:auto;display:block;overflow:visible}
+    .tour-bild .tb svg,.tour-bild .tb-kachel svg{width:100%;height:auto;display:block;overflow:visible}
     .tour-t{
       font-size:1.65rem;font-weight:900;color:#fff;letter-spacing:-.025em;
       line-height:1.16;max-width:340px;
@@ -7282,6 +7282,15 @@
     .iphone-finger{position:absolute;z-index:6;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
       background:rgba(255,255,255,.34);border:1.5px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(0,0,0,.35);
       opacity:0;visibility:hidden;pointer-events:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+    /* Regeln, die in der App an einer ID haengen, fuer die Kopien */
+    [data-tid="fySub"]{margin:-6px 16px 12px;font-size:.76rem;color:var(--muted)}
+    [data-tid="detailKopf"] .modal-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tour-voll{position:relative;height:802px;overflow:hidden}
+    .tour-voll .modal{max-height:760px}
+    .tour-voll .overlay{transition:none}
+    .tour-voll .tour-detail{position:absolute;inset:0;display:block}
+    .tour-voll .tour-detail>div{position:absolute;inset:0}
+    .tour-voll .tour-detail .overlay{position:absolute}
     .tour-zwei{display:grid}
     .tour-zwei>*{grid-area:1/1}
     .tour-zwei>[data-tm="nach"]{opacity:0}
@@ -7290,6 +7299,19 @@
     .tour-funke{position:absolute;z-index:6;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;pointer-events:none}
     .tour-folgen{margin-top:14px}
     .tour-folgen .follow-btn{width:100%}
+    /* Native Leiste der App (Tableiste.tsx) in der Tour */
+    .tl-leiste{position:relative;height:90px;padding:7px 4px 41px;display:flex;align-items:center;justify-content:space-around;
+      background:rgba(9,13,36,.55);-webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);
+      box-shadow:0 -6px 12px rgba(0,0,0,.32)}
+    .tl-leiste::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.14) 30%,rgba(255,255,255,.14) 70%,rgba(255,255,255,0))}
+    .tl-knopf{flex:1;max-width:112px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 10px}
+    .tl-knopf svg{display:block}
+    .tl-text{font:600 9.6px/1.2 Inter,system-ui,sans-serif;white-space:nowrap}
+    .tl-dick{font-weight:700}
+    .tl-plus{width:56px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#FF2D76,#FF5A45);box-shadow:0 6px 10px rgba(255,45,118,.25)}
+    .iphone-leiste .tl-leiste{margin:0}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -10372,7 +10394,78 @@ function tourGelaufen(satz){
   return geraet;
 }
 
-function tourStarten(satz,erzwingen){
+/* Momentaufnahmen der echten App mit Beispieldaten: Startseite und
+   Partyseite werden mit den echten Funktionen gezeichnet (renderFeed,
+   openDetail), kopiert und sofort wieder zurueckgestellt. Die Datenbank
+   wird dafuer kurz durch Beispieldaten ersetzt – nichts wird gelesen
+   oder geschrieben. So ist die Tour 1:1 die App. */
+let TOUR_SNAP={};
+function tourDemoListe(col){
+  return [tourParty(),tourParty2(),tourDemo3(),tourDemo4()].map(e=>({...e,type:col}));
+}
+function tourDbAttrappe(tabellen){
+  const kette=(daten)=>{ let einzeln=false;
+    const p=new Proxy(function(){},{
+      get:(t,k)=>{
+        if(k==='then')return (ok,f)=>Promise.resolve({data:einzeln?null:daten,error:null,count:Array.isArray(daten)?daten.length:0}).then(ok,f);
+        if(k==='maybeSingle'||k==='single')return ()=>{ einzeln=true; return p; };
+        return ()=>p;
+      },
+      apply:()=>p });
+    return p; };
+  const alt={from:sb.from,rpc:sb.rpc,storage:sb.storage&&sb.storage.from};
+  sb.from=(t)=>kette(tabellen[t]||[]);
+  sb.rpc=()=>kette(null);
+  if(sb.storage)sb.storage.from=()=>({list:async()=>({data:[],error:null}),getPublicUrl:()=>({data:{publicUrl:''}})});
+  return ()=>{ sb.from=alt.from; sb.rpc=alt.rpc; if(sb.storage&&alt.storage)sb.storage.from=alt.storage; };
+}
+async function tourSchnappschuesse(){
+  TOUR_SNAP={};
+  const col=document.querySelector('.segbtn.active')?.dataset.col||'public';
+  const altE=evts;
+  /* Startseite, einmal ohne und einmal mit Freunden */
+  try{
+    evts=tourDemoListe(col);
+    renderFeed(); TOUR_SNAP.start=tourSeitenKlon([...TOUR_OBEN,'#fySection']);
+    tourFreundeSetzen(); renderFeed(); TOUR_SNAP.freunde=tourSeitenKlon([...TOUR_OBEN,'#fySection']);
+  }catch(e){ console.warn('[tour] Startseite',e); }
+  finally{ tourOhneFreunde(); evts=altE; try{ renderFeed(); }catch(e){} }
+  /* Partyseite vor und nach der Zusage */
+  const ov=document.getElementById('detailOverlay');
+  const p={...tourParty(),type:col};
+  const leute=TOUR_LEUTE.map(x=>({user_id:x.id,event_id:p.id,profiles:{...x,avatar_url:null}}));
+  const ich={user_id:cUser?.id||'ich',event_id:p.id,profiles:{id:cUser?.id||'ich',username:'mia.keller',full_name:'Mia Keller',avatar_url:null}};
+  const klon=()=>{ const k=ov.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); });
+    k.style.visibility=''; return k.outerHTML; };
+  let zurueck=null;
+  try{
+    if(!ov)throw new Error('kein Fenster');
+    ov.style.visibility='hidden';
+    evts=[...altE,p];
+    zurueck=tourDbAttrappe({event_attendees:leute});
+    await openDetail(p.id); TOUR_SNAP.detail=klon();
+    zurueck(); zurueck=tourDbAttrappe({event_attendees:[...leute,ich]});
+    await openDetail(p.id); TOUR_SNAP.dabei=klon();
+  }catch(e){ console.warn('[tour] Partyseite',e); }
+  finally{
+    if(zurueck)zurueck();
+    try{ closeDetail(); }catch(e){}
+    evts=altE;
+    if(ov)setTimeout(()=>{ ov.style.visibility=''; },400);
+  }
+  /* Formular "Neue Party" – nur, wenn es gerade nicht offen ist */
+  const co=document.getElementById('createOverlay');
+  if(co&&!co.classList.contains('open')&&!istVerein()){
+    try{
+      co.style.visibility='hidden';
+      openCreate('public');
+      co.classList.add('open');
+      TOUR_SNAP.erstellen=(()=>{ const k=co.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); }); k.style.visibility=''; return k.outerHTML; })();
+    }catch(e){ console.warn('[tour] Erstellen',e); }
+    finally{ try{ entwurfNichtSichern=true; closeCreate(); }catch(e){} setTimeout(()=>{ co.style.visibility=''; },400); }
+  }
+}
+async function tourStarten(satz,erzwingen){
   const welcher=satz||'start';
   if(!erzwingen&&tourGelaufen(welcher))return;
   const t=document.getElementById('tour');
@@ -10383,6 +10476,7 @@ function tourStarten(satz,erzwingen){
   /* Erst sichtbar machen, dann bauen: solange das Fenster auf
      display:none steht, misst der Browser jede Hoehe als 0 - und die
      gemeinsame Bildhoehe waere nie zustande gekommen. */
+  try{ await tourSchnappschuesse(); }catch(e){ console.warn('[tour]',e); }
   t.classList.add('open');
   tourAufbauen();
   tourWischenEinrichten('tourBuehne',()=>tourWeiter(),()=>tourZurueck(),()=>tourIndex,()=>tourAnzahl());
@@ -10440,9 +10534,9 @@ function tourMotion(karte){
       },null,pos);
       tl.fromTo(finger,{autoAlpha:0,scale:1.25},{autoAlpha:1,scale:1,duration:.32},'>');
       tl.to(finger,{scale:.82,duration:.12,ease:'power2.out'},'>+.1');
-      tl.to(sel==='.tour-zwei'?f.querySelector('[data-tm="vor"]'):f.querySelector(sel),{scale:.96,duration:.12,ease:'power2.out'},'<');
+      tl.to(f.querySelector(sel),{scale:.96,duration:.12,ease:'power2.out'},'<');
       tl.to(finger,{scale:1,autoAlpha:0,duration:.3},'>');
-      tl.to(sel==='.tour-zwei'?f.querySelector('[data-tm="vor"]'):f.querySelector(sel),{scale:1,duration:.3,ease:'back.out(2)'},'<');
+      tl.to(f.querySelector(sel),{scale:1,duration:.3,ease:'back.out(2)'},'<');
     };
     if(art==='scroll'){
       const z=$('[data-tm="scroll"]');
@@ -10455,12 +10549,13 @@ function tourMotion(karte){
     if(art==='dabei'){
       const vor=$('[data-tm="vor"]'), nach=$('[data-tm="nach"]');
       tl.set(nach,{autoAlpha:0}).set(vor,{autoAlpha:1});
-      tippe('.tour-zwei');
-      tl.to(vor,{autoAlpha:0,duration:.15},'<');
-      tl.fromTo(nach,{autoAlpha:0,scale:.96},{autoAlpha:1,scale:1,duration:.35,ease:'back.out(2)'},'<');
+      tippe('[data-tm="vor"] [data-tid="attendBtn"]');
+      /* Wie in der App: der Zustand wechselt schlagartig, nur der Knopf federt */
+      tl.set(vor,{autoAlpha:0},'<').set(nach,{autoAlpha:1},'<');
+      tl.fromTo(nach.querySelector('[data-tid="attendBtn"]'),{scale:.96},{scale:1,duration:.4,ease:'back.out(2.2)'},'<');
       /* Dieselben Funken wie in der App beim Zusagen */
       tl.call(()=>{
-        const k=nach.querySelector('button')||nach, r=k.getBoundingClientRect(), b=schirm.getBoundingClientRect();
+        const k=nach.querySelector('[data-tid="attendBtn"]')||nach, r=k.getBoundingClientRect(), b=schirm.getBoundingClientRect();
         const cx=r.left-b.left+r.width/2, cy=r.top-b.top+r.height/2;
         const farben=['#FF2D76','#FF5A45','#633BFF','#54A7FF','#4ade80'];
         for(let i=0;i<12;i++){
@@ -10483,15 +10578,20 @@ function tourMotion(karte){
         .to({}, {duration:2.4});
     }
     if(art==='plus'){
-      const blatt=$('[data-tm="blatt"]'), dimm=$('[data-tm="dimm"]');
-      gsap.set(blatt,{yPercent:130,autoAlpha:0}); gsap.set(dimm,{filter:'brightness(1)'});
-      tl.set(blatt,{yPercent:130,autoAlpha:0}).set(dimm,{filter:'brightness(1)'});
-      tippe('.bnav-create');
-      tl.to(dimm,{filter:'brightness(.42)',duration:.35},'>-.1');
-      tl.to(blatt,{yPercent:0,autoAlpha:1,duration:.5,ease:'expo.out'},'<');
-      tl.to({}, {duration:1.8});
-      tl.to(blatt,{yPercent:130,autoAlpha:0,duration:.3,ease:'power2.in'});
-      tl.to(dimm,{filter:'brightness(1)',duration:.3},'<');
+      const blatt=$('[data-tm="blatt"]'), modal=blatt&&blatt.querySelector('.modal'), grund=blatt&&blatt.querySelector('.overlay');
+      gsap.set(modal,{yPercent:100}); gsap.set(grund,{autoAlpha:0});
+      tl.set(modal,{yPercent:100}).set(grund,{autoAlpha:0});
+      const leiste=$('.iphone-leiste');
+      tl.set(leiste,{autoAlpha:1},0);
+      tl.to({}, {duration:.9});
+      /* In der App verschwindet die Leiste, sobald ein Fenster offen ist */
+      tl.to(leiste,{autoAlpha:0,duration:.15});
+      tl.to(grund,{autoAlpha:1,duration:.3},'<');
+      tl.to(modal,{yPercent:0,duration:.55,ease:'expo.out'},'<');
+      tl.to({}, {duration:2});
+      tl.to(modal,{yPercent:100,duration:.32,ease:'power2.in'});
+      tl.to(grund,{autoAlpha:0,duration:.3},'<');
+      tl.to(leiste,{autoAlpha:1,duration:.2});
     }
     if(art==='folgen'){
       const k=$('.follow-btn');
@@ -10508,7 +10608,27 @@ function tourMotion(karte){
     tourMotionStopp=()=>{ tl.kill(); fertig(); };
   });
 }
+/* Wie selbst gescrollt: das Blatt der Partyseite so weit, dass der
+   Knopf im sichtbaren Ausschnitt liegt; die Startseite so, dass die
+   Freunde-Zeile zu sehen ist. */
+function tourAusrichten(karte){
+  const f=karte&&karte.querySelector('.iphone-fenster'); if(!f)return;
+  const fh=f.clientHeight, schirm=f.querySelector('.iphone-schirm'); if(!fh||!schirm)return;
+  const sTop=()=>schirm.getBoundingClientRect().top;
+  /* Ziel im sichtbaren Ausschnitt (Fenster kann oben oder unten sein) */
+  const ziel=()=>f.getBoundingClientRect().top+fh*0.55;
+  f.querySelectorAll('.tour-detail .modal').forEach(m=>{
+    const b=m.querySelector('[data-tid="attendBtn"]'); if(!b)return;
+    m.scrollTop=0;
+    const r=b.getBoundingClientRect();
+    m.scrollTop=Math.max(0,r.top+r.height/2-ziel());
+  });
+  const a=f.querySelector('[data-ausrichten]');
+  if(a){ a.style.marginTop='0px'; const z=a.querySelector(a.dataset.ausrichten);
+    if(z){ const r=z.getBoundingClientRect(), d=(r.top-sTop())+r.height/2-fh*0.58; if(d>0)a.style.marginTop=(-d)+'px'; } }
+}
 function tourKarteVorfuehren(karte){
+  tourAusrichten(karte);
   tourMotion(karte);
   if(!karte)return;
   mitGsap((gsap,fertig)=>{
@@ -10585,7 +10705,7 @@ function tourKlon(sel){
   const el=document.querySelector(sel); if(!el)return '';
   const k=el.cloneNode(true);
   k.removeAttribute('hidden');
-  [k,...k.querySelectorAll('*')].forEach(x=>{ x.removeAttribute('id'); x.removeAttribute('onclick'); });
+  [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); });
   return k.outerHTML;
 }
 function tourEcht(html,klasse){ return html?'<div class="tour-echt '+(klasse||'')+'" aria-hidden="true">'+html+'</div>':''; }
@@ -10603,7 +10723,7 @@ const TOUR_BILD_HAUS='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 2
 const tourBild=(svg)=>'data:image/svg+xml,'+encodeURIComponent(svg);
 function tourParty(){
   return {id:'tour-demo',name:'Openair am See',category:'Openair',type:'public',address:'Seebad Utoquai, Zürich',
-    date:tourTag(1),time:'20:00',attending:34,image_url:tourBild(TOUR_BILD_SEE),price:0,drink_price:0,created_by:'tour',status:'active'};
+    date:tourTag(1),time:'20:00',attending:3,image_url:tourBild(TOUR_BILD_SEE),price:0,drink_price:0,created_by:'tour',status:'active'};
 }
 function tourParty2(){
   return {id:'tour-demo2',name:'Hausparty bei Nina',category:'Hausparty',type:'public',address:'Langstrasse, Zürich',
@@ -10623,13 +10743,33 @@ function tourNeutral(html){
    voller Breite (390 px) und wird auf Handygroesse verkleinert – also
    1:1 dieselben Teile, nur kleiner. */
 /* Bis zu zwei echte Partys nebeneinander, wie im Raster der Startseite */
+function tourDemo3(){ return {...tourParty(),id:'tour-demo3',name:'Herbstfest Rohr',category:'Dorffest',address:'Rohrerstrasse, Rohr',date:tourTag(3),time:'17:00',attending:58,image_url:tourBild(TOUR_BILD_SEE)}; }
+function tourDemo4(){ return {...tourParty2(),id:'tour-demo4',name:'Techno im Keller',category:'Clubnacht',address:'Hardstrasse, Zürich',date:tourTag(5),time:'23:00',attending:21,price:15,image_url:tourBild(TOUR_BILD_HAUS)}; }
 function tourKarten2(){
-  const a={...tourParty(),id:'tour-demo3',name:'Herbstfest Rohr',category:'Dorffest',address:'Rohrerstrasse, Rohr',date:tourTag(3),time:'17:00',attending:58,image_url:tourBild(TOUR_BILD_SEE)};
-  const b={...tourParty2(),id:'tour-demo4',name:'Techno im Keller',category:'Clubnacht',address:'Hardstrasse, Zürich',date:tourTag(5),time:'23:00',attending:21,price:15,image_url:tourBild(TOUR_BILD_HAUS)};
+  const a=tourDemo3(), b=tourDemo4();
   return '<div class="iphone-karte iphone-zwei">'+cardHTML(a)+cardHTML(b)+'</div>';
 }
 function tourKarten(){
   return '<div class="iphone-karte iphone-zwei">'+cardHTML(tourParty())+cardHTML(tourParty2())+'</div>';
+}
+/* Die Leiste unten ist in der App nativ (components/Tableiste.tsx),
+   nicht die der Website. Hier dieselben Masse, Symbole und Farben. */
+function tourLeiste(aktiv){
+  const G='rgba(255,255,255,0.5)', HELL='rgba(255,255,255,0.16)';
+  const st='fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+  const sym=(n,f,a)=>{ const pk=a?'url(#pkPink)':HELL, vi=a?'url(#pkViolett)':HELL;
+    if(n==='main')return '<path d="M5.2 10.6 12 4.8l6.8 5.8V19a1.6 1.6 0 0 1-1.6 1.6H6.8A1.6 1.6 0 0 1 5.2 19z" fill="'+pk+'"/><path d="M3.4 11.3 12 4l8.6 7.3" stroke="'+f+'" '+st+'/><path d="M5.2 10v9a1.6 1.6 0 0 0 1.6 1.6h10.4a1.6 1.6 0 0 0 1.6-1.6v-9" stroke="'+f+'" '+st+'/><path d="M10 20.6v-3.8a2 2 0 0 1 4 0v3.8" stroke="#fff" '+st.replace('1.8','1.7')+'/>';
+    if(n==='calendar')return '<rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="'+vi+'" opacity=".3"/><path d="M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z" fill="'+vi+'"/><rect x="3.5" y="5" width="17" height="15.5" rx="3" stroke="'+f+'" '+st+'/><path d="M8 3v3.5M16 3v3.5" stroke="'+f+'" '+st+'/><circle cx="15.6" cy="15.4" r="2" fill="'+pk+'"/><circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/>';
+    if(n==='chat')return '<path d="'+PK_BLASE+'" fill="'+vi+'"/><path d="'+PK_BLASE+'" stroke="'+f+'" '+st+'/><circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/>';
+    return '<path d="M4.5 20.2a7.5 7.5 0 0 1 15 0z" fill="'+vi+'" opacity=".55"/><circle cx="12" cy="8.2" r="3.9" fill="'+pk+'"/><circle cx="12" cy="8.2" r="3.9" stroke="'+f+'" '+st+'/><path d="M4.5 20.2a7.5 7.5 0 0 1 15 0" stroke="'+f+'" '+st+'/>'; };
+  const k=[['main','Start'],['calendar','Kalender'],['create','Erstellen'],['chat','Chats'],['profile','Profil']];
+  return '<div class="tl-leiste">'+k.map(([n,t])=>{
+    const a=n===aktiv, f=n==='create'?'rgba(255,255,255,0.86)':a?'#FF2D76':G;
+    const ic=n==='create'
+      ?'<span class="tl-plus"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13" fill="none" stroke="#fff" stroke-width="2.7" stroke-linecap="round"/></svg></span>'
+      :'<svg width="24" height="24" viewBox="0 0 24 24">'+sym(n,f,a)+'</svg>';
+    return '<span class="tl-knopf">'+ic+'<span class="tl-text'+(n==='create'?' tl-dick':'')+'" style="color:'+f+'">'+t+'</span></span>';
+  }).join('')+'</div>';
 }
 function tourHandy(inner,unten,leiste,fenster,motion){
   const vonUnten=fenster?fenster==='unten':!!unten;
@@ -10650,7 +10790,7 @@ function tourHandyGeraet(inner,unten,leiste){
     +'</span></div>'
     +(leiste&&typeof leiste==='string'&&leiste.indexOf('tour-banner')>=0
       ?'<div class="iphone-ebene iphone-banner">'+leiste+'</div>'
-      :(leiste?'<div class="iphone-ebene iphone-leiste">'+(typeof leiste==='string'?leiste:tourNeutral(tourKlon('#bnav')||''))+'</div>':''))
+      :(leiste?'<div class="iphone-ebene iphone-leiste">'+(leiste===true?tourLeiste('main'):/^(main|calendar|chat|profile)$/.test(leiste)?tourLeiste(leiste):leiste)+'</div>':''))
     +'<div class="iphone-ebene iphone-unten-balken"><span></span></div>'
     +'<i class="iphone-finger"></i>'
     +'</div></div></div>';
@@ -10667,24 +10807,21 @@ function tourFreundeSetzen(){
 function tourOhneFreunde(){ if(typeof freundeMap!=='undefined'){ freundeMap.delete('tour-demo'); freundeMap.delete('tour-demo2'); } }
 const TOUR_OBEN=['#page-main .top-nav','#homeHero','#searchWrap','#segWrap'];
 const TOUR_ECHT={
-  0:()=>{ tourOhneFreunde(); const oben=tourSeitenKlon(TOUR_OBEN); if(!oben)return '';
-    return tourHandy('<div data-tm="scroll">'+oben+tourKarten()+tourKarten2()+'</div>',false,true,null,'scroll'); },
-  1:()=>{ tourFreundeSetzen(); const k=tourKlon('#page-main .top-nav'); const h=tourHandy(k+tourKarten(),false,true,null,'freunde'); tourOhneFreunde(); return h; },
-  2:()=>{ const p=tourParty(); let vor='',nach='';
-    try{ vor=buildAttendBtn(p,false,false,false,null,false,0,worldVars(p.type),p.attending,false);
-         nach=buildAttendBtn(p,true,false,false,null,false,0,worldVars(p.type),p.attending+1,false); }catch(e){ return ''; }
-    return tourHandy('<div class="iphone-karte iphone-karte-gross">'+cardHTML(p)+'</div>'
-      +'<div class="iphone-knopf"><div class="tour-zwei"><div data-tm="vor">'+vor+'</div><div data-tm="nach">'+nach+'</div></div></div>',
-      true,false,null,'dabei'); },
+  0:()=>{ const snap=TOUR_SNAP.start; if(!snap)return '';
+    return tourHandy('<div data-tm="scroll">'+snap+'</div>',false,true,null,'scroll'); },
+  1:()=>{ const snap=TOUR_SNAP.freunde; if(!snap)return '';
+    return tourHandy('<div data-tm="scroll" data-ausrichten=".fr-zeile">'+snap+'</div>',false,true,null,'freunde'); },
+  2:()=>{ if(!TOUR_SNAP.detail||!TOUR_SNAP.dabei||!TOUR_SNAP.start)return '';
+    return tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
+      +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.detail+'</div><div data-tm="nach">'+TOUR_SNAP.dabei+'</div></div></div>',
+      false,false,'unten','dabei'); },
   3:()=>tourBeispielChats(true),
-  4:()=>{ const leiste=tourKlon('#bnav'); if(!leiste)return '';
-    const hinten=tourSeitenKlon(TOUR_OBEN)+tourKarten();
-    const blatt='<div class="iphone-blatt" data-tm="blatt"><div class="plus-gross"><span class="plus-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>'
-      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div></div>';
-    return tourHandy('<div class="iphone-dimm" data-tm="dimm">'+hinten+'</div>',false,blatt+leiste,'unten','plus'); },
+  4:()=>{ if(!TOUR_SNAP.start||!TOUR_SNAP.erstellen)return '';
+    return tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
+      +'<div class="tour-detail" data-tm="blatt">'+TOUR_SNAP.erstellen+'</div></div>',false,'main',null,'plus'); },
   5:()=>tourFremdesProfil(),
-  6:()=>{ const k=tourSeitenKlon(TOUR_OBEN);
-    return k?tourHandy('<div class="iphone-raus">'+k+tourKarten()+'</div>',false,true,null,'raus'):''; },
+  6:()=>{ const k=TOUR_SNAP.start;
+    return k?tourHandy('<div class="iphone-raus">'+k+'</div>',false,true,null,'raus'):''; },
 };
 
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
@@ -10725,7 +10862,7 @@ function tourFremdesProfil(){
 }
 function tourBeispielChats(neu){
   const kopf=tourKlon('#page-chat .top-nav')||'';
-  const zeile=(p,text,zeit,neu)=>'<div class="chat-item'+(neu?' unread':'')+'"><div class="chat-av" style="background:'+avFarbeFuer(p.username)+'">'+p.full_name[0]+'</div>'
+  const zeile=(p,text,zeit,neu)=>'<div class="chat-item'+(neu?' unread':'')+'"><div class="chat-av" style="background:'+avFarbeFuer(p.full_name)+'">'+anfang(p.full_name)+'</div>'
     +'<div class="chat-info"><div class="chat-name">'+p.full_name+'</div><div class="chat-preview">'+text+'</div></div>'
     +'<div class="chat-meta"><div class="chat-time">'+zeit+'</div>'+(neu?'<div class="unread-dot">1</div>':'')+'</div></div>';
   return tourHandy(kopf+'<div class="chat-wrap">'
@@ -10737,8 +10874,7 @@ function tourBeispielChats(neu){
 }
 const TOUR_ECHT_PRO={
   0:()=>tourBeispielProfil(),
-  1:()=>tourHandy(tourKlon('#page-main .top-nav')
-      +'<div class="iphone-namen"><div class="iphone-namen-t">Openair am See · deine Leute</div>'+TOUR_LEUTE.map(tourAttZeile).join('')+'</div>'+tourKarten(),false,true),
+  1:()=>TOUR_SNAP.freunde?tourHandy('<div data-tm="scroll" data-ausrichten=".fr-zeile">'+TOUR_SNAP.freunde+'</div>',false,true,null,'freunde'):'',
   2:()=>tourBeispielChats(),
   3:()=>tourBeispielProfil('iphone-kanaele iphone-gescrollt'),
 };
@@ -10759,6 +10895,7 @@ function tourAufbauen(){
     '<div class="tour-punkt'+(i===0?' an':'')+'"></div>').join('');
 
   tourMasse();
+  buehne.querySelectorAll(".tour-karte").forEach(tourAusrichten);
 }
 
 /* Bild, Titel und Text bekommen jeweils die Höhe der grössten Karte.
@@ -26193,7 +26330,7 @@ const AV_FARBEN=[
   '#2F7BD6',
   '#C2378F',
 ];
-const AV_KLASSEN='.chat-av,.sr-av,.nt-av-bild,.kz-av,.cm-av,.kwb-av,.insta-av,.fr-av,.vh-av,.tb-av,.nt-anfr-av,.av-sm';
+const AV_KLASSEN='.chat-av,.sr-av,.nt-av-bild,.kz-av,.cm-av,.kwb-av,.insta-av,.fr-av>span,.vh-av,.tb-av,.nt-anfr-av,.av-sm';
 function avFarbeFuer(text){
   let h=0; const t=String(text||'?');
   for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;
