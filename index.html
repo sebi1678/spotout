@@ -7257,6 +7257,27 @@
     .ze-text small{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .ze-knopf{flex:none;border:none;cursor:pointer;padding:9px 12px;border-radius:12px;background:#FF2D76;color:#fff;font:800 .74rem var(--font)}
     @media(prefers-reduced-motion:reduce){.ze-banner{transition:opacity .2s;transform:none}}
+    /* Tour: Handy fast 1:1, angeschnitten und weich ausgeblendet */
+    .tour-karte:has(.iphone-fenster){inset:6px 0 0;padding-inline:26px}
+    .tour-bild:has(.iphone-fenster){width:100vw;max-width:none}
+    .iphone-fenster{position:relative;width:100%;height:var(--fenster-h,380px);overflow:hidden;
+      display:flex;justify-content:center;align-items:flex-start;padding-top:2px;
+      -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 64px),transparent);
+              mask-image:linear-gradient(to bottom,#000 calc(100% - 64px),transparent)}
+    .iphone-fenster.von-unten{align-items:flex-end;padding-top:0;
+      -webkit-mask-image:linear-gradient(to top,#000 calc(100% - 64px),transparent);
+              mask-image:linear-gradient(to top,#000 calc(100% - 64px),transparent)}
+    .iphone-fenster .iphone{--w:var(--tw,360px);--s:var(--ts,.887);flex:none;margin:0;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 1px 0 rgba(255,255,255,.08)}
+    .iphone-fenster .iphone-rand{padding:6px}
+    .iphone-namen{padding:6px 16px 10px}
+    .iphone-gescrollt{margin-top:-120px}
+    .iphone-namen-t{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:4px 0 8px}
+    .iphone-app{text-align:left}
+    .iphone-kanaele .up2-link{box-shadow:0 0 0 3px #FF2D76}
+    /* Einstellungen: schlichte, einfarbige Symbole wie in iOS */
+    .settings-btn .pk:not(.pk-bunt){color:rgba(255,255,255,.78)}
+    .settings-btn.danger .pk{color:#ff6b6b}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -8524,25 +8545,25 @@
         <div class="set-lbl">Privatsphäre</div>
         <div id="setProfilBox">
         <button class="settings-btn" onclick="wahlProfil()">
-          <i data-pk="profil" data-pk-g="20"></i>
+          <i data-pk="profil" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Dein Profil</span><span class="s-wert" id="setProfilWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         </div>
         <div class="settings-btn set-schalter">
-          <i data-pk="auge" data-pk-g="20"></i>
+          <i data-pk="auge" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Profilbesuche<small>Wer Pro hat, sieht, dass du da warst – und du siehst, wer bei dir war</small></span>
           <span id="setBesucheSchalter"></span>
         </div>
         <div id="setNachrichtenBox">
         <button class="settings-btn" onclick="wahlNachrichten()">
-          <i data-pk="chat" data-pk-g="20"></i>
+          <i data-pk="chat" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Wer darf dir schreiben?</span><span class="s-wert" id="setMsgWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         </div>
         <button class="settings-btn set-abstand" onclick="blockiertOeffnen()">
-          <i data-pk="blockiert" data-pk-g="20"></i>
+          <i data-pk="blockiert" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Blockierte Personen</span><span class="s-wert" id="setBlockZahl"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
@@ -8551,29 +8572,29 @@
       <div class="set-gruppe">
         <div class="set-lbl">App</div>
         <button class="settings-btn" onclick="pushEinstOeffnen()">
-          <i data-pk="glocke" data-pk-g="20"></i>
+          <i data-pk="glocke" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Benachrichtigungen</span><span class="s-wert" id="setPushWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <button class="settings-btn" onclick="wahlSprache()">
-          <i data-pk="sprache" data-pk-g="20"></i>
+          <i data-pk="sprache" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Sprache</span><span class="s-wert" id="setSpracheWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <div id="setRausBox">
         <button class="settings-btn" onclick="wahlRaus()">
-          <i data-pk="doomscroll" data-pk-g="20"></i>
+          <i data-pk="doomscroll" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Fluchtknopf</span><span class="s-wert" id="setRausWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         </div>
         <button class="settings-btn" onclick="wahlOrt()">
-          <i data-pk="ort" data-pk-g="20"></i>
+          <i data-pk="ort" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Standort</span><span class="s-wert" id="setOrtWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <button class="settings-btn" onclick="wahlKarten()">
-          <i data-pk="karte" data-pk-g="20"></i>
+          <i data-pk="karte" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Karten-App</span><span class="s-wert" id="setKartenWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
@@ -8582,22 +8603,22 @@
       <div class="set-gruppe">
         <div class="set-lbl">Hilfe</div>
       <button class="settings-btn" onclick="tourNochmal('start')">
-        <i data-pk="tour" data-pk-g="20"></i>
+        <i data-pk="tour" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">So funktioniert SPOTOUT</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn" id="setProTour" onclick="tourNochmal('pro')" hidden>
-        <i data-pk="stern" data-pk-g="20"></i>
+        <i data-pk="stern" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Was Pro alles kann</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn" onclick="openRules()">
-        <i data-pk="regeln" data-pk-g="20"></i>
+        <i data-pk="regeln" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Community-Regeln</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <a class="settings-btn" href="mailto:support@spotoutapp.ch">
-        <i data-pk="support" data-pk-g="20"></i>
+        <i data-pk="support" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Support</span><span class="s-wert">support@spotoutapp.ch</span>
       </a>
       </div>
@@ -8605,17 +8626,17 @@
       <div class="set-gruppe">
         <div class="set-lbl">Rechtliches</div>
       <a class="settings-btn" href="/nutzungsbedingungen" target="_blank" rel="noopener">
-        <i data-pk="dokument" data-pk-g="20"></i>
+        <i data-pk="dokument" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Nutzungsbedingungen</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </a>
       <a class="settings-btn" href="/datenschutz" target="_blank" rel="noopener">
-        <i data-pk="datenschutz" data-pk-g="20"></i>
+        <i data-pk="datenschutz" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Datenschutzerklärung</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </a>
       <a class="settings-btn" href="/impressum" target="_blank" rel="noopener">
-        <i data-pk="impressum" data-pk-g="20"></i>
+        <i data-pk="impressum" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Impressum</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </a>
@@ -8624,17 +8645,17 @@
       <div class="set-gruppe">
         <div class="set-lbl">Konto</div>
       <button class="settings-btn" id="pwAendernBtn" onclick="pwAendernMail()">
-        <i data-pk="passwort" data-pk-g="20"></i>
+        <i data-pk="passwort" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Passwort ändern</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn" onclick="doLogout()">
-        <i data-pk="abmelden" data-pk-g="20"></i>
+        <i data-pk="abmelden" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label">Abmelden</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn danger" id="kontoWegBtn" onclick="kontoWeg()">
-        <i data-pk="loeschen" data-pk-g="20"></i>
+        <i data-pk="loeschen" data-pk-g="20" data-pk-schlicht></i>
         <span class="s-label" id="kontoWegLabel">Konto löschen</span>
         <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
@@ -8650,12 +8671,12 @@
       <div class="set-gruppe" id="setSchenkenBox" hidden>
         <div class="set-lbl">Betreiber</div>
         <button class="settings-btn" onclick="vereinePruefenOeffnen()">
-          <i data-pk="verein" data-pk-g="20"></i>
+          <i data-pk="verein" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <button class="settings-btn" onclick="moderationOeffnen()">
-          <i data-pk="gefahr" data-pk-g="20"></i>
+          <i data-pk="gefahr" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Meldungen</span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
@@ -10445,22 +10466,49 @@ function tourKlon(sel){
   return k.outerHTML;
 }
 function tourEcht(html,klasse){ return html?'<div class="tour-echt '+(klasse||'')+'" aria-hidden="true">'+html+'</div>':''; }
+/* Die Tour zeigt echte Bausteine der App, aber nie die Daten der
+   Person, die sie gerade ansieht: eine erfundene Beispiel-Party und
+   Beispiel-Leute (dieselben Namen wie auf der Pro-Seite). */
+const TOUR_LEUTE=[
+  {id:'tl1',full_name:'Lena Meier',username:'lena.meier'},
+  {id:'tl2',full_name:'Jan Brunner',username:'jan.brunner'},
+  {id:'tl3',full_name:'Nina Kaufmann',username:'nina.kaufmann'},
+];
+function tourTag(plus){ const d=new Date(Date.now()+plus*864e5); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TOUR_BILD_SEE='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1446"/><stop offset=".55" stop-color="#7a2d6b"/><stop offset=".8" stop-color="#ff7a59"/><stop offset="1" stop-color="#ffb36b"/></linearGradient><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a66"/><stop offset="1" stop-color="#2a1745"/></linearGradient><radialGradient id="g" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd59a"/><stop offset="1" stop-color="#ffd59a" stop-opacity="0"/></radialGradient></defs><rect width="400" height="140" fill="url(#h)"/><circle cx="250" cy="140" r="70" fill="url(#g)" opacity=".7"/><circle cx="250" cy="140" r="26" fill="#ffd08a"/><path d="M0 128 Q60 112 120 124 T240 120 T400 126 V140 H0z" fill="#3a1b4f" opacity=".85"/><rect y="140" width="400" height="100" fill="url(#s)"/><g fill="#ffd08a" opacity=".55"><rect x="228" y="146" width="44" height="2" rx="1"/><rect x="236" y="153" width="28" height="2" rx="1"/><rect x="242" y="160" width="16" height="2" rx="1"/></g><g opacity=".35"><path d="M70 150 L20 40 L44 36z" fill="#ff5fa8"/><path d="M90 150 L150 30 L170 40z" fill="#7c6bff"/></g><path d="M40 150 h70 v-24 h-70z" fill="#140d2b"/><path d="M-10 18 L20 29 L50 38 L80 45 L110 51 L140 55 L170 57 L200 58 L230 57 L260 55 L290 51 L320 45 L350 38 L380 29 L410 18" stroke="#000" stroke-opacity=".5" stroke-width="1" fill="none"/><circle cx="20" cy="32" r="7" fill="#ff5fa8" opacity=".22"/><circle cx="20" cy="32" r="2.3" fill="#ff5fa8"/><circle cx="50" cy="41" r="7" fill="#8fd3ff" opacity=".22"/><circle cx="50" cy="41" r="2.3" fill="#8fd3ff"/><circle cx="80" cy="48" r="7" fill="#ffd36e" opacity=".22"/><circle cx="80" cy="48" r="2.3" fill="#ffd36e"/><circle cx="110" cy="54" r="7" fill="#ff5fa8" opacity=".22"/><circle cx="110" cy="54" r="2.3" fill="#ff5fa8"/><circle cx="140" cy="58" r="7" fill="#8fd3ff" opacity=".22"/><circle cx="140" cy="58" r="2.3" fill="#8fd3ff"/><circle cx="170" cy="60" r="7" fill="#ffd36e" opacity=".22"/><circle cx="170" cy="60" r="2.3" fill="#ffd36e"/><circle cx="200" cy="61" r="7" fill="#ff5fa8" opacity=".22"/><circle cx="200" cy="61" r="2.3" fill="#ff5fa8"/><circle cx="230" cy="60" r="7" fill="#8fd3ff" opacity=".22"/><circle cx="230" cy="60" r="2.3" fill="#8fd3ff"/><circle cx="260" cy="58" r="7" fill="#ffd36e" opacity=".22"/><circle cx="260" cy="58" r="2.3" fill="#ffd36e"/><circle cx="290" cy="54" r="7" fill="#ff5fa8" opacity=".22"/><circle cx="290" cy="54" r="2.3" fill="#ff5fa8"/><circle cx="320" cy="48" r="7" fill="#8fd3ff" opacity=".22"/><circle cx="320" cy="48" r="2.3" fill="#8fd3ff"/><circle cx="350" cy="41" r="7" fill="#ffd36e" opacity=".22"/><circle cx="350" cy="41" r="2.3" fill="#ffd36e"/><circle cx="380" cy="32" r="7" fill="#ff5fa8" opacity=".22"/><circle cx="380" cy="32" r="2.3" fill="#ff5fa8"/><g fill="#0b0820" opacity="1"><circle cx="-1" cy="212" r="4.6"/><rect x="-9" y="215" width="15" height="80" rx="7"/><circle cx="22" cy="207" r="5.3"/><rect x="13" y="211" width="17" height="80" rx="9"/><circle cx="46" cy="204" r="5.3"/><rect x="38" y="208" width="17" height="80" rx="9"/><circle cx="74" cy="206" r="4.5"/><rect x="67" y="210" width="14" height="80" rx="7"/><circle cx="99" cy="203" r="5.9"/><rect x="90" y="208" width="19" height="80" rx="9"/><circle cx="123" cy="212" r="5.5"/><rect x="114" y="217" width="18" height="80" rx="9"/><circle cx="151" cy="214" r="5.1"/><rect x="142" y="218" width="16" height="80" rx="8"/><circle cx="171" cy="205" r="5.9"/><rect x="162" y="209" width="19" height="80" rx="10"/><circle cx="197" cy="208" r="4.6"/><rect x="190" y="212" width="15" height="80" rx="7"/><circle cx="228" cy="211" r="4.7"/><rect x="220" y="215" width="15" height="80" rx="8"/><circle cx="251" cy="209" r="5.0"/><rect x="243" y="214" width="16" height="80" rx="8"/><circle cx="272" cy="208" r="4.5"/><rect x="264" y="211" width="14" height="80" rx="7"/><circle cx="301" cy="207" r="5.1"/><rect x="293" y="211" width="17" height="80" rx="8"/><circle cx="326" cy="207" r="5.2"/><rect x="317" y="211" width="17" height="80" rx="8"/><circle cx="352" cy="205" r="5.6"/><rect x="343" y="209" width="18" height="80" rx="9"/><circle cx="376" cy="212" r="5.3"/><rect x="367" y="216" width="17" height="80" rx="9"/></g></svg>';
+const TOUR_BILD_HAUS='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="a" cx=".3" cy=".35" r=".7"><stop offset="0" stop-color="#ff2d76" stop-opacity=".75"/><stop offset="1" stop-color="#1a0d33" stop-opacity="0"/></radialGradient><radialGradient id="b" cx=".8" cy=".3" r=".6"><stop offset="0" stop-color="#5b5bff" stop-opacity=".7"/><stop offset="1" stop-color="#1a0d33" stop-opacity="0"/></radialGradient></defs><rect width="400" height="240" fill="#140a26"/><rect width="400" height="240" fill="url(#a)"/><rect width="400" height="240" fill="url(#b)"/><rect x="270" y="40" width="80" height="96" rx="4" fill="#0d1a3a" stroke="#000" stroke-opacity=".5" stroke-width="4"/><path d="M310 40v96M270 88h80" stroke="#000" stroke-opacity=".5" stroke-width="3"/><g fill="#cfe3ff" opacity=".8"><circle cx="290" cy="60" r="1.2"/><circle cx="330" cy="70" r="1"/><circle cx="300" cy="110" r="1.1"/></g><circle cx="120" cy="30" r="14" fill="#d9d9e6" opacity=".9"/><g stroke="#fff" stroke-opacity=".25" stroke-width="1"><path d="M120 44 L60 150"/><path d="M120 44 L190 160"/><path d="M120 44 L120 170"/></g><path d="M-10 10 L25 19 L60 27 L95 32 L130 37 L165 39 L200 40 L235 39 L270 37 L305 32 L340 27 L375 19 L410 10" stroke="#000" stroke-opacity=".5" stroke-width="1" fill="none"/><circle cx="25" cy="22" r="7" fill="#ffe9b0" opacity=".22"/><circle cx="25" cy="22" r="2.3" fill="#ffe9b0"/><circle cx="60" cy="30" r="7" fill="#ffcf6e" opacity=".22"/><circle cx="60" cy="30" r="2.3" fill="#ffcf6e"/><circle cx="95" cy="36" r="7" fill="#ffe9b0" opacity=".22"/><circle cx="95" cy="36" r="2.3" fill="#ffe9b0"/><circle cx="130" cy="40" r="7" fill="#ffcf6e" opacity=".22"/><circle cx="130" cy="40" r="2.3" fill="#ffcf6e"/><circle cx="165" cy="42" r="7" fill="#ffe9b0" opacity=".22"/><circle cx="165" cy="42" r="2.3" fill="#ffe9b0"/><circle cx="200" cy="43" r="7" fill="#ffcf6e" opacity=".22"/><circle cx="200" cy="43" r="2.3" fill="#ffcf6e"/><circle cx="235" cy="42" r="7" fill="#ffe9b0" opacity=".22"/><circle cx="235" cy="42" r="2.3" fill="#ffe9b0"/><circle cx="270" cy="40" r="7" fill="#ffcf6e" opacity=".22"/><circle cx="270" cy="40" r="2.3" fill="#ffcf6e"/><circle cx="305" cy="36" r="7" fill="#ffe9b0" opacity=".22"/><circle cx="305" cy="36" r="2.3" fill="#ffe9b0"/><circle cx="340" cy="30" r="7" fill="#ffcf6e" opacity=".22"/><circle cx="340" cy="30" r="2.3" fill="#ffcf6e"/><circle cx="375" cy="22" r="7" fill="#ffe9b0" opacity=".22"/><circle cx="375" cy="22" r="2.3" fill="#ffe9b0"/><rect x="10" y="150" width="70" height="40" rx="6" fill="#0a0618"/><g fill="#07040f" opacity="1"><circle cx="1" cy="208" r="5.4"/><rect x="-8" y="212" width="17" height="80" rx="9"/><circle cx="33" cy="206" r="6.1"/><rect x="24" y="211" width="20" height="80" rx="10"/><circle cx="63" cy="213" r="4.5"/><rect x="56" y="216" width="14" height="80" rx="7"/><circle cx="93" cy="209" r="6.2"/><rect x="84" y="214" width="20" height="80" rx="10"/><circle cx="121" cy="211" r="5.1"/><rect x="113" y="215" width="16" height="80" rx="8"/><circle cx="150" cy="205" r="5.2"/><rect x="142" y="209" width="17" height="80" rx="8"/><circle cx="182" cy="213" r="4.4"/><rect x="174" y="217" width="14" height="80" rx="7"/><circle cx="212" cy="209" r="4.8"/><rect x="205" y="212" width="15" height="80" rx="8"/><circle cx="249" cy="210" r="4.5"/><rect x="242" y="214" width="14" height="80" rx="7"/><circle cx="277" cy="210" r="6.0"/><rect x="268" y="215" width="19" height="80" rx="10"/><circle cx="311" cy="209" r="4.9"/><rect x="303" y="213" width="16" height="80" rx="8"/><circle cx="337" cy="211" r="6.0"/><rect x="328" y="216" width="19" height="80" rx="10"/><circle cx="366" cy="207" r="4.7"/><rect x="359" y="211" width="15" height="80" rx="8"/></g></svg>';
+const tourBild=(svg)=>'data:image/svg+xml,'+encodeURIComponent(svg);
 function tourParty(){
-  const alle=(typeof evts!=='undefined'&&evts)||[];
-  const passt=alle.filter(e=>!istVorbei(e)&&e.type!=='private'&&e.created_by!==cUser?.id);
-  return passt[0]||alle.find(e=>!istVorbei(e))||null;
+  return {id:'tour-demo',name:'Openair am See',category:'Openair',type:'public',address:'Seebad Utoquai, Zürich',
+    date:tourTag(1),time:'20:00',attending:34,image_url:tourBild(TOUR_BILD_SEE),price:0,drink_price:0,created_by:'tour',status:'active'};
+}
+function tourParty2(){
+  return {id:'tour-demo2',name:'Hausparty bei Nina',category:'Hausparty',type:'public',address:'Langstrasse, Zürich',
+    date:tourTag(2),time:'22:00',attending:12,image_url:tourBild(TOUR_BILD_HAUS),price:5,drink_price:0,created_by:'tour',status:'active'};
+}
+/* Was aus der echten Oberflaeche geklont wird, traegt noch das eigene
+   Profilbild, den eigenen Namen und ungelesene Zahlen – das kommt raus. */
+function tourNeutral(html){
+  let h=html||'';
+  const ich=[cProfile?.username,cProfile?.full_name].filter(x=>x&&x.length>1);
+  ich.forEach(x=>{ h=h.split(esc(x)).join(x===cProfile?.username?'lena.meier':'Lena Meier'); });
+  h=h.replace(/(<div class="nav-av js-nav-av"[^>]*>)(<img[^>]*>|[^<]*)(<\/div>)/g,'$1L$3');
+  h=h.replace(/<(span|div) class="unread-badge[^"]*"[^>]*>[^<]*<\/\1>/g,'');
+  return h;
 }
 /* Im iPhone-Rahmen wie bei der Konkurrenz: Innen steht die echte App in
    voller Breite (390 px) und wird auf Handygroesse verkleinert – also
    1:1 dieselben Teile, nur kleiner. */
 /* Bis zu zwei echte Partys nebeneinander, wie im Raster der Startseite */
 function tourKarten(){
-  const alle=(typeof evts!=='undefined'&&evts)||[];
-  const p=tourParty(); if(!p)return '';
-  const zweite=alle.find(e=>e!==p&&!istVorbei(e)&&e.type===p.type);
-  return '<div class="iphone-karte'+(zweite?' iphone-zwei':'')+'">'+cardHTML(p)+(zweite?cardHTML(zweite):'')+'</div>';
+  return '<div class="iphone-karte iphone-zwei">'+cardHTML(tourParty())+cardHTML(tourParty2())+'</div>';
 }
-function tourHandy(inner,unten,leiste){
+function tourHandy(inner,unten,leiste,fenster){
+  const vonUnten=fenster?fenster==='unten':!!unten;
+  return '<div class="iphone-fenster'+(vonUnten?' von-unten':'')+'">'+tourHandyGeraet(inner,unten,leiste)+'</div>';
+}
+function tourHandyGeraet(inner,unten,leiste){
+  inner=tourNeutral(inner); if(typeof leiste==='string')leiste=tourNeutral(leiste);
   const balken=(h,x)=>'<rect x="'+x+'" y="'+(12-h)+'" width="3.2" height="'+h+'" rx="1" fill="#fff"/>';
   return '<div class="iphone" aria-hidden="true">'
     +'<i class="iphone-taste links aktion"></i><i class="iphone-taste links laut1"></i><i class="iphone-taste links laut2"></i>'
@@ -10472,7 +10520,7 @@ function tourHandy(inner,unten,leiste){
     +'<svg viewBox="0 0 16 12" width="17" height="12"><path d="M8 2.2c2.4 0 4.6.9 6.2 2.4l1.2-1.2A10.4 10.4 0 0 0 8 .5 10.4 10.4 0 0 0 .6 3.4l1.2 1.2A8.7 8.7 0 0 1 8 2.2zm0 3.4c1.5 0 2.8.5 3.8 1.4L13 5.8A7.2 7.2 0 0 0 8 3.9a7.2 7.2 0 0 0-5 1.9L4.2 7c1-.9 2.3-1.4 3.8-1.4zM8 9l2.3-1.6A3.6 3.6 0 0 0 8 6.6c-.9 0-1.7.3-2.3.8z" fill="#fff"/></svg>'
     +'<svg viewBox="0 0 28 13" width="27" height="13"><rect x=".5" y=".5" width="24" height="12" rx="3.8" fill="none" stroke="#fff" stroke-opacity=".4"/><rect x="2" y="2" width="21" height="9" rx="2.5" fill="#fff"/><path d="M26 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="#fff" fill-opacity=".45"/></svg>'
     +'</span></div>'
-    +(leiste?'<div class="iphone-ebene iphone-leiste">'+(typeof leiste==='string'?leiste:(tourKlon('#bnav')||''))+'</div>':'')
+    +(leiste?'<div class="iphone-ebene iphone-leiste">'+(typeof leiste==='string'?leiste:tourNeutral(tourKlon('#bnav')||''))+'</div>':'')
     +'<div class="iphone-ebene iphone-unten-balken"><span></span></div>'
     +'</div></div></div>';
 }
@@ -10487,11 +10535,11 @@ const TOUR_ECHT={
     // Der Knopf, wie ihn Gaeste sehen (auch wenn die einzige Party die eigene ist)
     const kp=(echtP&&echtP.created_by!==cUser?.id)?echtP:{id:'tour',type:echtP?.type||'public',created_by:null,price:0,drink_price:0,attending:0};
     let knopf=''; try{ knopf=buildAttendBtn(kp,false,false,false,null,false,(kp.price||0)+(kp.drink_price||0),worldVars(kp.type),kp.attending||0,false); }catch(e){ return ''; }
-    return tourHandy(tourKlon('#page-main .top-nav')+(echtP?'<div class="iphone-karte iphone-karte-gross">'+cardHTML(echtP)+'</div>':'')+'<div class="iphone-knopf">'+knopf+'</div>'); },
+    return tourHandy(tourKlon('#page-main .top-nav')+(echtP?'<div class="iphone-karte iphone-karte-gross">'+cardHTML(echtP)+'</div>':'')+'<div class="iphone-knopf">'+knopf+'</div>',true); },
   2:()=>{ const leiste=tourKlon('#bnav'); if(!leiste)return '';
     const hinten=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap'])+tourKarten();
     return tourHandy('<div class="iphone-dimm">'+hinten+'</div>',false,'<div class="iphone-blatt"><div class="plus-gross"><span class="plus-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>'
-      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div></div>'+leiste); },
+      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div></div>'+leiste,'unten'); },
   3:()=>{ const k=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap']); const p=tourParty();
     return k?tourHandy('<div class="iphone-raus">'+k+(p?tourKarten():'')+'</div>',false,true):''; },
 };
@@ -10499,28 +10547,41 @@ const TOUR_ECHT={
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
    Kontakte in derselben Zeile wie auf der Gaesteliste, das echte
    Chat-Feld, deine echten Kanaele. Kontakte werden vor der Tour geladen. */
-let tourKontakte=[];
-async function tourKontakteLaden(){
-  if(!cUser)return;
-  try{
-    const{data}=await sb.from('follows').select('profiles:following_id(id,username,full_name,avatar_url)').eq('follower_id',cUser.id).limit(3);
-    tourKontakte=(data||[]).map(r=>r.profiles).filter(Boolean);
-  }catch(e){ tourKontakte=[]; }
-}
 function tourAttZeile(p){
   const av=p.avatar_url?'<img src="'+escAttr(p.avatar_url)+'" alt="">':anfang(p.full_name||p.username||'?');
   return '<div class="att-row"><div class="att-left"><div class="av-sm">'+av+'</div>'
     +'<div style="min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'')+'</div><div class="att-user">@'+esc(p.username||'')+'</div></div></div>'
     +'<span class="att-tag">geht hin</span></div>';
 }
+function tourBeispielProfil(markiere){
+  const kopf=tourKlon('#page-profile .top-nav')||'';
+  const stat=(z,t)=>'<div class="insta-stat"><div class="insta-stat-num">'+z+'</div><div class="insta-stat-lbl">'+t+'</div></div>';
+  return tourHandy('<div class="'+(markiere||'')+'">'+kopf
+    +'<div class="prof-wrap"><div class="prof-wrap-insta"><div class="prof-pro-header"><div class="prof-header">'
+    +'<div class="insta-av-wrap"><div class="insta-av pro-glow"><span>L</span></div></div>'
+    +'<div class="prof-stats-row">'+stat(4,'Partys')+stat(212,'Follower')+stat(180,'Folgt')+'</div></div>'
+    +'<div class="prof-bio"><div class="prof-name-row"><span class="insta-name">Lena Meier</span>'+proMarke()+'</div>'
+    +'<div class="insta-handle">@lena.meier · 21</div><div class="insta-bio">Openairs, Techno und gute Leute.</div>'
+    +buildSocialLinks({is_pro:true,instagram_handle:'lena.meier',snapchat_handle:'lena.mr'})
+    +'</div></div></div></div></div>',false,true);
+}
+function tourBeispielChats(){
+  const kopf=tourKlon('#page-chat .top-nav')||'';
+  const zeile=(p,text,zeit,neu)=>'<div class="chat-item'+(neu?' unread':'')+'"><div class="chat-av" style="background:'+avFarbeFuer(p.username)+'">'+p.full_name[0]+'</div>'
+    +'<div class="chat-info"><div class="chat-name">'+p.full_name+'</div><div class="chat-preview">'+text+'</div></div>'
+    +'<div class="chat-meta"><div class="chat-time">'+zeit+'</div>'+(neu?'<div class="unread-dot">1</div>':'')+'</div></div>';
+  return tourHandy(kopf+'<div class="chat-wrap">'
+    +zeile(TOUR_LEUTE[0],'Bist du morgen auch am See?','20:14',true)
+    +zeile(TOUR_LEUTE[2],'Treffen wir uns beim Eingang?','18:02',false)
+    +zeile(TOUR_LEUTE[1],'<span class="chat-du">Du:</span> Ich bring die Box mit','Gestern',false)
+    +'</div>',false,true);
+}
 const TOUR_ECHT_PRO={
-  0:()=>{ if(!cProfile)return '';
-    const av=cProfile.avatar_url?'<img src="'+escAttr(cProfile.avatar_url)+'" alt="">':anfang(cProfile.full_name||cProfile.username||'?');
-    return tourEcht('<div class="te-pro"><div class="insta-av pro-glow te-pro-av">'+av+'</div>'
-      +'<div class="prof-name-row"><span class="insta-name">'+esc(cProfile.full_name||cProfile.username||'')+'</span>'+proMarke()+'</div></div>','te-spalte'); },
-  1:()=>tourKontakte.length?tourEcht('<div class="te-liste">'+tourKontakte.map(tourAttZeile).join('')+'</div>','te-spalte'):'',
-  2:()=>{ const f=tourKlon('#page-conv .conv-input-wrap'); return f?tourEcht('<div class="te-chat">'+f+'</div>','te-spalte'):''; },
-  3:()=>{ const l=cProfile?buildSocialLinks({...cProfile,is_pro:true},{bunt:true}):''; return l?tourEcht(l,'te-spalte'):''; },
+  0:()=>tourBeispielProfil(),
+  1:()=>tourHandy(tourKlon('#page-main .top-nav')
+      +'<div class="iphone-namen"><div class="iphone-namen-t">Openair am See · deine Leute</div>'+TOUR_LEUTE.map(tourAttZeile).join('')+'</div>'+tourKarten(),false,true),
+  2:()=>tourBeispielChats(),
+  3:()=>tourBeispielProfil('iphone-kanaele iphone-gescrollt'),
 };
 
 function tourAufbauen(){
@@ -10556,7 +10617,7 @@ function tourMasse(){
   const buehne=document.getElementById('tourBuehne');
   if(!buehne||!buehne.children.length)return;
   const wurzel=document.documentElement.style;
-  ['--tour-bild-h','--tour-titel-h','--tour-text-h','--tour-luft','--tour-bild-skala']
+  ['--tour-bild-h','--tour-titel-h','--tour-text-h','--tour-luft','--tour-bild-skala','--fenster-h']
     .forEach(v=>wurzel.removeProperty(v));
 
   const groesste=(auswahl)=>{
@@ -10584,6 +10645,21 @@ function tourMasse(){
     }
   }
 
+  /* iPhone-Karten: nicht verkleinern, sondern das Handy fast in
+     Originalgroesse zeigen und mehr oder weniger davon anschneiden. */
+  if(buehne.querySelector('.iphone-fenster')){
+    const breite=Math.min(372, window.innerWidth-18);
+    wurzel.setProperty('--tw', breite+'px');
+    wurzel.setProperty('--ts', ((breite-16)/390).toFixed(4));
+    const fh=Math.round(Math.max(200, Math.min(520, platz - titel - text - luft - 56)));
+    wurzel.setProperty('--fenster-h', fh+'px');
+    skala=1;
+    wurzel.setProperty('--tour-bild-h', fh+'px');
+    if(titel>0)wurzel.setProperty('--tour-titel-h', titel+'px');
+    if(text>0)wurzel.setProperty('--tour-text-h', text+'px');
+    wurzel.setProperty('--tour-luft', luft+'px');
+    return;
+  }
   if(natur>0){
     wurzel.setProperty('--tour-bild-skala', skala.toFixed(3));
     wurzel.setProperty('--tour-bild-h', Math.round(natur*skala)+'px');
@@ -10949,7 +11025,7 @@ function tourNochmal(satz){
 function proTourPruefen(){
   if(!cProfile?.is_pro)return;
   if(tourGelaufen('pro'))return;
-  tourKontakteLaden().finally(()=>setTimeout(()=>tourStarten('pro'),600));
+  setTimeout(()=>tourStarten('pro'),600);
 }
 
 /* Der Scheinwerfer-Coach ist ausgebaut. Er zeigte auf echte Elemente
