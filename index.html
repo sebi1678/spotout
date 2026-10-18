@@ -7181,6 +7181,10 @@
     .iphone-knopf{padding:14px 16px 40px}
     .iphone-blatt{margin:0 0 10px;padding:22px 16px 18px;border-radius:26px 26px 0 0;background:rgb(15,20,50);border:1px solid rgba(255,255,255,.1)}
     .iphone-app .bnav{position:relative!important;bottom:auto!important}
+    /* Eventfrog-Karten: gleich wie eigene, mit kleinem Herkunftshinweis */
+    .card-extern{position:relative}
+    .card-extern::after{content:'Tickets · Eventfrog';position:absolute;right:8px;top:8px;padding:3px 7px;border-radius:7px;
+      background:rgba(9,13,36,.78);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.02em}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -11137,6 +11141,7 @@ function gastStarten(){
   const leiste=document.getElementById('gastLeiste');
   if(leiste)leiste.hidden=false;
   loadEvts();
+  externeLaden();
   initFyModus();
   autoLoc();
   // Auch ohne Konto: einmal zeigen, was man hier sieht.
@@ -11197,6 +11202,7 @@ function enterApp(){
   if(!blocksBereit)blocksBereit=loadBlocks().catch(()=>{});
   feedAusGemerktem();
   loadEvts().then(()=>stelleOrtHer());
+  externeLaden();
   autoLoc();
   initFyModus();
   checkJoinLink();checkFeeSuccess();checkProSuccess();checkEventLink();checkProfilLink();startNotifPolling();
@@ -13545,9 +13551,47 @@ function gridMehr(type){
   renderGrid(type,gridListe[type]||[]);
 }
 
+/* ── Events von Eventfrog (Konzerte, Clubs, Festivals) ──────────────
+   Wie bei der Konkurrenz: der Reiter "Events" ist nie leer. Die Daten
+   holt ein Server-Abgleich taeglich von der Eventfrog-API in die Tabelle
+   externe_events (samt eigenen Kopien der Bilder – Eventfrog verbietet
+   das direkte Laden ihrer Bilder). Gibt es die Tabelle noch nicht, bleibt
+   hier alles still. Felder: id, titel, beginn (timestamptz), ort_name,
+   adresse, lat, lng, bild_url, ticket_url, kategorie. */
+let externeEvents=[], externeAus=false;
+async function externeLaden(){
+  if(externeAus)return;
+  try{
+    const{data,error}=await sb.from('externe_events').select('id,titel,beginn,ort_name,adresse,lat,lng,bild_url,ticket_url,kategorie')
+      .gte('beginn',new Date(Date.now()-3*3600e3).toISOString()).order('beginn',{ascending:true}).limit(150);
+    if(error){ if(/PGRST205|42P01|does not exist|schema cache/i.test(error.message+error.code))externeAus=true; else console.warn('[eventfrog]',error.message); return; }
+    externeEvents=(data||[]).map(x=>{ const d=new Date(x.beginn);
+      return {id:'ef-'+x.id, extern:x, type:'events', name:x.titel, date:x.beginn.slice(0,10),
+        time:d.toTimeString().slice(0,5), address:[x.ort_name,x.adresse].filter(Boolean).join(', '),
+        image_url:x.bild_url, category:x.kategorie||'Event', price:0, drink_price:0, attending:0, status:'live', lat:x.lat, lng:x.lng}; });
+    if(document.getElementById('page-main')?.classList.contains('active'))filterAll();
+  }catch(e){ console.warn('[eventfrog]',e); }
+}
+function externNachNaehe(liste){
+  if(typeof userLat!=='number'||typeof userLng!=='number')return liste;
+  const km=(a,b,c,d)=>{ const r=Math.PI/180, x=(c-a)*r, y=(d-b)*r*Math.cos((a+c)/2*r); return 6371*Math.sqrt(x*x+y*y); };
+  return liste.filter(e=>e.lat==null||km(userLat,userLng,e.lat,e.lng)<=60);
+}
+function externKarte(e){
+  return cardHTML(e).replace("onclick=\"openDetail('"+e.id+"')\"","onclick=\"externOeffnen('"+e.extern.id+"')\"")
+    .replace('<div class="card"','<div class="card card-extern"');
+}
+function externOeffnen(id){
+  const x=externeEvents.find(e=>e.extern.id===id)?.extern; if(!x?.ticket_url)return;
+  if(istApp())location.href=x.ticket_url; else window.open(x.ticket_url,'_blank','noopener');
+}
+
 function renderGrid(type,list){
   gridListe[type]=list;
   const g=document.getElementById('grid-'+type);
+  // Eventfrog-Events haengen hinten an die eigenen Events an
+  const extern=type==='events'?externNachNaehe(externeEvents):[];
+  if(!list.length&&extern.length){ setzeHTML(g,extern.slice(0,40).map(externKarte).join('')); return; }
   if(!list.length){
     const w=worldVars(type);
     const icons={events:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',public:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',private:'<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/>'};
@@ -13574,7 +13618,8 @@ function renderGrid(type,list){
         +'Noch '+rest+(rest===1?' Party':' Partys')+' anzeigen'+pfeil+'</button>'
       : (list.length>GRID_SCHRITT
           ? '<div class="grid-ende">Das waren alle '+list.length+'.</div>'
-          : '')));
+          : ''))
+    +(rest<=0&&extern.length?extern.slice(0,40).map(externKarte).join(''):''));
 }
 
 /* ── Wer von deinen Leuten ist dabei? ──────────────────────────────
