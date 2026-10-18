@@ -7163,21 +7163,50 @@
       padding:0 4px!important;border-radius:8px!important;font-size:.6rem!important;font-weight:700!important;
       border:1.5px solid #090D24!important;box-shadow:none!important;line-height:13px!important;font-variant-numeric:tabular-nums}
     /* iPhone-Rahmen in der Tour: echte App, auf Handygroesse verkleinert */
-    .iphone{width:212px;height:300px;margin:0 auto;padding:7px;border-radius:38px;background:#1b1d2a;
-      border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 40px rgba(0,0,0,.45);pointer-events:none}
-    .iphone-schirm{position:relative;width:100%;height:100%;border-radius:31px;overflow:hidden;background:#090D24}
-    .iphone-status{position:absolute;top:0;left:0;right:0;z-index:3;height:26px;display:flex;align-items:center;justify-content:space-between;
-      padding:0 16px;font-size:9px;font-weight:700;color:#fff}
-    .iphone-insel{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:62px;height:17px;border-radius:10px;background:#000}
-    .iphone-ic{display:flex;gap:4px;align-items:center}
-    .iphone-app{position:absolute;top:22px;left:0;width:390px;transform:scale(.506);transform-origin:0 0}
-    .iphone-unten .iphone-app{top:auto;bottom:0;transform-origin:0 100%}
+    /* iPhone 16 (393 x 852 pt), massstabsgetreu: Alurahmen, schwarzer
+       Rand, Dynamic Island 126 x 37, Action-Button + Lautstaerke links,
+       Seitentaste + Camera Control rechts, Home-Balken. --s ist der
+       Massstab der 390 px breiten App im Bildschirm. */
+    .iphone{--w:196px;--s:.4667;position:relative;width:var(--w);height:calc(var(--w) * 2.0615);margin:0 auto;padding:2px;
+      border-radius:calc(var(--w) * .19);pointer-events:none;
+      background:linear-gradient(145deg,#4a4c53 0%,#2a2b30 30%,#1c1d21 60%,#3b3d43 100%);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 1px 0 rgba(255,255,255,.08),0 24px 48px -12px rgba(0,0,0,.7),0 8px 18px rgba(0,0,0,.35)}
+    .iphone-rand{position:relative;width:100%;height:100%;padding:5px;border-radius:calc(var(--w) * .18);background:#000}
+    .iphone-schirm{position:relative;width:100%;height:100%;border-radius:calc(var(--w) * .155);overflow:hidden;background:#090D24}
+    .iphone-schirm::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+      background:linear-gradient(118deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 38%)}
+    .iphone-taste{position:absolute;width:3px;border-radius:2px;background:linear-gradient(90deg,#55575e,#2a2b30)}
+    .iphone-taste.links{left:-2px;border-radius:2px 0 0 2px}
+    .iphone-taste.rechts{right:-2px;border-radius:0 2px 2px 0;background:linear-gradient(270deg,#55575e,#2a2b30)}
+    .iphone-taste.aktion{top:17%;height:5.5%}
+    .iphone-taste.laut1{top:25.5%;height:10%}
+    .iphone-taste.laut2{top:37.5%;height:10%}
+    .iphone-taste.seite{top:27%;height:15%}
+    .iphone-taste.kamera{top:61%;height:7.5%;width:2px;right:-1px;background:#1a1b1f}
+    .iphone-ebene{position:absolute;left:0;width:390px;transform:scale(var(--s));z-index:4;pointer-events:none}
+    .iphone-oben{top:0;transform-origin:0 0;height:54px;display:flex;align-items:center;justify-content:space-between;
+      padding:4px 30px 0 46px;font:600 17px/1 -apple-system,"SF Pro Text",Inter,system-ui,sans-serif;color:#fff;letter-spacing:-.2px;
+      background:linear-gradient(#090D24 55%,rgba(9,13,36,0))}
+    .iphone-insel{position:absolute;left:50%;top:11px;transform:translateX(-50%);width:126px;height:37px;border-radius:19px;background:#000}
+    .iphone-ic{display:flex;gap:6px;align-items:center}
+    .iphone-unten-balken{bottom:0;transform-origin:0 100%;height:34px;display:flex;justify-content:center;align-items:flex-end;padding-bottom:8px}
+    .iphone-unten-balken span{width:139px;height:5px;border-radius:3px;background:rgba(255,255,255,.92)}
+    .iphone-app{position:absolute;top:calc(50px * var(--s));left:0;width:390px;transform:scale(var(--s));transform-origin:0 0}
+    .iphone-unten .iphone-app{top:auto;bottom:calc(20px * var(--s));transform-origin:0 100%}
+    @media (max-height:740px){.iphone{--w:170px;--s:.4}}
+    @media (max-height:640px){.iphone{--w:150px;--s:.3487}}
     .iphone-app .top-nav{position:relative!important;padding-top:10px!important}
     .iphone .iphone-app .nav-raus{display:inline-flex!important}
     .iphone .iphone-raus .nav-raus{box-shadow:0 0 0 4px #FF2D76!important;border-radius:12px}
     .iphone-karte{padding:6px 16px}
     .iphone-karte>*{width:62%}
     .iphone-karte-gross>*{width:100%}
+    .iphone-dimm{filter:brightness(.42)}
+    .iphone-karte-gross .card-cta{display:none}
+    .iphone-zwei{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .iphone-zwei>*{width:auto}
+    .iphone-leiste{bottom:0;transform-origin:0 100%;z-index:3}
+    .iphone-leiste .bnav{position:relative!important;bottom:auto!important;left:auto!important;right:auto!important;margin:0 auto 22px!important}
     .iphone-knopf{padding:14px 16px 40px}
     .iphone-blatt{margin:0 0 10px;padding:22px 16px 18px;border-radius:26px 26px 0 0;background:rgb(15,20,50);border:1px solid rgba(255,255,255,.1)}
     .iphone-app .bnav{position:relative!important;bottom:auto!important}
@@ -7202,6 +7231,32 @@
     .card-tag{font-size:.62rem;letter-spacing:.04em;padding:4px 10px}
     .card-heute{background:#FF2D76;color:#fff;border-color:transparent}
     .card-zahl{font-size:.74rem;color:rgba(255,255,255,.7);font-weight:600;margin-top:4px}
+    /* Profil-Fortschritt */
+    .pf-karte{margin:4px 16px 14px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09)}
+    .pf-kopf{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:9px}
+    .pf-titel{font-size:.86rem;font-weight:800;color:#fff}
+    .pf-zahl{font-size:.72rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+    .pf-balken{height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+    .pf-balken span{display:block;height:100%;border-radius:3px;background:#FF2D76;transition:width .5s var(--kurve)}
+    .pf-liste{display:flex;flex-wrap:wrap;gap:6px 14px;margin:11px 0 12px;font-size:.74rem;color:var(--muted);font-weight:600}
+    .pf-liste span{display:inline-flex;align-items:center;gap:5px}
+    .pf-liste i{width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);display:inline-block}
+    .pf-liste .pf-ok{color:rgba(255,255,255,.85)}
+    .pf-liste .pf-ok .pk{width:13px;height:13px;color:#34D399}
+    .pf-knopf{width:100%;border:none;cursor:pointer;padding:11px;border-radius:12px;background:#FF2D76;color:#fff;font:800 .84rem var(--font)}
+    .pf-knopf:active{transform:scale(var(--druck))}
+    /* Nach der Zusage: Mitteilung oben */
+    .ze-banner{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:9000;
+      display:flex;align-items:center;gap:11px;padding:11px 12px 11px 14px;border-radius:20px;
+      background:#161B3D;border:1px solid rgba(255,255,255,.1);box-shadow:0 12px 30px rgba(0,0,0,.45);
+      transform:translateY(-140%);opacity:0;transition:transform .42s cubic-bezier(.2,.9,.25,1.15),opacity .25s}
+    .ze-banner.da{transform:none;opacity:1}
+    .ze-ic{flex:none;display:flex}
+    .ze-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+    .ze-text b{font-size:.88rem;color:#fff}
+    .ze-text small{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ze-knopf{flex:none;border:none;cursor:pointer;padding:9px 12px;border-radius:12px;background:#FF2D76;color:#fff;font:800 .74rem var(--font)}
+    @media(prefers-reduced-motion:reduce){.ze-banner{transition:opacity .2s;transform:none}}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -10398,12 +10453,28 @@ function tourParty(){
 /* Im iPhone-Rahmen wie bei der Konkurrenz: Innen steht die echte App in
    voller Breite (390 px) und wird auf Handygroesse verkleinert – also
    1:1 dieselben Teile, nur kleiner. */
-function tourHandy(inner,unten){
-  return '<div class="iphone" aria-hidden="true"><div class="iphone-schirm'+(unten?' iphone-unten':'')+'">'
-    +'<div class="iphone-status"><span>9:41</span><span class="iphone-insel"></span><span class="iphone-ic">'
-    +'<svg viewBox="0 0 18 12" width="16" height="11"><rect x="0" y="7" width="3" height="5" rx="1" fill="#fff"/><rect x="5" y="5" width="3" height="7" rx="1" fill="#fff"/><rect x="10" y="2.5" width="3" height="9.5" rx="1" fill="#fff"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#fff"/></svg>'
-    +'<svg viewBox="0 0 26 12" width="22" height="11"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#fff"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="#fff" opacity=".5"/></svg>'
-    +'</span></div><div class="iphone-app">'+inner+'</div></div></div>';
+/* Bis zu zwei echte Partys nebeneinander, wie im Raster der Startseite */
+function tourKarten(){
+  const alle=(typeof evts!=='undefined'&&evts)||[];
+  const p=tourParty(); if(!p)return '';
+  const zweite=alle.find(e=>e!==p&&!istVorbei(e)&&e.type===p.type);
+  return '<div class="iphone-karte'+(zweite?' iphone-zwei':'')+'">'+cardHTML(p)+(zweite?cardHTML(zweite):'')+'</div>';
+}
+function tourHandy(inner,unten,leiste){
+  const balken=(h,x)=>'<rect x="'+x+'" y="'+(12-h)+'" width="3.2" height="'+h+'" rx="1" fill="#fff"/>';
+  return '<div class="iphone" aria-hidden="true">'
+    +'<i class="iphone-taste links aktion"></i><i class="iphone-taste links laut1"></i><i class="iphone-taste links laut2"></i>'
+    +'<i class="iphone-taste rechts seite"></i><i class="iphone-taste rechts kamera"></i>'
+    +'<div class="iphone-rand"><div class="iphone-schirm'+(unten?' iphone-unten':'')+'">'
+    +'<div class="iphone-app">'+inner+'</div>'
+    +'<div class="iphone-ebene iphone-oben"><span>9:41</span><span class="iphone-insel"></span><span class="iphone-ic">'
+    +'<svg viewBox="0 0 18 12" width="19" height="12">'+balken(4,0)+balken(6.5,4.9)+balken(9,9.8)+balken(12,14.7)+'</svg>'
+    +'<svg viewBox="0 0 16 12" width="17" height="12"><path d="M8 2.2c2.4 0 4.6.9 6.2 2.4l1.2-1.2A10.4 10.4 0 0 0 8 .5 10.4 10.4 0 0 0 .6 3.4l1.2 1.2A8.7 8.7 0 0 1 8 2.2zm0 3.4c1.5 0 2.8.5 3.8 1.4L13 5.8A7.2 7.2 0 0 0 8 3.9a7.2 7.2 0 0 0-5 1.9L4.2 7c1-.9 2.3-1.4 3.8-1.4zM8 9l2.3-1.6A3.6 3.6 0 0 0 8 6.6c-.9 0-1.7.3-2.3.8z" fill="#fff"/></svg>'
+    +'<svg viewBox="0 0 28 13" width="27" height="13"><rect x=".5" y=".5" width="24" height="12" rx="3.8" fill="none" stroke="#fff" stroke-opacity=".4"/><rect x="2" y="2" width="21" height="9" rx="2.5" fill="#fff"/><path d="M26 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="#fff" fill-opacity=".45"/></svg>'
+    +'</span></div>'
+    +(leiste?'<div class="iphone-ebene iphone-leiste">'+(typeof leiste==='string'?leiste:(tourKlon('#bnav')||''))+'</div>':'')
+    +'<div class="iphone-ebene iphone-unten-balken"><span></span></div>'
+    +'</div></div></div>';
 }
 function tourSeitenKlon(teile){ return teile.map(tourKlon).join(''); }
 
@@ -10411,17 +10482,18 @@ const TOUR_ECHT={
   0:()=>{ const p=tourParty();
     const oben=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap']);
     if(!oben)return '';
-    return tourHandy(oben+(p?'<div class="iphone-karte">'+cardHTML(p)+'</div>':tourKlon('#fySection'))); },
+    return tourHandy(oben+(p?tourKarten():tourKlon('#fySection')),false,true); },
   1:()=>{ const echtP=tourParty();
     // Der Knopf, wie ihn Gaeste sehen (auch wenn die einzige Party die eigene ist)
     const kp=(echtP&&echtP.created_by!==cUser?.id)?echtP:{id:'tour',type:echtP?.type||'public',created_by:null,price:0,drink_price:0,attending:0};
     let knopf=''; try{ knopf=buildAttendBtn(kp,false,false,false,null,false,(kp.price||0)+(kp.drink_price||0),worldVars(kp.type),kp.attending||0,false); }catch(e){ return ''; }
-    return tourHandy((echtP?'<div class="iphone-karte iphone-karte-gross">'+cardHTML(echtP)+'</div>':'')+'<div class="iphone-knopf">'+knopf+'</div>',true); },
+    return tourHandy(tourKlon('#page-main .top-nav')+(echtP?'<div class="iphone-karte iphone-karte-gross">'+cardHTML(echtP)+'</div>':'')+'<div class="iphone-knopf">'+knopf+'</div>'); },
   2:()=>{ const leiste=tourKlon('#bnav'); if(!leiste)return '';
-    return tourHandy('<div class="iphone-blatt"><div class="plus-gross"><span class="plus-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>'
-      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div></div>'+leiste,true); },
+    const hinten=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap'])+tourKarten();
+    return tourHandy('<div class="iphone-dimm">'+hinten+'</div>',false,'<div class="iphone-blatt"><div class="plus-gross"><span class="plus-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>'
+      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div></div>'+leiste); },
   3:()=>{ const k=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap']); const p=tourParty();
-    return k?tourHandy('<div class="iphone-raus">'+k+(p?'<div class="iphone-karte">'+cardHTML(p)+'</div>':'')+'</div>'):''; },
+    return k?tourHandy('<div class="iphone-raus">'+k+(p?tourKarten():'')+'</div>',false,true):''; },
 };
 
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
@@ -13940,6 +14012,27 @@ const SOCIAL_SVG={
 // Social-Links: sichtbar für ALLE, sobald der Besitzer Pro ist. Genau das ist
 // der Sinn von Pro – Reichweite. Ein Gratis-Profil besteht weiterhin nur aus
 // Name und Bild, hat also nichts zu zeigen.
+/* Goal-Gradient: ein Balken, der schon ein Stück voll ist (Konto steht),
+   und immer genau der nächste Schritt als Knopf. Bei 100 % weg. */
+function profilFortschritt(fs,atts){
+  const schritte=[
+    {t:'Konto erstellt',ok:true},
+    {t:'Profilbild',ok:!!(cProfile?.avatar_url||'').trim(),knopf:'Profilbild hinzufügen',tun:'chgAv()'},
+    {t:'3 Leuten folgen',ok:(fs?.following||0)>=3,knopf:'Leute finden',tun:"showPage('search')"},
+    {t:'Erste Zusage',ok:(atts||[]).length>0,knopf:'Partys ansehen',tun:"showPage('home')"},
+  ];
+  const fertig=schritte.filter(x=>x.ok).length;
+  if(fertig===schritte.length)return '';
+  const naechster=schritte.find(x=>!x.ok);
+  return '<div class="pf-karte">'
+    +'<div class="pf-kopf"><span class="pf-titel">Dein Profil ist zu '+Math.round(fertig/schritte.length*100)+' % fertig</span>'
+    +'<span class="pf-zahl">'+fertig+' von '+schritte.length+'</span></div>'
+    +'<div class="pf-balken"><span style="width:'+(fertig/schritte.length*100)+'%"></span></div>'
+    +'<div class="pf-liste">'+schritte.map(x=>'<span class="'+(x.ok?'pf-ok':'')+'">'+(x.ok?pikto('ok',13):'<i></i>')+x.t+'</span>').join('')+'</div>'
+    +'<button class="pf-knopf" onclick="'+naechster.tun+'">'+naechster.knopf+'</button>'
+    +'</div>';
+}
+
 function buildSocialLinks(p,opts){
   if(!p?.is_pro)return'';
   const items=[
@@ -14534,7 +14627,7 @@ async function toggleAtt(id,isAtt){
     if(document.getElementById('page-profile')?.classList.contains('active'))renderProf();
     // Frisch angemeldet? Dann gleich fragen, was man mitbringt – sofern es
     // überhaupt eine Liste gibt.
-    if(!isAtt)setTimeout(()=>maybeOpenBringSheet(id),350);
+    if(!isAtt)setTimeout(async()=>{ if(!(await maybeOpenBringSheet(id))) zusageEnde(id); },350);
   }catch(err){
     console.error('[attend]',err);
     toast(fehlerText(err),'error');
@@ -15481,6 +15574,7 @@ async function renderProf(){
 
       </div>
       ${cProfile.is_pro?'</div>':''}
+      ${istVerein()?'':profilFortschritt(fs,atts)}
 
       <!-- ACTIONS ROW -->
       <div class="prof-actions">
@@ -20561,10 +20655,35 @@ async function maybeOpenBringSheet(eventId){
   const{data}=await sb.from('event_items').select('id,title,claimed_by')
     .eq('event_id',eventId).order('sort_order',{ascending:true});
   const items=data||[];
-  if(!items.length)return;                       // keine Liste, kein Fenster
+  if(!items.length)return false;                 // keine Liste, kein Fenster
   const frei=items.filter(i=>!i.claimed_by);
-  if(!frei.length&&!items.some(i=>i.claimed_by===cUser?.id))return;
+  if(!frei.length&&!items.some(i=>i.claimed_by===cUser?.id))return false;
   openBringSheet(eventId);
+  return true;
+}
+
+/* Peak-End: Das Ende einer Zusage ist der Moment, an den man sich
+   erinnert. Darum oben ein kurzer Hinweis wie eine iOS-Mitteilung –
+   wann es losgeht und gleich die naheliegende naechste Handlung:
+   Freunde mitnehmen. Blockiert nichts, geht nach 6 s von selbst. */
+function zusageEnde(id){
+  const e=evts.find(x=>x.id===id); if(!e)return;
+  document.getElementById('zeBanner')?.remove();
+  const st=evStart(e);
+  const wann=st?st.toLocaleDateString(locale(),{weekday:'short',day:'numeric',month:'short'})+' · '+(e.time||'').slice(0,5):'';
+  const b=document.createElement('div');
+  b.id='zeBanner'; b.className='ze-banner'; b.setAttribute('role','status');
+  b.innerHTML='<span class="ze-ic">'+pikto('ok',22,'pk-bunt')+'</span>'
+    +'<span class="ze-text"><b>Du bist dabei</b><small>'+esc(e.name||'')+(wann?' · '+esc(wann):'')+'</small></span>'
+    +'<button class="ze-knopf" type="button">Freunde mitnehmen</button>';
+  b.querySelector('.ze-knopf').onclick=()=>{ b.remove(); openShare(id); };
+  document.body.appendChild(b);
+  if(typeof applyLang==='function'&&LANG!=='de')applyLang();
+  requestAnimationFrame(()=>b.classList.add('da'));
+  const weg=()=>{ b.classList.remove('da'); setTimeout(()=>b.remove(),300); };
+  b._uhr=setTimeout(weg,6000);
+  b.addEventListener('touchstart',()=>clearTimeout(b._uhr),{passive:true});
+  b.addEventListener('touchend',()=>{ b._uhr=setTimeout(weg,2500); },{passive:true});
 }
 
 function closeBringSheet(){document.getElementById('bringSheetOverlay').classList.remove('open');}
@@ -21181,6 +21300,17 @@ const I18N_PAT=[
   [/^In Privat stehen (\d+) Partys an\.$/,{en:"There are $1 parties in Private.", fr:"Il y a $1 soirées dans Privé.", it:"Ci sono $1 feste in Privato."}],
   [/^(\d+) gehen hin$/,{en:"$1 going", fr:"$1 y vont", it:"$1 ci vanno"}],
   [/^Sei die erste Person in deiner Gegend\.$/,{en:"Be the first in your area.", fr:"Sois la première personne dans ton coin.", it:"Sii la prima persona nella tua zona."}],
+  [/^Du bist dabei$/,{en:"You’re going", fr:"Tu y vas", it:"Ci vai"}],
+  [/^Freunde mitnehmen$/,{en:"Bring friends", fr:"Inviter des amis", it:"Porta amici"}],
+  [/^Dein Profil ist zu (\d+) % fertig$/,{en:"Your profile is $1% done", fr:"Ton profil est complet à $1 %", it:"Il tuo profilo è al $1%"}],
+  [/^(\d) von (\d)$/,{en:"$1 of $2", fr:"$1 sur $2", it:"$1 di $2"}],
+  [/^Konto erstellt$/,{en:"Account created", fr:"Compte créé", it:"Account creato"}],
+  [/^Profilbild$/,{en:"Profile photo", fr:"Photo de profil", it:"Foto profilo"}],
+  [/^3 Leuten folgen$/,{en:"Follow 3 people", fr:"Suivre 3 personnes", it:"Segui 3 persone"}],
+  [/^Erste Zusage$/,{en:"First RSVP", fr:"Première participation", it:"Prima adesione"}],
+  [/^Profilbild hinzufügen$/,{en:"Add profile photo", fr:"Ajouter une photo", it:"Aggiungi foto"}],
+  [/^Leute finden$/,{en:"Find people", fr:"Trouver des gens", it:"Trova persone"}],
+  [/^Partys ansehen$/,{en:"See parties", fr:"Voir les soirées", it:"Vedi feste"}],
   [/^Party starten$/,{en:"Start a party", fr:"Lancer une soirée", it:"Organizza una festa"}],
   [/^HEUTE( · .+)?$/,{en:"TODAY$1", fr:"AUJOURD’HUI$1", it:"OGGI$1"}],
   [/^MORGEN( · .+)?$/,{en:"TOMORROW$1", fr:"DEMAIN$1", it:"DOMANI$1"}],
