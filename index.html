@@ -7198,6 +7198,10 @@
        ohne farbige Kaestchen (antislop: Icon-Kacheln sind ein KI-Merkmal) */
     .pro2-hero::before,.pro2-hero::after,.pro2-live::before,.pro2-live::after{display:none!important}
     .pro2-ic{background:none!important;border:none!important;box-shadow:none!important;color:#FF2D76!important;width:auto!important;padding:0!important}
+    /* Karte: wann (oben links) und wie viele gehen hin (Social Proof, erst ab 3) */
+    .card-tag{font-size:.62rem;letter-spacing:.04em;padding:4px 10px}
+    .card-heute{background:#FF2D76;color:#fff;border-color:transparent}
+    .card-zahl{font-size:.74rem;color:rgba(255,255,255,.7);font-weight:600;margin-top:4px}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -12987,6 +12991,22 @@ const COL_LABEL={events:'Events',public:'Öffentliche Partys',private:'Private P
 const COL_SHORT={events:'Events',public:'Öffentlich',private:'Privat'};
 
 // Startzeitpunkt eines Events als echtes Date-Objekt
+/* Leere Liste: nicht "schau woanders" sagen, sondern genau eine Tür
+   aufmachen – die Kategorie mit den meisten Partys, sonst Erstellen. */
+function fyLeerWeiter(col){
+  const zahl={};
+  evts.forEach(e=>{ if(e.type!==col&&!istVorbei(e)&&e.created_by!==cUser?.id) zahl[e.type]=(zahl[e.type]||0)+1; });
+  const beste=Object.keys(zahl).sort((a,b)=>zahl[b]-zahl[a])[0];
+  if(beste){
+    const n=zahl[beste];
+    return '<p>In '+COL_SHORT[beste]+' '+(n===1?'steht eine Party':'stehen '+n+' Partys')+' an.</p>'
+      +'<button class="fy-empty-btn" onclick="switchTab(\''+beste+'\',document.querySelector(\'.segbtn[data-col='+beste+']\'))">'
+      +COL_SHORT[beste]+' ansehen</button>';
+  }
+  return '<p>Sei die erste Person in deiner Gegend.</p>'
+    +'<button class="fy-empty-btn" onclick="plusMenue()">Party starten</button>';
+}
+
 function evStart(e){
   if(!e?.date)return null;
   const t=(e.time||'20:00').slice(0,5);
@@ -13280,8 +13300,8 @@ function renderFeed(){
   if(!pool.length){
     wrap.innerHTML=`<div class="fy-empty">
       <div class="fy-empty-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg></div>
-      <h4>Hier ist gerade nichts los</h4>
-      <p>Unter <b>${COL_SHORT[col]}</b> steht aktuell nichts an.<br/>Schau in einer anderen Kategorie vorbei – oder starte selbst etwas über das <b>Plus</b> unten.</p>
+      <h4>Unter ${COL_SHORT[col]} ist gerade nichts los</h4>
+      ${fyLeerWeiter(col)}
     </div>`;
     return;
   }
@@ -13793,6 +13813,7 @@ function cardHTML(e){
     ${imgHTML}
     <div class="card-img-overlay"></div>
     <div class="card-badges">
+      ${istVorbei(e)?'<span></span>':'<span class="pill pill-dark card-tag'+(isToday?' card-heute':'')+'">'+dayLabel+(e.time?' · '+e.time.slice(0,5):'')+'</span>'}
       ${e.status==='pending_payment'
         ? '<span class="card-gebuehr">Gebühr offen</span>'
         : ''}
@@ -13806,7 +13827,7 @@ function cardHTML(e){
       ? '<div class="card-host">'+vereinMarke()+'<span class="card-host-n">'+esc(e.profiles.full_name||e.profiles.username||'')+'</span></div>'
       : ''}
     <div class="card-loc">${esc(e.address?.split(',')[0]||'Schweiz')}</div>
-    ${istVorbei(e)?'':freundeZeile(e.id)}
+    ${istVorbei(e)?'':(freundeZeile(e.id)||(attCount>=3?'<div class="card-zahl">'+attCount+' gehen hin</div>':''))}
     ${istVorbei(e)
       ? '<div class="card-vorbei">Vorbei</div>'
       : istVoll(e)
@@ -21146,6 +21167,23 @@ const I18N_PAT=[
   [/^(.+) Du kannst trotzdem ein Konto erstellen – wir prüfen es dann von Hand, das dauert ein paar Tage\. Schneller geht es mit einer Adresse auf$/,{en:"$1 You can still sign up – we’ll check it by hand, which takes a few days. It’s quicker with an address at", fr:"$1 Tu peux quand même t’inscrire – on vérifie à la main, ce qui prend quelques jours. C’est plus rapide avec une adresse sur", it:"$1 Puoi comunque registrarti – controlliamo a mano e ci vogliono alcuni giorni. Più veloce con un indirizzo su"}],
   [/^Fürs Veröffentlichen wird einmalig (.+) fällig\. Danach erscheint die Party sofort im Feed und auf der Karte\.$/,{en:"Publishing costs a one-off $1. After that the party appears in the feed and on the map right away.", fr:"La publication coûte $1 une seule fois. Ensuite la soirée apparaît tout de suite dans le fil et sur la carte.", it:"Pubblicare costa $1 una tantum. Poi la festa compare subito nel feed e sulla mappa."}],
   [/^(.+) – liegt nach der Party$/,{en:"$1 – after the party", fr:"$1 – après la soirée", it:"$1 – dopo la festa"}],
+  [/^Unter Events ist gerade nichts los$/,{en:"Nothing on in Events right now", fr:"Rien en ce moment dans Événements", it:"Al momento niente in Eventi"}],
+  [/^Events ansehen$/,{en:"See Events", fr:"Voir Événements", it:"Vedi Eventi"}],
+  [/^In Events steht eine Party an\.$/,{en:"There’s one party in Events.", fr:"Il y a une soirée dans Événements.", it:"C’è una festa in Eventi."}],
+  [/^In Events stehen (\d+) Partys an\.$/,{en:"There are $1 parties in Events.", fr:"Il y a $1 soirées dans Événements.", it:"Ci sono $1 feste in Eventi."}],
+  [/^Unter Öffentlich ist gerade nichts los$/,{en:"Nothing on in Public right now", fr:"Rien en ce moment dans Public", it:"Al momento niente in Pubblico"}],
+  [/^Öffentlich ansehen$/,{en:"See Public", fr:"Voir Public", it:"Vedi Pubblico"}],
+  [/^In Öffentlich steht eine Party an\.$/,{en:"There’s one party in Public.", fr:"Il y a une soirée dans Public.", it:"C’è una festa in Pubblico."}],
+  [/^In Öffentlich stehen (\d+) Partys an\.$/,{en:"There are $1 parties in Public.", fr:"Il y a $1 soirées dans Public.", it:"Ci sono $1 feste in Pubblico."}],
+  [/^Unter Privat ist gerade nichts los$/,{en:"Nothing on in Private right now", fr:"Rien en ce moment dans Privé", it:"Al momento niente in Privato"}],
+  [/^Privat ansehen$/,{en:"See Private", fr:"Voir Privé", it:"Vedi Privato"}],
+  [/^In Privat steht eine Party an\.$/,{en:"There’s one party in Private.", fr:"Il y a une soirée dans Privé.", it:"C’è una festa in Privato."}],
+  [/^In Privat stehen (\d+) Partys an\.$/,{en:"There are $1 parties in Private.", fr:"Il y a $1 soirées dans Privé.", it:"Ci sono $1 feste in Privato."}],
+  [/^(\d+) gehen hin$/,{en:"$1 going", fr:"$1 y vont", it:"$1 ci vanno"}],
+  [/^Sei die erste Person in deiner Gegend\.$/,{en:"Be the first in your area.", fr:"Sois la première personne dans ton coin.", it:"Sii la prima persona nella tua zona."}],
+  [/^Party starten$/,{en:"Start a party", fr:"Lancer une soirée", it:"Organizza una festa"}],
+  [/^HEUTE( · .+)?$/,{en:"TODAY$1", fr:"AUJOURD’HUI$1", it:"OGGI$1"}],
+  [/^MORGEN( · .+)?$/,{en:"TOMORROW$1", fr:"DEMAIN$1", it:"DOMANI$1"}],
 ];
 
 function tr(txt){
