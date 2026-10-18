@@ -7137,6 +7137,27 @@
     .rzustimmung input{flex:none;width:20px;height:20px;margin-top:1px;accent-color:#FF2D76}
     .rzustimmung a{color:#FF7FA5}
     .rzustimmung.fehlt{border-color:rgba(255,80,80,.6);animation:ruck 260ms ease-out}
+    /* ══════════ FLACH UND RUHIG (17./18.10.) ══════════
+       Nach antislop-ui und der Liste "20 Gruende, warum eine App
+       vibecoded aussieht": eine Akzentfarbe (Pink) flach statt Verlauf,
+       Zweitknoepfe neutral, kein Lila-Blau, keine Leuchtschatten, keine
+       Lichtflecken. Glas bleibt nur an Kopf- und Tab-Leiste. Vorbild an
+       Ruhe: die Konkurrenz (partyapp.io). */
+    :root{
+      --grad-cta:#FF2D76;
+      --grad-sec:#262B4D;
+    }
+    body::before{display:none!important}
+    .glow-spot{display:none!important}
+    button,.sub-btn,.attend-btn,.pro2-cta,.fy-card,.card,.plus-gross,.karte-knopf,.segbar-thumb,
+    .send-btn,.cm-wahl-k,.teil-rund,.nt-senden,.ep-av-k,.pe-krone,.pro2-krone,.insta-av,.pro-glow{box-shadow:none!important}
+    /* Pro-Ring am Profilbild: eine ruhige Linie statt Leuchten */
+    .pro-glow{outline:none!important;border:2px solid #FF2D76!important}
+    .prof-pro-header{background:none!important}
+    .prof-pro-header::before,.prof-pro-header::after{display:none!important}
+    .pro-marke{background:#FF2D76!important;box-shadow:none!important}
+    .fy-empty{border-style:solid!important;border-color:rgba(255,255,255,.08)!important;background:rgba(255,255,255,.035)!important}
+    .fy-empty-ic,.nt-leer-ic{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.1)!important;box-shadow:none!important}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -13705,24 +13726,24 @@ function worldVars(type){
     glow1:'rgba(255,215,0,.15)',glow2:'rgba(255,140,0,.1)',
     text:'#FFD700',muted:'rgba(255,215,0,.6)',
     pill:'rgba(255,215,0,.15)',pillText:'#FFD700',
-    grad:'linear-gradient(135deg,#FF6B00,#FFD700)',
-    btnBg:'linear-gradient(135deg,#FF6B00,#FFD700)',btnColor:'#0a0a0a'
+    grad:'#FFB020',
+    btnBg:'#FFB020',btnColor:'#0a0a0a'
   };
   if(type==='public')return{
     accent:'#FF2D76',border:'rgba(255,45,118,.3)',
     glow1:'rgba(255,45,118,.15)',glow2:'rgba(255,90,69,.1)',
     text:'#FF2D76',muted:'rgba(255,45,118,.6)',
     pill:'rgba(255,45,118,.15)',pillText:'#FF4D8A',
-    grad:'linear-gradient(135deg,#FF2D76,#FF5A45)',
-    btnBg:'linear-gradient(135deg,#FF2D76,#FF5A45)',btnColor:'#fff'
+    grad:'#FF2D76',
+    btnBg:'#FF2D76',btnColor:'#fff'
   };
   return{
     accent:'#7C5CFC',border:'rgba(124,92,252,.3)',
     glow1:'rgba(124,92,252,.15)',glow2:'rgba(84,167,255,.1)',
     text:'#7C5CFC',muted:'rgba(124,92,252,.6)',
     pill:'rgba(124,92,252,.15)',pillText:'#9B7FFF',
-    grad:'linear-gradient(135deg,#633BFF,#54A7FF)',
-    btnBg:'linear-gradient(135deg,#633BFF,#54A7FF)',btnColor:'#fff'
+    grad:'#6B4CFF',
+    btnBg:'#6B4CFF',btnColor:'#fff'
   };
 }
 
@@ -14119,8 +14140,7 @@ async function openDetail(id){
   const albumHTML='';
   setzeHTML(document.getElementById('detailContent'),`
     <div class="d-hero" style="background:${bg}">
-      <div class="glow-spot glow-1" style="background:radial-gradient(circle,${w.glow1},transparent 70%)"></div>
-      <div class="glow-spot glow-2" style="background:radial-gradient(circle,${w.glow2},transparent 70%)"></div>
+
       ${e.image_url?('<img alt="" loading="eager" fetchpriority="high" decoding="async" src="'+escAttr(e.image_url)+'"/><div class="d-hero-overlay"></div>'):('<div class="d-hero-overlay" style="opacity:.6"></div>')}
       ${!e.image_url?('<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.18;color:#fff">'+iconSvg(evIconKey(e),80)+'</div>'):''}
       <div class="d-hero-marken">
