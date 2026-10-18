@@ -5470,7 +5470,7 @@
     .pl-ohne::before{
       content:'';flex-shrink:0;width:16px;height:16px;border-radius:50%;
       background:rgba(43,217,138,.16) center/10px 10px no-repeat
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232bd98a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232bd98a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 5 5 9-10'/%3E%3C/svg%3E");
       box-shadow:inset 0 0 0 1.5px rgba(43,217,138,0.22);
     }
     .pl-hint{font-size:.78rem;color:var(--muted);line-height:1.55;margin:-2px 0 10px}
@@ -7288,9 +7288,9 @@
           <input type="email" id="login-email" name="email" placeholder="E-Mail" autocomplete="username" autocapitalize="none" spellcheck="false" enterkeyhint="next" oninput="loginFehler('')"/>
         </div>
         <div class="auth-field">
-          <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <svg class="pk auth-field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="url(#pkViolett)"/><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(12 15.3) scale(1.1)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
           <input type="password" id="login-pw" name="password" placeholder="Passwort" autocomplete="current-password" enterkeyhint="go" oninput="loginFehler('')"/>
-          <button type="button" class="pw-auge" onclick="pwUmschalten('login-pw',this)" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          <button type="button" class="pw-auge" onclick="pwUmschalten('login-pw',this)" aria-label="Passwort anzeigen"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="url(#pkEis)"/><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.2" cy="10.8" r=".9" fill="#fff"/></svg></button>
         </div>
         <button type="button" class="auth-vergessen" onclick="pwAnsicht('vergessen')">Passwort vergessen?</button>
         <!-- Fehler stehen dort, wo der Finger als Naechstes hingeht – nicht
@@ -7323,7 +7323,7 @@
             <span class="rwahl-haken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m5 12.5 5 5 9-10"/></svg></span>
           </button>
           <button type="button" class="rwahl" id="art-verein" onclick="setKontoart('verein')">
-            <span class="rwahl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+            <span class="rwahl-ic"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <span class="rwahl-txt">
               <b>Für einen Verein</b>
               <span>Anlässe unter dem Vereinsnamen veröffentlichen</span>
@@ -7348,7 +7348,7 @@
         <div class="rstep" data-rs="2" data-art="verein">
           <div class="rfrage">Wie heisst der Verein?</div>
           <div class="auth-field">
-            <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg class="pk auth-field-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <input type="text" id="reg-vn" placeholder="z. B. Turnverein Rohr" autocomplete="organization" autocapitalize="words" enterkeyhint="next"/>
           </div>
           <div class="rhinweis">So steht er später über euren Anlässen.</div>
@@ -7358,7 +7358,7 @@
         <div class="rstep" data-rs="3" data-art="privat">
           <div class="rfrage">Wann hast du Geburtstag?</div>
           <div class="auth-field">
-            <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg class="pk auth-field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/><path d="M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z" fill="url(#pkViolett)"/><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3v3.5M16 3v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/><circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/></svg>
             <input type="text" id="reg-bd" inputmode="numeric" autocomplete="bday"
                    placeholder="TT.MM.JJJJ" maxlength="10" enterkeyhint="next" oninput="bdTippen(this)"/>
           </div>
@@ -7388,9 +7388,9 @@
             <input type="email" id="reg-em" placeholder="E-Mail" autocomplete="username" autocapitalize="none" spellcheck="false" enterkeyhint="next" oninput="vereinDomainPruefen()"/>
           </div>
           <div class="auth-field">
-            <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg class="pk auth-field-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="url(#pkViolett)"/><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(12 15.3) scale(1.1)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
             <input type="password" id="reg-pw" placeholder="Mindestens 6 Zeichen" autocomplete="new-password" passwordrules="minlength: 6;" enterkeyhint="go"/>
-            <button type="button" class="pw-auge" onclick="pwUmschalten('reg-pw',this)" aria-label="Passwort anzeigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button type="button" class="pw-auge" onclick="pwUmschalten('reg-pw',this)" aria-label="Passwort anzeigen"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="url(#pkEis)"/><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.2" cy="10.8" r=".9" fill="#fff"/></svg></button>
           </div>
           <div id="reg-domain-hinweis"></div>
         </div>
@@ -7400,7 +7400,7 @@
 
         <div class="rnav">
           <button type="button" class="rzurueck" id="rZurueck" onclick="regZurueck()" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg>
             Zurück
           </button>
           <button class="auth-submit-btn rweiter" id="rWeiter" onclick="regWeiter()">Weiter</button>
@@ -7452,11 +7452,11 @@
         <p class="pw-text">Mindestens 6 Zeichen. Danach bist du gleich angemeldet.</p>
         <input type="email" id="pwNeuName" autocomplete="username" class="pw-versteckt" tabindex="-1" aria-hidden="true"/>
         <div class="auth-field">
-          <svg width="17" height="17" class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <svg class="pk auth-field-icon" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="url(#pkViolett)"/><rect x="5" y="10.5" width="14" height="10" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(12 15.3) scale(1.1)" d="M0 2.6S-2.6 1.1-2.6-.7A1.4 1.4 0 0 1 0-1.4a1.4 1.4 0 0 1 2.6.7C2.6 1.1 0 2.6 0 2.6z" fill="#fff"/></svg>
           <input type="password" id="pwNeu" placeholder="Neues Passwort" autocomplete="new-password" minlength="6"
             onkeydown="if(event.key==='Enter'){event.preventDefault();pwSpeichern()}"/>
           <button type="button" class="pw-auge" onclick="pwZeigen()" aria-label="Passwort anzeigen">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="url(#pkEis)"/><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.2" cy="10.8" r=".9" fill="#fff"/></svg>
           </button>
         </div>
         <button class="auth-submit-btn" id="pwSpeichernBtn" onclick="pwSpeichern()">Passwort speichern</button>
@@ -7513,7 +7513,7 @@
       <svg class="pk" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <input type="text" id="searchInput" placeholder="Ort, Club oder Party…" enterkeyhint="search" oninput="sucheTippen()"/>
       <button class="s-loeschen" id="sLoeschen" onclick="sucheLeeren()" aria-label="Suche löschen" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <button class="karte-knopf" id="mapBtn" onclick="toggleMap()">
@@ -7540,7 +7540,7 @@
       <button data-km="0" onclick="umkreisSetzen(0,this)">Überall</button>
     </div>
     <button class="os-weg" onclick="suchOrtLoeschen()" aria-label="Ort entfernen">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
     </button>
   </div>
 
@@ -7549,7 +7549,7 @@
     <div id="map"></div>
     <div class="map-kopf">
       <button class="map-zu" onclick="toggleMap()" aria-label="Karte schliessen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
       <div class="map-titel"><b id="mapTitel">Karte</b><span id="mapUnter"></span></div>
     </div>
@@ -7686,7 +7686,7 @@
   <div class="conv-wrap">
     <div class="conv-hdr">
       <button class="conv-back" onclick="convZurueck()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg>
       </button>
       <div class="chat-av" id="convAv" onclick="convProfilOeffnen()" style="cursor:pointer"></div>
       <div style="flex:1;min-width:0;cursor:pointer" onclick="convProfilOeffnen()">
@@ -7709,7 +7709,7 @@
       <span class="cb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg></span>
       <span class="cb-txt">Nachricht bearbeiten</span>
       <button class="cb-x" onclick="bearbeitenAbbrechen()" aria-label="Abbrechen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="conv-input-wrap">
@@ -7720,7 +7720,7 @@
         oninput="convFeldWachsen(this);convTipptSenden()"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!convTippGeraet()){event.preventDefault();sendMsg()}"></textarea>
       <button class="send-btn" id="sendBtn" onclick="sendMsg()" aria-label="Senden">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 3.6 3.9 10.2c-.8.3-.8 1.4 0 1.7l6.4 2.4 2.4 6.4c.3.8 1.4.8 1.7 0z" fill="url(#pkPink)"/><path d="M20.4 3.6 3.9 10.2c-.8.3-.8 1.4 0 1.7l6.4 2.4 2.4 6.4c.3.8 1.4.8 1.7 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.4 3.6l-10.1 10.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
   </div>
@@ -7753,7 +7753,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/></svg>
       <input id="userSearchInput" placeholder="Suchen" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="searchUsers()"/>
       <button class="search-clear" id="searchClear" onclick="clearUserSearch()" aria-label="Leeren">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <button class="such-ab" onclick="zurueck()">Abbrechen</button>
@@ -7775,7 +7775,7 @@
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="nav-x" onclick="zurueck()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="nav-x" onclick="zurueck()" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
   </div>
   <div class="pro-page-wrap" id="proPageContent"></div>
@@ -7839,7 +7839,7 @@
     <div class="tour-reihe">
       <!-- Wer sich vertippt hat, will zurueck – nicht alles ueberspringen. -->
       <button class="tour-zurueck tour-zurueck-weg" id="einsZurueck" onclick="einstiegZurueck()" aria-label="Zurück">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Zurück
+        <svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg>Zurück
       </button>
       <button class="tour-btn" id="einsBtn" onclick="einstiegWeiter()">Weiter</button>
     </div>
@@ -7858,7 +7858,7 @@
     <div class="tour-punkte" id="tourPunkte"></div>
     <div class="tour-reihe">
       <button class="tour-zurueck tour-zurueck-weg" id="tourZurueck" onclick="tourZurueck()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg>
         Zurück
       </button>
       <button class="tour-btn" id="tourBtn" onclick="tourWeiter()">Weiter</button>
@@ -7883,7 +7883,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Profil bearbeiten</div>
       <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('editProfOverlay').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -7892,7 +7892,7 @@
         <div style="position:relative;cursor:pointer" onclick="document.getElementById('avFile').click()">
           <div id="epAvPreview" class="insta-av" style="width:72px;height:72px;font-size:1.4rem"></div>
           <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--grad-cta);border-radius:50%;border:2px solid #090D24;display:flex;align-items:center;justify-content:center">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <svg class="pk" width="12" height="12" style="color:#fff" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="url(#pkSonne)" opacity=".6"/><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3 6.1l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <input type="file" id="avFile" accept="image/*" style="display:none" onchange="upAv(event)"/>
         </div>
@@ -7966,7 +7966,7 @@
 <div class="overlay" id="createOverlay" onclick="closeIfOutside(event,'createOverlay')">
   <div class="modal create-modal no-swipe">
     <div class="modal-handle"></div>
-    <button class="modal-x modal-x-float" onclick="closeCreate()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button class="modal-x modal-x-float" onclick="closeCreate()" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     <button class="entwurf-knopf" id="entwurfKnopf" onclick="entwurfSichern()">Entwurf sichern</button>
     <div class="cprog">
       <div class="cprog-head">
@@ -7984,7 +7984,7 @@
       <div class="cq-sub">Das legt fest, wer deine Party sehen kann.</div>
       <div class="type-grid-pro">
         <div class="type-card-pro sel-public" data-type="public" onclick="selTypePro('public',this)">
-          <div class="tcp-icon" style="background:rgba(255,45,118,.12);color:#FF2D76"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="tcp-icon" style="background:rgba(255,45,118,.12);color:#FF2D76"><svg class="pk" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Öffentliche Party</div><div class="tcp-desc">Jeder kann teilnehmen</div></div>
           <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
@@ -8282,7 +8282,7 @@
         <img alt="" loading="lazy" decoding="async" class="u-preview" id="imgPrev" style="display:none"/>
         <div class="u-overlay"><span>Bild ändern</span></div>
         <button class="img-clear" onclick="event.stopPropagation();clearImg()" aria-label="Bild entfernen">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
         </button>
         <div id="imgPh" class="img-ph-pro">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8.5h3l1.5-2h7l1.5 2h3a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
@@ -8306,7 +8306,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Filter</div>
       <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('oeFilterOverlay').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -8345,7 +8345,7 @@
     <div class="modal-hdr">
       <div class="modal-title">In welchen Kalender?</div>
       <button class="modal-x" onclick="closeOverlay('kalOverlay')" aria-label="Schliessen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -8358,11 +8358,11 @@
       </div>
       <div class="route-wahl">
         <button class="route-opt" onclick="kalWahl('apple')">
-          <div class="route-opt-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="18" rx="2.5"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="route-opt-ic"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/><path d="M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z" fill="url(#pkViolett)"/><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3v3.5M16 3v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/><circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/></svg></div>
           <div><b>Kalender auf dem iPhone</b><span>Danach fragt dein iPhone, in welchen Kalender</span></div>
         </button>
         <button class="route-opt" onclick="kalWahl('google')">
-          <div class="route-opt-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M12 14v4M10 16h4"/></svg></div>
+          <div class="route-opt-ic"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="url(#pkViolett)" opacity=".3"/><path d="M3.5 8a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3v2h-17z" fill="url(#pkViolett)"/><rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3v3.5M16 3v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.6" cy="15.4" r="2" fill="url(#pkPink)"/><circle cx="9" cy="15.4" r="1.1" fill="#fff" opacity=".7"/></svg></div>
           <div><b>Google Kalender</b><span>Öffnet sich im Browser</span></div>
         </button>
         <button class="route-opt" onclick="kalWahl('outlook')">
@@ -8380,7 +8380,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Womit navigieren?</div>
       <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('routeOverlay').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -8409,7 +8409,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Einladung</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeJoin()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="joinBody"></div>
@@ -8421,7 +8421,7 @@
   <div class="modal no-swipe">
     <div class="up-kopf">
       <button class="up-zurueck" onclick="closeUserProf()" aria-label="Zurück">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg>
       </button>
       <div class="up-kopf-titel" id="upTitel"></div>
       <div class="up2-kopfaktion" id="upMehr"></div>
@@ -8437,7 +8437,7 @@
     <div class="modal-hdr">
       <div class="modal-title" id="flTitle">Follower</div>
       <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('followListOverlay').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="flBody"></div>
@@ -8451,7 +8451,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Einstellungen</div>
       <button class="modal-x" aria-label="Schliessen" onclick="document.getElementById('settingsOverlay').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -8467,7 +8467,7 @@
         <button class="settings-btn" onclick="wahlProfil()">
           <i data-pk="profil" data-pk-g="20"></i>
           <span class="s-label">Dein Profil</span><span class="s-wert" id="setProfilWert"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         </div>
         <div class="settings-btn set-schalter">
@@ -8479,13 +8479,13 @@
         <button class="settings-btn" onclick="wahlNachrichten()">
           <i data-pk="chat" data-pk-g="20"></i>
           <span class="s-label">Wer darf dir schreiben?</span><span class="s-wert" id="setMsgWert"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         </div>
         <button class="settings-btn set-abstand" onclick="blockiertOeffnen()">
           <i data-pk="blockiert" data-pk-g="20"></i>
           <span class="s-label">Blockierte Personen</span><span class="s-wert" id="setBlockZahl"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
       </div>
 
@@ -8494,29 +8494,29 @@
         <button class="settings-btn" onclick="pushEinstOeffnen()">
           <i data-pk="glocke" data-pk-g="20"></i>
           <span class="s-label">Benachrichtigungen</span><span class="s-wert" id="setPushWert"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <button class="settings-btn" onclick="wahlSprache()">
           <i data-pk="sprache" data-pk-g="20"></i>
           <span class="s-label">Sprache</span><span class="s-wert" id="setSpracheWert"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <div id="setRausBox">
         <button class="settings-btn" onclick="wahlRaus()">
           <i data-pk="doomscroll" data-pk-g="20"></i>
           <span class="s-label">Fluchtknopf</span><span class="s-wert" id="setRausWert"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         </div>
         <button class="settings-btn" onclick="wahlOrt()">
           <i data-pk="ort" data-pk-g="20"></i>
           <span class="s-label">Standort</span><span class="s-wert" id="setOrtWert"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <button class="settings-btn" onclick="wahlKarten()">
           <i data-pk="karte" data-pk-g="20"></i>
           <span class="s-label">Karten-App</span><span class="s-wert" id="setKartenWert"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
       </div>
 
@@ -8525,17 +8525,17 @@
       <button class="settings-btn" onclick="tourNochmal('start')">
         <i data-pk="tour" data-pk-g="20"></i>
         <span class="s-label">So funktioniert SPOTOUT</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn" id="setProTour" onclick="tourNochmal('pro')" hidden>
         <i data-pk="stern" data-pk-g="20"></i>
         <span class="s-label">Was Pro alles kann</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn" onclick="openRules()">
         <i data-pk="regeln" data-pk-g="20"></i>
         <span class="s-label">Community-Regeln</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <a class="settings-btn" href="mailto:support@spotoutapp.ch">
         <i data-pk="support" data-pk-g="20"></i>
@@ -8548,17 +8548,17 @@
       <a class="settings-btn" href="/nutzungsbedingungen" target="_blank" rel="noopener">
         <i data-pk="dokument" data-pk-g="20"></i>
         <span class="s-label">Nutzungsbedingungen</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </a>
       <a class="settings-btn" href="/datenschutz" target="_blank" rel="noopener">
         <i data-pk="datenschutz" data-pk-g="20"></i>
         <span class="s-label">Datenschutzerklärung</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </a>
       <a class="settings-btn" href="/impressum" target="_blank" rel="noopener">
         <i data-pk="impressum" data-pk-g="20"></i>
         <span class="s-label">Impressum</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </a>
       </div>
 
@@ -8567,17 +8567,17 @@
       <button class="settings-btn" id="pwAendernBtn" onclick="pwAendernMail()">
         <i data-pk="passwort" data-pk-g="20"></i>
         <span class="s-label">Passwort ändern</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn" onclick="doLogout()">
         <i data-pk="abmelden" data-pk-g="20"></i>
         <span class="s-label">Abmelden</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <button class="settings-btn danger" id="kontoWegBtn" onclick="kontoWeg()">
         <i data-pk="loeschen" data-pk-g="20"></i>
         <span class="s-label" id="kontoWegLabel">Konto löschen</span>
-        <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
       </button>
       <div class="konto-weg-hinweis" id="kontoWegHinweis" hidden>
         Alles wird gelöscht: dein Profil, deine Partys, deine Anmeldungen, deine Fotos
@@ -8593,12 +8593,12 @@
         <button class="settings-btn" onclick="vereinePruefenOeffnen()">
           <i data-pk="verein" data-pk-g="20"></i>
           <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <button class="settings-btn" onclick="moderationOeffnen()">
           <i data-pk="gefahr" data-pk-g="20"></i>
           <span class="s-label">Meldungen</span>
-          <svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         <div class="set-frage">Pro verschenken</div>
         <div class="set-hilfe">Benutzername ohne @. Läuft schon ein Abo, wird die Zeit hinten angehängt.</div>
@@ -8638,7 +8638,7 @@
 
 <!-- ════ GROUP MODALS (legacy) ════ -->
 <div class="overlay" id="groupDetailOverlay" onclick="closeIfOutside(event,'groupDetailOverlay')">
-  <div class="modal"><div class="modal-handle"></div><button class="modal-x modal-x-float" onclick="closeOverlay('groupDetailOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="modal-body" id="groupDetailContent"></div></div>
+  <div class="modal"><div class="modal-handle"></div><button class="modal-x modal-x-float" onclick="closeOverlay('groupDetailOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button><div class="modal-body" id="groupDetailContent"></div></div>
 </div>
 <!-- ════ PARTY-FOTOS ════ -->
 <div class="overlay" id="fotoRegelnOverlay" onclick="closeIfOutside(event,'fotoRegelnOverlay')">
@@ -8646,7 +8646,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Bevor du Fotos teilst</div>
-      <button class="modal-x" onclick="closeOverlay('fotoRegelnOverlay')" aria-label="Schliessen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('fotoRegelnOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="foto-regel"><div class="foto-regel-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg></div>
@@ -8662,10 +8662,10 @@
 <div class="foto-voll" id="fotoVoll" hidden>
   <div class="foto-voll-kopf">
     <div class="foto-voll-wer" id="fotoVollWer"></div>
-    <button class="modal-x" onclick="fotoZu()" aria-label="Schliessen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button class="modal-x" onclick="fotoZu()" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
   </div>
   <div class="foto-voll-buehne" id="fotoVollBuehne">
-    <button class="foto-voll-pfeil links" onclick="fotoBlaettern(-1)" aria-label="Vorheriges Foto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="foto-voll-pfeil links" onclick="fotoBlaettern(-1)" aria-label="Vorheriges Foto"><svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg></button>
     <img id="fotoVollBild" alt=""/>
     <button class="foto-voll-pfeil rechts" onclick="fotoBlaettern(1)" aria-label="Nächstes Foto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg></button>
   </div>
@@ -8688,7 +8688,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Meldungen</div>
-      <button class="modal-x" onclick="closeOverlay('moderationOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('moderationOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body"><div id="moderationListe"></div></div>
   </div>
@@ -8700,7 +8700,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Melden</div>
-      <button class="modal-x" onclick="closeReport()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeReport()" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body" id="reportBody"></div>
   </div>
@@ -8712,7 +8712,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Community-Regeln</div>
-      <button class="modal-x" onclick="closeOverlay('rulesOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('rulesOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="rules-lead">SPOTOUT duldet keine beleidigenden Inhalte und kein
@@ -8745,7 +8745,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Vereine prüfen</div>
-      <button class="modal-x" onclick="closeOverlay('vereinePruefenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('vereinePruefenOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body"><div id="vereinePruefenListe"></div></div>
   </div>
@@ -8757,7 +8757,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Blockierte Personen</div>
-      <button class="modal-x" onclick="closeOverlay('blockiertOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('blockiertOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body">
       <div class="set-hilfe">Hebst du eine Blockierung auf, könnt ihr euch wieder schreiben und seht eure Partys.</div>
@@ -8771,7 +8771,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Benachrichtigungen</div>
-      <button class="modal-x" onclick="closeOverlay('pushOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('pushOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body">
       <div id="pushStatus"></div>
@@ -8785,7 +8785,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Abzeichen</div>
-      <button class="modal-x" onclick="closeOverlay('abzeichenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('abzeichenOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body"><div id="abzeichenListe"></div></div>
   </div>
@@ -8796,7 +8796,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Follow-Anfragen</div>
-      <button class="modal-x" onclick="closeOverlay('anfragenOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('anfragenOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body"><div id="anfragenListe"></div></div>
   </div>
@@ -8806,7 +8806,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Profilbesuche</div>
-      <button class="modal-x" onclick="closeOverlay('besucherOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('besucherOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body"><div id="besucherListe"></div></div>
   </div>
@@ -8817,7 +8817,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title" id="rechtTitel">Rechtliches</div>
-      <button class="modal-x" onclick="closeOverlay('rechtOverlay')" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeOverlay('rechtOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <iframe class="recht-frame" id="rechtFrame" title="Rechtliches"></iframe>
   </div>
@@ -8829,7 +8829,7 @@
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-title">Benachrichtigungen</div>
-      <button class="modal-x" onclick="closeNotifs()" aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="modal-x" onclick="closeNotifs()" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="nt-schieber" id="ntSchieber">
       <span class="nt-schieber-fuell" id="ntFuell"></span>
@@ -8854,7 +8854,7 @@
     <div class="modal-handle"></div>
     <div class="modal-body pro-ang">
       <div class="pro-ang-ic">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>
+        <svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.2 2.5 5 13.6h6.2l-1 7.9 8.8-11.7h-6.3z" fill="url(#pkSonne)"/><path d="M13.2 2.5 5 13.6h6.2l-1 7.9 8.8-11.7h-6.3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.2 4.4) scale(0.85)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </div>
       <div class="pro-ang-t">Wer von deinen Leuten geht auch?</div>
       <div class="pro-ang-s">Mit Pro siehst du auf jeder Party, wer aus deinen Kontakten dabei ist – mit Namen. Und du kannst alle zuerst anschreiben.</div>
@@ -8872,7 +8872,7 @@
     <div class="modal-hdr">
       <div class="modal-title" id="wahlTitel"></div>
       <button class="modal-x" onclick="closeOverlay('wahlOverlay')" aria-label="Schliessen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="wahlBody"></div>
@@ -8886,7 +8886,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Chat</div>
       <button class="modal-x" onclick="closeOverlay('convMenueOverlay')" aria-label="Schliessen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="convMenueBody"></div>
@@ -8899,7 +8899,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Konto wechseln</div>
       <button class="modal-x" onclick="closeOverlay('kontenOverlay')" aria-label="Schliessen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="kontenBody"></div>
@@ -8913,7 +8913,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Dafür brauchst du ein Konto</div>
       <button class="modal-x" onclick="closeOverlay('kontoOverlay')" aria-label="Schliessen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -8934,7 +8934,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Partys in deiner Nähe</div>
       <button class="modal-x" onclick="ortSpaeter()" aria-label="Schliessen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -8958,7 +8958,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Was bringst du mit?</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeBringSheet()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="bringSheetBody"></div>
@@ -8972,7 +8972,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Was möchtest du machen?</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('plusOverlay')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="plusBody"></div>
@@ -8985,7 +8985,7 @@
     <div class="modal-hdr">
       <div class="modal-title" id="shareTitle">Teilen</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeShare()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="shareBody"></div>
@@ -8999,7 +8999,7 @@
     <div class="modal-hdr">
       <div class="modal-title" id="gruppeTitel">Gruppe</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('gruppeOverlay')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="gruppeBody"></div>
@@ -9015,7 +9015,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Treffen planen</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('treffenOverlay')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body tr-body">
@@ -9062,7 +9062,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Gruppe gründen</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('gruppeNeuOverlay')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -9082,7 +9082,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Einladung</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('gruppeJoinOverlay')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="gruppeJoinBody"></div>
@@ -9096,7 +9096,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Party verwalten</div>
       <button class="modal-x" aria-label="Schliessen" onclick="closeManage()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body" id="manageBody"></div>
@@ -9110,7 +9110,7 @@
     <div class="modal-hdr">
       <div class="modal-title">Bild ausrichten</div>
       <button class="modal-x" onclick="avCropAbbrechen()" aria-label="Abbrechen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
       </button>
     </div>
     <div class="modal-body">
@@ -9415,6 +9415,20 @@ function pikto(name,groesse,klasse){
 
 /* Zweiter Teil des Sets: Einstellungen, Benachrichtigungen, Fotos.
    Wird hinter pikto.js geladen und ergaenzt PIKTO. */
+/* Vier Formen, die vorher als fremde Linien-Icons im HTML standen
+   (Stift, Herz, Senden, Raster) – jetzt im eigenen Stil. */
+Object.assign(PIKTO,{
+  stift: PK_F('Sonne','M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z',' opacity=".6"')
+      +PK_P('M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z')+PK_P('M13.3 6.1l4.6 4.6'),
+  herz: PK_F('Pink','M12 20s-7.8-4.7-7.8-10.3A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 7.8 2.7C19.8 15.3 12 20 12 20z')
+      +PK_P('M12 20s-7.8-4.7-7.8-10.3A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 7.8 2.7C19.8 15.3 12 20 12 20z'),
+  senden: PK_F('Pink','M20.4 3.6 3.9 10.2c-.8.3-.8 1.4 0 1.7l6.4 2.4 2.4 6.4c.3.8 1.4.8 1.7 0z')
+      +PK_P('M20.4 3.6 3.9 10.2c-.8.3-.8 1.4 0 1.7l6.4 2.4 2.4 6.4c.3.8 1.4.8 1.7 0z')+PK_P('M20.4 3.6l-10.1 10.7'),
+  raster: ['4 4','13 4','4 13','13 13'].map(xy=>{const [x,y]=xy.split(' ');
+      return '<rect x="'+x+'" y="'+y+'" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/>'
+        +'<rect x="'+x+'" y="'+y+'" width="7" height="7" rx="2" '+PK_L+'/>';}).join(''),
+});
+
 Object.assign(PIKTO,{
   /* ── Einstellungen ── */
   blockiert: '<circle cx="12" cy="12" r="8.6" fill="url(#pkPink)"/><circle cx="12" cy="12" r="8.6" '+PK_L+'/>'
@@ -10164,7 +10178,7 @@ const TOUREN={
         return '<div class="tb">'
           +'<div class="tb-leiste"><span class="tb-logo">SPOTOUT</span>'
           +'<span class="tb-ic raus"><svg class="pk" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg></span>'
-          +'<span class="tb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>'
+          +'<span class="tb-ic"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
           +'</div>'
           +'<div class="tb-kopf"><span>Wohin der Knopf führt</span></div>'
           +'<div class="chipset tb-chips">'
@@ -11693,7 +11707,7 @@ function vereinDomainPruefen(){
   const web =(document.getElementById('reg-web')?.value||'').trim();
   const md=mail.split('@')[1]?.toLowerCase();
   const ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/></svg>';
-  const ok='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
+  const ok='<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg>';
 
   if(!md||!web){hinweisSetzen(box,'');return;}
 
@@ -13087,7 +13101,7 @@ function vereinDarfPosten(){
 }
 
 const V_SVG = {
-  haus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  haus:'<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   uhr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>',
@@ -13949,7 +13963,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
   // sonst sah der Gastgeber auf der eigenen Party "Auf die Warteliste".
   if(e.created_by===cUser?.id){
     return '<div class="attend-btn attend-btn-in" style="cursor:default">'
-      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px;height:16px"><path d="M20 6 9 17l-5-5"/></svg>'
+      +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="m5 12.5 5 5 9-10"/></svg>'
       +'Deine Party<span class="attend-sub">Du bist als Gastgeber dabei</span></div>';
   }
   // Ein Vereinskonto steht auf keiner Gästeliste – es veranstaltet.
@@ -13970,12 +13984,12 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
   // Wer die Party macht, ist dabei – ohne Knopf und ohne Austragen.
   if(e.created_by===cUser?.id){
     return '<div class="attend-btn attend-btn-in" style="cursor:default">'
-      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px;height:16px"><path d="M20 6 9 17l-5-5"/></svg>'
+      +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="m5 12.5 5 5 9-10"/></svg>'
       +'Deine Party<span class="attend-sub">Du bist als Gastgeber dabei</span></div>';
   }
   if(isAtt){
     return '<button class="attend-btn attend-btn-in" id="attendBtn" onclick="toggleAtt(\''+e.id+'\',true)">'
-      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:16px;height:16px"><path d="M20 6 9 17l-5-5"/></svg>'
+      +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="m5 12.5 5 5 9-10"/></svg>'
       +'Du bist dabei<span class="attend-sub">Tippen zum Austragen</span></button>';
   }
   /* Preis und Zahlart ("bar vor Ort") stehen in der Kachel direkt
@@ -14106,7 +14120,7 @@ async function openDetail(id){
              :(isMe?'<span class="att-tag att-tag-me">Du</span>':'');
     const action=isMe?''
       :'<button class="msg-btn" onclick="startChat(\''+pid+'\',\''+pnm+'\',\''+un+'\')">'
-       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Schreiben</button>';
+       +'<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="url(#pkViolett)"/><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/></svg>Schreiben</button>';
     const openProf=isMe?'':' onclick="closeDetail();openUserProf(\''+pid+'\')" style="cursor:pointer"';
     return '<div class="att-row"><div class="att-left"'+openProf+'><div class="av-sm">'+av+'</div>'
       +'<div style="min-width:0"><div class="att-name">'+nm+tag+'</div><div class="att-user">@'+esc(un)+'</div></div></div>'
@@ -14302,8 +14316,7 @@ async function openDetail(id){
      '<div class="modal-title">'+esc(e.name||'Party')+'</div>'
     +'<div class="d-kopf-rechts">'+kopfRechts
     +'<button class="modal-x" onclick="closeDetail()" aria-label="Schliessen">'
-    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">'
-    +'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>';
+    +'<svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>';
   document.getElementById('detailOverlay').classList.add('open');
   merkeOrt();
   zaehleAufruf(e.id,e.type);
@@ -14598,8 +14611,7 @@ function searchRow(u,ausVerlauf){
     +'</div>'
     +(ausVerlauf
        ? '<span class="such-weg" onclick="verlaufEintragWeg(\''+u.id+'\',event)">'
-         +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6">'
-         +'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>'
+         +'<svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></span>'
        : '<svg class="sr-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 6 15 12 9 18"/></svg>')
     +'</button>';
 }
@@ -14857,8 +14869,8 @@ function calRow(e,isPast){
 function calActs(e,big){
   const pin='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>';
   const cal='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>';
-  const out='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>';
-  const gear='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+  const out='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+  const gear='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="url(#pkViolett)" opacity=".5"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   let h='<div class="cal-acts" onclick="event.stopPropagation()">';
   h+='<button class="cal-act" onclick="openRoute(\''+e.id+'\')">'+pin+'Route</button>';
   h+='<button class="cal-act" onclick="addToDeviceCal(\''+e.id+'\')">'+cal+'Kalender</button>';
@@ -15452,16 +15464,16 @@ async function renderProf(){
       <!-- ACTIONS ROW -->
       <div class="prof-actions">
         <button class="prof-action-btn" onclick="openEditProfile()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <svg class="pk" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="url(#pkSonne)" opacity=".6"/><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3 6.1l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Bearbeiten
         </button>
         <button class="prof-action-btn" onclick="profilTeilen()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>
+          <svg class="pk" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="url(#pkMint)" opacity=".35"/><path d="M7.5 10H7a2.5 2.5 0 0 0-2.5 2.5V18A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-5.5A2.5 2.5 0 0 0 17 10h-.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14.5V3.8M8 7.6l4-3.8 4 3.8" fill="none" stroke="#34E3A4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Profil teilen
         </button>
-        <button class="prof-action-btn prof-action-quadrat besuch-knopf" onclick="besucherOeffnen()" aria-label="Profilbesuche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="besuch-punkt" id="besuchPunkt" hidden></span></button>
+        <button class="prof-action-btn prof-action-quadrat besuch-knopf" onclick="besucherOeffnen()" aria-label="Profilbesuche"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="url(#pkEis)"/><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.2" cy="10.8" r=".9" fill="#fff"/></svg><span class="besuch-punkt" id="besuchPunkt" hidden></span></button>
         <button class="prof-action-btn prof-action-quadrat" onclick="showPage('search')" aria-label="Leute finden">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7.5" r="3.5"/><path d="M19 8v6M22 11h-6"/></svg>
+          <svg class="pk" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20.2a6.5 6.5 0 0 1 13 0z" fill="url(#pkViolett)" opacity=".55"/><circle cx="9.5" cy="8.3" r="3.6" fill="url(#pkViolett)"/><circle cx="9.5" cy="8.3" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 20.2a6.5 6.5 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18.2" cy="8.8" r="3.6" fill="url(#pkPink)"/><path d="M18.2 7v3.6M16.4 8.8H20" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
         </button>
         ${!cProfile.is_pro&&!istVerein()?'<button class="prof-action-btn pro-action" onclick="showPage(\'pro\')">'+PRO_STERN+'Pro werden</button>':''}
       </div>
@@ -15470,15 +15482,15 @@ async function renderProf(){
       <div class="insta-tabs mit-strich">
         <span class="insta-strich" id="profStrich" aria-hidden="true"></span>
         <button class="insta-tab active" id="tab-mine" onclick="switchProfTab('mine')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <svg class="pk" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="13" y="4" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="13" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="13" y="13" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="13" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Erstellt
         </button>
         <button class="insta-tab" id="tab-visited" onclick="switchProfTab('visited')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg class="pk" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.8-4.7-7.8-10.3A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 7.8 2.7C19.8 15.3 12 20 12 20z" fill="url(#pkPink)"/><path d="M12 20s-7.8-4.7-7.8-10.3A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 7.8 2.7C19.8 15.3 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Besucht
         </button>
         <button class="insta-tab" id="tab-gruppen" onclick="switchProfTab('gruppen')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <svg class="pk" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Gruppen
         </button>
       </div>
@@ -15488,13 +15500,13 @@ async function renderProf(){
         ${(myEvts||[]).length?myEvts.map(e=>{
           const img=e.image_url?('<img alt="" loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>');
           return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(e.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(e.date)+'</div></div></div>';
-        }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Noch keine Partys erstellt</div>'}
+        }).join(''):'<div class="insta-empty"><svg class="pk" width="40" height="40" opacity=".3" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="13" y="4" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="13" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="13" y="13" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="13" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Noch keine Partys erstellt</div>'}
       </div>
       <div id="prof-panel-visited" class="insta-grid" style="display:none">
         ${visitedEvts.length?visitedEvts.map(a=>{
           const img=a.events.image_url?('<img alt="" loading="lazy" decoding="async" src="'+escAttr(a.events.image_url)+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(a.events.type,a.events.category)+'">'+iconSvg(evIconKey(a.events),26)+'</div>');
           return '<div class="insta-tile'+(a.archiv?' archiv':'')+'"'+(a.archiv?'':' onclick="openDetail(\''+a.events.id+'\')"')+'>'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(a.events.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(a.events.date)+'</div></div></div>';
-        }).join(''):'<div class="insta-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Noch keine Partys besucht</div>'}
+        }).join(''):'<div class="insta-empty"><svg class="pk" width="40" height="40" opacity=".3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.8-4.7-7.8-10.3A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 7.8 2.7C19.8 15.3 12 20 12 20z" fill="url(#pkPink)"/><path d="M12 20s-7.8-4.7-7.8-10.3A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 7.8 2.7C19.8 15.3 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Noch keine Partys besucht</div>'}
       </div>
       <div id="prof-panel-gruppen" style="display:none;padding:4px 2px 0"></div>
       <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
@@ -16086,7 +16098,7 @@ const PRO_ICON={
   liste:'<path d="M17 20.5v-1.8a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1.8"/><circle cx="9.5" cy="7" r="4"/><path d="M22 20.5v-1.8a4 4 0 0 0-3-3.85M16.5 3.35a4 4 0 0 1 0 7.75"/>',
   geld:'<circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.9-1.8-1.4-3-1.4-1.9 0-3 1-3 2.3 0 3 6 1.6 6 4.6 0 1.4-1.2 2.4-3 2.4-1.3 0-2.4-.5-3.1-1.5"/><path d="M12 5.4v13.2"/>',
   stern:'<path d="M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 16.9 6.6 19.8l1-6.1L3.2 9.4l6.1-.9z"/>',
-  check:'<path d="M20 6 9 17l-5-5"/>',
+  check:'<path d="m5 12.5 5 5 9-10"/>',
   auge:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
 };
 /* Pro-Vorteile zeigen dieselben SPOTOUT-Piktogramme wie der Rest der
@@ -16442,8 +16454,8 @@ function chatSperreZeigen(){
 
      Jetzt ein Satz, der die Regel nennt, und ein Knopf. Wer mehr
      wissen will, tippt drauf. */
-  const kreuz='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-  const blitz='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/></svg>';
+  const kreuz='<svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+  const blitz='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.2 2.5 5 13.6h6.2l-1 7.9 8.8-11.7h-6.3z" fill="url(#pkSonne)"/><path d="M13.2 2.5 5 13.6h6.2l-1 7.9 8.8-11.7h-6.3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.2 4.4) scale(0.85)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>';
 
   box.innerHTML=
     '<div class="cpro">'
@@ -16621,7 +16633,7 @@ async function loadMsgRequests(){
         +'<div style="flex:1;min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'Unbekannt')+'</div>'
         +'<div class="att-user">möchte dir schreiben</div></div>'
         +'<button class="mreq-yes" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',true,this)">Annehmen</button>'
-        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false,this)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+        +'<button class="mreq-no" onclick="answerMsgReq(\''+r.id+'\',\''+p.id+'\',false,this)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'
         +'</div>';
     }).join('');
 }
@@ -16825,7 +16837,7 @@ async function loadMsgs(){
 
   if(!msgs.length){
     c.innerHTML='<div class="conv-empty">'
-      +'<div class="conv-empty-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>'
+      +'<div class="conv-empty-ic"><svg class="pk" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="url(#pkViolett)"/><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/></svg></div>'
       +'Noch keine Nachrichten.<br>Schreib die erste.</div>';
     return;
   }
@@ -17262,11 +17274,11 @@ function plusZeigen(meine){
   const plus='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
   const pfeil='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 6 15 12 9 18"/></svg>';
   const schloss='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>';
-  const leute='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>';
+  const leute='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   const entw=entwurfLesen();
-  const stift='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-  const kreuzchen='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  const stift='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="url(#pkSonne)" opacity=".6"/><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3 6.1l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const kreuzchen='<svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>';
 
   document.getElementById('plusBody').innerHTML=
     // Angefangenes zuerst – wer etwas offen hat, sucht meistens genau das
@@ -18722,7 +18734,7 @@ function setAddrHint(kind,txt){
   if(!el)return;
   if(!kind){el.style.display='none';el.innerHTML='';return;}
   const ic=kind==='ok'
-    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>'
+    ?'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg>'
     :kind==='load'?'<span class="btn-spin" style="width:12px;height:12px;border-width:2px"></span>'
     :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>';
   el.className='addr-hint addr-hint-'+kind;
@@ -18919,7 +18931,7 @@ async function openUserProf(userId,zurueck){
         ? buildAnfrageBtn(p.id,!!p.anfrage_laeuft,!!st?.folgt_dir)
         : buildFollowBtn(p.id,iFollow,!!st?.folgt_dir))
       +(canChat?'<button class="up-msg-btn" onclick="startChat(upUser.id,upUser.full_name||upUser.username||\'\',upUser.username||\'\')">'
-        +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Schreiben</button>':'')
+        +'<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="url(#pkViolett)"/><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5.2l-4 3.4c-.5.4-1.1 0-1.1-.5V16H7a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8.6" cy="10" r="1.15" fill="#fff"/><circle cx="12" cy="10" r="1.15" fill="#fff"/><circle cx="15.4" cy="10" r="1.15" fill="#fff"/></svg>Schreiben</button>':'')
     +'</div>'
     +(p.offen===false
       ? '<div class="up2-zu">'
@@ -18966,8 +18978,8 @@ async function renderFolgeAnfragen(){
     .eq('an',cUser.id).order('created_at',{ascending:true});
   if(error||!data?.length){box.innerHTML='';return;}
 
-  const ja='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
-  const nein='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+  const ja='<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg>';
+  const nein='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 7l10 10M17 7 7 17"/></svg>';
 
   box.innerHTML='<div class="fa-titel">Anfragen <span class="mg-pill">'+data.length+'</span></div>'
     +data.map(a=>{
@@ -19104,7 +19116,7 @@ function buildAnfrageBtn(userId,laeuft,folgtDir){
 function buildFollowBtn(userId,iFollow,folgtDir){
   if(!cUser||userId===cUser.id)return'';
   const plus='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>';
-  const check='<svg class="fb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
+  const check='<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="fb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg>';
   // Beide Zustände sind immer im DOM – gewechselt wird nur die Klasse
   return '<button class="follow-btn'+(iFollow?' following':'')+'" id="followBtn" data-uid="'+userId+'" '
     +'onclick="toggleFollow(this)">'
@@ -19300,7 +19312,7 @@ async function loadMyFollowStats(){
 
 const EIN_SVG = {
   schloss:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
-  teilen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>',
+  teilen:'<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="url(#pkMint)" opacity=".35"/><path d="M7.5 10H7a2.5 2.5 0 0 0-2.5 2.5V18A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-5.5A2.5 2.5 0 0 0 17 10h-.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14.5V3.8M8 7.6l4-3.8 4 3.8" fill="none" stroke="#34E3A4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   kopie:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
   muell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>',
   kette:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
@@ -19628,9 +19640,9 @@ async function gruppenLaden(){
         +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(e.name||'Gruppe')+'</div>'
         +'<div class="mg-req-s">von '+esc(e.von||'jemandem')+' · '+(e.mitglieder||0)+' dabei</div></div>'
         +'<button class="mg-yes" aria-label="Annehmen" onclick="gruppeEinladungAntwort(this,\''+e.id+'\',true)">'
-          +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
+          +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg></button>'
         +'<button class="mg-no" aria-label="Ablehnen" onclick="gruppeEinladungAntwort(this,\''+e.id+'\',false)">'
-          +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+          +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'
         +'</div>').join('')
     : '';
   if(!liste.length){
@@ -19715,9 +19727,9 @@ function gruppeZeichnen(g){
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
           +'<div class="mg-req-s">@'+esc(a.username||'')+'</div></div>'
           +'<button class="mg-yes" aria-label="Aufnehmen" onclick="gruppeEntscheiden(this,\''+g.id+'\',\''+a.id+'\',true)">'
-            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
+            +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg></button>'
           +'<button class="mg-no" aria-label="Ablehnen" onclick="gruppeEntscheiden(this,\''+g.id+'\',\''+a.id+'\',false)">'
-            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'
           +'</div>';
       }).join('')
     : '';
@@ -19790,7 +19802,7 @@ function gruppeZeichnen(g){
       +'<div class="grp-kopf-m">Gruppe · '+mitgliederText((g.mitglieder||[]).length)+'</div>'
       +(wann?'<div class="grp-kopf-s">Gegründet von '+esc(g.gruender_name||'Jemand')+' am '+wann+'</div>':'')
       +(g.gruender?'<button class="grp-stift" onclick="gruppeBearbeiten()">'
-        +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+        +'<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="url(#pkSonne)" opacity=".6"/><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3 6.1l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
         +'Bearbeiten</button>':'')
     +'</div>'
     +'<button class="sub-btn sub-public" style="margin:0 0 8px" onclick="gruppeChat(\''+g.id+'\')">Gruppenchat</button>'
@@ -20553,7 +20565,7 @@ async function renderBringSheet(eventId){
   if(error){body.innerHTML='<div class="mg-empty">Liste konnte nicht geladen werden.</div>';return;}
   const items=data||[];
   const meine=items.filter(i=>i.claimed_by===cUser?.id);
-  const check='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg>';
+  const check='<svg stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg>';
 
   const rows=items.map(i=>{
     const mine=i.claimed_by===cUser?.id;
@@ -20628,7 +20640,7 @@ async function openShare(eventId,opts){
 
   const pro=!!cProfile?.is_pro;
   const wa='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.6 2 2.2 6.4 2.2 11.84c0 1.74.46 3.44 1.32 4.94L2.1 22l5.36-1.4a9.8 9.8 0 0 0 4.58 1.16h.01c5.43 0 9.84-4.4 9.84-9.84C21.89 6.4 17.47 2 12.04 2zm5.72 13.9c-.24.68-1.4 1.3-1.94 1.34-.5.04-.98.22-3.3-.7-2.78-1.1-4.54-3.94-4.68-4.12-.14-.18-1.12-1.5-1.12-2.86 0-1.36.72-2.02.98-2.3.24-.28.54-.34.72-.34h.52c.16 0 .4-.06.62.48.24.56.8 1.94.88 2.08.08.14.12.3.02.48-.1.18-.16.3-.3.46-.14.16-.3.36-.42.48-.14.14-.28.3-.12.58.16.28.72 1.18 1.54 1.92 1.06.94 1.94 1.24 2.22 1.38.28.14.44.12.6-.08.16-.2.7-.82.88-1.1.18-.28.36-.24.62-.14.26.1 1.64.78 1.92.92.28.14.46.2.54.32.06.12.06.7-.18 1.38z"/></svg>';
-  const shareIc='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>';
+  const shareIc='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10.5" rx="3" fill="url(#pkMint)" opacity=".35"/><path d="M7.5 10H7a2.5 2.5 0 0 0-2.5 2.5V18A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5v-5.5A2.5 2.5 0 0 0 17 10h-.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14.5V3.8M8 7.6l4-3.8 4 3.8" fill="none" stroke="#34E3A4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const cp='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
 
   const priv=e.type==='private';
@@ -21511,7 +21523,7 @@ async function anfrageImBlatt(btn,von,ja){
 /* ══════════ PROFILBESUCHE (Pro) ══════════
    Wie auf TikTok. Wer die Einstellung ausschaltet, wird bei anderen nicht
    mehr gezaehlt und sieht selbst auch niemanden – beides entscheidet der Server. */
-const BES_AUGE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const BES_AUGE='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="url(#pkEis)"/><path d="M2.6 12S6 5.8 12 5.8 21.4 12 21.4 12 18 18.2 12 18.2 2.6 12 2.6 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.2" cy="10.8" r=".9" fill="#fff"/></svg>';
 async function besucherOeffnen(){
   if(!cUser){kontoNoetig();return;}
   const ov=document.getElementById('besucherOverlay'), box=document.getElementById('besucherListe');
@@ -21969,7 +21981,7 @@ async function warteAufPro(){
 
 const IC_KAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
 const IC_UHR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
-const IC_PFEIL='<svg class="pk-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+const IC_PFEIL='<svg class="pk-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>';
 
 function datumKlartext(iso){
   if(!iso)return 'Datum wählen';
@@ -22432,13 +22444,13 @@ let notifTimer=null,notifSeen=new Set(),notifFirst=true,ntVorher=0;
 
 const NT_ICON={
   guest_request:{cls:'frage',svg:'<path d="M16 20.5v-1.7a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1.7"/><circle cx="9" cy="7.5" r="4"/><path d="M19 8v6M22 11h-6"/>'},
-  guest_ok:{cls:'ok',svg:'<path d="M20 6 9 17l-5-5"/>'},
-  guest_no:{cls:'no',svg:'<path d="M18 6 6 18M6 6l12 12"/>'},
+  guest_ok:{cls:'ok',svg:'<path d="m5 12.5 5 5 9-10"/>'},
+  guest_no:{cls:'no',svg:'<path d="M7 7l10 10M17 7 7 17"/>'},
   invite:{cls:'ein',svg:'<path d="M4 6.5h16a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V8A1.5 1.5 0 0 1 4 6.5z"/><path d="m3 8 9 6 9-6"/>'},
   event_changed:{cls:'frage',svg:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/>'},
   event_gone:{cls:'no',svg:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2v.01"/>'},
-  verein_bestaetigt:{cls:'ok',svg:'<path d="M20 6 9 17l-5-5"/>'},
-  verein_abgelehnt:{cls:'no',svg:'<path d="M18 6 6 18M6 6l12 12"/>'},
+  verein_bestaetigt:{cls:'ok',svg:'<path d="m5 12.5 5 5 9-10"/>'},
+  verein_abgelehnt:{cls:'no',svg:'<path d="M7 7l10 10M17 7 7 17"/>'},
   verein_pruefen:{cls:'frage',svg:'<path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="m9 12 2 2 4-4"/>'},
   nachricht:{cls:'ntmsg',svg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
   // Diese drei gab es in der Datenbank schon, hier aber nicht – sie
@@ -22591,7 +22603,7 @@ function closeNotifs(){
    Anfrage nimmt man hier an. Wer erst in den Chat wechseln muss, schreibt
    oft gar nicht mehr zurueck. */
 const NT_SCHNELL=['Hoi! 👋','Bin dabei 🎉','Wann geht’s los?','Klingt gut!'];
-const NT_SENDEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>';
+const NT_SENDEN='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 3.6 3.9 10.2c-.8.3-.8 1.4 0 1.7l6.4 2.4 2.4 6.4c.3.8 1.4.8 1.7 0z" fill="url(#pkPink)"/><path d="M20.4 3.6 3.9 10.2c-.8.3-.8 1.4 0 1.7l6.4 2.4 2.4 6.4c.3.8 1.4.8 1.7 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.4 3.6l-10.1 10.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const NT_GLOCKE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.2 7.5-2.2 7.5h16.4S18 14.5 18 8.5z"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg>';
 // Diese Saetze sagte der Server, als es noch keinen Knopf gab.
 const NT_ALT_HINWEIS=['Tipp an, um die Party anzusehen','Tipp an, um zu entscheiden'];
@@ -22716,7 +22728,7 @@ function ntAnfragenZeile(){
     +'<span class="nt-anfr-avs'+(a.length>1?' zwei':'')+'">'+avs+'</span>'
     +'<span class="nt-anfr-txt"><b>Follow-Anfragen</b><span>'+esc(nm)
       +(rest>0?(rest===1?' und 1 weitere Person':' und '+rest+' weitere Personen'):'')+'</span></span>'
-    +'<span class="nt-anfr-zahl">'+a.length+'</span>'+'<svg class="nt-anfr-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>'
+    +'<span class="nt-anfr-zahl">'+a.length+'</span>'+'<svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="nt-anfr-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>'
     +'</button>';
 }
 
@@ -23033,7 +23045,7 @@ async function renderPlusCard(eventId){
     .eq('event_id',eventId).eq('user_id',cUser.id).maybeSingle();
   if(error){console.error('[plus]',error);box.innerHTML='';return;}
 
-  const ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 20.5v-1.7a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1.7"/><circle cx="9" cy="7.5" r="4"/><path d="M19 8v6M22 11h-6"/></svg>';
+  const ic='<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20.2a6.5 6.5 0 0 1 13 0z" fill="url(#pkViolett)" opacity=".55"/><circle cx="9.5" cy="8.3" r="3.6" fill="url(#pkViolett)"/><circle cx="9.5" cy="8.3" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 20.2a6.5 6.5 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18.2" cy="8.8" r="3.6" fill="url(#pkPink)"/><path d="M18.2 7v3.6M16.4 8.8H20" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>';
 
   if(!data){
     plusWahl=1;
@@ -23122,8 +23134,7 @@ function plusNamenFelder(){
           +'<div class="plus-konto-u">@'+esc(k.username||'')+' · hat SPOTOUT</div>'
         +'</div>'
         +'<button class="plus-konto-x" onclick="plusKontoWeg('+i+')" aria-label="Verknüpfung lösen">'
-        +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6">'
-        +'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>'
+        +'<svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'
         +'</div>';
     }
     return '<div class="plus-name-feld" id="plusZeile'+i+'">'
@@ -23309,8 +23320,8 @@ async function openManage(eventId){
           +'<div class="av-sm">'+av+'</div>'
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
           +'<div class="mg-req-s">über deinen Einladungslink</div></div>'
-          +'<button class="mg-yes" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',true)" aria-label="Bestätigen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
-          +'<button class="mg-no" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',false)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+          +'<button class="mg-yes" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',true)" aria-label="Bestätigen"><svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg></button>'
+          +'<button class="mg-no" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',false)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'
           +'</div>';
       }).join('')
     :'';
@@ -23325,9 +23336,9 @@ async function openManage(eventId){
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+' möchte +'+r.extra_count+' mitbringen</div>'
           +begleiterZeile(r)+'</div>'
           +'<button class="mg-yes" onclick="decideRequest(\''+r.id+'\',\''+ev.id+'\',true,this)" aria-label="Zusagen">'
-            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></button>'
+            +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg></button>'
           +'<button class="mg-no" onclick="decideRequest(\''+r.id+'\',\''+ev.id+'\',false,this)" aria-label="Absagen">'
-            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+            +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'
           +'</div>';
       }).join('')
     :'';
@@ -23947,7 +23958,7 @@ async function renderBringList(eventId,isHost){
   const open=items.length-done;
   const pct=items.length?Math.round(done/items.length*100):0;
   const mineItems=items.filter(i=>i.claimed_by===cUser?.id);
-  const check='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg>';
+  const check='<svg stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg>';
   const trash='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13h10l1-13"/></svg>';
   const bag='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5.5 8h13l-1 12.5a1 1 0 0 1-1 .9H7.5a1 1 0 0 1-1-.9z"/><path d="M8.8 8V6.2a3.2 3.2 0 0 1 6.4 0V8"/></svg>';
 
@@ -24764,7 +24775,7 @@ function convMenueZeichnen(){
     : esc(((u.full_name||u.username||'?').trim()[0]||'?').toUpperCase());
   const laedt=cmStand.stumm===null;
   const selbst=cmStand.selbst;
-  const pfeil='<svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+  const pfeil='<svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>';
   kasten.innerHTML=
      '<div class="cm-kopf">'
     +  '<button class="cm-av" onclick="closeOverlay(\'convMenueOverlay\');convProfilOeffnen()" aria-label="Profil ansehen">'+av+'</button>'
