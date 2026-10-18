@@ -20674,7 +20674,7 @@ function zusageEnde(id){
   const b=document.createElement('div');
   b.id='zeBanner'; b.className='ze-banner'; b.setAttribute('role','status');
   b.innerHTML='<span class="ze-ic">'+pikto('ok',22,'pk-bunt')+'</span>'
-    +'<span class="ze-text"><b>Du bist dabei</b><small>'+esc(e.name||'')+(wann?' · '+esc(wann):'')+'</small></span>'
+    +'<span class="ze-text"><b>Du bist dabei</b><small>'+esc(wann||e.name||'')+'</small></span>'
     +'<button class="ze-knopf" type="button">Freunde mitnehmen</button>';
   b.querySelector('.ze-knopf').onclick=()=>{ b.remove(); openShare(id); };
   document.body.appendChild(b);
