@@ -7278,6 +7278,18 @@
     /* Einstellungen: schlichte, einfarbige Symbole wie in iOS */
     .settings-btn .pk:not(.pk-bunt){color:rgba(255,255,255,.78)}
     .settings-btn.danger .pk{color:#ff6b6b}
+    /* Tour-Motion */
+    .iphone-finger{position:absolute;z-index:6;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
+      background:rgba(255,255,255,.34);border:1.5px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(0,0,0,.35);
+      opacity:0;visibility:hidden;pointer-events:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+    .tour-zwei{display:grid}
+    .tour-zwei>*{grid-area:1/1}
+    .tour-zwei>[data-tm="nach"]{opacity:0}
+    .iphone-banner{top:0;transform-origin:0 0;z-index:5;padding:54px 12px 0}
+    .tour-banner{position:relative!important;left:auto!important;right:auto!important;top:auto!important;transform:none;opacity:0}
+    .tour-funke{position:absolute;z-index:6;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;pointer-events:none}
+    .tour-folgen{margin-top:14px}
+    .tour-folgen .follow-btn{width:100%}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -10217,12 +10229,17 @@ const TOUREN={
   start:[
     {
       t:'Was in deiner Nähe läuft',
-      s:'Partys, Feste und Openairs, die nächsten zuerst. Mit „Karte“ siehst du alle auf einen Blick.',
+      s:'Partys, Feste und Openairs in deiner Gegend, die nächsten zuerst. Oben wählst du Events, Öffentlich oder Privat.',
       b:()=>'<div class="tb"><div class="tb-kachel">'
         +'<div class="tb-bild"><i>Öffentlich</i><b>4.6 km</b></div>'
         +'<div class="tb-txt"><div class="tb-n">Herbstfest Rohr</div>'
         +'<div class="tb-m">Sa. 19. Sept. · 17:00 Uhr<br>Rohrerstrasse, Rohr · Eintritt frei</div>'
         +'</div></div></div>',
+    },
+    {
+      t:'Sieh, wer hingeht',
+      s:'Auf jeder Party steht, wie viele hingehen und wie viele von deinen Leuten dabei sind. Mit Pro siehst du ihre Namen.',
+      b:()=>'<div class="tb"></div>',
     },
     {
       t:'Ein Tipp, und du bist dabei',
@@ -10237,6 +10254,11 @@ const TOUREN={
         +'<div class="tb-knopf">Ich bin dabei!</div></div>',
     },
     {
+      t:'Chats mit deinen Leuten',
+      s:'Antworte direkt, schick Fotos und sieh, wann jemand tippt. Wer zuerst schreiben will, braucht Pro.',
+      b:()=>'<div class="tb"></div>',
+    },
+    {
       t:'Deine eigene Party',
       s:'Tipp unten aufs Plus. Name, Zeit und Ort reichen. Öffentlich für alle oder privat nur für Eingeladene.',
       b:()=>'<div class="tb">'
@@ -10248,7 +10270,12 @@ const TOUREN={
         +'</div>',
     },
     {
-      t:'Angst vor Smalltalk?',
+      t:'Folge deinen Leuten',
+      s:'Folge Freunden, dann weisst du, wo sie hingehen. Private Profile fragst du an.',
+      b:()=>'<div class="tb"></div>',
+    },
+    {
+      t:'Angst vor Huzz?',
       s:'Die Party ist zäh, gehen willst du noch nicht. Ein Tipp oben rechts neben der Glocke, und du bist in TikTok, Reels oder Shorts. Gleich nachher wählst du, wohin.',
       /* Gewaehlt wird erst nach dieser Tour. Ist hier schon etwas
          markiert, hat jemand die Tour spaeter nochmals aufgerufen. */
@@ -10386,7 +10413,103 @@ function tourAnzahl(){ return (TOUREN[tourSatz]||[]).length; }
    wird "gedrueckt", der Fluchtknopf leuchtet zweimal auf. Einmalig und
    selten (Emil: Delight gehoert in erste Male), unter einer Sekunde,
    nichts wartet darauf. Weniger Bewegung: nichts davon. */
+/* Kleine Filme im iPhone: ein Finger tippt, der Bildschirm antwortet.
+   Laeuft in Schleife, solange die Karte offen ist, und wird beim
+   Weiterblaettern sauber gestoppt (Werte zurueck). Emil: starkes
+   Ease-out, kurze Antworten auf das Tippen, nie aus scale(0).
+   Weniger Bewegung: gar nichts davon (mitGsap). */
+let tourMotionStopp=null;
+function tourMotion(karte){
+  if(tourMotionStopp){ tourMotionStopp(); tourMotionStopp=null; }
+  const f=karte&&karte.querySelector('.iphone-fenster');
+  if(!f)return;
+  const art=f.dataset.motion;
+  mitGsap((gsap,fertig)=>{
+    const $=(sel)=>f.querySelector(sel);
+    const ease='power3.out';
+    const handy=$('.iphone'), schirm=$('.iphone-schirm'), finger=$('.iphone-finger');
+    gsap.fromTo(handy,{y:34,autoAlpha:0},{y:0,autoAlpha:1,duration:.55,ease:'expo.out'});
+    if(!art){ tourMotionStopp=()=>{ fertig(); }; return; }
+    const tl=gsap.timeline({repeat:-1,repeatDelay:1.4,delay:.6,defaults:{ease}});
+    /* Finger auf ein Element setzen und tippen lassen */
+    const tippe=(sel,pos)=>{
+      tl.call(()=>{
+        const z=f.querySelector(sel); if(!z||!schirm)return;
+        const a=z.getBoundingClientRect(), b=schirm.getBoundingClientRect();
+        gsap.set(finger,{left:a.left-b.left+a.width/2,top:a.top-b.top+a.height/2});
+      },null,pos);
+      tl.fromTo(finger,{autoAlpha:0,scale:1.25},{autoAlpha:1,scale:1,duration:.32},'>');
+      tl.to(finger,{scale:.82,duration:.12,ease:'power2.out'},'>+.1');
+      tl.to(sel==='.tour-zwei'?f.querySelector('[data-tm="vor"]'):f.querySelector(sel),{scale:.96,duration:.12,ease:'power2.out'},'<');
+      tl.to(finger,{scale:1,autoAlpha:0,duration:.3},'>');
+      tl.to(sel==='.tour-zwei'?f.querySelector('[data-tm="vor"]'):f.querySelector(sel),{scale:1,duration:.3,ease:'back.out(2)'},'<');
+    };
+    if(art==='scroll'){
+      const z=$('[data-tm="scroll"]');
+      tl.to(z,{y:-260,duration:2.4,ease:'power2.inOut'}).to(z,{y:0,duration:1.6,ease:'power2.inOut'},'+=1');
+    }
+    if(art==='freunde'){
+      const av=f.querySelectorAll('.fr-av span, .fr-zeile');
+      tl.fromTo(av,{autoAlpha:0,scale:.7},{autoAlpha:1,scale:1,duration:.4,ease:'back.out(2)',stagger:.12}).to({}, {duration:2.2});
+    }
+    if(art==='dabei'){
+      const vor=$('[data-tm="vor"]'), nach=$('[data-tm="nach"]');
+      tl.set(nach,{autoAlpha:0}).set(vor,{autoAlpha:1});
+      tippe('.tour-zwei');
+      tl.to(vor,{autoAlpha:0,duration:.15},'<');
+      tl.fromTo(nach,{autoAlpha:0,scale:.96},{autoAlpha:1,scale:1,duration:.35,ease:'back.out(2)'},'<');
+      /* Dieselben Funken wie in der App beim Zusagen */
+      tl.call(()=>{
+        const k=nach.querySelector('button')||nach, r=k.getBoundingClientRect(), b=schirm.getBoundingClientRect();
+        const cx=r.left-b.left+r.width/2, cy=r.top-b.top+r.height/2;
+        const farben=['#FF2D76','#FF5A45','#633BFF','#54A7FF','#4ade80'];
+        for(let i=0;i<12;i++){
+          const d=document.createElement('i'); d.className='tour-funke';
+          d.style.cssText='left:'+cx+'px;top:'+cy+'px;background:'+farben[i%5];
+          schirm.appendChild(d);
+          const w=i/12*Math.PI*2;
+          gsap.fromTo(d,{x:0,y:0,scale:.6,autoAlpha:1},{x:Math.cos(w)*(r.width*.42+gsap.utils.random(0,20)),y:Math.sin(w)*(r.height*.8+gsap.utils.random(8,24)),
+            scale:1,duration:.5,ease:'power3.out',onComplete:()=>gsap.to(d,{autoAlpha:0,duration:.25,onComplete:()=>d.remove()})});
+        }
+      },null,'<');
+      tl.to({}, {duration:2.2});
+    }
+    if(art==='chat'){
+      const neu=$('[data-tm="neu"]');
+      gsap.set(neu,{height:0,autoAlpha:0,overflow:'hidden'});
+      tl.set(neu,{height:0,autoAlpha:0,overflow:'hidden'})
+        .to(neu,{height:'auto',duration:.45,ease:'expo.out'},'+=.4')
+        .to(neu,{autoAlpha:1,duration:.3},'<.1')
+        .to({}, {duration:2.4});
+    }
+    if(art==='plus'){
+      const blatt=$('[data-tm="blatt"]'), dimm=$('[data-tm="dimm"]');
+      gsap.set(blatt,{yPercent:130,autoAlpha:0}); gsap.set(dimm,{filter:'brightness(1)'});
+      tl.set(blatt,{yPercent:130,autoAlpha:0}).set(dimm,{filter:'brightness(1)'});
+      tippe('.bnav-create');
+      tl.to(dimm,{filter:'brightness(.42)',duration:.35},'>-.1');
+      tl.to(blatt,{yPercent:0,autoAlpha:1,duration:.5,ease:'expo.out'},'<');
+      tl.to({}, {duration:1.8});
+      tl.to(blatt,{yPercent:130,autoAlpha:0,duration:.3,ease:'power2.in'});
+      tl.to(dimm,{filter:'brightness(1)',duration:.3},'<');
+    }
+    if(art==='folgen'){
+      const k=$('.follow-btn');
+      tl.call(()=>k&&k.classList.remove('following'));
+      tippe('.follow-btn');
+      tl.call(()=>k&&k.classList.add('following'),null,'<');
+      tl.to({}, {duration:2});
+    }
+    if(art==='raus'){
+      tippe('.nav-raus');
+      tl.fromTo($('.nav-raus'),{boxShadow:'0 0 0 0 rgba(255,45,118,.6)'},{boxShadow:'0 0 0 14px rgba(255,45,118,0)',duration:.8,ease:'power2.out'},'<');
+      tl.to({}, {duration:1.2});
+    }
+    tourMotionStopp=()=>{ tl.kill(); fertig(); };
+  });
+}
 function tourKarteVorfuehren(karte){
+  tourMotion(karte);
   if(!karte)return;
   mitGsap((gsap,fertig)=>{
     const teile=karte.querySelectorAll('.tour-bild .tb > *, .tour-bild .tb-kachel > *');
@@ -10500,12 +10623,17 @@ function tourNeutral(html){
    voller Breite (390 px) und wird auf Handygroesse verkleinert – also
    1:1 dieselben Teile, nur kleiner. */
 /* Bis zu zwei echte Partys nebeneinander, wie im Raster der Startseite */
+function tourKarten2(){
+  const a={...tourParty(),id:'tour-demo3',name:'Herbstfest Rohr',category:'Dorffest',address:'Rohrerstrasse, Rohr',date:tourTag(3),time:'17:00',attending:58,image_url:tourBild(TOUR_BILD_SEE)};
+  const b={...tourParty2(),id:'tour-demo4',name:'Techno im Keller',category:'Clubnacht',address:'Hardstrasse, Zürich',date:tourTag(5),time:'23:00',attending:21,price:15,image_url:tourBild(TOUR_BILD_HAUS)};
+  return '<div class="iphone-karte iphone-zwei">'+cardHTML(a)+cardHTML(b)+'</div>';
+}
 function tourKarten(){
   return '<div class="iphone-karte iphone-zwei">'+cardHTML(tourParty())+cardHTML(tourParty2())+'</div>';
 }
-function tourHandy(inner,unten,leiste,fenster){
+function tourHandy(inner,unten,leiste,fenster,motion){
   const vonUnten=fenster?fenster==='unten':!!unten;
-  return '<div class="iphone-fenster'+(vonUnten?' von-unten':'')+'">'+tourHandyGeraet(inner,unten,leiste)+'</div>';
+  return '<div class="iphone-fenster'+(vonUnten?' von-unten':'')+'"'+(motion?' data-motion="'+motion+'"':'')+'>'+tourHandyGeraet(inner,unten,leiste)+'</div>';
 }
 function tourHandyGeraet(inner,unten,leiste){
   inner=tourNeutral(inner); if(typeof leiste==='string')leiste=tourNeutral(leiste);
@@ -10520,28 +10648,43 @@ function tourHandyGeraet(inner,unten,leiste){
     +'<svg viewBox="0 0 16 12" width="17" height="12"><path d="M8 2.2c2.4 0 4.6.9 6.2 2.4l1.2-1.2A10.4 10.4 0 0 0 8 .5 10.4 10.4 0 0 0 .6 3.4l1.2 1.2A8.7 8.7 0 0 1 8 2.2zm0 3.4c1.5 0 2.8.5 3.8 1.4L13 5.8A7.2 7.2 0 0 0 8 3.9a7.2 7.2 0 0 0-5 1.9L4.2 7c1-.9 2.3-1.4 3.8-1.4zM8 9l2.3-1.6A3.6 3.6 0 0 0 8 6.6c-.9 0-1.7.3-2.3.8z" fill="#fff"/></svg>'
     +'<svg viewBox="0 0 28 13" width="27" height="13"><rect x=".5" y=".5" width="24" height="12" rx="3.8" fill="none" stroke="#fff" stroke-opacity=".4"/><rect x="2" y="2" width="21" height="9" rx="2.5" fill="#fff"/><path d="M26 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="#fff" fill-opacity=".45"/></svg>'
     +'</span></div>'
-    +(leiste?'<div class="iphone-ebene iphone-leiste">'+(typeof leiste==='string'?leiste:tourNeutral(tourKlon('#bnav')||''))+'</div>':'')
+    +(leiste&&typeof leiste==='string'&&leiste.indexOf('tour-banner')>=0
+      ?'<div class="iphone-ebene iphone-banner">'+leiste+'</div>'
+      :(leiste?'<div class="iphone-ebene iphone-leiste">'+(typeof leiste==='string'?leiste:tourNeutral(tourKlon('#bnav')||''))+'</div>':''))
     +'<div class="iphone-ebene iphone-unten-balken"><span></span></div>'
+    +'<i class="iphone-finger"></i>'
     +'</div></div></div>';
 }
 function tourSeitenKlon(teile){ return teile.map(tourKlon).join(''); }
 
+function tourFreundeSetzen(){
+  /* Echte Freunde-Zeile, aber mit Beispiel-Leuten: Gratis-Konten sehen
+     die Zahl, Pro die Namen – genau wie in der App. */
+  if(typeof freundeMap==='undefined')return;
+  freundeMap.set('tour-demo',{anzahl:2,namen:[{name:'Lena Meier'},{name:'Jan Brunner'}]});
+  freundeMap.set('tour-demo2',{anzahl:1,namen:[{name:'Nina Kaufmann'}]});
+}
+function tourOhneFreunde(){ if(typeof freundeMap!=='undefined'){ freundeMap.delete('tour-demo'); freundeMap.delete('tour-demo2'); } }
+const TOUR_OBEN=['#page-main .top-nav','#homeHero','#searchWrap','#segWrap'];
 const TOUR_ECHT={
-  0:()=>{ const p=tourParty();
-    const oben=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap']);
-    if(!oben)return '';
-    return tourHandy(oben+(p?tourKarten():tourKlon('#fySection')),false,true); },
-  1:()=>{ const echtP=tourParty();
-    // Der Knopf, wie ihn Gaeste sehen (auch wenn die einzige Party die eigene ist)
-    const kp=(echtP&&echtP.created_by!==cUser?.id)?echtP:{id:'tour',type:echtP?.type||'public',created_by:null,price:0,drink_price:0,attending:0};
-    let knopf=''; try{ knopf=buildAttendBtn(kp,false,false,false,null,false,(kp.price||0)+(kp.drink_price||0),worldVars(kp.type),kp.attending||0,false); }catch(e){ return ''; }
-    return tourHandy(tourKlon('#page-main .top-nav')+(echtP?'<div class="iphone-karte iphone-karte-gross">'+cardHTML(echtP)+'</div>':'')+'<div class="iphone-knopf">'+knopf+'</div>',true); },
-  2:()=>{ const leiste=tourKlon('#bnav'); if(!leiste)return '';
-    const hinten=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap'])+tourKarten();
-    return tourHandy('<div class="iphone-dimm">'+hinten+'</div>',false,'<div class="iphone-blatt"><div class="plus-gross"><span class="plus-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>'
-      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div></div>'+leiste,'unten'); },
-  3:()=>{ const k=tourSeitenKlon(['#page-main .top-nav','#homeHero','#searchWrap','#segWrap']); const p=tourParty();
-    return k?tourHandy('<div class="iphone-raus">'+k+(p?tourKarten():'')+'</div>',false,true):''; },
+  0:()=>{ tourOhneFreunde(); const oben=tourSeitenKlon(TOUR_OBEN); if(!oben)return '';
+    return tourHandy('<div data-tm="scroll">'+oben+tourKarten()+tourKarten2()+'</div>',false,true,null,'scroll'); },
+  1:()=>{ tourFreundeSetzen(); const k=tourKlon('#page-main .top-nav'); const h=tourHandy(k+tourKarten(),false,true,null,'freunde'); tourOhneFreunde(); return h; },
+  2:()=>{ const p=tourParty(); let vor='',nach='';
+    try{ vor=buildAttendBtn(p,false,false,false,null,false,0,worldVars(p.type),p.attending,false);
+         nach=buildAttendBtn(p,true,false,false,null,false,0,worldVars(p.type),p.attending+1,false); }catch(e){ return ''; }
+    return tourHandy('<div class="iphone-karte iphone-karte-gross">'+cardHTML(p)+'</div>'
+      +'<div class="iphone-knopf"><div class="tour-zwei"><div data-tm="vor">'+vor+'</div><div data-tm="nach">'+nach+'</div></div></div>',
+      true,false,null,'dabei'); },
+  3:()=>tourBeispielChats(true),
+  4:()=>{ const leiste=tourKlon('#bnav'); if(!leiste)return '';
+    const hinten=tourSeitenKlon(TOUR_OBEN)+tourKarten();
+    const blatt='<div class="iphone-blatt" data-tm="blatt"><div class="plus-gross"><span class="plus-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>'
+      +'<span><span class="plus-t">Neue Party</span><span class="plus-s">Name, Zeit, Ort – der Rest ist freiwillig</span></span></div></div>';
+    return tourHandy('<div class="iphone-dimm" data-tm="dimm">'+hinten+'</div>',false,blatt+leiste,'unten','plus'); },
+  5:()=>tourFremdesProfil(),
+  6:()=>{ const k=tourSeitenKlon(TOUR_OBEN);
+    return k?tourHandy('<div class="iphone-raus">'+k+tourKarten()+'</div>',false,true,null,'raus'):''; },
 };
 
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
@@ -10553,7 +10696,7 @@ function tourAttZeile(p){
     +'<div style="min-width:0"><div class="att-name">'+esc(p.full_name||p.username||'')+'</div><div class="att-user">@'+esc(p.username||'')+'</div></div></div>'
     +'<span class="att-tag">geht hin</span></div>';
 }
-function tourBeispielProfil(markiere){
+function tourBeispielProfil(markiere,fremd){
   const kopf=tourKlon('#page-profile .top-nav')||'';
   const stat=(z,t)=>'<div class="insta-stat"><div class="insta-stat-num">'+z+'</div><div class="insta-stat-lbl">'+t+'</div></div>';
   return tourHandy('<div class="'+(markiere||'')+'">'+kopf
@@ -10563,18 +10706,34 @@ function tourBeispielProfil(markiere){
     +'<div class="prof-bio"><div class="prof-name-row"><span class="insta-name">Lena Meier</span>'+proMarke()+'</div>'
     +'<div class="insta-handle">@lena.meier · 21</div><div class="insta-bio">Openairs, Techno und gute Leute.</div>'
     +buildSocialLinks({is_pro:true,instagram_handle:'lena.meier',snapchat_handle:'lena.mr'})
-    +'</div></div></div></div></div>',false,true);
+    +(fremd?'<div class="tour-folgen">'+(buildFollowBtn('tour-lena',false,false)||'').replace(' id="followBtn"','')+'</div>':'')
+    +'</div></div></div></div></div>',false,true,null,fremd?'folgen':null);
 }
-function tourBeispielChats(){
+/* Fremdes Profil wie in der App (Kopf mit Zurueck, Folgen-Knopf),
+   nur mit Beispiel-Person */
+function tourFremdesProfil(){
+  const stat=(z,t)=>'<div class="insta-stat"><div class="insta-stat-num">'+z+'</div><div class="insta-stat-lbl">'+t+'</div></div>';
+  const kopf='<div class="up-kopf"><button class="up-zurueck"><svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg></button>'
+    +'<div class="up-kopf-titel">lena.meier</div><div class="up2-kopfaktion"></div></div>';
+  const body='<div class="up-rolle"><div class="prof-wrap-insta up-seite">'
+    +'<div class="prof-header"><div class="insta-av"><span>L</span></div><div class="prof-stats-row">'+stat(4,'Partys')+stat(212,'Follower')+stat(180,'Folgt')+'</div></div>'
+    +'<div class="prof-bio"><div class="prof-name-row"><span class="insta-name">Lena Meier</span></div>'
+    +'<div class="insta-handle">@lena.meier</div></div>'
+    +'<div class="prof-actions up-akt">'+(buildFollowBtn('tour-lena',false,false)||'').replace(' id="followBtn"','')+'</div>'
+    +'<div class="up2-abschnitt">Kommende Partys</div></div></div>';
+  return tourHandy('<div class="tour-up">'+kopf+body+'</div>',false,true,null,'folgen');
+}
+function tourBeispielChats(neu){
   const kopf=tourKlon('#page-chat .top-nav')||'';
   const zeile=(p,text,zeit,neu)=>'<div class="chat-item'+(neu?' unread':'')+'"><div class="chat-av" style="background:'+avFarbeFuer(p.username)+'">'+p.full_name[0]+'</div>'
     +'<div class="chat-info"><div class="chat-name">'+p.full_name+'</div><div class="chat-preview">'+text+'</div></div>'
     +'<div class="chat-meta"><div class="chat-time">'+zeit+'</div>'+(neu?'<div class="unread-dot">1</div>':'')+'</div></div>';
   return tourHandy(kopf+'<div class="chat-wrap">'
-    +zeile(TOUR_LEUTE[0],'Bist du morgen auch am See?','20:14',true)
+    +(neu?'<div data-tm="neu">'+zeile({full_name:'Mia Keller',username:'mia.keller'},'Kommst du heute mit? 🎉','jetzt',true)+'</div>':'')
+    +zeile(TOUR_LEUTE[0],'Bist du morgen auch am See?','20:14',!neu)
     +zeile(TOUR_LEUTE[2],'Treffen wir uns beim Eingang?','18:02',false)
     +zeile(TOUR_LEUTE[1],'<span class="chat-du">Du:</span> Ich bring die Box mit','Gestern',false)
-    +'</div>',false,true);
+    +'</div>',false,true,null,neu?'chat':null);
 }
 const TOUR_ECHT_PRO={
   0:()=>tourBeispielProfil(),
@@ -10648,9 +10807,10 @@ function tourMasse(){
   /* iPhone-Karten: nicht verkleinern, sondern das Handy fast in
      Originalgroesse zeigen und mehr oder weniger davon anschneiden. */
   if(buehne.querySelector('.iphone-fenster')){
-    const breite=Math.min(372, window.innerWidth-18);
-    wurzel.setProperty('--tw', breite+'px');
-    wurzel.setProperty('--ts', ((breite-16)/390).toFixed(4));
+    /* Exakt 1:1: der Bildschirm ist 390 px breit wie die App selbst.
+       Auf schmalen Geraeten ragt der Rahmen seitlich ueber den Rand. */
+    wurzel.setProperty('--tw', '406px');
+    wurzel.setProperty('--ts', '1');
     const fh=Math.round(Math.max(200, Math.min(520, platz - titel - text - luft - 56)));
     wurzel.setProperty('--fenster-h', fh+'px');
     skala=1;
@@ -10727,6 +10887,7 @@ function tourZurueck(){
 
 
 function tourFertig(){
+  if(tourMotionStopp){ tourMotionStopp(); tourMotionStopp=null; }
   try{ localStorage.setItem(tourSatz==='pro'?TOUR_PRO_SCHLUESSEL:TOUR_SCHLUESSEL,'1'); }catch(e){}
   kontoMerkmalSetzen(tourSatz==='pro'?'tour_pro':'tour_start');
   const t=document.getElementById('tour');
