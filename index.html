@@ -7264,7 +7264,11 @@
       display:flex;justify-content:center;align-items:flex-start;padding-top:2px;
       -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 64px),transparent);
               mask-image:linear-gradient(to bottom,#000 calc(100% - 64px),transparent)}
-    .iphone-fenster.von-unten{align-items:flex-end;padding-top:0;
+    .iphone-kamera{flex:none;will-change:transform}
+    .iphone-fenster.mitte{padding-top:0;
+      -webkit-mask-image:linear-gradient(to bottom,transparent,#000 56px,#000 calc(100% - 56px),transparent);
+              mask-image:linear-gradient(to bottom,transparent,#000 56px,#000 calc(100% - 56px),transparent)}
+    .iphone-fenster.von-unten{padding-top:0;
       -webkit-mask-image:linear-gradient(to top,#000 calc(100% - 64px),transparent);
               mask-image:linear-gradient(to top,#000 calc(100% - 64px),transparent)}
     .iphone-fenster .iphone{--w:var(--tw,360px);--s:var(--ts,.887);flex:none;margin:0;
@@ -7312,6 +7316,38 @@
     .tl-plus{width:56px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;
       background:linear-gradient(135deg,#FF2D76,#FF5A45);box-shadow:0 6px 10px rgba(255,45,118,.25)}
     .iphone-leiste .tl-leiste{margin:0}
+    /* Pro-Werbung nach der Tour */
+    .pw{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:column;background:#090D24;
+      padding:calc(env(safe-area-inset-top,0px) + 8px) 0 calc(env(safe-area-inset-bottom,0px) + 10px);
+      opacity:0;transition:opacity .28s cubic-bezier(.23,1,.32,1);overflow:hidden}
+    .pw.da{opacity:1}
+    .pw{overflow-y:auto;overscroll-behavior:contain}
+    .pw::before{content:"";position:absolute;left:50%;top:-120px;width:520px;height:420px;transform:translateX(-50%);pointer-events:none;
+      background:radial-gradient(closest-side,rgba(255,45,118,.22),rgba(255,45,118,0))}
+    .pw-kopf{position:relative;display:flex;align-items:center;justify-content:space-between;padding:4px 16px 0;z-index:2}
+    .pw-buehne{position:relative;flex:1 1 auto;min-height:170px;display:flex;align-items:flex-start;overflow:hidden}
+    .pw-buehne .iphone-fenster{height:var(--fenster-h,300px)}
+    .pw-text{position:relative;padding:6px 24px 0}
+    .pw-t{font-size:2rem;font-weight:900;letter-spacing:-.03em;line-height:1.08;color:#fff;margin:0}
+    .pw-s{font-size:.95rem;color:var(--text2,rgba(255,255,255,.72));line-height:1.45;margin:8px 0 14px}
+    .pw-v{display:flex;align-items:center;gap:12px;padding:7px 0}
+    .pw-v-ic{flex:none;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06)}
+    .pw-v b{display:block;font-size:.92rem;color:#fff}
+    .pw-v small{display:block;font-size:.78rem;color:var(--muted);margin-top:1px}
+    .pw-fuss{position:relative;padding:12px 20px 0;text-align:center}
+    .pw-probe{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#4ade80;
+      background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);border-radius:980px;padding:4px 10px;margin-bottom:10px}
+    .pw-cta{display:block;width:100%;height:54px;border:none;border-radius:16px;background:#FF2D76;color:#fff;font:800 1.02rem var(--font);cursor:pointer;
+      transition:transform 140ms cubic-bezier(.23,1,.32,1)}
+    .pw-cta:active{transform:scale(.97)}
+    .pw-preis{font-size:.82rem;color:#fff;font-weight:600;margin-top:9px}
+    .pw-recht{font-size:.64rem;line-height:1.4;color:var(--muted);margin-top:6px}
+    .pw-links{display:flex;justify-content:center;gap:6px;font-size:.66rem;color:var(--muted);margin-top:4px}
+    .pw-link{background:none;border:none;padding:0;color:var(--muted);font:inherit;text-decoration:underline;cursor:pointer}
+    .pw-spaeter{display:block;margin:6px auto 0;background:none;border:none;color:rgba(255,255,255,.6);font:600 .86rem var(--font);padding:8px 16px;cursor:pointer}
+    .pw-zwei{position:relative}
+    .pw-zwei>[data-tm="nach"]{opacity:0}
+    @media (max-height:700px){.pw-v small{display:none}.pw-t{font-size:1.7rem}}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -10249,120 +10285,38 @@ const TOUREN={
      man findet sie dort, wo man sie braucht. Wer die Tour schon
      gesehen hat, bekommt sie deswegen nicht nochmals. */
   start:[
-    {
-      t:'Was in deiner Nähe läuft',
-      s:'Partys, Feste und Openairs in deiner Gegend, die nächsten zuerst. Oben wählst du Events, Öffentlich oder Privat.',
-      b:()=>'<div class="tb"><div class="tb-kachel">'
-        +'<div class="tb-bild"><i>Öffentlich</i><b>4.6 km</b></div>'
-        +'<div class="tb-txt"><div class="tb-n">Herbstfest Rohr</div>'
-        +'<div class="tb-m">Sa. 19. Sept. · 17:00 Uhr<br>Rohrerstrasse, Rohr · Eintritt frei</div>'
-        +'</div></div></div>',
-    },
-    {
-      t:'Sieh, wer hingeht',
-      s:'Auf jeder Party steht, wie viele hingehen und wie viele von deinen Leuten dabei sind. Mit Pro siehst du ihre Namen.',
-      b:()=>'<div class="tb"></div>',
-    },
-    {
-      t:'Ein Tipp, und du bist dabei',
-      s:'„Ich bin dabei“ trägt dich ein. Danach steht die Party in deinem Kalender, mit Route und Erinnerung.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:#6B4CFF">L</div>'
-        +'<div><div class="tb-t">Lena Meier</div><div class="tb-s">vor 2 Stunden angemeldet</div></div>'
-        +'<div class="tb-wer">geht hin</div></div>'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#FF2D76,#FF6B00)">J</div>'
-        +'<div><div class="tb-t">Jan Brunner</div><div class="tb-s">gestern angemeldet</div></div>'
-        +'<div class="tb-wer">geht hin</div></div>'
-        +'<div class="tb-knopf">Ich bin dabei!</div></div>',
-    },
-    {
-      t:'Chats mit deinen Leuten',
-      s:'Antworte direkt, schick Fotos und sieh, wann jemand tippt. Wer zuerst schreiben will, braucht Pro.',
-      b:()=>'<div class="tb"></div>',
-    },
-    {
-      t:'Deine eigene Party',
-      s:'Tipp unten aufs Plus. Name, Zeit und Ort reichen. Öffentlich für alle oder privat nur für Eingeladene.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Öffentlich</div><div class="tb-s">Steht auf der Startseite und auf der Karte</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Privat</div><div class="tb-s">Nur mit persönlicher Einladung sichtbar</div></div></div>'
-        +tbHinweis('Öffentliche Partys kosten einmalig eine kleine Gebühr. Private sind gratis.')
-        +'</div>',
-    },
-    {
-      t:'Folge deinen Leuten',
-      s:'Folge Freunden, dann weisst du, wo sie hingehen. Private Profile fragst du an.',
-      b:()=>'<div class="tb"></div>',
-    },
-    {
-      t:'Angst vor Huzz?',
-      s:'Die Party ist zäh, gehen willst du noch nicht. Ein Tipp oben rechts neben der Glocke, und du bist in TikTok, Reels oder Shorts. Gleich nachher wählst du, wohin.',
-      /* Gewaehlt wird erst nach dieser Tour. Ist hier schon etwas
-         markiert, hat jemand die Tour spaeter nochmals aufgerufen. */
-      b:()=>{
-        const w=schnellRausWahl();
-        const chip=(k,n)=>'<span class="cset'+(w===k?' on':'')+'">'+n+'</span>';
-        return '<div class="tb">'
-          +'<div class="tb-leiste"><span class="tb-logo">SPOTOUT</span>'
-          +'<span class="tb-ic raus"><svg class="pk" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg></span>'
-          +'<span class="tb-ic"><svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
-          +'</div>'
-          +'<div class="tb-kopf"><span>Wohin der Knopf führt</span></div>'
-          +'<div class="chipset tb-chips">'
-          +chip('tiktok','TikTok')+chip('instagram','Instagram Reels')
-          +chip('youtube','YouTube Shorts')
-          +'</div></div>';
-      },
-    },
+    { t:'Was heute läuft',
+      s:'Partys und Events in deiner Nähe, die nächsten zuerst. Oben wählst du, was dich interessiert.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Ein Tipp, und du bist dabei',
+      s:'Die Party landet in deinem Kalender, mit Route und Erinnerung.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Deine eigene Party',
+      s:'Tipp unten aufs Plus. Name, Zeit und Ort reichen für den Anfang.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Deine Chats',
+      s:'Schreibt dir jemand, antwortest du direkt hier. Auch mit Fotos.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Folge deinen Leuten',
+      s:'Auf ihrem Profil siehst du, welche Partys bei ihnen anstehen.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Angst vor Huzz?',
+      s:'Ein Tipp oben rechts, und du bist in TikTok, Reels oder Shorts. Wohin, wählst du gleich.',
+      b:()=>'<div class="tb"></div>' },
   ],
   pro:[
-    {
-      t:'Du bist Pro',
-      s:'Vier Dinge sind jetzt anders.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div><div><div class="tb-t">Sieh, wer hingeht</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div><div><div class="tb-t">Schreib, wen du willst</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div><div><div class="tb-t">Dein Profil sehen alle</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div><div><div class="tb-t">Halbe Gebühr auf eigene Partys</div></div></div>'
-        +'</div>',
-    },
-    {
-      t:'Jetzt stehen dort Namen',
-      s:'Auf jeder Party siehst du, wer von deinen Kontakten dabei ist. Nicht nur eine Zahl.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:#6B4CFF">L</div>'
-        +'<div><div class="tb-t">Lena Meier</div><div class="tb-s">@lena_m</div></div>'
-        +'<div class="tb-wer">geht hin</div></div>'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#FF2D76,#FF6B00)">J</div>'
-        +'<div><div class="tb-t">Jan Brunner</div><div class="tb-s">@janbru</div></div>'
-        +'<div class="tb-wer">geht hin</div></div>'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:linear-gradient(135deg,#2BD98A,#38BDF8)">N</div>'
-        +'<div><div class="tb-t">Nina Kaufmann</div><div class="tb-s">@ninak</div></div>'
-        +'<div class="tb-wer">geht hin</div></div></div>',
-    },
-    {
-      t:'Schreib zuerst',
-      s:'Du kannst jetzt jedem als Erster schreiben.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-av" style="background:#FF2D76">S</div>'
-        +'<div><div class="tb-t">Schnazgi</div><div class="tb-s">Tippe an, um zu schreiben</div></div></div>'
-        +'<div class="tb-feld" style="margin-top:12px;color:rgba(255,255,255,.5)">Hoi, gehst du am Samstag auch?</div>'
-        +'<div class="tb-knopf">Senden</div></div>',
-    },
-    {
-      t:'Dein Profil ist offen',
-      s:'Bio und Kanäle sehen jetzt alle. Deinen Namen änderst du jederzeit.',
-      b:()=>'<div class="tb">'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Bio und Kanäle sichtbar</div><div class="tb-s">Für alle, nicht nur für Pro</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Name jederzeit änderbar</div><div class="tb-s">Im Profil unter „Bearbeiten“</div></div></div>'
-        +'<div class="tb-zeile"><div class="tb-hk">'+HK+'</div>'
-        +'<div><div class="tb-t">Halbe Gebühr</div><div class="tb-s">CHF 3, 8 oder 15 statt 5, 15 oder 30</div></div></div>'
-        +'</div>',
-    },
+    { t:'Jetzt siehst du Namen',
+      s:'Auf jeder Party steht, welche von deinen Leuten dabei sind.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Schreib, wen du willst',
+      s:'Du kannst jetzt alle zuerst anschreiben.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Sieh, wer bei dir war',
+      s:'Tipp auf das Auge in deinem Profil: alle Besuche der letzten 30 Tage.',
+      b:()=>'<div class="tb"></div>' },
+    { t:'Bio und Kanäle für alle',
+      s:'Instagram und Snapchat stehen jetzt sichtbar auf deinem Profil.',
+      b:()=>'<div class="tb"></div>' },
   ],
 };
 
@@ -10403,7 +10357,7 @@ let TOUR_SNAP={};
 function tourDemoListe(col){
   return [tourParty(),tourParty2(),tourDemo3(),tourDemo4()].map(e=>({...e,type:col}));
 }
-function tourDbAttrappe(tabellen){
+function tourDbAttrappe(tabellen,rpcs){
   const kette=(daten)=>{ let einzeln=false;
     const p=new Proxy(function(){},{
       get:(t,k)=>{
@@ -10415,7 +10369,7 @@ function tourDbAttrappe(tabellen){
     return p; };
   const alt={from:sb.from,rpc:sb.rpc,storage:sb.storage&&sb.storage.from};
   sb.from=(t)=>kette(tabellen[t]||[]);
-  sb.rpc=()=>kette(null);
+  sb.rpc=(n)=>kette((rpcs&&rpcs[n])||null);
   if(sb.storage)sb.storage.from=()=>({list:async()=>({data:[],error:null}),getPublicUrl:()=>({data:{publicUrl:''}})});
   return ()=>{ sb.from=alt.from; sb.rpc=alt.rpc; if(sb.storage&&alt.storage)sb.storage.from=alt.storage; };
 }
@@ -10428,6 +10382,11 @@ async function tourSchnappschuesse(){
     evts=tourDemoListe(col);
     renderFeed(); TOUR_SNAP.start=tourSeitenKlon([...TOUR_OBEN,'#fySection']);
     tourFreundeSetzen(); renderFeed(); TOUR_SNAP.freunde=tourSeitenKlon([...TOUR_OBEN,'#fySection']);
+    /* Fuer die Pro-Werbung beide Ansichten: Gratis (Zahl) und Pro (Namen) */
+    if(cProfile){ const war=cProfile.is_pro;
+      try{ cProfile.is_pro=false; renderFeed(); TOUR_SNAP.freundeGratis=tourSeitenKlon([...TOUR_OBEN,'#fySection']);
+           cProfile.is_pro=true;  renderFeed(); TOUR_SNAP.freundePro=tourSeitenKlon([...TOUR_OBEN,'#fySection']); }
+      finally{ cProfile.is_pro=war; } }
   }catch(e){ console.warn('[tour] Startseite',e); }
   finally{ tourOhneFreunde(); evts=altE; try{ renderFeed(); }catch(e){} }
   /* Partyseite vor und nach der Zusage */
@@ -10452,6 +10411,24 @@ async function tourSchnappschuesse(){
     try{ closeDetail(); }catch(e){}
     evts=altE;
     if(ov)setTimeout(()=>{ ov.style.visibility=''; },400);
+  }
+  /* Besucherliste (Pro) mit Beispiel-Leuten */
+  const bo=document.getElementById('besucherOverlay'), punkt=document.getElementById('besuchPunkt');
+  if(bo&&!bo.classList.contains('open')){
+    const punktWar=punkt?punkt.hidden:null; let z=null;
+    try{
+      bo.style.visibility='hidden';
+      const jetzt=Date.now();
+      z=tourDbAttrappe({},{meine_besucher:{status:'ok',besucher:[
+        {id:'tl1',full_name:'Lena Meier',username:'lena.meier',zuletzt:new Date(jetzt-12*60e3).toISOString(),neu:true,folgt_mir:true},
+        {id:'tl2',full_name:'Jan Brunner',username:'jan.brunner',zuletzt:new Date(jetzt-3*36e5).toISOString(),neu:true,ich_folge:true},
+        {id:'tl3',full_name:'Nina Kaufmann',username:'nina.kaufmann',zuletzt:new Date(jetzt-26*36e5).toISOString(),is_pro:true},
+        {id:'tl4',full_name:'Mia Keller',username:'mia.keller',zuletzt:new Date(jetzt-3*864e5).toISOString()}]}});
+      await besucherOeffnen();
+      const k=bo.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); });
+      k.style.visibility=''; TOUR_SNAP.besucher=k.outerHTML;
+    }catch(e){ console.warn('[tour] Besucher',e); }
+    finally{ if(z)z(); bo.classList.remove('open'); if(punkt&&punktWar!==null)punkt.hidden=punktWar; setTimeout(()=>{ bo.style.visibility=''; },400); }
   }
   /* Formular "Neue Party" – nur, wenn es gerade nicht offen ist */
   const co=document.getElementById('createOverlay');
@@ -10579,17 +10556,20 @@ function tourMotion(karte){
     }
     if(art==='plus'){
       const blatt=$('[data-tm="blatt"]'), modal=blatt&&blatt.querySelector('.modal'), grund=blatt&&blatt.querySelector('.overlay');
-      gsap.set(modal,{yPercent:100}); gsap.set(grund,{autoAlpha:0});
-      tl.set(modal,{yPercent:100}).set(grund,{autoAlpha:0});
-      const leiste=$('.iphone-leiste');
-      tl.set(leiste,{autoAlpha:1},0);
-      tl.to({}, {duration:.9});
+      const leiste=$('.iphone-leiste'), kam=$('.iphone-kamera');
+      const unten=tourBlickY(f,1), oben=tourBlickY(f,0);
+      gsap.set(modal,{yPercent:100}); gsap.set(grund,{autoAlpha:0}); gsap.set(kam,{y:unten});
+      tl.set(modal,{yPercent:100}).set(grund,{autoAlpha:0}).set(leiste,{autoAlpha:1}).set(kam,{y:unten});
+      tippe('.tl-plus');
       /* In der App verschwindet die Leiste, sobald ein Fenster offen ist */
-      tl.to(leiste,{autoAlpha:0,duration:.15});
+      tl.to(leiste,{autoAlpha:0,duration:.15},'>-.1');
       tl.to(grund,{autoAlpha:1,duration:.3},'<');
       tl.to(modal,{yPercent:0,duration:.55,ease:'expo.out'},'<');
-      tl.to({}, {duration:2});
-      tl.to(modal,{yPercent:100,duration:.32,ease:'power2.in'});
+      /* die Kamera folgt dem Blatt nach oben, bis man das Formular liest */
+      tl.to(kam,{y:oben,duration:.9,ease:'power3.inOut'},'<.15');
+      tl.to({}, {duration:1.8});
+      tl.to(kam,{y:unten,duration:.7,ease:'power3.inOut'});
+      tl.to(modal,{yPercent:100,duration:.32,ease:'power2.in'},'<.2');
       tl.to(grund,{autoAlpha:0,duration:.3},'<');
       tl.to(leiste,{autoAlpha:1,duration:.2});
     }
@@ -10599,6 +10579,14 @@ function tourMotion(karte){
       tippe('.follow-btn');
       tl.call(()=>k&&k.classList.add('following'),null,'<');
       tl.to({}, {duration:2});
+    }
+    if(art==='schreiben'){
+      tippe('.up-msg-btn');
+      tl.to({}, {duration:1.6});
+    }
+    if(art==='besucher'){
+      const z=f.querySelectorAll('[data-tm="liste"] .bes-zeile');
+      tl.fromTo(z,{autoAlpha:0,y:10},{autoAlpha:1,y:0,duration:.4,ease:'power3.out',stagger:.09}).to({}, {duration:2.4});
     }
     if(art==='raus'){
       tippe('.nav-raus');
@@ -10614,6 +10602,8 @@ function tourMotion(karte){
 function tourAusrichten(karte){
   const f=karte&&karte.querySelector('.iphone-fenster'); if(!f)return;
   const fh=f.clientHeight, schirm=f.querySelector('.iphone-schirm'); if(!fh||!schirm)return;
+  const kam=f.querySelector('.iphone-kamera');
+  if(kam){ kam.style.transform='translateY('+tourBlickY(f,Number(f.dataset.blick)||0)+'px)'; }
   const sTop=()=>schirm.getBoundingClientRect().top;
   /* Ziel im sichtbaren Ausschnitt (Fenster kann oben oder unten sein) */
   const ziel=()=>f.getBoundingClientRect().top+fh*0.55;
@@ -10771,10 +10761,14 @@ function tourLeiste(aktiv){
     return '<span class="tl-knopf">'+ic+'<span class="tl-text'+(n==='create'?' tl-dick':'')+'" style="color:'+f+'">'+t+'</span></span>';
   }).join('')+'</div>';
 }
+/* fenster: welcher Teil des Handys im Ausschnitt steht – 0 oben,
+   1 unten, dazwischen z. B. 0.5 Mitte ('unten'/'oben' gehen auch). */
 function tourHandy(inner,unten,leiste,fenster,motion){
-  const vonUnten=fenster?fenster==='unten':!!unten;
-  return '<div class="iphone-fenster'+(vonUnten?' von-unten':'')+'"'+(motion?' data-motion="'+motion+'"':'')+'>'+tourHandyGeraet(inner,unten,leiste)+'</div>';
+  const b=typeof fenster==='number'?fenster:fenster==='unten'?1:fenster==='oben'?0:(unten?1:0);
+  const kl=b>=1?' von-unten':b>0?' mitte':'';
+  return '<div class="iphone-fenster'+kl+'" data-blick="'+b+'"'+(motion?' data-motion="'+motion+'"':'')+'><div class="iphone-kamera">'+tourHandyGeraet(inner,unten,leiste)+'</div></div>';
 }
+function tourBlickY(f,b){ const k=f.querySelector('.iphone-kamera'); return k?(f.clientHeight-k.offsetHeight)*b:0; }
 function tourHandyGeraet(inner,unten,leiste){
   inner=tourNeutral(inner); if(typeof leiste==='string')leiste=tourNeutral(leiste);
   const balken=(h,x)=>'<rect x="'+x+'" y="'+(12-h)+'" width="3.2" height="'+h+'" rx="1" fill="#fff"/>';
@@ -10807,21 +10801,17 @@ function tourFreundeSetzen(){
 function tourOhneFreunde(){ if(typeof freundeMap!=='undefined'){ freundeMap.delete('tour-demo'); freundeMap.delete('tour-demo2'); } }
 const TOUR_OBEN=['#page-main .top-nav','#homeHero','#searchWrap','#segWrap'];
 const TOUR_ECHT={
-  0:()=>{ const snap=TOUR_SNAP.start; if(!snap)return '';
-    return tourHandy('<div data-tm="scroll">'+snap+'</div>',false,true,null,'scroll'); },
-  1:()=>{ const snap=TOUR_SNAP.freunde; if(!snap)return '';
-    return tourHandy('<div data-tm="scroll" data-ausrichten=".fr-zeile">'+snap+'</div>',false,true,null,'freunde'); },
-  2:()=>{ if(!TOUR_SNAP.detail||!TOUR_SNAP.dabei||!TOUR_SNAP.start)return '';
+  0:()=>TOUR_SNAP.start?tourHandy('<div data-tm="scroll">'+TOUR_SNAP.start+'</div>',false,true,0,'scroll'):'',
+  1:()=>{ if(!TOUR_SNAP.detail||!TOUR_SNAP.dabei||!TOUR_SNAP.start)return '';
     return tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
       +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.detail+'</div><div data-tm="nach">'+TOUR_SNAP.dabei+'</div></div></div>',
-      false,false,'unten','dabei'); },
-  3:()=>tourBeispielChats(true),
-  4:()=>{ if(!TOUR_SNAP.start||!TOUR_SNAP.erstellen)return '';
+      false,false,1,'dabei'); },
+  2:()=>{ if(!TOUR_SNAP.start||!TOUR_SNAP.erstellen)return '';
     return tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
-      +'<div class="tour-detail" data-tm="blatt">'+TOUR_SNAP.erstellen+'</div></div>',false,'main',null,'plus'); },
-  5:()=>tourFremdesProfil(),
-  6:()=>{ const k=TOUR_SNAP.start;
-    return k?tourHandy('<div class="iphone-raus">'+k+'</div>',false,true,null,'raus'):''; },
+      +'<div class="tour-detail" data-tm="blatt">'+TOUR_SNAP.erstellen+'</div></div>',false,'main',1,'plus'); },
+  3:()=>tourBeispielChats(true),
+  4:()=>tourFremdesProfil(),
+  5:()=>TOUR_SNAP.start?tourHandy('<div class="iphone-raus">'+TOUR_SNAP.start+'</div>',false,true,0,'raus'):'',
 };
 
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
@@ -10848,7 +10838,7 @@ function tourBeispielProfil(markiere,fremd){
 }
 /* Fremdes Profil wie in der App (Kopf mit Zurueck, Folgen-Knopf),
    nur mit Beispiel-Person */
-function tourFremdesProfil(){
+function tourFremdesProfil(schreiben){
   const stat=(z,t)=>'<div class="insta-stat"><div class="insta-stat-num">'+z+'</div><div class="insta-stat-lbl">'+t+'</div></div>';
   const kopf='<div class="up-kopf"><button class="up-zurueck"><svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg></button>'
     +'<div class="up-kopf-titel">lena.meier</div><div class="up2-kopfaktion"></div></div>';
@@ -10856,9 +10846,10 @@ function tourFremdesProfil(){
     +'<div class="prof-header"><div class="insta-av"><span>L</span></div><div class="prof-stats-row">'+stat(4,'Partys')+stat(212,'Follower')+stat(180,'Folgt')+'</div></div>'
     +'<div class="prof-bio"><div class="prof-name-row"><span class="insta-name">Lena Meier</span></div>'
     +'<div class="insta-handle">@lena.meier</div></div>'
-    +'<div class="prof-actions up-akt">'+(buildFollowBtn('tour-lena',false,false)||'').replace(' id="followBtn"','')+'</div>'
+    +'<div class="prof-actions up-akt">'+(buildFollowBtn('tour-lena',!!schreiben,false)||'').replace(' id="followBtn"','')
+      +(schreiben?'<button class="up-msg-btn">'+pikto('chat',20)+'Schreiben</button>':'')+'</div>'
     +'<div class="up2-abschnitt">Kommende Partys</div></div></div>';
-  return tourHandy('<div class="tour-up">'+kopf+body+'</div>',false,true,null,'folgen');
+  return tourHandy('<div class="tour-up">'+kopf+body+'</div>',false,true,0,schreiben?'schreiben':'folgen');
 }
 function tourBeispielChats(neu){
   const kopf=tourKlon('#page-chat .top-nav')||'';
@@ -10873,9 +10864,9 @@ function tourBeispielChats(neu){
     +'</div>',false,true,null,neu?'chat':null);
 }
 const TOUR_ECHT_PRO={
-  0:()=>tourBeispielProfil(),
-  1:()=>TOUR_SNAP.freunde?tourHandy('<div data-tm="scroll" data-ausrichten=".fr-zeile">'+TOUR_SNAP.freunde+'</div>',false,true,null,'freunde'):'',
-  2:()=>tourBeispielChats(),
+  0:()=>TOUR_SNAP.freundePro?tourHandy('<div data-tm="scroll" data-ausrichten=".fr-zeile">'+TOUR_SNAP.freundePro+'</div>',false,true,0,'freunde'):'',
+  1:()=>tourFremdesProfil(true),
+  2:()=>(TOUR_SNAP.besucher&&TOUR_SNAP.start)?tourHandy('<div class="tour-voll">'+TOUR_SNAP.start+'<div class="tour-detail" data-tm="liste">'+TOUR_SNAP.besucher+'</div></div>',false,false,1,'besucher'):'',
   3:()=>tourBeispielProfil('iphone-kanaele iphone-gescrollt'),
 };
 
@@ -11033,7 +11024,86 @@ function tourFertig(){
   setTimeout(()=>t.classList.remove('open'),320);
   /* Nach der Einfuehrung die drei Fragen – jetzt weiss man, wovon sie
      handeln. Nur nach der Start-Tour, nicht nach der Pro-Tour. */
-  if(tourSatz==='start'&&einstiegNoetig())setTimeout(einstiegStarten,360);
+  const danach=()=>{ if(einstiegNoetig())setTimeout(einstiegStarten,200); };
+  if(tourSatz==='start'){ if(!proWerbungZeigen(danach))setTimeout(danach,160); }
+}
+
+/* ══════════ PRO-WERBUNG NACH DER TOUR ══════════
+   Einmal pro Konto, nur fuer Gratis-Konten. Herzstueck ist die echte
+   Partykarte: erst die Gratis-Ansicht (Zahl mit Schloss), dann wechselt
+   sie zu den Namen. Apple 3.1.2: Schliessen gut sichtbar, Preis,
+   Laufzeit, Verlaengerung, Kuendigung, Wiederherstellen, Bedingungen. */
+function proWerbungZeigen(weiter){
+  if(!cUser||cProfile?.is_pro||istVerein()||kontoMerkmal('pro_werbung'))return false;
+  if(!TOUR_SNAP.freundeGratis||!TOUR_SNAP.freundePro)return false;
+  kontoMerkmalSetzen('pro_werbung');
+  if(istApp())appleAngebotLaden();
+  const frei=probeFrei();
+  const preis=(applePreis&&applePreis!=='CHF 3.00')?applePreis:'CHF 3.00';
+  const v=(ic,t,d)=>'<div class="pw-v"><span class="pw-v-ic">'+pikto(ic,22,'pk-bunt')+'</span><span><b>'+t+'</b><small>'+d+'</small></span></div>';
+  const el=document.createElement('div');
+  el.id='proWerbung'; el.className='pw'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','SPOTOUT Pro');
+  el.innerHTML='<div class="pw-kopf"><span class="pw-marke">'+proMarke()+'</span>'
+      +'<button class="modal-x pw-zu" type="button" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>'
+    +'<div class="pw-buehne">'
+      +tourHandy('<div data-tm="scroll" data-ausrichten=".fr-zeile"><div class="tour-zwei pw-zwei"><div data-tm="vor">'+TOUR_SNAP.freundeGratis+'</div><div data-tm="nach">'+TOUR_SNAP.freundePro+'</div></div></div>',false,false,0,'werbung')
+    +'</div>'
+    +'<div class="pw-text">'
+      +'<h2 class="pw-t">Sieh, wer hingeht.</h2>'
+      +'<p class="pw-s">Nicht nur eine Zahl. Die Namen deiner Leute, auf jeder Party.</p>'
+      +v('gaeste','Namen auf jeder Party','Du weisst vorher, wer da ist.')
+      +v('chat','Schreib zuerst','Ohne Pro kannst du nur antworten.')
+      +v('auge','Sieh, wer bei dir war','Profilbesuche der letzten 30 Tage.')
+    +'</div>'
+    +'<div class="pw-fuss">'
+      +(frei?'<div class="pw-probe">7 Tage gratis</div>':'')
+      +'<button class="pw-cta" type="button">'+(frei?'Gratis testen':'Pro holen')+'</button>'
+      +'<div class="pw-preis">'+(frei?'Danach '+preis+' pro Monat. ':preis+' pro Monat. ')+'Jederzeit kündbar.</div>'
+      +'<div class="pw-recht">'+(frei
+          ?'7 Tage gratis, danach Laufzeit 1 Monat für '+preis+'. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst. In der Testwoche jederzeit kostenlos kündbar.'
+          :'Laufzeit 1 Monat für '+preis+'. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst.')
+        +(istApp()?' Verwaltung in den iPhone-Einstellungen.':'')+'</div>'
+      +'<div class="pw-links">'+(istApp()?'<button type="button" class="pw-link pw-wieder">Kauf wiederherstellen</button><span>·</span>':'')
+        +'<a class="pw-link" href="/nutzungsbedingungen" target="_blank" rel="noopener">Bedingungen</a><span>·</span>'
+        +'<a class="pw-link" href="/datenschutz" target="_blank" rel="noopener">Datenschutz</a></div>'
+      +'<button class="pw-spaeter" type="button">Später</button>'
+    +'</div>';
+  document.body.appendChild(el);
+  if(typeof applyLang==='function'&&LANG!=='de')applyLang();
+  let zu=false;
+  const schliessen=(dann)=>{ if(zu)return; zu=true;
+    if(el._stopp)el._stopp();
+    el.classList.remove('da'); setTimeout(()=>{ el.remove(); (dann||weiter)&&(dann||weiter)(); },280); };
+  el.querySelector('.pw-zu').onclick=()=>schliessen();
+  el.querySelector('.pw-spaeter').onclick=()=>schliessen();
+  el.querySelector('.pw-cta').onclick=()=>schliessen(()=>{ startProUpgrade(); });
+  const w=el.querySelector('.pw-wieder'); if(w)w.onclick=()=>schliessen(()=>{ proWiederherstellen(); });
+  /* Masse wie in der Tour: Handy 1:1, Ausschnitt so hoch wie Platz da ist */
+  const wurzel=document.documentElement.style;
+  wurzel.setProperty('--tw','406px'); wurzel.setProperty('--ts','1');
+  requestAnimationFrame(()=>{
+    const buehne=el.querySelector('.pw-buehne');
+    buehne.style.setProperty('--fenster-h',Math.max(170,Math.min(330,buehne.clientHeight))+'px');
+    tourAusrichten(el);
+    el.classList.add('da');
+    mitGsap((gsap,fertig)=>{
+      const vor=el.querySelector('[data-tm="vor"]'), nach=el.querySelector('[data-tm="nach"]');
+      gsap.fromTo(el.querySelector('.iphone'),{y:40,autoAlpha:0},{y:0,autoAlpha:1,duration:.6,ease:'expo.out',delay:.05});
+      gsap.fromTo(el.querySelectorAll('.pw-t,.pw-s,.pw-v,.pw-fuss>*'),{y:12,autoAlpha:0},{y:0,autoAlpha:1,duration:.45,ease:'power3.out',stagger:.05,delay:.2});
+      const tl=gsap.timeline({repeat:-1,repeatDelay:1.6,delay:1});
+      gsap.set(nach,{autoAlpha:0});
+      tl.set(nach,{autoAlpha:0}).set(vor,{autoAlpha:1})
+        .to({}, {duration:1.1})
+        /* der Wechsel: kurz unscharf, dann stehen die Namen da */
+        .to(vor,{filter:'blur(6px)',autoAlpha:0,duration:.35,ease:'power2.in'})
+        .fromTo(nach,{filter:'blur(6px)',autoAlpha:0},{filter:'blur(0px)',autoAlpha:1,duration:.45,ease:'expo.out'},'<.15')
+        .fromTo(nach.querySelectorAll('.fr-av span'),{scale:.7},{scale:1,duration:.4,ease:'back.out(2)',stagger:.08},'<.1')
+        .to({}, {duration:2.4})
+        .to(nach,{autoAlpha:0,duration:.3}).to(vor,{autoAlpha:1,filter:'blur(0px)',duration:.3},'<');
+      el._stopp=()=>{ tl.kill(); fertig(); };
+    });
+  });
+  return true;
 }
 
 /* ══════════ DIE DREI FRAGEN NACH DEM TUTORIAL ══════════
