@@ -7390,7 +7390,7 @@
     .pro2-titel,.pw-abo{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px;text-align:center}
     /* Formular: ruhigere Kopfzeile – der Entwurf sichert sich beim
        Schliessen selbst, und das Thema sagt schon die Frage */
-    #entwurfKnopf,#cStepName{display:none!important}
+    #entwurfKnopf,#cStepName,[data-tid="entwurfKnopf"],[data-tid="cStepName"]{display:none!important}
       background:rgba(9,13,36,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
     .po-inhalt{width:min(88vw,340px);text-align:center}
     .po-t{font-size:1.7rem;font-weight:900;letter-spacing:-.025em;color:#fff}
@@ -7400,6 +7400,20 @@
     /* Veroeffentlicht: der Knopf zeigt den Erfolg */
     .knopf-fertig{display:inline-flex;align-items:center;justify-content:center;gap:8px}
     .knopf-haken{width:20px;height:20px;flex:none}
+    /* Wetter-Gag in der Tour (eigener Stil, kein fremdes Logo) */
+    .iphone-zusatz{position:absolute;inset:0;z-index:3;pointer-events:none}
+    .iphone-schirm.wetter-an .iphone-oben{background:none}
+    .tour-wetter{position:absolute;inset:0;z-index:4;padding:110px 28px 0;text-align:center;color:#fff;
+      background:linear-gradient(180deg,#3B82C4 0%,#5FA2D9 45%,#8EC1E8 100%);font-family:-apple-system,"SF Pro Display",Inter,system-ui,sans-serif}
+    .tw-ort{font-size:34px;font-weight:500;letter-spacing:.3px}
+    .tw-grad{font-size:96px;font-weight:200;line-height:1;margin:2px 0 4px;letter-spacing:-2px}
+    .tw-lage{font-size:20px;font-weight:500;opacity:.92}
+    .tw-ht{font-size:20px;font-weight:500;opacity:.92;margin-top:2px}
+    .tw-karte{margin-top:34px;padding:12px 14px 14px;border-radius:16px;background:rgba(255,255,255,.16);text-align:left}
+    .tw-k-t{font-size:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.25);opacity:.95}
+    .tw-std{display:flex;justify-content:space-between;padding-top:12px;text-align:center}
+    .tw-std>div{display:flex;flex-direction:column;gap:8px;font-size:15px;font-weight:500}
+    .tw-ic{font-size:20px;font-weight:400;line-height:1}
     /* ══════════ KNOEPFE: EIN SATZ REGELN FUER DIE GANZE APP ══════════
        Vorher rund 60 Stile: 41–54 px hoch, Radius 8 bis 18, Schrift 600
        bis 900, fuenf Rottoene, drei Link-Pinks, Hauptknoepfe in Gold und
@@ -10410,8 +10424,8 @@ const TOUREN={
     { t:'Deine eigene Party',
       s:'Tipp unten aufs Plus. Name, Zeit und Ort reichen für den Anfang.',
       b:()=>'<div class="tb"></div>' },
-    { t:'Private Partys',
-      s:'Nur wer eingeladen ist, sieht sie. Auf der Mitbringliste tragen Gäste ein, was sie mitbringen.',
+    { t:'Mitbringliste',
+      s:'Bei privaten Partys tragen Gäste ein, was sie mitbringen. So steht nicht zehnmal Chips auf dem Tisch.',
       b:()=>'<div class="tb"></div>' },
     { t:'Deine Chats',
       s:'Schreibt dir jemand, antwortest du direkt hier.',
@@ -10420,7 +10434,7 @@ const TOUREN={
       s:'Auf ihrem Profil siehst du, welche Partys bei ihnen anstehen.',
       b:()=>'<div class="tb"></div>' },
     { t:'Angst vor Huzz?',
-      s:'Ein Tipp oben rechts, und du bist in TikTok, Reels oder Shorts. Wohin, wählst du gleich.',
+      s:'Ein Tipp oben rechts, und du bist weg: TikTok, Reels oder Shorts. Oder du checkst ganz unauffällig das Wetter.',
       b:()=>'<div class="tb"></div>' },
   ],
   pro:[
@@ -10596,7 +10610,10 @@ async function tourSchnappschuesse(){
       co.style.visibility='hidden';
       openCreate('public');
       co.classList.add('open');
-      TOUR_SNAP.erstellen=(()=>{ const k=co.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); }); k.style.visibility=''; k.classList.remove('open'); k.classList.add('tour-auf'); return k.outerHTML; })();
+      const klonC=()=>{ const k=co.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); }); k.style.visibility=''; k.classList.remove('open'); k.classList.add('tour-auf'); return k.outerHTML; };
+      TOUR_SNAP.erstellen=klonC();
+      selTypePro('private',co.querySelector('.type-card-pro[data-type="private"]')); TOUR_SNAP.erstellenPriv=klonC();
+      goCreateStep(2,true); TOUR_SNAP.erstellenName=klonC();
     }catch(e){ console.warn('[tour] Erstellen',e); }
     finally{ try{ entwurfNichtSichern=true; closeCreate(); }catch(e){} setTimeout(()=>{ co.style.visibility=''; },400); }
   }
@@ -10714,22 +10731,31 @@ function tourMotion(karte){
         .to({}, {duration:2.4});
     }
     if(art==='plus'){
-      const blatt=$('[data-tm="blatt"]'), modal=blatt&&blatt.querySelector('.modal'), grund=blatt&&blatt.querySelector('.overlay');
+      /* Knackig statt Zeitlupe: Plus, Formular schnellt hoch, Kamera folgt,
+         "Private Party" waehlen, Name tippt sich ein. */
+      const e1=$('[data-tm="e1"]'), e2=$('[data-tm="e2"]'), e3=$('[data-tm="e3"]');
+      const modal=e1&&e1.querySelector('.modal'), grund=e1&&e1.querySelector('.overlay');
       const leiste=$('.iphone-leiste'), kam=$('.iphone-kamera');
+      const feld=e3&&e3.querySelector('[data-tid="fName"]');
       const unten=tourBlickY(f,1), oben=tourBlickY(f,0);
-      gsap.set(modal,{yPercent:100}); gsap.set(grund,{autoAlpha:0}); gsap.set(kam,{y:unten});
-      tl.set(modal,{yPercent:100}).set(grund,{autoAlpha:0}).set(leiste,{autoAlpha:1}).set(kam,{y:unten});
+      const name='Geburtstag bei Lena';
+      const anfang=()=>{ gsap.set([e2,e3],{autoAlpha:0}); gsap.set(e1,{autoAlpha:1}); gsap.set(modal,{yPercent:100}); gsap.set(grund,{autoAlpha:0});
+        gsap.set(kam,{y:unten}); gsap.set(leiste,{autoAlpha:1}); if(feld)feld.value=''; };
+      anfang(); tl.call(anfang);
       tippe('.tl-plus');
-      /* In der App verschwindet die Leiste, sobald ein Fenster offen ist */
-      tl.to(leiste,{autoAlpha:0,duration:.15},'>-.1');
-      tl.to(grund,{autoAlpha:1,duration:.3},'<');
-      tl.to(modal,{yPercent:0,duration:.55,ease:'expo.out'},'<');
-      /* die Kamera folgt dem Blatt nach oben, bis man das Formular liest */
-      tl.to(kam,{y:oben,duration:.9,ease:'power3.inOut'},'<.15');
-      tl.to({}, {duration:1.8});
-      tl.to(kam,{y:unten,duration:.7,ease:'power3.inOut'});
-      tl.to(modal,{yPercent:100,duration:.32,ease:'power2.in'},'<.2');
-      tl.to(grund,{autoAlpha:0,duration:.3},'<');
+      tl.to(leiste,{autoAlpha:0,duration:.12},'>-.12');
+      tl.to(grund,{autoAlpha:1,duration:.2},'<');
+      tl.to(modal,{yPercent:0,duration:.4,ease:'expo.out'},'<');
+      tl.to(kam,{y:oben,duration:.45,ease:'power3.out'},'<.05');
+      tippe('[data-tm="e1"] .type-card-pro[data-type="private"]');
+      tl.set(e1,{autoAlpha:0},'<').set(e2,{autoAlpha:1},'<');
+      tl.to({}, {duration:.35});
+      tl.set(e2,{autoAlpha:0}).set(e3,{autoAlpha:1});
+      tl.fromTo(e3.querySelectorAll('.create-panel:not([style*="none"]) > *'),{x:14,autoAlpha:0},{x:0,autoAlpha:1,duration:.3,ease:'power3.out',stagger:.04},'<');
+      for(let i=1;i<=name.length;i++)tl.call(()=>{ if(feld)feld.value=name.slice(0,i); },null,'>+.055');
+      tl.to({}, {duration:1.4});
+      tl.to(kam,{y:unten,duration:.4,ease:'power3.inOut'});
+      tl.to([e3,grund],{autoAlpha:0,duration:.25},'<.1');
       tl.to(leiste,{autoAlpha:1,duration:.2});
     }
     if(art==='folgen'){
@@ -10768,9 +10794,17 @@ function tourMotion(karte){
       tl.fromTo(z,{autoAlpha:0,y:10},{autoAlpha:1,y:0,duration:.4,ease:'power3.out',stagger:.09}).to({}, {duration:2.4});
     }
     if(art==='raus'){
+      const wetter=$('[data-tm="wetter"]');
+      gsap.set(wetter,{autoAlpha:0});
+      tl.set(wetter,{autoAlpha:0,scale:1.04});
       tippe('.nav-raus');
-      tl.fromTo($('.nav-raus'),{boxShadow:'0 0 0 0 rgba(255,45,118,.6)'},{boxShadow:'0 0 0 14px rgba(255,45,118,0)',duration:.8,ease:'power2.out'},'<');
-      tl.to({}, {duration:1.2});
+      /* Party weg, Wetter da – als haette man nie etwas anderes gemacht */
+      tl.call(()=>schirm&&schirm.classList.add('wetter-an'),null,'<.05');
+      tl.to(wetter,{autoAlpha:1,scale:1,duration:.32,ease:'power3.out'},'<');
+      tl.to({}, {duration:1.9});
+      tl.to(wetter,{autoAlpha:0,duration:.3});
+      tl.call(()=>schirm&&schirm.classList.remove('wetter-an'));
+      tl.to({}, {duration:.6});
     }
     tourMotionStopp=()=>{ tl.kill(); fertig(); };
   });
@@ -10943,13 +10977,13 @@ function tourLeiste(aktiv){
 }
 /* fenster: welcher Teil des Handys im Ausschnitt steht – 0 oben,
    1 unten, dazwischen z. B. 0.5 Mitte ('unten'/'oben' gehen auch). */
-function tourHandy(inner,unten,leiste,fenster,motion,ziel){
+function tourHandy(inner,unten,leiste,fenster,motion,ziel,ebene){
   const b=typeof fenster==='number'?fenster:fenster==='unten'?1:fenster==='oben'?0:(unten?1:0);
   const kl=b>=1?' von-unten':b>0?' mitte':'';
-  return '<div class="iphone-fenster'+kl+'" data-blick="'+b+'"'+(motion?' data-motion="'+motion+'"':'')+(ziel?' data-ziel="'+ziel+'"':'')+'><div class="iphone-kamera">'+tourHandyGeraet(inner,unten,leiste)+'</div></div>';
+  return '<div class="iphone-fenster'+kl+'" data-blick="'+b+'"'+(motion?' data-motion="'+motion+'"':'')+(ziel?' data-ziel="'+ziel+'"':'')+'><div class="iphone-kamera">'+tourHandyGeraet(inner,unten,leiste,ebene)+'</div></div>';
 }
 function tourBlickY(f,b){ const k=f.querySelector('.iphone-kamera'); return k?(f.clientHeight-k.offsetHeight)*b:0; }
-function tourHandyGeraet(inner,unten,leiste){
+function tourHandyGeraet(inner,unten,leiste,ebene){
   inner=tourNeutral(inner); if(typeof leiste==='string')leiste=tourNeutral(leiste);
   const balken=(h,x)=>'<rect x="'+x+'" y="'+(12-h)+'" width="3.2" height="'+h+'" rx="1" fill="#fff"/>';
   return '<div class="iphone" aria-hidden="true">'
@@ -10966,6 +11000,7 @@ function tourHandyGeraet(inner,unten,leiste){
       ?'<div class="iphone-ebene iphone-banner">'+leiste+'</div>'
       :(leiste?'<div class="iphone-ebene iphone-leiste">'+(leiste===true?tourLeiste('main'):/^(main|calendar|chat|profile)$/.test(leiste)?tourLeiste(leiste):leiste)+'</div>':''))
     +'<div class="iphone-ebene iphone-unten-balken"><span></span></div>'
+    +(ebene?'<div class="iphone-zusatz">'+ebene+'</div>':'')
     +'<i class="iphone-finger"></i>'
     +'</div></div></div>';
 }
@@ -10987,14 +11022,14 @@ const TOUR_ECHT={
       +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.detail+'</div><div data-tm="nach">'+TOUR_SNAP.dabei+'</div></div></div>',
       false,false,1,'dabei'); },
   2:()=>TOUR_SNAP.kalender?tourHandy(TOUR_SNAP.kalender,false,'calendar',0,'kalender'):'',
-  3:()=>{ if(!TOUR_SNAP.start||!TOUR_SNAP.erstellen)return '';
+  3:()=>{ if(!TOUR_SNAP.start||!TOUR_SNAP.erstellen||!TOUR_SNAP.erstellenPriv||!TOUR_SNAP.erstellenName)return '';
     return tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
-      +'<div class="tour-detail" data-tm="blatt">'+TOUR_SNAP.erstellen+'</div></div>',false,'main',1,'plus'); },
+      +'<div class="tour-detail" data-tm="blatt"><div data-tm="e1">'+TOUR_SNAP.erstellen+'</div><div data-tm="e2">'+TOUR_SNAP.erstellenPriv+'</div><div data-tm="e3">'+TOUR_SNAP.erstellenName+'</div></div></div>',false,'main',1,'plus'); },
   4:()=>(TOUR_SNAP.mitbringen&&TOUR_SNAP.mitbringenNach&&TOUR_SNAP.start)?tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
-      +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.mitbringen+'</div><div data-tm="nach">'+TOUR_SNAP.mitbringenNach+'</div></div></div>',false,false,1,'mitbringen'):'',
+      +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.mitbringen+'</div><div data-tm="nach">'+TOUR_SNAP.mitbringenNach+'</div></div></div>',false,false,0.62,'mitbringen'):'',
   5:()=>tourBeispielChats(true),
   6:()=>tourFremdesProfil(),
-  7:()=>TOUR_SNAP.start?tourHandy('<div class="iphone-raus">'+TOUR_SNAP.start+'</div>',false,true,0,'raus'):'',
+  7:()=>TOUR_SNAP.start?tourHandy('<div class="iphone-raus">'+TOUR_SNAP.start+'</div>',false,true,0,'raus',null,tourWetter()):'',
 };
 
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
@@ -11033,6 +11068,14 @@ function tourFremdesProfil(schreiben){
       +(schreiben?'<button class="up-msg-btn">'+pikto('chat',20)+'Schreiben</button>':'')+'</div>'
     +'<div class="up2-abschnitt">Kommende Partys</div></div></div>';
   return tourHandy('<div class="tour-up">'+kopf+body+'</div>',false,true,0,schreiben?'schreiben':'folgen');
+}
+/* Der Gag zum Fluchtknopf: ganz unschuldig das Wetter checken */
+function tourWetter(){
+  const std=[['Jetzt','14°','☀︎'],['15','15°','☀︎'],['16','16°','⛅︎'],['17','15°','⛅︎'],['18','13°','☁︎']];
+  return '<div class="tour-wetter" data-tm="wetter"><div class="tw-ort">Zürich</div><div class="tw-grad">14°</div>'
+    +'<div class="tw-lage">Meist sonnig</div><div class="tw-ht">H: 17°  T: 9°</div>'
+    +'<div class="tw-karte"><div class="tw-k-t">Am Abend klar, ideal für draussen.</div><div class="tw-std">'
+    +std.map(([z,g,i])=>'<div><span>'+z+'</span><b class="tw-ic">'+i+'</b><span>'+g+'</span></div>').join('')+'</div></div></div>';
 }
 function tourBeispielChats(neu){
   const kopf=tourKlon('#page-chat .top-nav')||'';
@@ -11338,6 +11381,7 @@ const EINS_IC={
   tiktok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 17.4V6.2l7.2-1.8v8.4"/><circle cx="6.6" cy="17.4" r="2.6"/><circle cx="13.8" cy="15" r="2.6"/></svg>',
   instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="16.9" cy="7.1" r="1" fill="currentColor" stroke="none"/></svg>',
   youtube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.6" width="17.6" height="12.8" rx="4"/><path d="M10.6 9.9 15.2 12l-4.6 2.1z" fill="currentColor" stroke="none"/></svg>',
+  wetter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3.4"/><path d="M9 2.6v1.3M3.9 4.6l.9.9M2.6 9h1.3M14.1 4.6l-.9.9"/><path d="M8.5 20h9a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 8.5 20z"/></svg>',
   keiner:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m6.1 6.1 11.8 11.8"/></svg>',
   ort:pikto('ort',20,'pk-bunt'),
   glocke_an:pikto('glocke',20,'pk-bunt'),
@@ -11359,6 +11403,7 @@ function einstiegKarten(){
         {wert:'tiktok',    ic:'tiktok',    t:'TikTok',          s:''},
         {wert:'instagram', ic:'instagram', t:'Instagram Reels', s:''},
         {wert:'youtube',   ic:'youtube',   t:'YouTube Shorts',  s:''},
+        {wert:'wetter',    ic:'wetter',    t:'Wetter-App',      s:'Ganz unschuldig das Wetter checken'},
         {wert:'',          ic:'keiner',    t:'Brauch ich nicht', s:'Kein Knopf in der Leiste'},
       ],
     },
@@ -15755,7 +15800,7 @@ function wahlTippen(i){
 }
 
 const WERT_MSG={everyone:'Jeder',requests:'Nur Anfragen',nobody:'Niemand'};
-const WERT_RAUS={'':'Aus',tiktok:'TikTok',instagram:'Instagram Reels',youtube:'YouTube Shorts'};
+const WERT_RAUS={'':'Aus',tiktok:'TikTok',instagram:'Instagram Reels',youtube:'YouTube Shorts',wetter:'Wetter-App'};
 const WERT_KARTE={'':'Jedes Mal fragen',apple:'Apple Karten',google:'Google Maps'};
 const WERT_SPRACHE={de:'Deutsch',en:'English',fr:'Français',it:'Italiano'};
 
@@ -15801,6 +15846,7 @@ function wahlRaus(){
       {wert:'tiktok',   titel:'TikTok',          text:'Öffnet direkt „Für dich“'},
       {wert:'instagram',titel:'Instagram Reels', text:'Öffnet direkt die Reels'},
       {wert:'youtube',  titel:'YouTube Shorts',  text:'Öffnet direkt die Shorts'},
+      {wert:'wetter',   titel:'Wetter-App',      text:'Ganz unschuldig das Wetter checken'},
     ], waehlen:(w)=>setSchnellRaus(w)});
 }
 function wahlOrt(){
@@ -26213,13 +26259,17 @@ const RAUS_ZIELE = {
   tiktok:    {app:'snssdk1233://',                     netz:'https://www.tiktok.com/foryou'},
   instagram: {app:'instagram://reels',                 netz:'https://www.instagram.com/reels/'},
   youtube:   {app:'youtube://www.youtube.com/shorts',  netz:'https://www.youtube.com/shorts'},
+  /* Der Gag: ganz unschuldig das Wetter checken. Apple dokumentiert kein
+     Schema fuer die Wetter-App; weather:// oeffnet sie, wo iOS es kennt –
+     sonst geht MeteoSchweiz im Browser auf, genauso unauffaellig. */
+  wetter:    {app:'weather://',                        netz:'https://www.meteoschweiz.admin.ch/'},
 };
 
 function schnellRausWahl(){
   try{
     const k=localStorage.getItem('spotout_raus')||'';
-    // Taschenrechner und Wetter gibt es nicht mehr – wer sie hatte, scrollt jetzt in TikTok
-    if(k==='tarnung'||k==='wetter'){ localStorage.setItem('spotout_raus','tiktok'); return 'tiktok'; }
+    // Die alte Tarnseite (Taschenrechner) gibt es nicht mehr; Wetter oeffnet jetzt die echte Wetter-App
+    if(k==='tarnung'){ localStorage.setItem('spotout_raus','tiktok'); return 'tiktok'; }
     return k;
   }catch(e){ return ''; }
 }
@@ -26303,6 +26353,11 @@ function schnellRaus(){
          wuerde es beim Zurueckkommen ein zweites Mal oeffnen. */
       if(r&&/^unbekannt/.test(String(r.fehler||''))){
         try{ location.href=ziel.app; }catch(e){}
+      }
+      /* Aeltere App kennt das Ziel noch nicht (z. B. Wetter): dann die
+         Website des Ziels, die oeffnet die App im Browser */
+      else if(r&&r.fehler==='fremdes_ziel'&&ziel.netz){
+        try{ location.href=ziel.netz; }catch(e){}
       }
     });
     return;
