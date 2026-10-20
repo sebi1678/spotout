@@ -3353,8 +3353,8 @@
     .cprog-fill{
       height:100%;border-radius:980px;background:var(--grad-cta);
       width:100%;transform:scaleX(.33);transform-origin:left center;
-      transition:transform var(--takt) var(--kurve);
-      box-shadow:0 0 12px rgba(255,45,118,0.22);
+      transition:transform 420ms cubic-bezier(.23,1,.32,1);
+      box-shadow:none;
     }
 
     /* Live-Vorschau der eigenen Karte */
@@ -7388,6 +7388,17 @@
     .nt-schieber{margin-top:8px;margin-bottom:12px}
 
     .pro2-titel,.pw-abo{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px;text-align:center}
+    /* Formular: ruhigere Kopfzeile – der Entwurf sichert sich beim
+       Schliessen selbst, und das Thema sagt schon die Frage */
+    #entwurfKnopf,#cStepName{display:none!important}
+    /* Party online: kurzer Hoehepunkt nach dem Veroeffentlichen */
+    .po{position:fixed;inset:0;z-index:9600;display:flex;align-items:center;justify-content:center;
+      background:rgba(9,13,36,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+    .po-inhalt{width:min(88vw,340px);text-align:center}
+    .po-t{font-size:1.7rem;font-weight:900;letter-spacing:-.025em;color:#fff}
+    .po-s{font-size:.92rem;color:var(--muted);margin:6px 0 18px}
+    .po-karte{text-align:left;pointer-events:none}
+    .po-karte .card{margin:0 auto}
     /* ══════════ KNOEPFE: EIN SATZ REGELN FUER DIE GANZE APP ══════════
        Vorher rund 60 Stile: 41–54 px hoch, Radius 8 bis 18, Schrift 600
        bis 900, fuenf Rottoene, drei Link-Pinks, Hauptknoepfe in Gold und
@@ -8289,7 +8300,7 @@
     <!-- 3 · KATEGORIE -->
     <div class="create-panel" id="cpanel-3" style="display:none">
       <div class="cq">Was für eine Party ist das?</div>
-      <div class="cq-sub">Danach suchen die Leute – nimm die, die am besten passt.</div>
+      <div class="cq-sub">Danach suchen die Leute.</div>
       <div class="icon-picker" id="iconPicker"></div>
       <div class="fg cat-free" id="catFree" style="display:none">
         <label>Was ist es denn?</label>
@@ -8304,7 +8315,7 @@
     <!-- 4 · WANN -->
     <div class="create-panel" id="cpanel-4" style="display:none">
       <div class="cq">Wann geht’s los?</div>
-      <div class="cq-sub">Nach sechs Stunden gilt die Party als vorbei, 24 Stunden nach Beginn wird sie gelöscht.</div>
+      <div class="cq-sub">Tag und Uhrzeit reichen.</div>
 
       <div class="when-box">
         <div class="when-day" id="whenDay">—</div>
@@ -8348,7 +8359,7 @@
     <!-- 5 · WO -->
     <div class="create-panel" id="cpanel-5" style="display:none">
       <div class="cq">Wo findet sie statt?</div>
-      <div class="cq-sub">Tipp einen Vorschlag an, damit sie auf der Karte erscheint. Hütten und Vereinshäuser findest du auch über den Namen.</div>
+      <div class="cq-sub">Tipp einen Vorschlag an, damit sie auf der Karte erscheint.</div>
       <div class="fg" id="fgAddr">
         <div class="addr-wrap">
           <input type="text" id="fAddr" class="big-input" placeholder="Strasse, Waldhütte oder Vereinshaus" autocomplete="off" oninput="addrSearch(this.value);cPrevUpdate()"/>
@@ -8459,7 +8470,7 @@
     <!-- 8 · DETAILS -->
     <div class="create-panel" id="cpanel-8" style="display:none">
       <div class="cq">Noch ein paar Angaben</div>
-      <div class="cq-sub">Alles freiwillig – du kannst direkt weiter.</div>
+      <div class="cq-sub">Alles freiwillig. Du kannst direkt weiter.</div>
 
       <!-- Nur private Partys: gemeinsame Playlist. Steht hier, weil sie
            freiwillig ist – wie Dresscode und Beschreibung daneben. -->
@@ -18082,6 +18093,7 @@ function plusEinladen(eventId){
 }
 
 function openCreate(type){
+  try{ gsapLaden().catch(()=>{}); }catch(_){}   // Bewegung im Formular steht bereit
   // Ein Verein hat genau eine Art von Anlass. Die Auswahl entfällt.
   if(istVerein()){
     if(!vereinDarfPosten()){
@@ -18380,6 +18392,16 @@ async function validateStep(step){
 /* Beim allerersten Erstellen einmal zeigen, wie es laeuft. Danach nie
    wieder – ausser man ruft es in den Einstellungen selbst auf. */
 
+/* Die Teile eines Schritts erscheinen kurz nacheinander: Frage,
+   Untertitel, Auswahl. Kurz (unter 400 ms), starkes Ease-out, aus der
+   Richtung, in die man blaettert. Weniger Bewegung: nichts davon. */
+function schrittTeileZeigen(panel,richtung){
+  if(!window.gsap||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const teile=[...panel.children].filter(el=>el.offsetParent!==null).slice(0,6);
+  if(!teile.length)return;
+  const dx=richtung==='reinL'?-14:14;
+  window.gsap.fromTo(teile,{autoAlpha:0,x:dx},{autoAlpha:1,x:0,duration:.34,ease:'power3.out',stagger:.04,clearProps:'transform,opacity,visibility'});
+}
 async function goCreateStep(step,silent){
   if(!silent&&step>cStep&&!(await validateStep(cStep)))return;
 
@@ -18391,7 +18413,7 @@ async function goCreateStep(step,silent){
     if(!p)continue;
     p.style.display=(i===step)?'block':'none';
     p.classList.remove('rein','reinL');
-    if(i===step&&!silent&&step!==cStep){ void p.offsetWidth; p.classList.add(richtung); }
+    if(i===step&&step!==cStep){ void p.offsetWidth; p.classList.add(richtung); schrittTeileZeigen(p,richtung); }
   }
   cStep=step;
 
@@ -18638,6 +18660,8 @@ function cPrevUpdate(){
 // ── Schnellauswahl Preis / Gäste ──
 function csetOn(groupId,el){
   document.querySelectorAll('#'+groupId+' .cset').forEach(b=>b.classList.toggle('on',b===el));
+  if(el&&window.gsap&&!matchMedia('(prefers-reduced-motion: reduce)').matches)
+    window.gsap.fromTo(el,{scale:.94},{scale:1,duration:.32,ease:'back.out(2.4)',clearProps:'transform'});
 }
 /* Die Gebühr hängt an Eintritt und Gästezahl, und die Frage nach den
    Zahlarten hängt am Eintritt. Beides wurde bisher nur nachgerechnet,
@@ -19355,8 +19379,43 @@ async function submitEventInner(){
     const rein=await gruppeNachErstellen(data.id);
     if(rein){ openDetail(data.id); return; }
   }
-  // Letzter, freiwilliger Schritt: Leute einladen
-  setTimeout(()=>openShare(data.id,{afterCreate:true}),300);
+  // Erst der Moment, dann der letzte, freiwillige Schritt: Leute einladen
+  partyOnlineFeiern(data.id,()=>openShare(data.id,{afterCreate:true}));
+}
+
+/* Peak-End: Die eigene Party ist online – der Moment, an den man sich
+   erinnert. Die echte Karte springt herein, Funken wie beim Zusagen,
+   dann geht es von selbst (oder per Tipp) zum Einladen. Kurz, nichts
+   blockiert. Weniger Bewegung: direkt weiter. */
+async function partyOnlineFeiern(id,weiter){
+  const e=(evts||[]).find(x=>x.id===id);
+  if(!window.gsap){ try{ await Promise.race([gsapLaden(),new Promise(r=>setTimeout(r,500))]); }catch(_){} }
+  if(!e||!window.gsap||matchMedia('(prefers-reduced-motion: reduce)').matches){ setTimeout(weiter,300); return; }
+  try{ nativeHaptik('erfolg'); }catch(_){}
+  const el=document.createElement('div');
+  el.className='po'; el.setAttribute('role','status');
+  el.innerHTML='<div class="po-inhalt"><div class="po-t">Deine Party ist online</div>'
+    +'<div class="po-s">Jetzt Leute einladen.</div><div class="po-karte">'+cardHTML(e)+'</div></div>';
+  document.body.appendChild(el);
+  if(typeof applyLang==='function'&&LANG!=='de')applyLang();
+  let fertig=false;
+  const ende=()=>{ if(fertig)return; fertig=true; window.gsap.to(el,{autoAlpha:0,duration:.25,ease:'power2.out',onComplete:()=>{ el.remove(); weiter(); }}); };
+  el.addEventListener('click',ende);
+  const g=window.gsap, karte=el.querySelector('.po-karte');
+  g.fromTo(el,{autoAlpha:0},{autoAlpha:1,duration:.22});
+  g.fromTo(el.querySelectorAll('.po-t,.po-s'),{y:10,autoAlpha:0},{y:0,autoAlpha:1,duration:.4,ease:'power3.out',stagger:.06,delay:.08});
+  g.fromTo(karte,{scale:.9,y:24,autoAlpha:0},{scale:1,y:0,autoAlpha:1,duration:.55,ease:'back.out(1.6)',delay:.12,onComplete:()=>{
+    const r=karte.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height*.35;
+    const farben=['#FF2D76','#FF5A45','#633BFF','#54A7FF','#4ade80'];
+    for(let i=0;i<16;i++){
+      const d=document.createElement('i'); d.className='feier-punkt'; d.style.left=cx+'px'; d.style.top=cy+'px'; d.style.background=farben[i%5];
+      document.body.appendChild(d);
+      const w=i/16*Math.PI*2;
+      g.fromTo(d,{x:0,y:0,scale:.6,autoAlpha:1},{x:Math.cos(w)*(r.width*.55+g.utils.random(0,30)),y:Math.sin(w)*(r.height*.45+g.utils.random(10,40)),scale:1,duration:.6,ease:'power3.out',
+        onComplete:()=>g.to(d,{autoAlpha:0,duration:.25,onComplete:()=>d.remove()})});
+    }
+  }});
+  setTimeout(ende,1900);
 }
 
 /* ══════════ GEBÜHR BEZAHLEN ══════════
