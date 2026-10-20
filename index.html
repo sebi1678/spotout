@@ -7380,6 +7380,7 @@
        Kante des Umschalters – darum Luft darueber. */
     .nt-schieber{margin-top:8px;margin-bottom:12px}
 
+    .pro2-titel,.pw-abo{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px;text-align:center}
     /* ══════════ KNOEPFE: EIN SATZ REGELN FUER DIE GANZE APP ══════════
        Vorher rund 60 Stile: 41–54 px hoch, Radius 8 bis 18, Schrift 600
        bis 900, fuenf Rottoene, drei Link-Pinks, Hauptknoepfe in Gold und
@@ -11149,6 +11150,7 @@ function proWerbungZeigen(weiter){
       +v('auge','Sieh, wer bei dir war','Profilbesuche der letzten 30 Tage.')
     +'</div>'
     +'<div class="pw-fuss">'
+      +'<div class="pw-abo">SPOTOUT Pro · Monatsabo</div>'
       +(frei?'<div class="pw-probe">7 Tage gratis</div>':'')
       +'<button class="pw-cta" type="button">'+(frei?'Gratis testen':'Pro holen')+'</button>'
       +'<div class="pw-preis">'+(frei?'Danach '+preis+' pro Monat. ':preis+' pro Monat. ')+'Jederzeit kündbar.</div>'
@@ -16996,6 +16998,7 @@ function renderProPage(){
 
         ${probeFrei()?'<div class="pro2-testwoche">7 Tage gratis testen</div>'
                      :'<div class="pro2-testwoche pro2-testwoche-weg">Testwoche schon genutzt</div>'}
+        <div class="pro2-titel">SPOTOUT Pro · Monatsabo</div>
         <div class="pro2-price">
           ${probeFrei()?'<span class="p-per" style="margin-right:6px">danach</span>':''}${applePreis&&applePreis!=='CHF 3.00'?'<span class="p-num">'+esc(applePreis)+'</span>':'<span class="p-cur">CHF</span><span class="p-num">3.00</span>'}<span class="p-per">/ Monat</span>
         </div>
