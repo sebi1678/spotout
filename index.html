@@ -17657,8 +17657,26 @@ async function openConv(cid,other){
     // Wer im Gespraech sitzt, hat die neue Nachricht gesehen
     if(!gruppeHier)sb.from('messages').update({read:true}).eq('conversation_id',cid).eq('read',false).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
     ntGespraechGelesen(cid);
-  }).subscribe();
+  });
+  const kanal=convSub_;
+  /* Sicherheitsnetz: Bekommt der Chat keine Live-Leitung (Server voll,
+     Netz wackelt), holt er neue Nachrichten alle 4 s selbst ab, bis die
+     Leitung wieder steht. So bleibt er bei jeder Last benutzbar. */
+  kanal.subscribe((stand)=>{
+    if(convSub_!==kanal)return;
+    if(stand==='SUBSCRIBED'){ clearInterval(convErsatzUhr); convErsatzUhr=null; return; }
+    if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(stand)&&!convErsatzUhr){
+      console.warn('[chat] Live-Leitung weg, hole selbst ab:',stand);
+      convErsatzUhr=setInterval(()=>{
+        if(convId!==cid||convSub_!==kanal||!document.getElementById('page-conv')?.classList.contains('active')){
+          clearInterval(convErsatzUhr); convErsatzUhr=null; return;
+        }
+        if(!document.hidden)loadMsgs();
+      },4000);
+    }
+  });
 }
+let convErsatzUhr=null;
 
 /* Mehrzeilig wie bei iMessage: das Feld waechst bis 5 Zeilen mit.
    Am Handy macht Return eine neue Zeile (Senden ist der Knopf), am
