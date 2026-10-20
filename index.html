@@ -7296,6 +7296,13 @@
     .tour-voll{position:relative;height:802px;overflow:hidden}
     .tour-voll .modal{max-height:760px}
     .tour-voll .overlay{transition:none}
+    .overlay.tour-auf{opacity:1;visibility:visible;pointer-events:none}
+    .overlay.tour-auf .modal{transform:translateY(0)}
+    /* Listen-Fenster (Follower, Besuche): feste Hoehe wie bei Instagram.
+       Vorher ging das Blatt mit sechs Platzhaltern hoch auf und schrumpfte
+       sofort auf die echte Laenge – ein sichtbarer Ruck. */
+    #followListOverlay .modal,#besucherOverlay .modal{height:min(72vh,620px);display:flex;flex-direction:column}
+    #followListOverlay .modal-body,#besucherOverlay .modal-body{flex:1;min-height:0;overflow-y:auto}
     .tour-voll .tour-detail{position:absolute;inset:0;display:block}
     .tour-voll .tour-detail>div{position:absolute;inset:0}
     .tour-voll .tour-detail .overlay{position:absolute}
@@ -8413,9 +8420,9 @@
 
       <div id="c7-cap">
         <div class="chipset" id="capPresets">
-          <button class="cset" onclick="setCap(20,this)">20</button>
-          <button class="cset on" onclick="setCap(50,this)">50</button>
-          <button class="cset" onclick="setCap(100,this)">100</button>
+          <button class="cset" onclick="setCap(20,this)" data-cap-i="0">20</button>
+          <button class="cset on" onclick="setCap(50,this)" data-cap-i="1">50</button>
+          <button class="cset" onclick="setCap(100,this)" data-cap-i="2">100</button>
           <button class="cset" onclick="setCap(null,this)">Anderes</button>
         </div>
         <div class="fg" id="fgCap" style="display:none"><input type="number" id="fCap" placeholder="Anzahl" min="1" oninput="updateFeeBox()"/></div>
@@ -10402,6 +10409,9 @@ const TOUREN={
     { t:'Jetzt siehst du Namen',
       s:'Auf jeder Party steht, welche von deinen Leuten dabei sind.',
       b:()=>'<div class="tb"></div>' },
+    { t:'Die ganze Gästeliste',
+      s:'Bei jeder Party siehst du, wer kommt. Auch Leute, die du noch nicht kennst.',
+      b:()=>'<div class="tb"></div>' },
     { t:'Schreib, wen du willst',
       s:'Du kannst jetzt alle zuerst anschreiben.',
       b:()=>'<div class="tb"></div>' },
@@ -10489,7 +10499,7 @@ async function tourSchnappschuesse(){
   const leute=TOUR_LEUTE.map(x=>({user_id:x.id,event_id:p.id,profiles:{...x,avatar_url:null}}));
   const ich={user_id:cUser?.id||'ich',event_id:p.id,profiles:{id:cUser?.id||'ich',username:'mia.keller',full_name:'Mia Keller',avatar_url:null}};
   const klon=()=>{ const k=ov.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); });
-    k.style.visibility=''; return k.outerHTML; };
+    k.style.visibility=''; k.classList.remove('open'); k.classList.add('tour-auf'); return k.outerHTML; };
   let zurueck=null;
   try{
     if(!ov)throw new Error('kein Fenster');
@@ -10499,6 +10509,14 @@ async function tourSchnappschuesse(){
     await openDetail(p.id); TOUR_SNAP.detail=klon();
     zurueck(); zurueck=tourDbAttrappe({event_attendees:[...leute,ich]});
     await openDetail(p.id); TOUR_SNAP.dabei=klon();
+    /* Fuer die Pro-Tour: die ganze Gaesteliste, auch Leute, die man nicht kennt */
+    zurueck(); 
+    const viele=['Lena Meier','Jan Brunner','Nina Kaufmann','Elias Baumann','Lara Steiner','Noah Weber','Alina Fischer','Leon Schmid','Sofia Meyer','Jonas Keller','Emma Graf','David Roth']
+      .map((n,i)=>({user_id:'tg'+i,event_id:p.id,profiles:{id:'tg'+i,username:n.toLowerCase().replace(/ /g,'.'),full_name:n,avatar_url:null}}));
+    zurueck=tourDbAttrappe({event_attendees:viele});
+    const proWar=cProfile?cProfile.is_pro:false;
+    try{ if(cProfile)cProfile.is_pro=true; await openDetail(p.id); TOUR_SNAP.gaesteliste=klon(); }
+    finally{ if(cProfile)cProfile.is_pro=proWar; }
   }catch(e){ console.warn('[tour] Partyseite',e); }
   finally{
     if(zurueck)zurueck();
@@ -10520,7 +10538,7 @@ async function tourSchnappschuesse(){
         {id:'tl4',full_name:'Mia Keller',username:'mia.keller',zuletzt:new Date(jetzt-3*864e5).toISOString()}]}});
       await besucherOeffnen();
       const k=bo.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); });
-      k.style.visibility=''; TOUR_SNAP.besucher=k.outerHTML;
+      k.style.visibility=''; k.classList.remove('open'); k.classList.add('tour-auf'); TOUR_SNAP.besucher=k.outerHTML;
     }catch(e){ console.warn('[tour] Besucher',e); }
     finally{ if(z)z(); bo.classList.remove('open'); if(punkt&&punktWar!==null)punkt.hidden=punktWar; setTimeout(()=>{ bo.style.visibility=''; },400); }
   }
@@ -10531,7 +10549,7 @@ async function tourSchnappschuesse(){
       co.style.visibility='hidden';
       openCreate('public');
       co.classList.add('open');
-      TOUR_SNAP.erstellen=(()=>{ const k=co.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); }); k.style.visibility=''; return k.outerHTML; })();
+      TOUR_SNAP.erstellen=(()=>{ const k=co.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); }); k.style.visibility=''; k.classList.remove('open'); k.classList.add('tour-auf'); return k.outerHTML; })();
     }catch(e){ console.warn('[tour] Erstellen',e); }
     finally{ try{ entwurfNichtSichern=true; closeCreate(); }catch(e){} setTimeout(()=>{ co.style.visibility=''; },400); }
   }
@@ -10674,6 +10692,10 @@ function tourMotion(karte){
       tl.call(()=>k&&k.classList.add('following'),null,'<');
       tl.to({}, {duration:2});
     }
+    if(art==='gaeste'){
+      const m=f.querySelector('.tour-detail .modal');
+      if(m){ const start=m.scrollTop; tl.to(m,{scrollTop:start+260,duration:2.6,ease:'power2.inOut'}).to(m,{scrollTop:start,duration:1.4,ease:'power2.inOut'},'+=.8'); }
+    }
     if(art==='schreiben'){
       tippe('.up-msg-btn');
       tl.to({}, {duration:1.6});
@@ -10701,8 +10723,9 @@ function tourAusrichten(karte){
   const sTop=()=>schirm.getBoundingClientRect().top;
   /* Ziel im sichtbaren Ausschnitt (Fenster kann oben oder unten sein) */
   const ziel=()=>f.getBoundingClientRect().top+fh*0.55;
+  const zielSel=f.dataset.ziel||'[data-tid="attendBtn"]';
   f.querySelectorAll('.tour-detail .modal').forEach(m=>{
-    const b=m.querySelector('[data-tid="attendBtn"]'); if(!b)return;
+    const b=m.querySelector(zielSel); if(!b)return;
     m.scrollTop=0;
     const r=b.getBoundingClientRect();
     m.scrollTop=Math.max(0,r.top+r.height/2-ziel());
@@ -10857,10 +10880,10 @@ function tourLeiste(aktiv){
 }
 /* fenster: welcher Teil des Handys im Ausschnitt steht – 0 oben,
    1 unten, dazwischen z. B. 0.5 Mitte ('unten'/'oben' gehen auch). */
-function tourHandy(inner,unten,leiste,fenster,motion){
+function tourHandy(inner,unten,leiste,fenster,motion,ziel){
   const b=typeof fenster==='number'?fenster:fenster==='unten'?1:fenster==='oben'?0:(unten?1:0);
   const kl=b>=1?' von-unten':b>0?' mitte':'';
-  return '<div class="iphone-fenster'+kl+'" data-blick="'+b+'"'+(motion?' data-motion="'+motion+'"':'')+'><div class="iphone-kamera">'+tourHandyGeraet(inner,unten,leiste)+'</div></div>';
+  return '<div class="iphone-fenster'+kl+'" data-blick="'+b+'"'+(motion?' data-motion="'+motion+'"':'')+(ziel?' data-ziel="'+ziel+'"':'')+'><div class="iphone-kamera">'+tourHandyGeraet(inner,unten,leiste)+'</div></div>';
 }
 function tourBlickY(f,b){ const k=f.querySelector('.iphone-kamera'); return k?(f.clientHeight-k.offsetHeight)*b:0; }
 function tourHandyGeraet(inner,unten,leiste){
@@ -10889,7 +10912,7 @@ function tourFreundeSetzen(){
   /* Echte Freunde-Zeile, aber mit Beispiel-Leuten: Gratis-Konten sehen
      die Zahl, Pro die Namen – genau wie in der App. */
   if(typeof freundeMap==='undefined')return;
-  freundeMap.set('tour-demo',{anzahl:2,namen:[{name:'Lena Meier'},{name:'Jan Brunner'}]});
+  freundeMap.set('tour-demo',{anzahl:6,namen:['Lena Meier','Jan Brunner','Nina Kaufmann','Mia Keller','Luca Frei','Sara Huber'].map(n=>({name:n}))});
   freundeMap.set('tour-demo2',{anzahl:1,namen:[{name:'Nina Kaufmann'}]});
 }
 function tourOhneFreunde(){ if(typeof freundeMap!=='undefined'){ freundeMap.delete('tour-demo'); freundeMap.delete('tour-demo2'); } }
@@ -10959,9 +10982,11 @@ function tourBeispielChats(neu){
 }
 const TOUR_ECHT_PRO={
   0:()=>TOUR_SNAP.freundePro?tourHandy('<div data-tm="scroll" data-ausrichten=".fr-zeile">'+TOUR_SNAP.freundePro+'</div>',false,true,0,'freunde'):'',
-  1:()=>tourFremdesProfil(true),
-  2:()=>(TOUR_SNAP.besucher&&TOUR_SNAP.start)?tourHandy('<div class="tour-voll">'+TOUR_SNAP.start+'<div class="tour-detail" data-tm="liste">'+TOUR_SNAP.besucher+'</div></div>',false,false,1,'besucher'):'',
-  3:()=>tourBeispielProfil('iphone-kanaele iphone-gescrollt'),
+  1:()=>(TOUR_SNAP.gaesteliste&&TOUR_SNAP.start)?tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
+      +'<div class="tour-detail">'+TOUR_SNAP.gaesteliste+'</div></div>',false,false,1,'gaeste','.att-row'):'',
+  2:()=>tourFremdesProfil(true),
+  3:()=>(TOUR_SNAP.besucher&&TOUR_SNAP.start)?tourHandy('<div class="tour-voll">'+TOUR_SNAP.start+'<div class="tour-detail" data-tm="liste">'+TOUR_SNAP.besucher+'</div></div>',false,false,1,'besucher'):'',
+  4:()=>tourBeispielProfil('iphone-kanaele iphone-gescrollt'),
 };
 
 function tourAufbauen(){
@@ -11115,7 +11140,10 @@ function tourFertig(){
   const t=document.getElementById('tour');
   if(!t)return;
   t.classList.remove('sichtbar');
-  setTimeout(()=>t.classList.remove('open'),320);
+  /* Inhalt danach wegraeumen: die Kopien der Fenster darin trugen
+     "overlay open" – die App hielt sie fuer offene Fenster und blendete
+     ihre Leiste aus, obwohl man laengst wieder auf der Startseite war. */
+  setTimeout(()=>{ t.classList.remove('open'); const b=document.getElementById('tourBuehne'); if(b)b.innerHTML=''; },320);
   /* Nach der Einfuehrung die drei Fragen – jetzt weiss man, wovon sie
      handeln. Nur nach der Start-Tour, nicht nach der Pro-Tour. */
   const danach=()=>{ if(einstiegNoetig())setTimeout(einstiegStarten,200); };
@@ -11147,7 +11175,7 @@ function proWerbungZeigen(weiter){
       +'<p class="pw-s">Nicht nur eine Zahl. Die Namen deiner Leute, auf jeder Party.</p>'
       +v('gaeste','Namen auf jeder Party','Du weisst vorher, wer da ist.')
       +v('chat','Schreib zuerst','Ohne Pro kannst du nur antworten.')
-      +v('auge','Sieh, wer bei dir war','Profilbesuche der letzten 30 Tage.')
+      +v('muenzen','Günstiger veröffentlichen','Öffentliche Partys ab CHF 3 statt 5.')
     +'</div>'
     +'<div class="pw-fuss">'
       +'<div class="pw-abo">SPOTOUT Pro · Monatsabo</div>'
@@ -16901,7 +16929,15 @@ function appleAngebotLaden(){
       return;
     }
     appleAngebotFehlt=false;
-    if(a.preis)applePreis=String(a.preis);
+    /* Gleicher Betrag, andere Schreibweise ("3,00 CHF", "Fr. 3.00",
+       "CHF 3.–") gilt als CHF 3.00 – dann steht ueberall dieselbe Zahl.
+       Ein wirklich anderer Betrag (falsch eingestellt in App Store
+       Connect) bleibt sichtbar: Apple verlangt den echten Preis. */
+    if(a.preis){
+      const roh=String(a.preis), zahl=parseFloat(roh.replace(/[^0-9.,]/g,'').replace(',','.'));
+      applePreis=(Math.abs(zahl-3)<0.001&&/CHF|Fr/i.test(roh))?'CHF 3.00':roh;
+      if(applePreis!=='CHF 3.00')console.warn('[pro] Apple meldet einen anderen Preis als CHF 3.00:',roh);
+    }
     if(a.probe_moeglich===true||a.probe_moeglich===false)appleProbe=a.probe_moeglich;
     if(document.getElementById('page-pro')?.classList.contains('active'))renderProPage();
     applyLang();
@@ -18102,11 +18138,14 @@ function openCreate(type){
   const pp=document.querySelectorAll('#pricePresets .cset');
   pp.forEach((b,i)=>b.classList.toggle('on',i===0));
   const cp=document.querySelectorAll('#capPresets .cset');
-  cp.forEach((b,i)=>b.classList.toggle('on',i===1));
+  /* Auswahl passend zur Staffel: je ein Knopf pro Stufe */
+  cp.forEach(b=>{ const i=b.dataset.capI; if(i!=null){ const v=FEE_CHIPS[Number(i)]; b.textContent=String(v); b.setAttribute('onclick','setCap('+v+',this)'); } });
+  const startI=FEE_STUFEN_NEU?0:1;
+  cp.forEach((b,i)=>b.classList.toggle('on',i===startI));
   document.getElementById('fgPrice').style.display='none';
   document.getElementById('fgCap').style.display='none';
   document.getElementById('fPrice').value='';
-  document.getElementById('fCap').value='50';
+  document.getElementById('fCap').value=String(FEE_CHIPS[FEE_STUFEN_NEU?0:1]);
   const addrEl=document.getElementById('fAddr');
   if(addrEl)addrEl.value='';
   const addrDrop=document.getElementById('addrDrop');
@@ -18619,7 +18658,9 @@ function setCap(v,el){
   csetOn('capPresets',el);
   const fg=document.getElementById('fgCap');
   const inp=document.getElementById('fCap');
-  if(v===null){ fg.style.display='block'; inp.focus(); }
+  /* Feld leeren: sonst stand dort noch die alte Zahl, und der Preis ging
+     beim Wechsel auf "Anderes" nicht mit */
+  if(v===null){ fg.style.display='block'; inp.value=''; inp.focus(); }
   else{ fg.style.display='none'; inp.value=String(v); }
   updateFeeBox();
 }
@@ -18862,7 +18903,17 @@ function dressZeile(v){
    aufgerundet auf ganze Franken – Apple kennt in der Schweiz keine Rappen.
    Die verbindliche Berechnung passiert im Trigger set_event_fee in der
    Datenbank – das hier ist nur die Anzeige. */
-const FEE_TIERS=[{max:30,chf:5},{max:100,chf:15},{max:Infinity,chf:30}];
+/* Gaestezahl je Stufe. Die Preise bleiben (5/15/30), nur die Grenzen
+   steigen auf 50/150/darueber. Die Datenbank (set_event_fee,
+   guard_event_fee_columns) rechnet die Gebuehr selbst – beide muessen
+   gleich sein, sonst stuende hier ein anderer Preis als der verlangte.
+   Darum der Schalter: auf true, sobald die Datenbank umgestellt ist
+   (SQL: spotout-app/auftraege/sql-kaufstufen.sql). */
+const FEE_STUFEN_NEU=false;
+const FEE_TIERS=FEE_STUFEN_NEU
+  ? [{max:50,chf:5},{max:150,chf:15},{max:Infinity,chf:30}]
+  : [{max:30,chf:5},{max:100,chf:15},{max:Infinity,chf:30}];
+const FEE_CHIPS=FEE_STUFEN_NEU?[50,150,300]:[20,50,100];
 
 function feeBase(cap){
   return (FEE_TIERS.find(t=>(cap||50)<=t.max)||FEE_TIERS[2]).chf;
@@ -18910,6 +18961,17 @@ function zahlartenText(liste){
   return teile.slice(0,-1).join(', ')+' oder '+teile[teile.length-1]+' vor Ort';
 }
 
+/* Der Betrag springt nicht einfach um: er zaehlt kurz hoch (oder runter)
+   und die Pille federt leicht – man sieht, dass mehr Gaeste mehr kosten. */
+let feeAlt=null;
+function feeBetragZeigen(html, betrag){
+  const el=document.getElementById('feeAmt'); if(!el)return;
+  const von=feeAlt; feeAlt=betrag;
+  if(von==null||von===betrag||!window.gsap||matchMedia('(prefers-reduced-motion: reduce)').matches){ el.innerHTML=html; return; }
+  const o={v:von};
+  window.gsap.to(o,{v:betrag,duration:.45,ease:'power3.out',onUpdate:()=>{ el.innerHTML=html.replace(chf(betrag),chf(Math.round(o.v))); },onComplete:()=>{ el.innerHTML=html; }});
+  window.gsap.fromTo(el,{scale:1},{scale:1.08,duration:.14,yoyo:true,repeat:1,ease:'power2.out'});
+}
 function updateFeeBox(){
   const box=document.getElementById('feeBox');
   if(!box)return;
@@ -18923,7 +18985,8 @@ function updateFeeBox(){
   const pro=!!cProfile?.is_pro;
   const base=feeBase(cap);
   const amt=feeFor(cap,price,pro);
-  const range=cap<=30?'bis 30 Gäste':cap<=100?'bis 100 Gäste':'über 100 Gäste';
+  const g1=FEE_TIERS[0].max, g2=FEE_TIERS[1].max;
+  const range=cap<=g1?'bis '+g1+' Gäste':cap<=g2?'bis '+g2+' Gäste':'über '+g2+' Gäste';
 
   box.style.display='block';
 
@@ -18936,7 +18999,7 @@ function updateFeeBox(){
     return;
   }
 
-  document.getElementById('feeAmt').innerHTML=(pro?'<s>'+chf(base)+'</s>':'')+chf(amt);
+  feeBetragZeigen((pro?'<s>'+chf(base)+'</s>':'')+chf(amt), amt);
   document.getElementById('feeSub').innerHTML=
     'Einmalig fürs Veröffentlichen, je nach Gästezahl: <b>'+range+'</b>. '
     +'Private Partys kosten nichts.'
