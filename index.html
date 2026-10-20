@@ -7414,6 +7414,7 @@
     .tw-std{display:flex;justify-content:space-between;padding-top:12px;text-align:center}
     .tw-std>div{display:flex;flex-direction:column;gap:8px;font-size:15px;font-weight:500}
     .tw-ic{font-size:20px;font-weight:400;line-height:1}
+    .mod-pruefen{border-color:rgba(255,90,95,.45)!important;background:rgba(255,90,95,.06)!important}
     /* ══════════ KNOEPFE: EIN SATZ REGELN FUER DIE GANZE APP ══════════
        Vorher rund 60 Stile: 41–54 px hoch, Radius 8 bis 18, Schrift 600
        bis 900, fuenf Rottoene, drei Link-Pinks, Hauptknoepfe in Gold und
@@ -23274,8 +23275,9 @@ function sperrSeiteZeigen(s){
   const bis=s.dauerhaft||!s.gesperrt_bis?null:new Date(s.gesperrt_bis);
   const bisText=bis?bis.toLocaleString(locale(),{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';
   inh.innerHTML='<div class="sk-kopf gross">'+pikto('blockiert',34)+'</div>'
-    +'<h2 class="sk-h">'+(s.dauerhaft?'Dein Konto ist gesperrt':'Dein Konto ist 7 Tage gesperrt')+'</h2>'
-    +(bis?'<p class="sk-text">Wieder frei am <b>'+esc(bisText)+'</b>.</p>'
+    +'<h2 class="sk-h">'+(s.dauerhaft?'Dein Konto ist gesperrt':s.stufe>=3?'Dein Konto ist vorläufig gesperrt':'Dein Konto ist 7 Tage gesperrt')+'</h2>'
+    +(s.stufe>=3&&!s.dauerhaft?'<p class="sk-text">Wir prüfen die Meldungen. Ein Mensch entscheidet, ob die Sperre bleibt.</p>':'')
+    +(bis?'<p class="sk-text">Wieder frei am <b>'+esc(bisText)+'</b>'+(s.stufe>=3&&!s.dauerhaft?', falls wir nichts anderes entscheiden':'')+'.</p>'
          :'<p class="sk-text">Die Sperre gilt dauerhaft.</p>')
     +'<p class="sk-text">So lange kannst du keine Partys erstellen, dich nicht anmelden, nicht schreiben und niemandem folgen.</p>'
     +sanktionDetails(s)
@@ -23304,11 +23306,15 @@ async function moderationOeffnen(){
   const zeit=t=>new Date(t).toLocaleString(locale(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
   const knopf=(aktion,id,text)=>'<button class="nt-knopf" onclick="moderationAktion(this,\''+aktion+'\',\''+id+'\')">'+text+'</button>';
 
+  /* Stufe 3 sperrt nur vorlaeufig – dauerhaft wird es erst hier, durch
+     einen Menschen. Diese Faelle stehen zuoberst. */
+  const pruefen=x=>x.stufe>=3&&x.art!=='sperre_dauerhaft'&&!x.aufgehoben;
+  sk.sort((a,b)=>(pruefen(b)?1:0)-(pruefen(a)?1:0));
   const teilS=sk.length?'<div class="mg-sec">Verwarnungen &amp; Sperren</div>'+sk.map(x=>
-    '<div class="mod-karte'+(x.aufgehoben?' weg':'')+'">'
-      +'<div class="mod-kopf"><b>'+esc(x.wer||'?')+'</b><span class="mod-pill">'+esc(sanktText[x.art]||x.art)+'</span></div>'
+    '<div class="mod-karte'+(x.aufgehoben?' weg':'')+(pruefen(x)?' mod-pruefen':'')+'">'
+      +'<div class="mod-kopf"><b>'+esc(x.wer||'?')+'</b><span class="mod-pill">'+(pruefen(x)?'Vorläufig gesperrt · bitte prüfen':esc(sanktText[x.art]||x.art))+'</span></div>'
       +'<div class="mod-zeit">'+zeit(x.created_at)+(x.aufgehoben?' · aufgehoben':'')+'</div>'
-      +(x.aufgehoben?'':'<div class="mod-akt">'+knopf('aufheben',x.id,'Aufheben')+'</div>')
+      +(x.aufgehoben?'':'<div class="mod-akt">'+(pruefen(x)?knopf('bestaetigen',x.id,'Dauerhaft sperren'):'')+knopf('aufheben',x.id,'Aufheben')+'</div>')
     +'</div>').join(''):'';
 
   const teilM=m.length?'<div class="mg-sec">Meldungen</div>'+m.map(x=>
@@ -23331,7 +23337,7 @@ async function moderationOeffnen(){
 async function moderationAktion(btn,aktion,id){
   if(!btn)return;
   // Entfernen und Aufheben wirken sofort – darum ein zweiter Tipp
-  if((aktion==='entfernen'||aktion==='aufheben')&&!btn.classList.contains('armed')){
+  if((aktion==='entfernen'||aktion==='aufheben'||aktion==='bestaetigen')&&!btn.classList.contains('armed')){
     btn.dataset.text=btn.textContent; btn.classList.add('armed'); btn.textContent='Wirklich?';
     setTimeout(()=>{ if(btn.isConnected){ btn.classList.remove('armed'); btn.textContent=btn.dataset.text; } },4000);
     return;
@@ -23339,6 +23345,8 @@ async function moderationAktion(btn,aktion,id){
   btn.closest('.mod-akt')?.querySelectorAll('button').forEach(k=>k.disabled=true);
   const{data,error}=aktion==='aufheben'
     ?await sb.rpc('sanktion_aufheben',{p_id:id})
+    :aktion==='bestaetigen'
+    ?await sb.rpc('sanktion_bestaetigen',{p_id:id})
     :await sb.rpc('meldung_erledigen',{p_report:id,p_aktion:aktion});
   if(error)toast(fehlerText(error),'error');
   moderationOeffnen();
