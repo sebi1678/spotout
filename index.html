@@ -56,6 +56,10 @@
     if(!l){var b=(navigator.language||'de').toLowerCase();l=b.indexOf('fr')===0?'fr':b.indexOf('it')===0?'it':b.indexOf('en')===0?'en':'de';}
     if(l!=='de')document.write('<script src="/i18n.js"><\/script>');}catch(e){}})();</script>
   <link rel="dns-prefetch" href="https://maps.googleapis.com"/>
+  <!-- Karte: Verbindungen vorab aufbauen, dann kommen Skript und Kacheln ohne Wartezeit -->
+  <link rel="preconnect" href="https://maps.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://maps.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
   <style>
     /* Inter als eine variable Datei (300–900), vom eigenen Server.
        Vorher: Google-Fonts-CSS im Kopf, das die Seite anhielt. */
@@ -2299,7 +2303,7 @@
     .popup-name{font-size:.9rem;font-weight:800;color:#fff;line-height:1.25;margin-bottom:5px}
     .popup-meta{font-size:.71rem;color:rgba(255,255,255,.55);line-height:1.5;margin-bottom:11px}
     .popup-btn{
-      width:100%;border:none;border-radius:12px;padding:9px;cursor:pointer;
+      width:100%;border:none;border-radius:12px;padding:9px;cursor:pointer;background:#FF2D76;color:#fff;
       font-family:var(--font);font-size:.78rem;font-weight:800;transition:transform var(--takt-kurz);
     }
     .popup-btn:active{transform:scale(var(--druck))}
@@ -17095,6 +17099,7 @@ async function chatListeZeichnen(list){
      den Benachrichtigungen; die gibt es ohnehin pro Person. */
   const{data:offeneNt}=await ntAbfrage;
   const grpOffenNt=new Set((offeneNt||[]).map(n=>n.conversation_id));
+  if(data)posteingangAuffrischen(data.map(c=>c.id));
   /* Sortiert war bisher nach dem Tag, an dem das Gespräch angelegt
      wurde. Wer heute Morgen geschrieben hat, stand deshalb ganz unten,
      und ein Gespräch ohne einzige Nachricht ganz oben. Jetzt zählt die
@@ -17311,7 +17316,7 @@ async function openConv(cid,other){
   /* Nur im Zweiergespraech: "read" ist eine Spalte fuer alle, in einer
      Gruppe waere das Lesen des Ersten das Lesen aller. Dort zaehlen die
      Benachrichtigungen, die ntGespraechGelesen() gleich abraeumt. */
-  if(!convGruppe)await sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser.id);
+  if(!convGruppe)await sb.from('messages').update({read:true}).eq('conversation_id',cid).eq('read',false).neq('sender_id',cUser.id);
   loadUnread();
   const altKanal=convSub_; convSub_=null;
   try{ if(altKanal)await sb.removeChannel(altKanal); }catch(e){console.warn('[chat] unsubscribe',e);}
@@ -17324,11 +17329,13 @@ async function openConv(cid,other){
     .on('broadcast',{event:'tippt'},(m)=>{ if(convId===cid&&m?.payload?.von&&m.payload.von!==cUser?.id)convTipptZeigen(); })
     .on('postgres_changes',{event:'*',schema:'public',table:'messages',filter:`conversation_id=eq.${cid}`},(pl)=>{
     if(convId!==cid)return;
-    loadMsgs();
+    /* Mehrere Aenderungen kurz hintereinander (z. B. Gelesen-Markierung
+       vieler Nachrichten) laden den Verlauf nur einmal neu */
+    clearTimeout(window.__convLadeUhr); window.__convLadeUhr=setTimeout(()=>{ if(convId===cid)loadMsgs(); },120);
     if(pl&&pl.eventType&&pl.eventType!=='INSERT')return;
     if(pl?.new?.sender_id&&pl.new.sender_id!==cUser?.id){ clearTimeout(tipptUhr); const sub=document.getElementById('convSub'); if(sub&&sub.classList.contains('tippt')){ sub.classList.remove('tippt'); sub.textContent='@'+(convUser?.username||''); } }
     // Wer im Gespraech sitzt, hat die neue Nachricht gesehen
-    if(!gruppeHier)sb.from('messages').update({read:true}).eq('conversation_id',cid).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
+    if(!gruppeHier)sb.from('messages').update({read:true}).eq('conversation_id',cid).eq('read',false).neq('sender_id',cUser?.id||'').then(()=>{},()=>{});
     ntGespraechGelesen(cid);
   }).subscribe();
 }
@@ -23567,11 +23574,27 @@ let notifStand='';
    rutscht das Gespraech sofort nach oben, die Zahl am Tab stimmt sofort –
    vorher erst nach dem naechsten Oeffnen. */
 let posteingang=null, posteingangUhr=null;
-function posteingangStarten(){
+/* Vorher hoerte jedes Konto auf JEDE neue Nachricht aller Nutzer –
+   der Server prueft dann fuer jeden Zuhoerer die Rechte (RLS). Bei
+   tausenden gleichzeitig bricht Realtime ein. Jetzt nur die eigenen
+   Gespraeche (Filter auf dem Server, hoechstens 100). Neue Gespraeche
+   kommen beim naechsten Laden der Liste dazu; die Glocke faengt den
+   Rest ab. Die saubere Loesung (eigener Kanal pro Person) ist ein
+   Datenbank-Auftrag, siehe Bericht. */
+let posteingangIds='';
+async function posteingangStarten(){
   if(!cUser||posteingang)return;
   const uid=cUser.id;
+  let ids=[];
+  try{
+    const{data}=await sb.from('conversations').select('id').or(`user1_id.eq.${uid},user2_id.eq.${uid},group_id.not.is.null`)
+      .order('created_at',{ascending:false}).limit(100);
+    ids=(data||[]).map(c=>c.id).filter(Boolean);
+  }catch(e){ console.warn('[huelle] Posteingang',e); }
+  if(!cUser||cUser.id!==uid||posteingang||!ids.length)return;
+  posteingangIds=ids.join(',');
   posteingang=sb.channel('posteingang-'+uid)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},(pl)=>{
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=in.('+posteingangIds+')'},(pl)=>{
       if(cUser?.id!==uid)return;
       const m=pl?.new; if(!m||m.sender_id===uid)return;
       clearTimeout(posteingangUhr);
@@ -23581,8 +23604,15 @@ function posteingangStarten(){
       },250);
     }).subscribe();
 }
+/* Neue Gespraeche aufnehmen: nach dem Laden der Chatliste neu abonnieren,
+   wenn sich die Menge geaendert hat */
+function posteingangAuffrischen(ids){
+  const neu=(ids||[]).slice(0,100).join(',');
+  if(!cUser||!neu||neu===posteingangIds)return;
+  posteingangStoppen(); posteingangStarten();
+}
 function posteingangStoppen(){
-  const k=posteingang; posteingang=null; clearTimeout(posteingangUhr);
+  const k=posteingang; posteingang=null; posteingangIds=''; clearTimeout(posteingangUhr);
   if(k)sb.removeChannel(k).catch(()=>{});
 }
 
@@ -24894,7 +24924,14 @@ function leafletLaden(){
   return leafletGeladen;
 }
 window.addEventListener('load',()=>{
-  const los=()=>leafletLaden().catch(()=>{});
+  /* Leaflet und die Google-Skripte im Leerlauf vorladen. Dann steht beim
+     ersten Oeffnen gleich die richtige Karte da, ohne OpenStreetMap
+     davor. Google rechnet erst ab einer erzeugten Karte ab, das
+     Vorladen der Skripte kostet nichts. */
+  const los=()=>leafletLaden().then(()=>{
+    const g=()=>{ try{ if(karteHatGoogle())googleKarteLaden().catch(()=>{}); }catch(e){} };
+    if('requestIdleCallback' in window)requestIdleCallback(g,{timeout:8000}); else setTimeout(g,4000);
+  }).catch(()=>{});
   if('requestIdleCallback' in window)requestIdleCallback(los,{timeout:4000});
   else setTimeout(los,2500);
 });
@@ -25074,9 +25111,13 @@ function mapPasst(e, now){
   return true;
 }
 
+/* Vorher wurden bei jeder Suche, jedem Filter und jedem Neuladen alle
+   Marker geloescht und neu gebaut, samt fertigem Popup. Jetzt bleibt,
+   was sich nicht geaendert hat; neu gebaut wird nur, was neu ist, und
+   das Popup entsteht erst beim Antippen. */
+const markerSpeicher=new Map();
 function updMarkers(){
   if(!mapInst)return;
-  markers.forEach(m=>m.remove()); markers=[];
   if(mapMe){mapMe.remove();mapMe=null;}
   mapPts=[];
 
@@ -25090,6 +25131,7 @@ function updMarkers(){
 
   const now=new Date();
   let shown=0;
+  const sichtbar=new Set();
 
   // Dieselbe Auswahl wie in der Liste – mapPasst prueft Kategorie,
   // Suche und Filter.
@@ -25098,40 +25140,48 @@ function updMarkers(){
     const st=evStart(e); if(!st)return;
     if((now-st)/36e5>6)return;              // vorbei
     if(!mapPasst(e,now))return;             // Umkreis und Zeitraum
-    const w=worldVars(e.type);
     const live=isLive(e);
     const soon=!live&&(st-now)/36e5<=8;
-
-    const html=
-      '<div class="mpin'+(live?' live':'')+'" style="color:'+w.accent+'">'+
-        (live?'<div class="mpin-ring"></div>':'')+
-        '<div class="mpin-body" style="background:'+w.grad+'"></div>'+
-        '<div class="mpin-ic">'+iconSvg(evIconKey(e),18)+'</div>'+
-        (live?'<div class="mpin-live">LIVE</div>':'')+
-      '</div>';
-
-    const m=L.marker([e.lat,e.lng],{
-      icon:L.divIcon({className:'',html:html,iconSize:[38,38],iconAnchor:[19,38],popupAnchor:[0,-36]}),
-      zIndexOffset:live?900:(soon?500:0)
-    }).addTo(mapInst);
-
-    const dist=(userLat!=null)?distKm(userLat,userLng,e.lat,e.lng):null;
-    const distTxt=dist==null?'':(entfernungText(dist)+' entfernt');
-    const when=live?'Läuft gerade':fyWhen({...e,_start:st});
-    const tot=(e.price||0)+(e.drink_price||0);
-
-    m.bindPopup(
-      '<div class="popup-when" style="color:'+w.accent+'">'+when+'</div>'+
-      '<div class="popup-name">'+esc(e.name||'Party')+'</div>'+
-      '<div class="popup-meta">'+esc((e.address||'').split(',')[0]||'Schweiz')+
-        (distTxt?'<br>'+distTxt:'')+
-        '<br>'+(tot===0?'Gratis':chf(tot))+' · '+zahlText(e.attending||0)+' dabei</div>'+
-      '<button class="popup-btn" style="background:'+w.btnBg+';color:'+w.btnColor+'" '+
-        'onclick="openDetail(\''+e.id+'\')">Details ansehen</button>'
-    );
-
-    markers.push(m); mapPts.push([e.lat,e.lng]); shown++;
+    const sig=[e.lat,e.lng,e.type,live?1:0,soon?1:0,evIconKey(e)].join('|');
+    sichtbar.add(e.id);
+    const alt=markerSpeicher.get(e.id);
+    if(alt&&alt.sig===sig){
+      if(!mapInst.hasLayer(alt.m))alt.m.addTo(mapInst);
+    }else{
+      if(alt)alt.m.remove();
+      const w=worldVars(e.type);
+      const html=
+        '<div class="mpin'+(live?' live':'')+'" style="color:'+w.accent+'">'+
+          (live?'<div class="mpin-ring"></div>':'')+
+          '<div class="mpin-body" style="background:'+w.grad+'"></div>'+
+          '<div class="mpin-ic">'+iconSvg(evIconKey(e),18)+'</div>'+
+          (live?'<div class="mpin-live">LIVE</div>':'')+
+        '</div>';
+      const m=L.marker([e.lat,e.lng],{
+        icon:L.divIcon({className:'',html:html,iconSize:[38,38],iconAnchor:[19,38],popupAnchor:[0,-36]}),
+        zIndexOffset:live?900:(soon?500:0)
+      }).addTo(mapInst);
+      const id=e.id;
+      m.bindPopup(()=>{
+        const ev=evts.find(x=>x.id===id)||e, s2=evStart(ev)||st, w2=worldVars(ev.type), lv=isLive(ev);
+        const dist=(userLat!=null)?distKm(userLat,userLng,ev.lat,ev.lng):null;
+        const distTxt=dist==null?'':(entfernungText(dist)+' entfernt');
+        const when=lv?'Läuft gerade':fyWhen({...ev,_start:s2});
+        const tot=(ev.price||0)+(ev.drink_price||0);
+        return '<div class="popup-when" style="color:'+w2.accent+'">'+when+'</div>'+
+          '<div class="popup-name">'+esc(ev.name||'Party')+'</div>'+
+          '<div class="popup-meta">'+esc((ev.address||'').split(',')[0]||'Schweiz')+
+            (distTxt?'<br>'+distTxt:'')+
+            '<br>'+(tot===0?'Gratis':chf(tot))+' · '+zahlText(ev.attending||0)+' dabei</div>'+
+          '<button class="popup-btn" onclick="openDetail(\''+ev.id+'\')">Details ansehen</button>';
+      });
+      markerSpeicher.set(e.id,{m,sig});
+    }
+    mapPts.push([e.lat,e.lng]); shown++;
   });
+  // Was nicht mehr passt, verschwindet
+  markerSpeicher.forEach((v,id)=>{ if(!sichtbar.has(id)){ v.m.remove(); markerSpeicher.delete(id); } });
+  markers=[...markerSpeicher.values()].map(v=>v.m);
 
   mapZahl=shown;
   mapKopfSetzen();
