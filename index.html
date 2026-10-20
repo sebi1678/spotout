@@ -7363,6 +7363,13 @@
     .grp-aktion:active{transform:scale(.97)}
     .grp-aktion .pk{color:rgba(255,255,255,.85)}
     #profContent .grp-karte,#profContent .grp-karte~.prof-action-btn{margin-left:16px!important;margin-right:16px!important;width:calc(100% - 32px)!important}
+    /* Neu seit dem letzten Besuch, Zahl unter der Ueberschrift */
+    .fy-neu{background:#FF2D76!important;color:#fff!important;border-color:transparent!important}
+    .fy-neu-hinweis{display:flex;align-items:center;gap:8px;margin:0 16px 12px;padding:10px 14px;border-radius:14px;
+      background:rgba(255,45,118,.1);border:1px solid rgba(255,45,118,.25);font-size:.82rem;color:rgba(255,255,255,.85)}
+    .fy-neu-hinweis b{color:#fff}
+    .fy-neu-hinweis .pk{color:#FF2D76;flex:none}
+    .hero-zahl{margin:-2px 0 0;font-size:.86rem;color:var(--muted);font-weight:600}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -13762,7 +13769,55 @@ function navFuerKontoart(){
   document.body.classList.toggle('ist-verein',verein);
 }
 
+/* ── Grund, morgen wieder reinzuschauen – ehrlich ───────────────────
+   "Neu seit deinem letzten Besuch": nur wenn wirklich neue Partys dazu
+   gekommen sind, mit der echten Zahl. Kein Zaehler, der kuenstlich
+   lockt, keine Endlosliste. Der Besuch zaehlt als "gesehen", sobald man
+   die App verlaesst. */
+const FEED_ZULETZT='spotout_feed_zuletzt';
+let feedZuletzt=(()=>{ try{ return Number(localStorage.getItem(FEED_ZULETZT))||0; }catch(e){ return 0; } })();
+let feedNeuIds=new Set();
+function feedNeuBerechnen(){
+  feedNeuIds=new Set();
+  if(!feedZuletzt||!cUser)return;
+  (evts||[]).forEach(e=>{
+    const t=Date.parse(e.created_at||''); 
+    if(t&&t>feedZuletzt&&e.created_by!==cUser.id&&!istVorbei(e))feedNeuIds.add(e.id);
+  });
+}
+function feedGesehen(){ try{ localStorage.setItem(FEED_ZULETZT,String(Date.now())); }catch(e){} }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden&&cUser)feedGesehen(); });
+window.addEventListener('pagehide',()=>{ if(cUser)feedGesehen(); });
+if(!feedZuletzt)setTimeout(feedGesehen,4000);   // erster Besuch: ab jetzt zaehlt es
+function feedNeuHinweis(col){
+  const sec=document.getElementById('fySection'); if(!sec)return;
+  let el=document.getElementById('fyNeu');
+  const n=[...feedNeuIds].filter(id=>{ const e=evts.find(x=>x.id===id); return e&&e.type===col; }).length;
+  if(!n){ if(el)el.remove(); return; }
+  if(!el){ el=document.createElement('div'); el.id='fyNeu'; el.className='fy-neu-hinweis';
+    const wrap=document.getElementById('feedWrap'); sec.insertBefore(el,wrap); }
+  const tage=Math.round((Date.now()-feedZuletzt)/864e5);
+  const seit=tage<=0?'seit deinem letzten Besuch':tage===1?'seit gestern':'seit '+tage+' Tagen';
+  el.innerHTML=pikto('funken',16)+'<span><b>'+n+(n===1?' neue Party':' neue Partys')+'</b> '+seit+'</span>';
+}
+/* Die Ueberschrift passt sich der Woche an, darunter die echte Zahl */
+function heroSetzen(){
+  const h=document.querySelector('#homeHero h1'); if(!h)return;
+  const jetzt=new Date(), tag=jetzt.getDay();
+  const wochenende=tag>=4&&tag<=6;          // Do, Fr, Sa
+  h.textContent=wochenende?'Was geht am Wochenende?':'Was geht heute?';
+  let von=jetzt, bis;
+  if(wochenende){ bis=new Date(jetzt); bis.setDate(bis.getDate()+(7-tag)%7); bis.setHours(23,59,0,0); }
+  else{ bis=new Date(jetzt); bis.setDate(bis.getDate()+1); bis.setHours(6,0,0,0); }
+  const n=(evts||[]).filter(e=>{ const st=evStart(e); return st&&st<=bis&&!istVorbei(e)&&(st>=von||isLive(e))&&(e.type!=='private'||e.created_by!==cUser?.id); }).length;
+  let z=document.getElementById('heroZahl');
+  if(!n){ if(z)z.remove(); return; }
+  if(!z){ z=document.createElement('p'); z.id='heroZahl'; z.className='hero-zahl'; h.after(z); }
+  z.textContent=n+(n===1?' Party':' Partys')+(userLat!=null?' in deiner Nähe':'');
+}
 function renderFeed(){
+  feedNeuBerechnen();
+  try{ heroSetzen(); }catch(e){ console.warn('[feed] Ueberschrift',e); }
   const wrap=document.getElementById('feedWrap');
   if(!wrap)return;
   const sec=document.getElementById('fySection');
@@ -13878,6 +13933,7 @@ function renderFeed(){
           <span class="fy-chip" style="color:${w.accent};border-color:${w.border};background:rgba(0,0,0,.68)">${typeLabel}</span>
           ${/* "Ausgebucht" steht unten auf dem Knopf – oben nicht nochmals */''}
           ${(!istVoll(e)&&att>0)?`<span class="fy-chip fy-chip-dark">${users}${att} dabei</span>`:''}
+          ${feedNeuIds.has(e.id)?'<span class="fy-chip fy-neu">Neu</span>':''}
         </div>
         <div class="fy-reason${r.roh?' fy-reason-zahl':''}" style="color:${w.accent}">${r.ic}${r.txt}</div>
       </div>
@@ -13899,6 +13955,7 @@ function renderFeed(){
   }).join('');
 
   setzeHTML(wrap,`<div class="fy-list">${cards}</div>`);
+  feedNeuHinweis(col);
 }
 
 // Empfehlungen neu mischen (Button in der Kopfzeile)
