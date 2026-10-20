@@ -11994,7 +11994,6 @@ function enterApp(){
     if(!cUser)return;
     externeLaden();
     startNotifPolling();
-    posteingangStarten();
     proTourPruefen();
     nativePushAnmelden();
     /* Ein Zeitstempel pro Stunde, mehr nicht. Ohne ihn laesst sich nicht
@@ -13286,6 +13285,11 @@ function showPage(name,richtung){
      „Pro werden“ in den Party-Details. */
   alleFensterZu();
   showOnly(name,richtung);
+  /* Live-Verbindung nur, solange man in den Chats ist. Vorher hielt jede
+     offene App eine – der Tarif erlaubt nur eine begrenzte Zahl
+     gleichzeitig. Ausserhalb der Chats halten Glocke, Push und das
+     Zurueckkommen in die App die Zahlen aktuell. */
+  if(name==='chat'||name==='conv')posteingangStarten(); else posteingangStoppen();
   if(name==='profile')renderProf();
   if(name==='chat')loadChats();
   if(name==='main'){ loadEvts({wennAlt:true}); vereinHomeUmschalten(); }
@@ -23985,8 +23989,11 @@ let posteingang=null, posteingangUhr=null;
    Rest ab. Die saubere Loesung (eigener Kanal pro Person) ist ein
    Datenbank-Auftrag, siehe Bericht. */
 let posteingangIds='';
+function inDenChats(){
+  return ['page-chat','page-conv'].some(id=>document.getElementById(id)?.classList.contains('active'));
+}
 async function posteingangStarten(){
-  if(!cUser||posteingang)return;
+  if(!cUser||posteingang||!inDenChats())return;
   const uid=cUser.id;
   let ids=[];
   try{
@@ -23994,7 +24001,7 @@ async function posteingangStarten(){
       .order('created_at',{ascending:false}).limit(100);
     ids=(data||[]).map(c=>c.id).filter(Boolean);
   }catch(e){ console.warn('[huelle] Posteingang',e); }
-  if(!cUser||cUser.id!==uid||posteingang||!ids.length)return;
+  if(!cUser||cUser.id!==uid||posteingang||!ids.length||!inDenChats())return;
   posteingangIds=ids.join(',');
   posteingang=sb.channel('posteingang-'+uid)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=in.('+posteingangIds+')'},(pl)=>{
