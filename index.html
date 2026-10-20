@@ -24027,6 +24027,13 @@ document.addEventListener('visibilitychange',()=>{
   if(document.hidden||!cUser)return;
   try{ loadNotifs(); loadUnread(); }catch(e){ console.warn('[chat] Zurueck',e); }
 });
+/* Die App meldet: Push ist angekommen, waehrend die App offen ist.
+   Dann sofort nachladen statt auf den naechsten Takt zu warten. */
+window.__huelleNeuigkeit=()=>{
+  if(!cUser)return;
+  try{ loadNotifs(); loadUnread(); }catch(e){ console.warn('[huelle] Neuigkeit',e); }
+  if(document.getElementById('page-chat')?.classList.contains('active'))loadChats();
+};
 function posteingangStoppen(){
   const k=posteingang; posteingang=null; posteingangIds=''; clearTimeout(posteingangUhr);
   if(k)sb.removeChannel(k).catch(()=>{});
