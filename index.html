@@ -11842,18 +11842,25 @@ function enterApp(){
   if(!blocksBereit)blocksBereit=loadBlocks().catch(()=>{});
   feedAusGemerktem();
   loadEvts().then(()=>stelleOrtHer());
-  externeLaden();
   autoLoc();
   initFyModus();
-  checkJoinLink();checkFeeSuccess();checkProSuccess();checkEventLink();checkProfilLink();startNotifPolling();
-  posteingangStarten();
+  checkJoinLink();checkFeeSuccess();checkProSuccess();checkEventLink();checkProfilLink();
   netzWaechterAn();
-  proTourPruefen();
-  nativePushAnmelden();
-  /* Ein Zeitstempel pro Stunde, mehr nicht. Ohne ihn laesst sich nicht
-     sagen, ob eine Verbesserung wirkt – und "kommen die Leute wieder"
-     ist die einzige Zahl, die am Anfang zaehlt. */
-  sb.rpc('ping').then(({error})=>{ if(error)console.warn('[ping]',error.message); });
+  /* Alles, was das erste Bild nicht braucht, kommt danach im Leerlauf.
+     Vorher liefen rund 12 Anfragen gleichzeitig mit dem Feed los. */
+  const spaeter=()=>{
+    if(!cUser)return;
+    externeLaden();
+    startNotifPolling();
+    posteingangStarten();
+    proTourPruefen();
+    nativePushAnmelden();
+    /* Ein Zeitstempel pro Stunde, mehr nicht. Ohne ihn laesst sich nicht
+       sagen, ob eine Verbesserung wirkt – und "kommen die Leute wieder"
+       ist die einzige Zahl, die am Anfang zaehlt. */
+    sb.rpc('ping').then(({error})=>{ if(error)console.warn('[ping]',error.message); });
+  };
+  if('requestIdleCallback' in window)requestIdleCallback(spaeter,{timeout:1500}); else setTimeout(spaeter,800);
   // Wurde die App ueber eine Meldung geoeffnet, bevor das Profil stand,
   // wird der Weg jetzt nachgeholt.
   if(window.__pushOffen){
@@ -12500,7 +12507,7 @@ window.__huelleZurueck=async()=>{
     if(seitenFassung&&f&&f!==seitenFassung){ location.reload(); return; }
   }catch(e){}
   try{
-    loadEvts();
+    loadEvts({wennAlt:true});
     if(cUser){
       if(typeof loadNotifs==='function')loadNotifs();
       if(typeof sanktionPruefen==='function')sanktionPruefen(false);
@@ -13588,6 +13595,11 @@ const gesehen = new Set();
 function zaehleAufruf(id, typ){
   if(!id || typ==='private' || gesehen.has(id) || !cUser) return;
   gesehen.add(id);
+  /* Hoechstens einmal pro Party und Tag auf diesem Geraet – jedes Oeffnen
+     war ein Schreibzugriff, bei tausenden Nutzern unnoetige Last */
+  const k='spotout_gesehen_'+new Date().toISOString().slice(0,10);
+  try{ const l=JSON.parse(sessionStorage.getItem(k)||localStorage.getItem(k)||'[]');
+       if(l.includes(id))return; l.push(id); localStorage.setItem(k,JSON.stringify(l.slice(-300))); }catch(e){}
   sb.rpc('party_gesehen', { p_event: id }).then(()=>{}, ()=>{});
 }
 
@@ -15453,8 +15465,8 @@ async function renderCalendar(){
   // Angemeldete UND selbst erstellte Partys – als Gastgeber stand man vorher
   // gar nicht im eigenen Kalender.
   const[{data:atts,error:f1},{data:hosted,error:f2}]=await Promise.all([
-    sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id),
-    sb.from('events').select('*').eq('created_by',cUser.id)
+    sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id).order('joined_at',{ascending:false}).limit(200),
+    sb.from('events').select('*').eq('created_by',cUser.id).order('date',{ascending:false}).limit(200)
   ]);
   if(f1||f2){
     console.warn('[kalender] laden',f1||f2);
@@ -16090,8 +16102,8 @@ async function renderProf(){
      Rest, danach noch die Zahlen) – jede Stufe kostet einen ganzen Weg
      zum Server, und keine brauchte das Ergebnis der vorherigen. */
   const [{data:myEvts},{data:atts},{data:archiv},{data:abz},{data:abzStand},{data:fstats}]=await Promise.all([
-    sb.from('events').select('*').eq('created_by',cUser.id).order('date',{ascending:false}),
-    sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id),
+    sb.from('events').select('*').eq('created_by',cUser.id).order('date',{ascending:false}).limit(200),
+    sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id).order('joined_at',{ascending:false}).limit(200),
     sb.from('besucht_archiv').select('*').eq('user_id',cUser.id).order('datum',{ascending:false}).limit(300),
     sb.from('abzeichen').select('schluessel,erhalten_am').eq('user_id',cUser.id),
     sb.from('abzeichen_stand').select('*').eq('user_id',cUser.id).maybeSingle(),
