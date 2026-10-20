@@ -11955,6 +11955,14 @@ function enterApp(){
        sagen, ob eine Verbesserung wirkt – und "kommen die Leute wieder"
        ist die einzige Zahl, die am Anfang zaehlt. */
     sb.rpc('ping').then(({error})=>{ if(error)console.warn('[ping]',error.message); });
+    /* Chats, Kalender und Profil schon einmal im Hintergrund zeichnen –
+       dann steht beim ersten Tipp auf den Tab sofort etwas da, statt auf
+       den Server zu warten. Danach frischt jeder Besuch nur noch auf. */
+    setTimeout(()=>{ if(!cUser)return;
+      try{ loadChats(); }catch(e){ console.warn('[vorladen] Chats',e); }
+      try{ renderCalendar(); }catch(e){ console.warn('[vorladen] Kalender',e); }
+      try{ renderProf(); }catch(e){ console.warn('[vorladen] Profil',e); }
+    },1200);
   };
   if('requestIdleCallback' in window)requestIdleCallback(spaeter,{timeout:1500}); else setTimeout(spaeter,800);
   // Wurde die App ueber eine Meldung geoeffnet, bevor das Profil stand,
@@ -17327,8 +17335,11 @@ async function loadChats(){
      darf die Liste darunter trotzdem nicht leer bleiben – genau das ist
      am 22.09. passiert (ReferenceError im Hinweis, Chats leer). */
   try{ chatSperreZeigen(); }catch(e){ console.error('[chats] Pro-Hinweis:',e); }
-  try{ await loadMsgRequests(); }catch(e){ console.error('[chats] Anfragen:',e); }
-  await chatGeloeschtLaden();
+  /* Vorher drei Runden zum Server nacheinander (Anfragen, geloeschte
+     Chats, Liste) – auf dem Handy rund eine Sekunde leere Seite. Die
+     Anfragen laufen jetzt nebenher, der Rest so frueh wie moeglich. */
+  loadMsgRequests().catch(e=>console.error('[chats] Anfragen:',e));
+  window.__chatGelP=chatGeloeschtLaden();     // laeuft gleichzeitig mit der Liste
   try{
     await chatListeZeichnen(list);
   }catch(e){
@@ -17354,6 +17365,7 @@ async function chatListeZeichnen(list){
      anderen den Punkt geloescht. Der Ungelesen-Zustand kommt darum aus
      den Benachrichtigungen; die gibt es ohnehin pro Person. */
   const{data:offeneNt}=await ntAbfrage;
+  if(window.__chatGelP){ try{ await window.__chatGelP; }catch(_){} }
   const grpOffenNt=new Set((offeneNt||[]).map(n=>n.conversation_id));
   if(data)posteingangAuffrischen(data.map(c=>c.id));
   /* Sortiert war bisher nach dem Tag, an dem das Gespräch angelegt
