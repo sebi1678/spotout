@@ -7355,6 +7355,14 @@
     /* Chat: lange Links brechen um, Links sind erkennbar */
     .bub{overflow-wrap:anywhere}
     .bub-link{color:inherit;text-decoration:underline;text-underline-offset:2px}
+    /* Gruppen: drei gleichwertige Aktionen, Liste mit Rand */
+    .grp-aktionen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+    .grp-aktion{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:74px;padding:10px 6px;
+      border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;
+      font:600 .78rem var(--font);cursor:pointer;transition:transform 140ms cubic-bezier(.23,1,.32,1)}
+    .grp-aktion:active{transform:scale(.97)}
+    .grp-aktion .pk{color:rgba(255,255,255,.85)}
+    #profContent .grp-karte,#profContent .grp-karte~.prof-action-btn{margin-left:16px!important;margin-right:16px!important;width:calc(100% - 32px)!important}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -20227,7 +20235,7 @@ async function gruppenLaden(){
     return;
   }
   box.innerHTML=einladungen+liste.map(g=>{
-    const bilder=(g.bilder||[]).slice(0,4).map(u=>'<div class="av-sm"><img alt="" loading="lazy" decoding="async" src="'+escAttr(u)+'"/></div>').join('');
+    const bilder=(g.bilder||[]).filter(u=>u&&String(u).trim()).slice(0,4).map(u=>'<div class="av-sm"><img alt="" loading="lazy" decoding="async" src="'+escAttr(u)+'"/></div>').join('');
     const offen=Number(g.anfragen||0);
     const teile=[(g.mitglieder||0)+(g.mitglieder===1?' Person':' Leute')];
     if(g.partys)teile.push(g.partys+(g.partys===1?' Party':' Partys'));
@@ -20376,13 +20384,13 @@ function gruppeZeichnen(g){
         +'<svg class="pk" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="url(#pkSonne)" opacity=".6"/><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3 6.1l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
         +'Bearbeiten</button>':'')
     +'</div>'
-    +'<button class="sub-btn sub-public" style="margin:0 0 8px" onclick="gruppeChat(\''+g.id+'\')">Gruppenchat</button>'
-    +'<div style="display:flex;gap:8px;margin-bottom:4px">'
-      +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppeKontakteWaehlen(\''+g.id+'\')">Leute holen</button>'
-      +'<button class="prof-action-btn" style="flex:1;margin:0" onclick="gruppePartyWaehlen(\''+g.id+'\')">Party hineinstellen</button>'
-    +'</div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:4px">'
-      +'<button class="sub-btn sub-public" style="flex:1;margin:0" onclick="treffenOeffnen(\''+g.id+'\')">Treffen planen</button>'
+    /* Ein Hauptknopf, darunter drei gleichwertige Aktionen – vorher
+       standen zwei pinke Knoepfe uebereinander und stritten um den Blick */
+    +'<button class="sub-btn sub-public" style="margin:0 0 10px" onclick="gruppeChat(\''+g.id+'\')">Gruppenchat</button>'
+    +'<div class="grp-aktionen">'
+      +'<button class="grp-aktion" onclick="gruppeKontakteWaehlen(\''+g.id+'\')">'+pikto('gast_anfrage',22)+'<span>Leute holen</span></button>'
+      +'<button class="grp-aktion" onclick="gruppePartyWaehlen(\''+g.id+'\')">'+pikto('events',22)+'<span>Party hinein</span></button>'
+      +'<button class="grp-aktion" onclick="treffenOeffnen(\''+g.id+'\')">'+pikto('kalender',22)+'<span>Treffen planen</span></button>'
     +'</div>'
     +anfragen
     +'<div class="mg-sec">Partys</div>'+partys
@@ -21348,7 +21356,12 @@ async function renderShareContacts(alsEinladung){
     .select('id,username,full_name,avatar_url,is_pro').in('id',ids);
   if(!leute?.length){box.innerHTML='<div class="mg-empty">Keine Kontakte gefunden.</div>';return;}
 
-  leute.sort((a,b)=>(a.full_name||a.username||'').localeCompare(b.full_name||b.username||'','de'));
+  /* Wer sich gegenseitig folgt, steht oben – das sind die Leute, die man
+     am ehesten einlaedt. Danach alphabetisch. */
+  const ichFolge=new Set((folge||[]).map(f=>f.following_id)), folgtMir=new Set((folger||[]).map(f=>f.follower_id));
+  const gegenseitig=(id)=>ichFolge.has(id)&&folgtMir.has(id)?0:1;
+  leute.sort((a,b)=>gegenseitig(a.id)-gegenseitig(b.id)
+    ||(a.full_name||a.username||'').localeCompare(b.full_name||b.username||'','de'));
 
   const reihen=leute.map(u=>{
     const nm=u.full_name||u.username||'Unbekannt';
@@ -21367,12 +21380,11 @@ async function renderShareContacts(alsEinladung){
   }).join('');
 
   // Ab einer Handvoll Kontakten wird Scrollen zum Suchen laestig.
-  const werkzeug=leute.length>5
+  const werkzeug=leute.length>=2
     ? '<div class="sh-tools">'
-      +'<input class="sh-suche" id="shSuche" placeholder="Name suchen…" '
-      +'oninput="shareFiltern(this.value)" autocomplete="off"/>'
-      +'<button class="sh-alle" id="shAlle" onclick="shareAnAlle()">'
-      +(alsEinladung?'Alle':'An alle')+'</button>'
+      +(leute.length>5?'<input class="sh-suche" id="shSuche" placeholder="Name suchen" '
+        +'oninput="shareFiltern(this.value)" autocomplete="off"/>':'<span style="flex:1"></span>')
+      +'<button class="sh-alle" id="shAlle" onclick="shareAnAlle()">Alle einladen</button>'
       +'</div>'
     : '';
 
@@ -23706,7 +23718,7 @@ async function renderPlusCard(eventId){
     box.innerHTML='<div class="plus-card">'
       +'<div class="plus-hdr"><div class="plus-ic">'+ic+'</div>'
       +'<div><div class="plus-t">Jemanden mitbringen?</div>'
-      +'<div class="plus-s">Frag den Gastgeber. Er bestätigt oder lehnt ab.</div></div></div>'
+      +'<div class="plus-s">Frag beim Host an. Du bekommst Bescheid.</div></div></div>'
       +'<div class="chipset" style="margin:12px 0 10px">'
       +[1,2,3,4].map(n=>'<button class="cset'+(n===1?' on':'')+'" onclick="setPlus('+n+',this)">+'+n+'</button>').join('')
       +'</div>'
@@ -23722,7 +23734,7 @@ async function renderPlusCard(eventId){
     box.innerHTML='<div class="plus-card wait">'
       +'<div class="plus-hdr"><div class="plus-ic">'+ic+'</div>'
       +'<div><div class="plus-t">Anfrage läuft: +'+n+'</div>'
-      +'<div class="plus-s">Der Gastgeber hat noch nicht entschieden.</div>'
+      +'<div class="plus-s">Der Host hat noch nicht entschieden.</div>'
       +plusWerZeile(data)+'</div></div>'
       +'<button class="plus-btn ghost" onclick="cancelPlusRequest(\''+data.id+'\',\''+eventId+'\')">Anfrage zurückziehen</button>'
       +'</div>';
@@ -23740,7 +23752,7 @@ async function renderPlusCard(eventId){
   box.innerHTML='<div class="plus-card no">'
     +'<div class="plus-hdr"><div class="plus-ic">'+ic+'</div>'
     +'<div><div class="plus-t">Anfrage abgelehnt</div>'
-    +'<div class="plus-s">Diesmal geht es leider nicht.</div></div></div></div>';
+    +'<div class="plus-s">Diesmal geht es nicht.</div></div></div></div>';
 }
 
 function setPlus(n,el){
