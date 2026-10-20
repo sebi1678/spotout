@@ -18988,7 +18988,7 @@ function dressZeile(v){
    gleich sein, sonst stuende hier ein anderer Preis als der verlangte.
    Darum der Schalter: auf true, sobald die Datenbank umgestellt ist
    (SQL: spotout-app/auftraege/sql-kaufstufen.sql). */
-const FEE_STUFEN_NEU=false;
+const FEE_STUFEN_NEU=true;   // Datenbank umgestellt am 20.10.2026 (Migration kaufstufen_50_150)
 const FEE_TIERS=FEE_STUFEN_NEU
   ? [{max:50,chf:5},{max:150,chf:15},{max:Infinity,chf:30}]
   : [{max:30,chf:5},{max:100,chf:15},{max:Infinity,chf:30}];
