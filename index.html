@@ -1712,7 +1712,7 @@
     }
     .conv-input{
       flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
-      border-radius:22px;padding:10px 16px;color:#fff;font-family:var(--font);font-size:.9rem;outline:none;
+      border-radius:22px;padding:10px 16px;color:#fff;font-family:var(--font);font-size:16px;outline:none;
     }
 
     /* Auf breiten Bildschirmen bekommt die Unterhaltung eine eigene
@@ -7352,6 +7352,9 @@
     .pw-zwei{position:relative}
     .pw-zwei>[data-tm="nach"]{opacity:0}
     @media (max-height:700px){.pw-v small{display:none}.pw-t{font-size:1.7rem}}
+    /* Chat: lange Links brechen um, Links sind erkennbar */
+    .bub{overflow-wrap:anywhere}
+    .bub-link{color:inherit;text-decoration:underline;text-underline-offset:2px}
     /* ══════════ ABSTAENDE: EINE REGEL ══════════
        4-px-Raster (design-system-Skill). Zwei eigenstaendige Kaestchen –
        Chips, Knoepfe, Karten – haben nie weniger als 8 px Luft; Karten
@@ -17276,6 +17279,7 @@ function ntGespraechGelesen(cid){
 }
 
 async function openConv(cid,other){
+  window.__offenesGespraech=cid;   // fuer die App: Push aus diesem Gespraech nicht als Banner
   // Angefangener Text gehoert zu diesem Gespraech, nicht zum naechsten
   const eingabe=document.getElementById('convInput');
   if(eingabe&&convId!==cid)eingabe.value='';
@@ -17474,7 +17478,8 @@ async function loadMsgs(){
     const roh=evId
       ? String(m.content||'').replace(PARTY_LINK,'').replace(/\n?\s*Schau dir (die Party|das Event) auf SPOTOUT an:\s*/,'\n').trim()
       : (m.content||'');
-    const text=roh?esc(roh).replace(/\n/g,'<br>'):'';
+    /* Links antippbar machen (die App oeffnet fremde Adressen im Browser) */
+    const text=roh?esc(roh).replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]])/g,'<a class="bub-link" href="$1" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\n/g,'<br>'):'';
     const karte=evId?'<div class="bub-party" data-ev="'+escAttr(evId)+'">'
       +'<div class="bp-laden"><div class="spinner"></div></div></div>':'';
     if(convGruppe&&!mine&&!grouped){
@@ -17755,8 +17760,8 @@ async function sendMsg(){
   /* Noch innerhalb der Berührung: iOS oeffnet die Tastatur nur, wenn
      focus() waehrend der Geste kommt – nach dem Warten auf den Server
      ist es zu spaet. */
-  if(feld)feld.focus();
-  if(!convId){toast('Kein Chat geöffnet','warn');return;}
+  if(feld&&warFokus)feld.focus();
+  if(!convId){toast('Öffne zuerst ein Gespräch.','warn');return;}
   // Aendern statt senden, wenn gerade eine Nachricht in Arbeit ist
   if(bearbeiteId){
     const id=bearbeiteId;
@@ -23611,6 +23616,12 @@ function posteingangAuffrischen(ids){
   if(!cUser||!neu||neu===posteingangIds)return;
   posteingangStoppen(); posteingangStarten();
 }
+/* Zurueck in der App: Glocke und Chat-Zahl sofort aktualisieren, nicht
+   erst beim naechsten Abfragetakt */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden||!cUser)return;
+  try{ loadNotifs(); loadUnread(); }catch(e){ console.warn('[chat] Zurueck',e); }
+});
 function posteingangStoppen(){
   const k=posteingang; posteingang=null; posteingangIds=''; clearTimeout(posteingangUhr);
   if(k)sb.removeChannel(k).catch(()=>{});
@@ -26245,6 +26256,32 @@ async function loadUnread(){
    legt sie darueber. Alles, was mit 100 % Hoehe rechnet, verschwindet
    dann zur Haelfte darunter. visualViewport meldet, was tatsaechlich
    sichtbar ist. */
+/* Neue App-Version: die App sagt VOR der Animation, wie hoch die Tastatur
+   wird und wie lange sie faehrt. Die Spalte wird sofort kurz, das
+   Schreibfeld faehrt mit derselben Kurve hoch – es klebt an der
+   Tastatur, nichts springt nach. Beim Schliessen sinkt es mit ihr. */
+const tastaturNativ=()=>!!(window.SPOTOUT_NATIVE&&window.SPOTOUT_NATIVE.tastatur);
+let tastaturHoeheAlt=0;
+window.__huelleTastatur=function(h,dauer){
+  const KURVE='cubic-bezier(.38,.7,.125,1)';
+  const conv=document.getElementById('page-conv')?.classList.contains('active');
+  const bar=conv?document.querySelector('#page-conv .conv-input-wrap'):null;
+  const m=document.getElementById('convMsgs');
+  const amEnde=!!m&&(m.scrollHeight-m.scrollTop-m.clientHeight<140);
+  const fahre=(von)=>{ if(!bar)return; bar.style.transition='none'; bar.style.transform='translateY('+von+'px)';
+    void bar.offsetHeight; bar.style.transition='transform '+(dauer||250)+'ms '+KURVE; bar.style.transform=''; };
+  if(h>0){
+    document.documentElement.style.setProperty('--tastatur',Math.round(window.innerHeight-h)+'px');
+    document.body.classList.add('tastatur-offen');
+    fahre(h);
+  }else{
+    document.documentElement.style.removeProperty('--tastatur');
+    document.body.classList.remove('tastatur-offen');
+    fahre(-tastaturHoeheAlt);
+  }
+  tastaturHoeheAlt=h>0?h:0;
+  if(amEnde&&m)requestAnimationFrame(()=>{ m.scrollTop=m.scrollHeight; });
+};
 function tastaturBeobachten(){
   const vv=window.visualViewport;
   if(!vv)return;
@@ -26253,6 +26290,8 @@ function tastaturBeobachten(){
     // Was nach dem Aufgehen der Tastatur wirklich sichtbar bleibt. Nur
     // bei einer Aenderung setzen – die Variable erbt sich auf die ganze
     // Seite, jedes Setzen rechnet alle Stile neu.
+    // Die neue App meldet die Tastatur selbst (__huelleTastatur)
+    if(tastaturNativ())return;
     const h=Math.round(vv.height);
     if(h!==letzteH){ letzteH=h; document.documentElement.style.setProperty('--tastatur',h+'px'); }
     // Den Versatz, den iOS dabei erzeugt, sofort wieder zuruecknehmen –
@@ -26262,9 +26301,11 @@ function tastaturBeobachten(){
       document.documentElement.scrollTop=0;
       document.body.scrollTop=0;
     }
+    /* Nur ans Ende, wenn man schon unten war – wer weiter oben liest,
+       wird nicht mehr nach unten gerissen */
     if(document.getElementById('page-conv')?.classList.contains('active')){
       const m=document.getElementById('convMsgs');
-      if(m)m.scrollTop=m.scrollHeight;
+      if(m&&m.scrollHeight-m.scrollTop-m.clientHeight<140)m.scrollTop=m.scrollHeight;
     }
     merken();
   };
@@ -26296,14 +26337,26 @@ function tastaturBeobachten(){
   const feld=document.getElementById('convInput');
   if(feld){
     feld.addEventListener('focus',()=>{
+      if(tastaturNativ())return;
       setzen();
       setTimeout(setzen,120);
       setTimeout(setzen,350);
     });
     feld.addEventListener('blur',()=>{
+      if(tastaturNativ())return;
       document.documentElement.style.removeProperty('--tastatur');
       setTimeout(()=>{window.scrollTo(0,0);setzen();},80);
     });
+    /* Wie bei WhatsApp: im Verlauf nach unten wischen schliesst die Tastatur */
+    const verlauf=document.getElementById('convMsgs');
+    if(verlauf){
+      let y0=null;
+      verlauf.addEventListener('touchstart',e=>{ y0=e.touches[0]?.clientY??null; },{passive:true});
+      verlauf.addEventListener('touchmove',e=>{
+        if(y0==null||document.activeElement!==feld)return;
+        if((e.touches[0]?.clientY??y0)-y0>14){ feld.blur(); y0=null; }
+      },{passive:true});
+    }
   }
   /* ── Anmeldung ──
      Vier Felder untereinander, und die Tastatur deckt die unteren zu.
