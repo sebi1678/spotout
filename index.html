@@ -7391,14 +7391,15 @@
     /* Formular: ruhigere Kopfzeile – der Entwurf sichert sich beim
        Schliessen selbst, und das Thema sagt schon die Frage */
     #entwurfKnopf,#cStepName{display:none!important}
-    /* Party online: kurzer Hoehepunkt nach dem Veroeffentlichen */
-    .po{position:fixed;inset:0;z-index:9600;display:flex;align-items:center;justify-content:center;
       background:rgba(9,13,36,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
     .po-inhalt{width:min(88vw,340px);text-align:center}
     .po-t{font-size:1.7rem;font-weight:900;letter-spacing:-.025em;color:#fff}
     .po-s{font-size:.92rem;color:var(--muted);margin:6px 0 18px}
     .po-karte{text-align:left;pointer-events:none}
     .po-karte .card{margin:0 auto}
+    /* Veroeffentlicht: der Knopf zeigt den Erfolg */
+    .knopf-fertig{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+    .knopf-haken{width:20px;height:20px;flex:none}
     /* ══════════ KNOEPFE: EIN SATZ REGELN FUER DIE GANZE APP ══════════
        Vorher rund 60 Stile: 41–54 px hoch, Radius 8 bis 18, Schrift 600
        bis 900, fuenf Rottoene, drei Link-Pinks, Hauptknoepfe in Gold und
@@ -10403,11 +10404,17 @@ const TOUREN={
     { t:'Ein Tipp, und du bist dabei',
       s:'Die Party landet in deinem Kalender, mit Route und Erinnerung.',
       b:()=>'<div class="tb"></div>' },
+    { t:'Dein Kalender',
+      s:'Countdown bis zur nächsten Party. Route in Apple oder Google Maps, und ein Tipp trägt sie in deinen iPhone-Kalender ein.',
+      b:()=>'<div class="tb"></div>' },
     { t:'Deine eigene Party',
       s:'Tipp unten aufs Plus. Name, Zeit und Ort reichen für den Anfang.',
       b:()=>'<div class="tb"></div>' },
+    { t:'Private Partys',
+      s:'Nur wer eingeladen ist, sieht sie. Auf der Mitbringliste tragen Gäste ein, was sie mitbringen.',
+      b:()=>'<div class="tb"></div>' },
     { t:'Deine Chats',
-      s:'Schreibt dir jemand, antwortest du direkt hier. Auch mit Fotos.',
+      s:'Schreibt dir jemand, antwortest du direkt hier.',
       b:()=>'<div class="tb"></div>' },
     { t:'Folge deinen Leuten',
       s:'Auf ihrem Profil siehst du, welche Partys bei ihnen anstehen.',
@@ -10534,6 +10541,35 @@ async function tourSchnappschuesse(){
     try{ closeDetail(); }catch(e){}
     evts=altE;
     if(ov)setTimeout(()=>{ ov.style.visibility=''; },400);
+  }
+  /* Kalender mit Beispiel-Partys (Route, iPhone-Kalender, Countdown) */
+  {
+    const altE2=evts; let z=null;
+    try{
+      const kp=[{...tourParty(),type:col},{...tourParty2(),type:col},{...tourDemo3(),type:col}];
+      z=tourDbAttrappe({event_attendees:kp.map(e=>({event_id:e.id,user_id:cUser?.id,events:e})),events:[]});
+      await renderCalendar();
+      TOUR_SNAP.kalender=tourSeitenKlon(['#page-calendar .top-nav','#calendarList']);
+    }catch(e){ console.warn('[tour] Kalender',e); }
+    finally{ if(z)z(); evts=altE2; const l=document.getElementById('calendarList'); if(l)delete l.dataset.geladen; try{ renderCalendar(); }catch(_){} }
+  }
+  /* Mitbringliste einer privaten Party, vor und nach dem Antippen */
+  const bso=document.getElementById('bringSheetOverlay');
+  if(bso&&!bso.classList.contains('open')){
+    let z=null;
+    const posten=(meins)=>[
+      {id:'tb1',title:'Chips',menge:null,claimed_by:'tl1',profiles:{id:'tl1',username:'lena.meier',full_name:'Lena Meier'}},
+      {id:'tb2',title:'Getränke',menge:null,claimed_by:meins?(cUser?.id||'ich'):null,profiles:meins?{id:cUser?.id,username:'mia.keller',full_name:'Mia Keller'}:null},
+      {id:'tb3',title:'Musikbox',menge:null,claimed_by:'tl2',profiles:{id:'tl2',username:'jan.brunner',full_name:'Jan Brunner'}},
+      {id:'tb4',title:'Eis',menge:null,claimed_by:null,profiles:null}];
+    const klonB=()=>{ const k=bso.cloneNode(true); [k,...k.querySelectorAll('*')].forEach(x=>{ const i=x.id; if(i){ x.removeAttribute('id'); x.dataset.tid=i; } x.removeAttribute('onclick'); });
+      k.style.visibility=''; k.classList.remove('open'); k.classList.add('tour-auf'); return k.outerHTML; };
+    try{
+      bso.style.visibility='hidden';
+      z=tourDbAttrappe({event_items:posten(false)}); await openBringSheet('tour-demo'); TOUR_SNAP.mitbringen=klonB();
+      z(); z=tourDbAttrappe({event_items:posten(true)}); await renderBringSheet('tour-demo'); TOUR_SNAP.mitbringenNach=klonB();
+    }catch(e){ console.warn('[tour] Mitbringliste',e); }
+    finally{ if(z)z(); try{ closeBringSheet(); }catch(_){} setTimeout(()=>{ bso.style.visibility=''; },400); }
   }
   /* Besucherliste (Pro) mit Beispiel-Leuten */
   const bo=document.getElementById('besucherOverlay'), punkt=document.getElementById('besuchPunkt');
@@ -10701,6 +10737,22 @@ function tourMotion(karte){
       tl.call(()=>k&&k.classList.remove('following'));
       tippe('.follow-btn');
       tl.call(()=>k&&k.classList.add('following'),null,'<');
+      tl.to({}, {duration:2});
+    }
+    if(art==='kalender'){
+      tippe('.cal-next .cal-act');
+      tl.to({}, {duration:.6});
+      tippe('.cal-next .cal-act:nth-child(2)');
+      tl.to({}, {duration:1.2});
+    }
+    if(art==='mitbringen'){
+      const vor=$('[data-tm="vor"]'), nach=$('[data-tm="nach"]');
+      gsap.set(nach,{autoAlpha:0});
+      tl.set(nach,{autoAlpha:0}).set(vor,{autoAlpha:1});
+      const ziel='[data-tm="vor"] .bring-box:not(.on):not(.mine)';   // erster freier Eintrag (Getraenke)
+      tippe(ziel);
+      tl.set(vor,{autoAlpha:0},'<').set(nach,{autoAlpha:1},'<');
+      tl.fromTo(nach.querySelector('.bring-row.mine-row .bring-box')||nach,{scale:.8},{scale:1,duration:.4,ease:'back.out(2.4)'},'<');
       tl.to({}, {duration:2});
     }
     if(art==='gaeste'){
@@ -10934,12 +10986,15 @@ const TOUR_ECHT={
     return tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
       +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.detail+'</div><div data-tm="nach">'+TOUR_SNAP.dabei+'</div></div></div>',
       false,false,1,'dabei'); },
-  2:()=>{ if(!TOUR_SNAP.start||!TOUR_SNAP.erstellen)return '';
+  2:()=>TOUR_SNAP.kalender?tourHandy(TOUR_SNAP.kalender,false,'calendar',0,'kalender'):'',
+  3:()=>{ if(!TOUR_SNAP.start||!TOUR_SNAP.erstellen)return '';
     return tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
       +'<div class="tour-detail" data-tm="blatt">'+TOUR_SNAP.erstellen+'</div></div>',false,'main',1,'plus'); },
-  3:()=>tourBeispielChats(true),
-  4:()=>tourFremdesProfil(),
-  5:()=>TOUR_SNAP.start?tourHandy('<div class="iphone-raus">'+TOUR_SNAP.start+'</div>',false,true,0,'raus'):'',
+  4:()=>(TOUR_SNAP.mitbringen&&TOUR_SNAP.mitbringenNach&&TOUR_SNAP.start)?tourHandy('<div class="tour-voll">'+TOUR_SNAP.start
+      +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.mitbringen+'</div><div data-tm="nach">'+TOUR_SNAP.mitbringenNach+'</div></div></div>',false,false,1,'mitbringen'):'',
+  5:()=>tourBeispielChats(true),
+  6:()=>tourFremdesProfil(),
+  7:()=>TOUR_SNAP.start?tourHandy('<div class="iphone-raus">'+TOUR_SNAP.start+'</div>',false,true,0,'raus'):'',
 };
 
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
@@ -19363,6 +19418,10 @@ async function submitEventInner(){
   document.getElementById('drinkFields').classList.remove('open');
   document.getElementById('deadlineTog').classList.remove('on');
   document.getElementById('deadlineFields').classList.remove('open');
+  /* Der Moment des Erfolgs gehoert an den Knopf, den man gedrueckt hat:
+     Ladekreis, Haken zeichnet sich, "Party ist online" – dann gleitet das
+     Formular weg und das Einladen kommt. Kein eigenes Vollbild. */
+  if(data.status!=='pending_payment')await amKnopfOnline();
   closeCreate();await loadEvts();
 
   // Gebührenpflichtig? Dann ist die Party erst nach der Zahlung sichtbar.
@@ -19379,44 +19438,29 @@ async function submitEventInner(){
     const rein=await gruppeNachErstellen(data.id);
     if(rein){ openDetail(data.id); return; }
   }
-  // Erst der Moment, dann der letzte, freiwillige Schritt: Leute einladen
-  partyOnlineFeiern(data.id,()=>openShare(data.id,{afterCreate:true}));
+  // Letzter, freiwilliger Schritt: Leute einladen
+  setTimeout(()=>openShare(data.id,{afterCreate:true}),260);
 }
 
-/* Peak-End: Die eigene Party ist online – der Moment, an den man sich
-   erinnert. Die echte Karte springt herein, Funken wie beim Zusagen,
-   dann geht es von selbst (oder per Tipp) zum Einladen. Kurz, nichts
-   blockiert. Weniger Bewegung: direkt weiter. */
-async function partyOnlineFeiern(id,weiter){
-  const e=(evts||[]).find(x=>x.id===id);
-  if(!window.gsap){ try{ await Promise.race([gsapLaden(),new Promise(r=>setTimeout(r,500))]); }catch(_){} }
-  if(!e||!window.gsap||matchMedia('(prefers-reduced-motion: reduce)').matches){ setTimeout(weiter,300); return; }
+async function amKnopfOnline(){
+  const btn=document.getElementById('submitBtn'); if(!btn)return;
   try{ nativeHaptik('erfolg'); }catch(_){}
-  const el=document.createElement('div');
-  el.className='po'; el.setAttribute('role','status');
-  el.innerHTML='<div class="po-inhalt"><div class="po-t">Deine Party ist online</div>'
-    +'<div class="po-s">Jetzt Leute einladen.</div><div class="po-karte">'+cardHTML(e)+'</div></div>';
-  document.body.appendChild(el);
+  const label={private:'Party ist erstellt',events:'Event ist online'}[currentType]||'Party ist online';
+  btn.classList.add('knopf-fertig');
+  const zur=document.querySelector('#createFoot .create-back-btn');
+  if(zur){ zur.style.transition='opacity 180ms ease'; zur.style.opacity='0'; zur.style.pointerEvents='none'; }
+  btn.innerHTML='<svg class="knopf-haken" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>'+label+'</span>';
   if(typeof applyLang==='function'&&LANG!=='de')applyLang();
-  let fertig=false;
-  const ende=()=>{ if(fertig)return; fertig=true; window.gsap.to(el,{autoAlpha:0,duration:.25,ease:'power2.out',onComplete:()=>{ el.remove(); weiter(); }}); };
-  el.addEventListener('click',ende);
-  const g=window.gsap, karte=el.querySelector('.po-karte');
-  g.fromTo(el,{autoAlpha:0},{autoAlpha:1,duration:.22});
-  g.fromTo(el.querySelectorAll('.po-t,.po-s'),{y:10,autoAlpha:0},{y:0,autoAlpha:1,duration:.4,ease:'power3.out',stagger:.06,delay:.08});
-  g.fromTo(karte,{scale:.9,y:24,autoAlpha:0},{scale:1,y:0,autoAlpha:1,duration:.55,ease:'back.out(1.6)',delay:.12,onComplete:()=>{
-    const r=karte.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height*.35;
-    const farben=['#FF2D76','#FF5A45','#633BFF','#54A7FF','#4ade80'];
-    for(let i=0;i<16;i++){
-      const d=document.createElement('i'); d.className='feier-punkt'; d.style.left=cx+'px'; d.style.top=cy+'px'; d.style.background=farben[i%5];
-      document.body.appendChild(d);
-      const w=i/16*Math.PI*2;
-      g.fromTo(d,{x:0,y:0,scale:.6,autoAlpha:1},{x:Math.cos(w)*(r.width*.55+g.utils.random(0,30)),y:Math.sin(w)*(r.height*.45+g.utils.random(10,40)),scale:1,duration:.6,ease:'power3.out',
-        onComplete:()=>g.to(d,{autoAlpha:0,duration:.25,onComplete:()=>d.remove()})});
-    }
-  }});
-  setTimeout(ende,1900);
+  const ruhig=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!ruhig&&window.gsap){
+    const haken=btn.querySelector('.knopf-haken path'), l=haken.getTotalLength?haken.getTotalLength():24;
+    window.gsap.fromTo(haken,{strokeDasharray:l,strokeDashoffset:l},{strokeDashoffset:0,duration:.34,ease:'power2.out'});
+    window.gsap.fromTo(btn,{scale:.97},{scale:1,duration:.45,ease:'back.out(2)'});
+    window.gsap.fromTo(btn.querySelector('span'),{autoAlpha:0,x:-6},{autoAlpha:1,x:0,duration:.3,ease:'power3.out',delay:.12});
+  }
+  await new Promise(r=>setTimeout(r,ruhig?450:850));
 }
+
 
 /* ══════════ GEBÜHR BEZAHLEN ══════════
    Der Betrag wird ausschliesslich serverseitig bestimmt. Die Funktion
@@ -21452,8 +21496,8 @@ async function renderBringSheet(eventId){
   }).join('');
 
   body.innerHTML='<div class="bring-hint" style="margin-top:0">'
-      +'Der Gastgeber hat eine Mitbringliste angelegt. Tipp an, was du übernimmst – '
-      +'jeder Eintrag geht nur einmal.</div>'
+      +'Der Host hat eine Mitbringliste angelegt. Tipp an, was du übernimmst. '
+      +'Jeder Eintrag geht nur einmal.</div>'
     +rows
     +'<button class="sub-btn sub-private" style="margin-top:16px" onclick="closeBringSheet()">'
       +(meine.length?'Passt so':'Später entscheiden')+'</button>';
