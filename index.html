@@ -7518,7 +7518,7 @@
   </div>
   <div class="sp-notfall" id="spNotfall">
     <div class="sp-notfall-t">Das dauert länger als sonst</div>
-    <div class="sp-notfall-s">Prüf kurz deine Verbindung – dann nochmals versuchen.</div>
+    <div class="sp-notfall-s">Prüf kurz deine Verbindung und versuch es dann nochmals.</div>
     <button class="sp-notfall-btn" onclick="location.reload()">Nochmals versuchen</button>
   </div>
   </div>
@@ -7754,7 +7754,7 @@
            legt kein Konto an. -->
       <div class="auth-oder"><span></span>oder<span></span></div>
       <button class="auth-gast" onclick="gastStarten()">
-        Zuerst umschauen, ohne Konto
+        Zuerst ohne Konto umschauen
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg>
       </button>
     </div>
@@ -8400,7 +8400,7 @@
     <!-- 6 · EINTRITT  (privat: MITBRINGEN) -->
     <div class="create-panel" id="cpanel-6" style="display:none">
       <div class="cq" id="c6q">Kostet der Eintritt etwas?</div>
-      <div class="cq-sub" id="c6sub">Kannst du auch auf gratis lassen.</div>
+      <div class="cq-sub" id="c6sub">Gratis geht natürlich auch.</div>
 
       <div id="c6-eintritt">
         <div class="chipset" id="pricePresets">
@@ -8871,7 +8871,7 @@
       <div class="konto-weg-hinweis" id="kontoWegHinweis" hidden>
         Alles wird gelöscht: dein Profil, deine Partys, deine Anmeldungen, deine Fotos
         und deine Nachrichten. Rückgängig geht das nicht. Ein Pro-Abo über Apple
-        kündigst du vorher in den iPhone-Einstellungen unter „Abonnements“.
+        kündigst du vorher in den iPhone-Einstellungen unter «Abonnements».
         <button class="pro2-verwalten" id="kontoWegAbos" onclick="abosBeiApple()" hidden>Abos bei Apple öffnen</button>
       </div>
       </div>
@@ -9207,7 +9207,7 @@
     </div>
     <div class="modal-body">
       <div class="konto-s" id="kontoGrund">Umschauen geht ohne. Mitmachen nicht.</div>
-      <div class="konto-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Bei Partys anmelden und sehen, wer noch kommt</span></div>
+      <div class="konto-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Bei Partys dabei sein und sehen, wer noch kommt</span></div>
       <div class="konto-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Eigene Partys erstellen und Freunde einladen</span></div>
       <div class="konto-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 5 5 9-10"/></svg><span>Nachrichten schreiben und beantworten</span></div>
       <button class="konto-ja" onclick="zurAnmeldung('register')">Konto erstellen – dauert eine Minute</button>
@@ -9332,7 +9332,7 @@
       </div>
 
       <div class="tr-frage">Wo? <span class="tr-opt">freiwillig</span></div>
-      <input class="tr-feld" type="text" id="trOrt" maxlength="120" placeholder="Adresse oder einfach „bei Lena“" autocomplete="off" enterkeyhint="done" oninput="treffenVorschau()"/>
+      <input class="tr-feld" type="text" id="trOrt" maxlength="120" placeholder="Adresse oder einfach «bei Lena»" autocomplete="off" enterkeyhint="done" oninput="treffenVorschau()"/>
       <div class="tr-chips" id="trOrtChips"></div>
 
       <button class="tr-mehr" id="trNotizAuf" onclick="treffenNotizAuf()">+ Notiz für die Gruppe</button>
@@ -9403,7 +9403,7 @@
       </button>
     </div>
     <div class="modal-body">
-      <div class="crop-hilfe">Schieb das Bild mit dem Finger, zieh mit zwei Fingern zum Zoomen.</div>
+      <div class="crop-hilfe">Schieb das Bild mit einem Finger, zoom mit zwei Fingern.</div>
       <div class="crop-buehne" id="cropBuehne">
         <canvas id="cropFlaeche"></canvas>
         <div class="crop-maske"></div>
@@ -11390,7 +11390,7 @@ function proWerbungZeigen(weiter){
     +'</div>'
     +'<div class="pw-text">'
       +'<h2 class="pw-t">Sieh, wer hingeht.</h2>'
-      +'<p class="pw-s">Nicht nur eine Zahl. Die Namen deiner Leute, auf jeder Party.</p>'
+      +'<p class="pw-s">Auf jeder Party siehst du die Namen deiner Leute.</p>'
       +v('gaeste','Namen auf jeder Party','Du weisst vorher, wer da ist.')
       +v('chat','Schreib zuerst','Ohne Pro kannst du nur antworten.')
       +v('muenzen','Günstiger veröffentlichen','Öffentliche Partys ab CHF 3 statt 5.')
@@ -11793,7 +11793,7 @@ async function profilTeilen(){
   const text=(cProfile.full_name||cProfile.username)+' auf SPOTOUT';
   if(istApp()){
     const a=await nativeCall('teilen',{text:text,url:adresse},20000);
-    if(a&&a.fehler&&a.fehler!=='abgebrochen')toast('Teilen nicht möglich.','warn');
+    if(a&&a.fehler&&a.fehler!=='abgebrochen')toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
     return;
   }
   if(navigator.share){
@@ -12268,7 +12268,7 @@ async function pwNochmal(){
     knopfSperren(btn,f.sperre||60,'Nochmals schicken');
     return;
   }
-  toast('E-Mail gesendet. Sieh auch im Spam-Ordner nach.','success');
+  toast('Ist unterwegs – schau auch im Spam-Ordner nach.','success');
   knopfSperren(btn,60,'Nochmals schicken');
 }
 
@@ -12379,7 +12379,7 @@ async function mailNochmal(email){
     knopfSperren(btn,f.sperre||60,'E-Mail nochmals schicken');
     return;
   }
-  toast('E-Mail gesendet. Sieh auch im Spam-Ordner nach.','success');
+  toast('Ist unterwegs – schau auch im Spam-Ordner nach.','success');
   knopfSperren(btn,60,'E-Mail nochmals schicken');
 }
 
@@ -12403,7 +12403,7 @@ function setKontoart(art){
          'Ein bestätigtes Häkchen, sobald die E-Mail zu deiner Website gehört',
          'Mehrere Personen im Vorstand können dasselbe Konto nutzen']
       : ['Sieh, was heute in deiner Nähe läuft',
-         'Melde dich mit einem Tipp an – Freunde sehen, dass du kommst',
+         'Ein Tipp, und du bist dabei – Freunde sehen, dass du kommst',
          'Eigene Partys erstellen, öffentlich oder nur für Eingeladene'];
     nutzen.innerHTML=punkte.map(t=>
       '<div class="art-p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -12492,7 +12492,7 @@ function regPruefen(){
     const bd=bdNachIso(roh);
     if(!bd)return 'Bitte im Format TT.MM.JJJJ – zum Beispiel 24.07.2007.';
     const alter=calcAge(bd);
-    if(alter===null||isNaN(alter))return 'Geburtsdatum ungültig..';
+    if(alter===null||isNaN(alter))return 'Dieses Datum gibt es nicht. Prüf dein Geburtsdatum.';
     if(alter<16) return 'SPOTOUT ist ab 16 Jahren nutzbar.';
     if(alter>120)return 'Bitte prüfe dein Geburtsdatum.';
     return '';
@@ -12670,7 +12670,7 @@ async function doRegister(){
   // liesse sich das Alter später nirgends belegen.
   if(!bd){toast('Bitte gib dein Geburtsdatum ein','warn');return;}
   const alter=calcAge(bd);
-  if(alter===null||isNaN(alter)){toast('Geburtsdatum ungültig.','warn');return;}
+  if(alter===null||isNaN(alter)){toast('Dieses Datum gibt es nicht. Prüf dein Geburtsdatum.','warn');return;}
   if(alter<16){toast('SPOTOUT ist ab 16 Jahren','warn');return;}
   if(alter>120){toast('Bitte prüfe dein Geburtsdatum','warn');return;}
   if(!em){toast('Bitte gib deine E-Mail-Adresse ein','warn');return;}
@@ -12709,8 +12709,8 @@ async function registriereVerein(em,pw){
 
   if(!name){toast('Wie heisst der Verein?','warn');return;}
   if(!web||!domainAusUrl(web).includes('.')){
-    toast('Bitte die Website des Vereins eintragen','warn');return;}
-  if(!ort){toast('Bitte den Ort eintragen','warn');return;}
+    toast('Bitte gib die Website des Vereins ein.','warn');return;}
+  if(!ort){toast('Bitte gib den Ort des Vereins ein.','warn');return;}
   if(!em){toast('Bitte gib deine E-Mail-Adresse ein','warn');return;}
   if(!pw||pw.length<6){toast('Das Passwort braucht mindestens 6 Zeichen','warn');return;}
 
@@ -13041,7 +13041,7 @@ function ziehAktualisieren(){
       if(typeof filterAll==='function')filterAll();
     }catch(err){
       console.warn('[ziehen]',err);
-      toast('Aktualisieren nicht möglich.','warn');
+      toast('Aktualisieren hat nicht geklappt. Versuch es nochmals.','warn');
     }
     /* Unter einer halben Sekunde sieht man nur ein Zucken und fragt
        sich, ob ueberhaupt etwas passiert ist. */
@@ -13887,7 +13887,7 @@ function fyLeerWeiter(col){
       +COL_SHORT[beste]+' ansehen</button>';
   }
   return '<p>Sei die erste Person in deiner Gegend.</p>'
-    +'<button class="fy-empty-btn" onclick="plusMenue()">Party starten</button>';
+    +'<button class="fy-empty-btn" onclick="plusMenue()">Party erstellen</button>';
 }
 
 function evStart(e){
@@ -14060,7 +14060,7 @@ async function renderVereinHome(){
        so ein Satz ein Versprechen, das niemand halten kann. */
     status+='<div class="vh-status warten">'+V_SVG.uhr
       +'<span><b>Wir schauen uns deinen Verein an.</b> Das macht ein Mensch, '
-      +'darum kann es bis zu einem Tag dauern – du bekommst eine Nachricht, '
+      +'darum kann es ein paar Tage dauern – du bekommst eine Nachricht, '
       +'sobald er bestätigt ist.</span></div>';
   }else if(cProfile.verein_status==='abgelehnt'){
     status+='<div class="vh-status fehlt">'+V_SVG.warn
@@ -14097,7 +14097,7 @@ async function renderVereinHome(){
       :'<div class="vh-leer">Noch nichts geplant. Dein nächster Anlass erscheint hier – '
        +'und gleichzeitig bei allen, die in deiner Gegend suchen.</div>')
     +(vorbei.length
-      ? '<div class="vh-sec">Gelaufen</div><div class="grid">'+liste(vorbei)+'</div>'
+      ? '<div class="vh-sec">Vorbei</div><div class="grid">'+liste(vorbei)+'</div>'
       : '');
 }
 
@@ -14942,7 +14942,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
       +'Deine Party<span class="attend-sub">Du bist als Gastgeber dabei</span></div>';
   }
   // Ein Vereinskonto steht auf keiner Gästeliste – es veranstaltet.
-  if(istVerein())return attNote('Vereinskonten melden sich nicht an');
+  if(istVerein())return attNote('Vereinskonten können nicht an Partys teilnehmen');
 
   if(deadline&&deadlinePassed&&!isAtt){
     return attNote('Anmeldefrist war am '+fmtD(deadline.getFullYear()+'-'+String(deadline.getMonth()+1).padStart(2,'0')+'-'+String(deadline.getDate()).padStart(2,'0'))+' um '+fmtT(deadline),'warn');
@@ -14953,7 +14953,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
     if(cProfile?.is_pro){
       return '<button class="attend-btn attend-btn-wait" onclick="joinWaitlist(\''+e.id+'\')">Auf die Warteliste</button>';
     }
-    return attNote('Party ist voll – nur Pro kann auf die Warteliste','warn');
+    return attNote('Die Party ist voll. Auf die Warteliste kommst du mit Pro.','warn');
   }
 
   // Wer die Party macht, ist dabei – ohne Knopf und ohne Austragen.
@@ -14999,7 +14999,7 @@ async function openDetail(id){
     if(seq!==detailSeq)return;
     if(ladeFehler||!data){
       // Offline, privat oder geloescht – nicht alles ist "gibt es nicht mehr"
-      toast(ladeFehler?'Party nicht geladen. Prüfe deine Verbindung.'
+      toast(ladeFehler?'Party nicht geladen. Prüf deine Verbindung und versuch es nochmals.'
                       :'Diese Party ist nicht mehr verfügbar','info');
       if(document.getElementById('detailOverlay')?.classList.contains('open'))closeDetail();
       return;
@@ -15058,7 +15058,7 @@ async function openDetail(id){
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2v.01"/></svg>'
       +'<div><div class="pend-t">Noch nicht sichtbar</div>'
       +'<div class="pend-s">'+(isHost
-          ? 'Fürs Veröffentlichen wird einmalig '+chf(e.fee_amount||0)+' fällig. Danach erscheint die Party sofort im Feed und auf der Karte.'
+          ? 'Fürs Veröffentlichen wird einmalig '+chf(e.fee_amount||0)+' fällig. Danach erscheint die Party sofort in der Liste und auf der Karte.'
           : 'Diese Party ist noch nicht freigeschaltet.')+'</div></div>'
       +(isHost?'<button class="pend-btn" id="feePayBtn" onclick="startFeeCheckout(\''+e.id+'\','+Number(e.fee_amount||0)+')">Jetzt bezahlen</button>':'')
       +'</div>'
@@ -15216,7 +15216,7 @@ async function openDetail(id){
       +'<div class="att-lock-txt">'+(nachspiel
           ?'Mit Pro siehst du bis 24 Stunden nach Partybeginn, wer dabei war.'
           :'Mit Pro siehst du, wer kommt.')+'</div>'
-      +'<button class="mpro-btn" onclick="showPage(\'pro\')">Pro werden</button>'
+      +'<button class="mpro-btn" onclick="showPage(\'pro\')">Pro holen</button>'
       +'</div></div>';
   }
   /* Das Fotoalbum ist ausgebaut. Es gibt in SPOTOUT nur noch zwei
@@ -15690,7 +15690,7 @@ async function runUserSearch(q){
        nicht gibt. Frueher stand dieser Weg im Plus-Menue unten – dort
        sucht ihn niemand, und zwischen "Neue Party" und "Gruppe
        gruenden" gehoert er auch nicht hin. */
-    box.innerHTML=searchHint('Niemand gefunden, der zu „'+esc(q)+'“ passt.')
+    box.innerHTML=searchHint('Niemand gefunden, der zu «'+esc(q)+'» passt.')
       +'<button class="such-einladen" onclick="spotoutEinladen()">'
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
       +'stroke-linecap="round" stroke-linejoin="round">'
@@ -15956,7 +15956,7 @@ function wahlRaus(){
     aktuell:(()=>{ try{ return schnellRausWahl()||''; }catch(e){ return ''; } })(),
     optionen:[
       {wert:'',         titel:'Aus',             text:'Kein Knopf in der Leiste'},
-      {wert:'tiktok',   titel:'TikTok',          text:'Öffnet direkt „Für dich“'},
+      {wert:'tiktok',   titel:'TikTok',          text:'Öffnet direkt «Für dich»'},
       {wert:'instagram',titel:'Instagram Reels', text:'Öffnet direkt die Reels'},
       {wert:'youtube',  titel:'YouTube Shorts',  text:'Öffnet direkt die Shorts'},
       {wert:'wetter',   titel:'Wetter-App',      text:'Ganz unschuldig das Wetter checken'},
@@ -16255,7 +16255,7 @@ async function kalenderOeffnen(ics,dateiname,e){
     const a=await nativeCall('kalender',{ics:ics,name:dateiname,termin:termin},600000);
     if(a&&!a.fehler){
       if('gespeichert' in a){ if(a.gespeichert){ nativeHaptik('erfolg'); toast('Im Kalender eingetragen','success'); } return; }
-      toast('Wähle "Zum Kalender hinzufügen"','info'); return;
+      toast('Wähle «Zum Kalender hinzufügen»','info'); return;
     }
     if(a&&a.fehler==='abgebrochen')return;
     // Die Hülle kennt den Weg nicht (ältere Fassung): dann bleibt nur
@@ -16616,7 +16616,7 @@ function avCropOeffnen(datei, fertig){
     document.getElementById('avCropOverlay').classList.add('open');
     URL.revokeObjectURL(url);
   };
-  bild.onerror=()=>{ URL.revokeObjectURL(url); toast('Das Bild liess sich nicht öffnen','error'); };
+  bild.onerror=()=>{ URL.revokeObjectURL(url); toast('Das Bild liess sich nicht öffnen. Wähle ein anderes.','error'); };
   bild.src=url;
 }
 
@@ -16739,7 +16739,7 @@ function avCropFertig(){
     if(btn){btn.disabled=false;btn.textContent='Als Profilbild nehmen';}
     avCropAbbrechen();
     if(blob)cb(blob);
-    else toast('Zuschneiden nicht möglich.','error');
+    else toast('Zuschneiden hat nicht geklappt. Versuch es mit einem anderen Bild.','error');
   },'image/jpeg',0.9);
 }
 
@@ -16851,7 +16851,7 @@ function openEditProfile(){
       unHelp.classList.add('ep-help-pro');
       unHelp.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         +'<rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>'
-        +'<span>Auch den Benutzernamen ändern geht mit Pro.</span>';
+        +'<span>Mit Pro kannst du den Benutzernamen jederzeit ändern.</span>';
       unHelp.onclick=()=>{closeEditProfile();showPage('pro');};
     }else{
       unHelp.textContent=frei
@@ -16955,7 +16955,7 @@ function nameFeldSetzen(){
   hilfe.classList.add('ep-help-pro');
   hilfe.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
     +'<rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>'
-    +'<span>Den Namen ändern geht mit Pro. Sieben Tage gratis.</span>';
+    +'<span>Den Namen ändern geht mit Pro. 7 Tage gratis.</span>';
   hilfe.onclick=()=>{closeEditProfile();showPage('pro');};
 }
 
@@ -17031,7 +17031,7 @@ async function startChatInnen(uid,name,un){
     .or(`and(user1_id.eq.${cUser.id},user2_id.eq.${uid}),and(user1_id.eq.${uid},user2_id.eq.${cUser.id})`)
     .maybeSingle();
   if(schon){ closeDetail(); await openConv(schon.id,{id:uid,full_name:name,username:un}); return; }
-  if(!cProfile?.is_pro){showPage('pro');toast('Neue Gespräche beginnen ist mit Pro möglich.','warn');return;}
+  if(!cProfile?.is_pro){showPage('pro');toast('Neue Chats startest du mit Pro.','warn');return;}
   closeDetail();
   const{data:target}=await sb.from('profiles').select('allow_messages').eq('id',uid).single();
   if(target?.allow_messages==='nobody'){toast('Diese Person nimmt keine Nachrichten an','warn');return;}
@@ -17057,7 +17057,7 @@ async function startChatInnen(uid,name,un){
       console.error('[chat]',ce);
       const m=String(ce?.message||'');
       toast(/SPOTOUT_PRO_ZUM_ANFANGEN/.test(m)
-        ? 'Neue Gespräche beginnen ist mit Pro möglich.'
+        ? 'Neue Chats startest du mit Pro.'
         : /SPOTOUT_VEREIN/.test(m)
           ? 'Vereine schreiben keine Nachrichten'
           : fehlerText(ce),'error');
@@ -17089,7 +17089,7 @@ function proIcon(k,w){
 const PRO_VORTEILE=[
   {k:'liste',t:'Sieh, wer von deinen Leuten hingeht',
    d:'Auf jeder Party steht, wer aus deinen Kontakten dabei ist – <b>mit Namen</b>. '
-     +'Ohne Pro siehst du nur, dass es jemand ist. Dazu eine Meldung, sobald sich jemand anmeldet, dem du folgst.'},
+     +'Ohne Pro siehst du nur, dass es jemand ist. Dazu eine Meldung, sobald jemand, dem du folgst, bei einer Party dabei ist.'},
   {k:'chat',t:'Schreib, wen du willst',
    d:'Schreib alle zuerst an, die du auf SPOTOUT triffst. Ohne Pro kannst du nur antworten.'},
   {k:'profil',t:'Dein Profil sehen alle',
@@ -17245,7 +17245,7 @@ function renderProPage(){
       <div class="pro2-hero">
         <div class="pro2-krone">${PRO_STERN}</div>
         <h1>Sieh, wer hingeht.</h1>
-        <p>Nicht „3 Leute“. Namen.</p>
+        <p>Mit Namen statt nur einer Zahl.</p>
 
         <!-- Der Unterschied, statt beschrieben zu werden, gezeigt -->
         <div class="pz" aria-hidden="true">
@@ -17312,7 +17312,7 @@ function renderProPage(){
         <div class="pro2-q"><b>Kann ich jederzeit kündigen?</b>
           <span>Ja. Keine Mindestlaufzeit. Pro läuft bis zum Ende der bezahlten Periode weiter.</span></div>
         <div class="pro2-q"><b>Sehen auch Gratis-Nutzer mein Profil?</b>
-          <span>Genau das ist der Punkt. Bio, Instagram und Snapchat sind für alle sichtbar – dafür zahlst du.</span></div>
+          <span>Ja. Bio, Instagram und Snapchat sind für alle sichtbar, bei einem privaten Profil für deine Follower.</span></div>
         <div class="pro2-q"><b>Was passiert mit meinen Partys, wenn ich kündige?</b>
           <span>Nichts. Partys, Gästelisten und Fotos bleiben. Nur die Pro-Funktionen ruhen.</span></div>
       </div>
@@ -18500,7 +18500,7 @@ function entwurfSichern(){
     return;
   }
   try{ localStorage.setItem(ENTWURF_SCHLUESSEL,JSON.stringify(e)); }
-  catch(err){ toast('Entwurf konnte nicht gespeichert werden','error'); return; }
+  catch(err){ toast('Entwurf nicht gespeichert. Versuch es nochmals.','error'); return; }
   entwurfNichtSichern=true;
   closeCreate();
   toast(e.bildFehlt
@@ -18620,7 +18620,7 @@ async function validateStep(step){
     const when=new Date(date+'T'+time);
     if(!isNaN(when)&&when.getTime()<Date.now()-5*60000){
       fgErr('fgDate',true);fgErr('fgTime',true);zeige('fgDate');zeige('fgTime');
-      toast('Der Zeitpunkt liegt in der Vergangenheit','warn');return false;
+      toast('Der Zeitpunkt liegt in der Vergangenheit. Wähl einen späteren.','warn');return false;
     }
   }
   if(step===5){
@@ -18992,7 +18992,7 @@ function applyTypeToCreate(type){
   if(q6)q6.textContent=priv?'Wer bringt was mit?':'Kostet der Eintritt etwas?';
   if(s6)s6.textContent=priv
     ?'Jeder Eintrag geht an genau einen Gast.'
-    :'Kannst du auch auf gratis lassen.';
+    :'Gratis geht natürlich auch.';
 
   const q7=document.getElementById('c7q');
   const s7=document.getElementById('c7sub');
@@ -19090,7 +19090,7 @@ function fehlerText(error){
   if(m.includes('SPOTOUT_GASTGEBER_BLEIBT'))
     return 'Auf deiner eigenen Party bleibst du dabei.';
   if(m.includes('SPOTOUT_NUR_GASTGEBER'))
-    return 'Die Mitbringliste ändert nur der Host.';
+    return 'Die Mitbringliste ändert nur der Gastgeber.';
   if(m.includes('SPOTOUT_NAME_ZU_FRUEH'))
     return 'Der Benutzername lässt sich nur einmal pro Woche ändern.';
   if(m.includes('SPOTOUT_DOPPELTE_PARTY')){
@@ -19114,7 +19114,7 @@ function fehlerText(error){
   if(m.includes('SPOTOUT_BLOCKIERT')||/blockiert/i.test(m))return 'Nicht möglich, weil ihr euch blockiert habt.';
   if(m.includes('SPOTOUT_KEINE_NACHRICHTEN'))return 'Diese Person nimmt keine Nachrichten an.';
   if(m.includes('SPOTOUT_NUR_ANFRAGEN'))return 'Diese Person nimmt nur Anfragen an.';
-  if(m.includes('SPOTOUT_PRO_ZUM_ANFANGEN'))return 'Neue Gespräche beginnen ist mit Pro möglich.';
+  if(m.includes('SPOTOUT_PRO_ZUM_ANFANGEN'))return 'Neue Chats startest du mit Pro.';
   if(m.includes('SPOTOUT_NICHT_IN_GRUPPE'))return 'Du bist nicht mehr in dieser Gruppe.';
   if(m.includes('SPOTOUT_VEREIN_MELDET_SICH_NICHT_AN'))return 'Vereinskonten melden sich nicht bei Partys an.';
   if(m.includes('SPOTOUT_VEREIN'))return 'Mit einem Vereinskonto geht das nicht.';
@@ -19404,7 +19404,7 @@ function setDeadline(tage,el){
   if(!berechneFrist(tage)){
     dlTage=0;
     csetOn('dlPresets',document.querySelector('#dlPresets .cset'));
-    toast('Die Frist ist vorbei. Sie gilt jetzt bis Partybeginn.','warn');
+    toast('Diese Anmeldefrist ist schon vorbei. Wir haben sie auf den Partybeginn gesetzt.','warn');
   }
   updateDeadlineBox();
 }
@@ -19514,13 +19514,13 @@ async function submitEventInner(){
   const name=document.getElementById('fName').value.trim();
   const date=document.getElementById('fDate').value;
   const addr=document.getElementById('fAddr').value.trim();
-  if(!name||!date||!addr){toast('Name, Datum und Adresse ausfüllen','warn');return;}
+  if(!name||!date||!addr){toast('Füll Name, Datum und Adresse aus.','warn');return;}
   // Ein fortgesetzter Entwurf kann in der Vergangenheit liegen
   const tZeit=document.getElementById('fTime')?.value||'20:00';
   if(new Date(date+'T'+tZeit).getTime()<Date.now()-5*60000){
     toast('Datum und Zeit liegen in der Vergangenheit. Bitte anpassen.','warn'); goCreateStep(4,true); return;
   }
-  if(currentType==='events'&&!bizVerified){toast('Bitte zuerst verifizieren','warn');return;}
+  if(currentType==='events'&&!bizVerified){toast('Lass zuerst deine Veranstalter-Angaben prüfen.','warn');return;}
   // Letzte Sicherung: ohne Koordinaten wäre die Party auf der Karte unsichtbar
   if(selLat==null&&!(await ensureGeo())){
     toast('Adresse nicht gefunden. Wähle einen Vorschlag.','warn');
@@ -19542,7 +19542,7 @@ async function submitEventInner(){
         imgUrl=u.publicUrl;
       }
     }catch(ex){
-      toast('Bild konnte nicht hochgeladen werden','error');
+      toast('Das Bild wurde nicht hochgeladen. Versuch es nochmals.','error');
       return;
     }
   }
@@ -19673,13 +19673,13 @@ async function startFeeCheckout(eventId,betrag){
     });
     const j=await res.json().catch(()=>({}));
     if(!res.ok||!j.url){
-      toast(j.error||'Zahlung konnte nicht gestartet werden','error');
+      toast(j.error||'Zahlung nicht gestartet. Versuch es nochmals.','error');
       if(btn){btn.disabled=false;btn.textContent='Jetzt bezahlen';}
       return;
     }
     location.href=j.url;
   }catch(err){
-    toast('Zahlung konnte nicht gestartet werden','error');
+    toast('Zahlung nicht gestartet. Versuch es nochmals.','error');
     if(btn){btn.disabled=false;btn.textContent='Jetzt bezahlen';}
   }
 }
@@ -19774,7 +19774,7 @@ function addrSearch(val){
         box.querySelectorAll('.addr-item').forEach(el=>{
           el.addEventListener('click',()=>selAddr(el.dataset.name,el.dataset.lat,el.dataset.lng));
         });
-      }).catch(()=>{box.classList.remove('show');setAddrHint('warn','Adresssuche nicht erreichbar');});
+      }).catch(()=>{box.classList.remove('show');setAddrHint('warn','Die Adresssuche antwortet gerade nicht. Versuch es gleich nochmals.');});
   },350);
 }
 
@@ -20281,7 +20281,7 @@ async function openFollowList(userId,mode){
   const col=mode==='followers'?'follower_id':'following_id';
   const other=mode==='followers'?'following_id':'follower_id';
   const{data,error}=await sb.rpc('folge_liste',{p_user:userId,p_art:mode==='followers'?'followers':'following'});
-  if(error){body.innerHTML='<div class="up-empty">Konnte nicht geladen werden</div>';return;}
+  if(error){body.innerHTML='<div class="up-empty">Die Liste lädt gerade nicht. Versuch es gleich nochmals.</div>';return;}
   const ids=(data||[]).map(r=>r.id).filter(Boolean);
   if(!ids.length){
     body.innerHTML='<div class="up-empty">'+(mode==='followers'?'Noch keine Follower':'Folgt noch niemandem')+'</div>';
@@ -20493,7 +20493,7 @@ async function renderInviteCard(eventId){
     +'</div>'
     +(links.length
         ? zeilen
-        : '<div class="ein-leer">Noch keine Einladung. Namen hineinschreiben, auf Einladen tippen – '
+        : '<div class="ein-leer">Noch keine Einladung. Schreib einen Namen hinein und tipp auf Einladen – '
           +'das Teilen-Fenster geht sofort auf.</div>')
     +(links.length?'<div class="ein-leer" style="margin-top:10px">'
         +genutzt+' von '+links.length+' eingelöst</div>':'')
@@ -20594,7 +20594,7 @@ async function einladungTeilen(code,eventId,label){
 
 async function einladungKopieren(code){
   try{ await navigator.clipboard.writeText(einladungUrl(code)); amKnopfMelden('Kopiert'); }
-  catch(err){ toast('Kopieren nicht möglich.','warn'); }
+  catch(err){ toast('Kopieren hat nicht geklappt. Halte den Link gedrückt und kopier ihn von Hand.','warn'); }
 }
 
 async function einladungLoeschen(id,eventId){
@@ -20704,7 +20704,7 @@ async function gruppenLaden(){
     sb.rpc('meine_gruppen'),
     sb.rpc('meine_gruppen_einladungen'),
   ]);
-  if(error){box.innerHTML='<div class="insta-empty">Konnte nicht geladen werden.</div>';return;}
+  if(error){box.innerHTML='<div class="insta-empty">Die Einladungen laden gerade nicht. Versuch es gleich nochmals.</div>';return;}
   const liste=Array.isArray(data)?data:[];
   const offene=Array.isArray(einl)?einl:[];
 
@@ -21146,7 +21146,7 @@ async function spotoutEinladen(){
   const text='Komm auf SPOTOUT – da siehst du, welche Partys und Feste in der Schweiz laufen und wer hingeht.';
   if(istApp()){
     const a=await nativeCall('teilen',{text:text,url:adresse},20000);
-    if(a&&a.fehler&&a.fehler!=='abgebrochen')toast('Teilen nicht möglich.','warn');
+    if(a&&a.fehler&&a.fehler!=='abgebrochen')toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
     return;
   }
   if(navigator.share){
@@ -21342,7 +21342,7 @@ async function treffenSpeichern(){
     else if(rein) gruppeChat(gid);
   }catch(err){
     console.warn('[treffen]',err);
-    toast('Das Treffen konnte nicht erstellt werden','error');
+    toast('Das Treffen wurde nicht erstellt. Versuch es nochmals.','error');
   }finally{
     treffenLaeuft=false;
     if(btn){btn.disabled=false;btn.innerHTML=label;}
@@ -21423,7 +21423,7 @@ async function gruppePartyEntfernen(btn,gid,eid){
 
 async function gruppeTeilen(code,name){
   const url=grpUrl(code);
-  const txt='Komm in die Gruppe „'+name+'“ auf SPOTOUT';
+  const txt='Komm in die Gruppe «'+name+'» auf SPOTOUT';
   /* In der App das Teilen-Fenster von iOS – das der WebView kennt
      WhatsApp & Co. nicht zuverlässig. */
   if(istApp()){
@@ -21480,7 +21480,7 @@ async function gruppeBeitreten(){
   if(data?.status==='schon_drin'){closeOverlay('gruppeJoinOverlay');gruppeOeffnen(data.id);return;}
   if(data?.status!=='ok'){toast(grpSagen(data?.status),'warn');if(btn){btn.disabled=false;btn.textContent='Anfragen';}return;}
   closeOverlay('gruppeJoinOverlay');
-  toast('Anfrage gesendet. Die Gruppe entscheidet.','success');
+  toast('Anfrage gesendet. Wer die Gruppe gegründet hat, entscheidet.','success');
 }
 
 /* ── Beitritt über den Link ── */
@@ -21532,7 +21532,7 @@ async function openJoinOverlay(code){
   }else if(!cUser){
     action='<div class="join-note">'
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>'
-      +'<span><b>Neu bei SPOTOUT?</b> Das Konto ist gratis und in einer halben Minute erstellt. '
+      +'<span><b>Neu bei SPOTOUT?</b> Das Konto ist gratis und in einer Minute erstellt. '
       +'Deine Einladung bleibt so lange gespeichert – danach bist du automatisch dabei.</span></div>'
       +'<button class="attend-btn" style="background:'+w.btnBg+';color:'+w.btnColor+'" onclick="joinAfterLogin()">Gratis starten und beitreten</button>';
   }else if(e.beitritt_status==='offen'){
@@ -21594,7 +21594,7 @@ async function doJoin(){
     voll:'Die Party ist voll.',
     frist_abgelaufen:'Die Anmeldefrist ist abgelaufen',
     link_verbraucht:'Diese Einladung ist schon eingelöst',
-    code_ungueltig:'Dieser Code stimmt nicht',
+    code_ungueltig:'Dieser Einladungslink stimmt nicht. Frag nach einem neuen.',
     abgelehnt:'Der Gastgeber hat deine Anfrage abgelehnt',
     vorbei:'Diese Party ist schon vorbei',
     gesperrt:'Dein Konto ist gesperrt',
@@ -21685,7 +21685,7 @@ async function renderBringSheet(eventId){
   }).join('');
 
   body.innerHTML='<div class="bring-hint" style="margin-top:0">'
-      +'Der Host hat eine Mitbringliste angelegt. Tipp an, was du übernimmst. '
+      +'Der Gastgeber hat eine Mitbringliste angelegt. Tipp an, was du übernimmst. '
       +'Jeder Eintrag geht nur einmal.</div>'
     +rows
     +'<button class="sub-btn sub-private" style="margin-top:16px" onclick="closeBringSheet()">'
@@ -21811,7 +21811,7 @@ async function openShare(eventId,opts){
       +'<div class="ep-locked-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.4l-5.25 2.75 1-5.85L3.5 9.15l5.9-.85z"/></svg></div>'
       +'<div><div class="ep-locked-t">Direkt in SPOTOUT senden</div>'
       +'<div class="ep-locked-s">Mit Pro schickst du die Party als Nachricht an deine Kontakte. '
-      +'Über „Teilen“ geht es auch ohne Pro.</div></div>'
+      +'Über «Teilen» geht es auch ohne Pro.</div></div>'
       +'<svg class="ep-locked-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 6 15 12 9 18"/></svg></div>';
     return;
   }
@@ -21847,7 +21847,7 @@ async function renderShareContacts(alsEinladung){
     .filter(id=>id&&id!==cUser.id);
   if(!ids.length){
     box.innerHTML='<div class="mg-empty">Du hast noch keine Kontakte. Folge jemandem über die Suche – '
-      +'oder teil die Party unten über „Teilen“.</div>';
+      +'oder teil die Party unten über «Teilen».</div>';
     return;
   }
   const{data:leute}=await sb.from('profiles')
@@ -22040,7 +22040,7 @@ async function shareVia(art){
     art='copy';
   }
   try{ await navigator.clipboard.writeText(url); amKnopfMelden('Link kopiert'); }
-  catch(err){ toast('Kopieren nicht möglich.','warn'); }
+  catch(err){ toast('Kopieren hat nicht geklappt. Halte den Link gedrückt und kopier ihn von Hand.','warn'); }
 }
 
 // Link auf eine öffentliche Party oder ein Event
@@ -22224,7 +22224,7 @@ const I18N_PAT=[
   [/^(\d+) von (\d+) eingelöst$/,{en:"$1 of $2 redeemed", fr:"$1 sur $2 utilisés", it:"$1 su $2 usati"}],
   [/^Persönliche Einladung für (.+)$/,{en:"Personal invitation for $1", fr:"Invitation personnelle pour $1", it:"Invito personale per $1"}],
   [/^Nicht auf der Karte – wird bei (.+) eingetragen$/,{en:"Not on the map – will be listed at $1", fr:"Pas sur la carte – sera enregistré à $1", it:"Non sulla mappa – verrà registrato a $1"}],
-  [/^Niemand gefunden, der zu „(.+)“ passt\.$/,{en:"Nobody found matching “$1”.", fr:"Personne ne correspond à « $1 ».", it:"Nessuno corrisponde a «$1»."}],
+  [/^Niemand gefunden, der zu «(.+)» passt\.$/,{en:"Nobody found matching “$1”.", fr:"Personne ne correspond à « $1 ».", it:"Nessuno corrisponde a «$1»."}],
   [/^(\d+) Person benachrichtigt$/,{en:"$1 person notified", fr:"$1 personne prévenue", it:"$1 persona avvisata"}],
   [/^(\d+) Personen benachrichtigt$/,{en:"$1 people notified", fr:"$1 personnes prévenues", it:"$1 persone avvisate"}],
   [/^Du darfst (\d+) Personen mitbringen\.$/,{en:"You may bring $1 people.", fr:"Tu peux amener $1 personnes.", it:"Puoi portare $1 persone."}],
@@ -22250,7 +22250,7 @@ const I18N_PAT=[
   [/^(\d+) von (\d+) dabei$/,{en:"$1 of $2 going", fr:"$1 sur $2 y vont", it:"$1 su $2 ci vanno"}],
   [/^An dieser Adresse ist zu dieser Zeit schon etwas eingetragen(.*)\. Schau, ob es dieselbe Party ist\.$/,{en:"Something is already listed at this address at this time$1. Check whether it’s the same party.", fr:"Quelque chose est déjà enregistré à cette adresse à cette heure$1. Regarde si c’est la même soirée.", it:"A questo indirizzo e a quest’ora c’è già qualcosa$1. Guarda se è la stessa festa."}],
   [/^(.+) Du kannst trotzdem ein Konto erstellen – wir prüfen es dann von Hand, das dauert ein paar Tage\. Schneller geht es mit einer Adresse auf$/,{en:"$1 You can still sign up – we’ll check it by hand, which takes a few days. It’s quicker with an address at", fr:"$1 Tu peux quand même t’inscrire – on vérifie à la main, ce qui prend quelques jours. C’est plus rapide avec une adresse sur", it:"$1 Puoi comunque registrarti – controlliamo a mano e ci vogliono alcuni giorni. Più veloce con un indirizzo su"}],
-  [/^Fürs Veröffentlichen wird einmalig (.+) fällig\. Danach erscheint die Party sofort im Feed und auf der Karte\.$/,{en:"Publishing costs a one-off $1. After that the party appears in the feed and on the map right away.", fr:"La publication coûte $1 une seule fois. Ensuite la soirée apparaît tout de suite dans le fil et sur la carte.", it:"Pubblicare costa $1 una tantum. Poi la festa compare subito nel feed e sulla mappa."}],
+  [/^Fürs Veröffentlichen wird einmalig (.+) fällig\. Danach erscheint die Party sofort in der Liste und auf der Karte\.$/,{en:"Publishing costs a one-off $1. After that the party appears in the feed and on the map right away.", fr:"La publication coûte $1 une seule fois. Ensuite la soirée apparaît tout de suite dans le fil et sur la carte.", it:"Pubblicare costa $1 una tantum. Poi la festa compare subito nel feed e sulla mappa."}],
   [/^(.+) – liegt nach der Party$/,{en:"$1 – after the party", fr:"$1 – après la soirée", it:"$1 – dopo la festa"}],
   [/^Unter Events ist gerade nichts los$/,{en:"Nothing on in Events right now", fr:"Rien en ce moment dans Événements", it:"Al momento niente in Eventi"}],
   [/^Events ansehen$/,{en:"See Events", fr:"Voir Événements", it:"Vedi Eventi"}],
@@ -22470,18 +22470,18 @@ async function pushErlauben(){
   if(a&&a.token){
     pushZustand='an';
     const{error}=await sb.rpc('push_token_setzen',{p_token:a.token});
-    if(error){console.error('[push]',error);toast('Mitteilungen nicht gespeichert. Versuch es nochmals.','warn');}
+    if(error){console.error('[push]',error);toast('Benachrichtigungen nicht gespeichert. Versuch es nochmals.','warn');}
     else if(cProfile)cProfile.push_token=a.token;
   }else{
     // Kein stilles Scheitern mehr: sagen, woran es lag.
     const grund=(a&&a.fehler)||'unbekannt';
     if(grund==='nicht_erlaubt'){
       pushZustand='aus';
-      toast('Mitteilungen sind aus. Einschalten unter Einstellungen › Mitteilungen › SPOTOUT.','warn');
+      toast('Benachrichtigungen sind aus. Einschalten unter Einstellungen › Mitteilungen › SPOTOUT.','warn');
     }else if(grund==='zeitueberschreitung'){
       toast('Keine Antwort. Starte die App neu.','error');
     }else if(grund==='kein_native'||grund==='unbekannt: push_token'){
-      toast('Aktualisiere SPOTOUT, um Mitteilungen zu nutzen.','warn');
+      toast('Aktualisiere SPOTOUT, um Benachrichtigungen zu nutzen.','warn');
     }else{
       console.warn('[huelle] Push',grund);
       toast('Benachrichtigungen liessen sich nicht einschalten. Versuch es nochmals.','error');
@@ -22676,7 +22676,7 @@ async function besucherOeffnen(){
   ov.classList.add('open');
   box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
   const{data,error}=await sb.rpc('meine_besucher');
-  if(error){box.innerHTML='<div class="bes-leer"><b>Gerade nicht verfügbar</b><span>'+esc(fehlerText(error))+'</span></div>';return;}
+  if(error){box.innerHTML='<div class="bes-leer"><b>Profilbesuche laden gerade nicht</b><span>'+esc(fehlerText(error))+'</span></div>';return;}
   const st=data?.status;
   if(st==='kein_pro'){
     box.innerHTML='<div class="bes-leer"><div class="bes-ic">'+BES_AUGE+'</div><b>Sieh, wer bei dir vorbeischaut</b>'
@@ -22854,7 +22854,7 @@ function pushEinstZeichnen(){
   if(istApp()){
     if(pushZustand==='aus'){
       status='<div class="push-karte warn"><b>Im iPhone ausgeschaltet</b>'
-        +'<span>SPOTOUT darf dir gerade keine Mitteilungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.</span>'
+        +'<span>SPOTOUT darf dir gerade keine Benachrichtigungen schicken. Schalte sie in den iPhone-Einstellungen wieder ein.</span>'
         +'<button class="nt-knopf haupt" onclick="pushSystemEinst()">iPhone-Einstellungen öffnen</button></div>';
     }else if(pushZustand!=='an'){
       status='<div class="push-karte"><b>Benachrichtigungen einschalten</b>'
@@ -22917,7 +22917,7 @@ async function pushErlaubenHier(btn){
 }
 async function pushSystemEinst(){
   const a=await nativeCall('einstellungen_oeffnen',{},4000);
-  if(a&&a.fehler)toast('Öffne die iPhone-Einstellungen › Mitteilungen › Spotout','info');
+  if(a&&a.fehler)toast('Öffne die iPhone-Einstellungen › Mitteilungen › SPOTOUT','info');
 }
 
 /* ── Party-Gebühr: in der App über Apple, im Browser über Stripe ──── */
@@ -22964,7 +22964,7 @@ async function gebuehrKaufenApple(eventId,betrag){
     .update({pending_fee_event_id:eventId,pending_fee_at:new Date().toISOString()})
     .eq('id',cUser.id);
   if(merkFehler){
-    toast('Zahlung konnte nicht vorbereitet werden','error');
+    toast('Zahlung nicht gestartet. Versuch es nochmals.','error');
     if(btn){btn.disabled=false;btn.textContent='Jetzt bezahlen';}
     return;
   }
@@ -23310,7 +23310,7 @@ async function sendReport(){
   }
   const mail=(document.getElementById('repMail')?.value||'').trim();
   if(repAntwort&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){
-    repFehler('Bitte eine gültige E-Mail-Adresse eintragen');
+    repFehler('Bitte gib eine gültige E-Mail-Adresse ein.');
     document.getElementById('repMail')?.focus();
     return;
   }
@@ -23409,7 +23409,7 @@ function sperrSeiteZeigen(s){
     +(s.stufe>=3&&!s.dauerhaft?'<p class="sk-text">Wir prüfen die Meldungen. Ein Mensch entscheidet, ob die Sperre bleibt.</p>':'')
     +(bis?'<p class="sk-text">Wieder frei am <b>'+esc(bisText)+'</b>'+(s.stufe>=3&&!s.dauerhaft?', falls wir nichts anderes entscheiden':'')+'.</p>'
          :'<p class="sk-text">Die Sperre gilt dauerhaft.</p>')
-    +'<p class="sk-text">So lange kannst du keine Partys erstellen, dich nicht anmelden, nicht schreiben und niemandem folgen.</p>'
+    +'<p class="sk-text">So lange kannst du keine Partys erstellen, bei keiner dabei sein, nicht schreiben und niemandem folgen.</p>'
     +sanktionDetails(s)
     +sanktionStufen(s.dauerhaft?3:2)
     +'<p class="sk-klein">Ein Fehler? Schreib an <a href="mailto:support@spotoutapp.ch">support@spotoutapp.ch</a> – wir prüfen es.</p>'
@@ -23717,7 +23717,7 @@ async function bitteUmErlaubnis(){
   if(typeof Notification==='undefined'){toast('Auf diesem Gerät nicht verfügbar.','warn');return;}
   try{
     const antwort=await Notification.requestPermission();
-    if(antwort!=='granted')toast('Mitteilungen bleiben aus. Neues findest du unter der Glocke.','info');
+    if(antwort!=='granted')toast('Benachrichtigungen bleiben aus. Neues findest du unter der Glocke.','info');
   }catch(err){}
   renderNotifs();
 }
@@ -23975,7 +23975,7 @@ function renderNotifs(){
     const frisch=!ntGezeigt.has(n.id);
     const zeigText=n.text&&!NT_ALT_HINWEIS.includes(n.text);
     const text=zeigText
-      ? '<div class="nt-s">'+(n.art==='nachricht'?'„'+esc(n.text)+'“'+(n._mehr>1?' <span class="nt-mehr">+'+(n._mehr-1)+'</span>':''):esc(n.text))+'</div>'
+      ? '<div class="nt-s">'+(n.art==='nachricht'?'«'+esc(n.text)+'»'+(n._mehr>1?' <span class="nt-mehr">+'+(n._mehr-1)+'</span>':''):esc(n.text))+'</div>'
       : '';
     html+='<div class="nt-row'+(neu?' neu':'')+(frisch?' frisch':'')+'" style="--i:'+(frisch?stufe++:0)+'" '
       +'onclick="oeffneNotif(\''+n.id+'\')">'
@@ -24244,7 +24244,7 @@ async function renderPlusCard(eventId){
     box.innerHTML='<div class="plus-card">'
       +'<div class="plus-hdr"><div class="plus-ic">'+ic+'</div>'
       +'<div><div class="plus-t">Jemanden mitbringen?</div>'
-      +'<div class="plus-s">Frag beim Host an. Du bekommst Bescheid.</div></div></div>'
+      +'<div class="plus-s">Frag den Gastgeber. Du bekommst Bescheid.</div></div></div>'
       +'<div class="chipset" style="margin:12px 0 10px">'
       +[1,2,3,4].map(n=>'<button class="cset'+(n===1?' on':'')+'" onclick="setPlus('+n+',this)">+'+n+'</button>').join('')
       +'</div>'
@@ -24260,7 +24260,7 @@ async function renderPlusCard(eventId){
     box.innerHTML='<div class="plus-card wait">'
       +'<div class="plus-hdr"><div class="plus-ic">'+ic+'</div>'
       +'<div><div class="plus-t">Anfrage läuft: +'+n+'</div>'
-      +'<div class="plus-s">Der Host hat noch nicht entschieden.</div>'
+      +'<div class="plus-s">Der Gastgeber hat noch nicht entschieden.</div>'
       +plusWerZeile(data)+'</div></div>'
       +'<button class="plus-btn ghost" onclick="cancelPlusRequest(\''+data.id+'\',\''+eventId+'\')">Anfrage zurückziehen</button>'
       +'</div>';
@@ -24645,10 +24645,10 @@ async function saveManage(){
   const date=document.getElementById('mg-date').value;
   const time=document.getElementById('mg-time').value||'20:00';
   const addr=document.getElementById('mg-addr').value.trim();
-  if(!name){toast('Der Name darf nicht leer sein','warn');return;}
+  if(!name){toast('Gib deiner Party einen Namen.','warn');return;}
   if(!date){toast('Bitte ein Datum wählen','warn');return;}
   const istTreffen=mgEvent.category==='Treffen';
-  if(!addr&&!istTreffen){toast('Bitte eine Adresse eintragen','warn');return;}
+  if(!addr&&!istTreffen){toast('Bitte gib eine Adresse ein.','warn');return;}
   // Eine Party in die Vergangenheit schieben loescht sie beim naechsten Aufraeumen
   const zeitNeu=(date!==mgEvent.date||time!==String(mgEvent.time||'').slice(0,5));
   if(zeitNeu&&new Date(date+'T'+time)<Date.now()-5*6e4){toast('Das Datum liegt in der Vergangenheit','warn');return;}
@@ -24674,9 +24674,9 @@ async function saveManage(){
     }
     if(capEl){
       const roh=capEl.value.trim(), cap=parseInt(roh,10);
-      if(!roh&&mgEvent.type!=='private'){toast('Bitte eine Gästezahl eintragen','warn');return;}
+      if(!roh&&mgEvent.type!=='private'){toast('Bitte gib an, wie viele Gäste höchstens kommen.','warn');return;}
       if(roh&&!(cap>=1)){toast('Die Gästezahl muss mindestens 1 sein','warn');return;}
-      if(roh&&cap<(mgEvent.gaeste_zahl||0)){toast('Es sind schon mehr Gäste angemeldet','warn');return;}
+      if(roh&&cap<(mgEvent.gaeste_zahl||0)){toast('Es sind schon mehr Gäste dabei. Wähl eine höhere Zahl.','warn');return;}
       patch.capacity=roh?cap:null;
     }
 
@@ -24870,8 +24870,8 @@ function fotoFehlerText(err){
   const m=String(err?.message||err?.error||'').toLowerCase();
   if(m.includes('row-level')||m.includes('policy')||m.includes('unauthorized'))
     return 'Fotos gehen nur für Gäste, ab Partybeginn und 24 Stunden lang.';
-  if(m.includes('size')||m.includes('too large')||m.includes('exceeded'))return 'Das Foto ist zu gross.';
-  if(m.includes('mime')||m.includes('type'))return 'Dieses Bildformat geht leider nicht.';
+  if(m.includes('size')||m.includes('too large')||m.includes('exceeded'))return 'Das Foto ist zu gross. Wähle ein kleineres.';
+  if(m.includes('mime')||m.includes('type'))return 'Dieses Format geht nicht. Nutze JPG oder PNG.';
   return 'Hochladen hat nicht geklappt. Versuch es nochmals.';
 }
 
@@ -24892,8 +24892,8 @@ async function fotoHochladen(auswahl){
   for(const datei of dateien){
     const klein=await bildVerkleinern(datei,'party');
     const typ=klein.type||'';
-    if(!/^image\/(jpeg|png|webp)$/.test(typ)){ fehler='Dieses Bildformat geht leider nicht.'; continue; }
-    if(klein.size>3*1024*1024){ fehler='Das Foto ist zu gross.'; continue; }
+    if(!/^image\/(jpeg|png|webp)$/.test(typ)){ fehler='Dieses Format geht nicht. Nutze JPG oder PNG.'; continue; }
+    if(klein.size>3*1024*1024){ fehler='Das Foto ist zu gross. Wähle ein kleineres.'; continue; }
     const endung=typ==='image/png'?'png':typ==='image/webp'?'webp':'jpg';
     const zufall=(window.crypto&&crypto.randomUUID)?crypto.randomUUID()
       :(Date.now().toString(36)+Math.random().toString(36).slice(2));
@@ -25995,12 +25995,12 @@ function convMenueZeichnen(){
     +  '<button class="cm-profil" onclick="closeOverlay(\'convMenueOverlay\');convProfilOeffnen()">Profil ansehen</button>'
     +'</div>'
 
-    +'<div class="set-lbl">Mitteilungen</div>'
+    +'<div class="set-lbl">Benachrichtigungen</div>'
     +'<div class="cm-gruppe">'
     +  '<div class="cm-reihe">'
     +    '<span class="cm-ic">'+(cmStand.stumm?GLOCKE_AUS_SVG:GLOCKE_AN_SVG)+'</span>'
     +    '<span class="cm-text"><b>Stummschalten</b><small>'
-    +      (cmStand.stumm?'Keine Mitteilungen von '+esc(name):'Du bekommst eine Mitteilung bei jeder Nachricht')
+    +      (cmStand.stumm?'Keine Benachrichtigungen von '+esc(name):'Du bekommst bei jeder Nachricht eine Benachrichtigung')
     +    '</small></span>'
     +    schalter(!!cmStand.stumm,'convStumm(!'+(!!cmStand.stumm)+')',laedt)
     +  '</div>'
