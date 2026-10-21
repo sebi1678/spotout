@@ -7333,6 +7333,14 @@
       opacity:0;transition:opacity .28s cubic-bezier(.23,1,.32,1);overflow:hidden}
     .pw.da{opacity:1}
     .pw{overflow-y:auto;overscroll-behavior:contain}
+    .pw.an{z-index:9900;justify-content:space-between}
+    .an-inhalt{position:relative;padding:12vh 24px 0}
+    .an-ic{display:flex;width:52px;height:52px;border-radius:16px;align-items:center;justify-content:center;background:rgba(255,255,255,.06);margin-bottom:18px}
+    .an-feld{display:block}
+    .an-feld span{display:block;font-size:.8rem;font-weight:700;color:var(--text2,rgba(255,255,255,.72));margin:0 0 6px}
+    .an-feld input{width:100%;height:52px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font:600 16px var(--font);padding:0 14px;color-scheme:dark;box-sizing:border-box}
+    .an-fehler{margin-top:10px;font-size:.88rem;color:#FF5A5F;font-weight:600}
+    .pw.an .pw-recht a{color:inherit;text-decoration:underline}
     .pw::before{content:"";position:absolute;left:50%;top:-120px;width:520px;height:420px;transform:translateX(-50%);pointer-events:none;
       background:radial-gradient(closest-side,rgba(255,45,118,.22),rgba(255,45,118,0))}
     .pw-kopf{position:relative;display:flex;align-items:center;justify-content:space-between;padding:4px 16px 0;z-index:2}
@@ -10340,6 +10348,10 @@ async function loadProf(){
      gar keiner. Der Preis ist ehrlich benannt – wer sich auf einem
      zweiten Geraet anmeldet, waehlt den Knopf dort neu. */
   cProfile=updated;updNavAv();
+  /* Wer mit Apple oder Google kommt, hat noch kein Geburtsdatum. Bis es
+     da ist, sperrt die Datenbank alles Schreiben (ist_gesperrt); hier
+     wird es einmal nachgefragt. */
+  if(cProfile&&cProfile.kontoart!=='verein'&&!cProfile.birthdate)alterNachtragen();
   navFuerKontoart();          // Verein sieht eine andere Leiste
   vereinHomeUmschalten();
   profilMerken();
@@ -11265,6 +11277,52 @@ function tourFertig(){
    Partykarte: erst die Gratis-Ansicht (Zahl mit Schloss), dann wechselt
    sie zu den Namen. Apple 3.1.2: Schliessen gut sichtbar, Preis,
    Laufzeit, Verlaengerung, Kuendigung, Wiederherstellen, Bedingungen. */
+function alterNachtragen(){
+  if(document.getElementById('alterNach'))return;
+  const el=document.createElement('div');
+  el.id='alterNach'; el.className='pw an'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','Geburtsdatum');
+  const heute=new Date(), max=new Date(heute.getFullYear()-16,heute.getMonth(),heute.getDate());
+  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  el.innerHTML='<div class="an-inhalt">'
+      +'<span class="an-ic">'+pikto('kalender',26,'pk-bunt')+'</span>'
+      +'<h2 class="pw-t">Fast geschafft.</h2>'
+      +'<p class="pw-s">SPOTOUT ist ab 16. Gib einmal dein Geburtsdatum an. Andere sehen es nicht.</p>'
+      +'<label class="an-feld"><span>Geburtsdatum</span><input type="date" id="anDatum" max="'+iso(max)+'" min="1900-01-01"/></label>'
+      +'<div class="an-fehler" id="anFehler" hidden></div>'
+    +'</div>'
+    +'<div class="pw-fuss">'
+      +'<button class="pw-cta" type="button" id="anWeiter">Weiter</button>'
+      +'<div class="pw-recht">Mit «Weiter» akzeptierst du die <a href="/nutzungsbedingungen" target="_blank" rel="noopener">Nutzungsbedingungen</a> mit den Community-Regeln und bestätigst, die <a href="/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen zu haben.</div>'
+      +'<button class="pw-spaeter" type="button" id="anRaus">Abmelden</button>'
+    +'</div>';
+  document.body.appendChild(el);
+  if(typeof applyLang==='function'&&LANG!=='de')applyLang();
+  requestAnimationFrame(()=>el.classList.add('da'));
+  const fehler=t=>{ const f=el.querySelector('#anFehler'); f.textContent=t; f.hidden=!t; };
+  el.querySelector('#anRaus').onclick=()=>{ el.remove(); doLogout(); };
+  const knopf=el.querySelector('#anWeiter');
+  knopf.onclick=async()=>{
+    const wert=el.querySelector('#anDatum').value;
+    if(!wert){ fehler('Bitte gib dein Geburtsdatum ein.'); return; }
+    if(wert>iso(max)){
+      fehler('SPOTOUT ist ab 16 Jahren. Dein Konto wird jetzt gelöscht.');
+      knopf.disabled=true;
+      setTimeout(()=>kontoWegLoeschen(),2200);
+      return;
+    }
+    fehler(''); knopf.disabled=true; knopf.textContent='Einen Moment…';
+    const{error}=await sb.from('profiles').update({birthdate:wert}).eq('id',cUser.id);
+    if(error){
+      knopf.disabled=false; knopf.textContent='Weiter';
+      fehler(fehlerText(error));
+      console.warn('[huelle] Geburtsdatum',error.message);
+      return;
+    }
+    cProfile.birthdate=wert; profilMerken();
+    el.classList.remove('da'); setTimeout(()=>el.remove(),280);
+  };
+}
+
 function proWerbungZeigen(weiter){
   if(!cUser||cProfile?.is_pro||istVerein()||kontoMerkmal('pro_werbung'))return false;
   if(!TOUR_SNAP.freundeGratis||!TOUR_SNAP.freundePro)return false;
