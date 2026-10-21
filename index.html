@@ -244,6 +244,11 @@
       .sp-satz{animation:none}
       .sp-satz:first-child{opacity:1}
     }
+    /* In der App deckt das native Ladebild den Splash ab, bis die Website
+       steht – hier keine grossen Ebenen und keine Endlos-Animationen. */
+    html.in-app .sp-licht,html.in-app .sp-halo{display:none}
+    html.in-app .sp-satz,html.in-app .splash-logo{animation:none}
+    html.in-app .splash-logo,html.in-app .sp-satz:first-child{opacity:1}
 
     /* ── LOGO SVG ── */
     .logo-white{filter:brightness(0) invert(1)}
@@ -712,10 +717,12 @@
       /* Schwebende Schicht: der Inhalt laeuft sichtbar darunter weiter.
          Oben keine harte Linie, sondern eine Lichtkante, die zu den
          Seiten hin ausläuft (siehe .bnav::before). */
-      background:rgba(9,13,36,.72);
+      /* Halbe Unschaerfe, dichterer Grund: fast gleicher Eindruck, aber
+         deutlich weniger Arbeit pro Scrollbild (in der App ohnehin aus). */
+      background:rgba(9,13,36,.82);
       border:none;
-      backdrop-filter:blur(24px) saturate(180%);
-      -webkit-backdrop-filter:blur(24px) saturate(180%);
+      backdrop-filter:blur(12px) saturate(160%);
+      -webkit-backdrop-filter:blur(12px) saturate(160%);
       border-radius:0;
       padding:7px 4px calc(7px + var(--safe-bottom));
       display:flex;align-items:center;justify-content:space-around;
@@ -939,8 +946,9 @@
       border:1px solid rgba(255,255,255,.15);border-radius:980px;
       padding:7px 14px;font-family:var(--font);font-size:.82rem;font-weight:600;
       cursor:pointer;background:rgba(255,255,255,.06);color:var(--muted);
-      transition:transform var(--takt);flex-shrink:0;
+      transition:transform var(--takt-kurz) var(--kurve);flex-shrink:0;-webkit-tap-highlight-color:transparent;
     }
+    .filter-chip:active{transform:scale(var(--druck))}
     @media(hover:hover) and (pointer:fine){.filter-chip:hover{color:#fff;border-color:rgba(255,255,255,.3)}}
     .filter-chip.active{
       color:#fff;background:rgba(255,45,118,.15);
@@ -1886,7 +1894,7 @@
       border:1px solid rgba(255,45,118,.2);border-radius:24px;
       padding:28px 24px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;
     }
-    .pro-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,45,118,.2),transparent 70%);filter:blur(20px);pointer-events:none}
+    .pro-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,45,118,.16),rgba(255,45,118,.05) 45%,transparent 72%);pointer-events:none}
     .pro-hero h2{font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:6px}
     .pro-hero p{font-size:.9rem;color:var(--text2);margin-bottom:20px}
     .pro-price{font-size:2.2rem;font-weight:800;color:#fff;margin-bottom:4px}
@@ -2237,10 +2245,13 @@
     /* OpenStreetMap ist eine helle Karte. Fuer den dunklen Modus wird
        sie umgedreht und der Farbkreis zurueckgedreht, sonst waeren Wald
        und Wasser in Warnfarben. */
-    #mapWrap.map-osm .leaflet-tile{
+    /* Ein Filter fuer die ganze Kachelebene statt einer pro Kachel
+       (20–40 gefilterte Ebenen beim Zoomen). Hell: kein Filter, der
+       Unterschied von 2 % war nicht zu sehen. */
+    #mapWrap.map-osm .leaflet-tile-pane{
       filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.92) saturate(.85);
     }
-    #mapWrap.map-osm.map-light .leaflet-tile{filter:saturate(1.02) contrast(1.02)}
+    #mapWrap.map-osm.map-light .leaflet-tile-pane{filter:none}
     #mapWrap.map-light #map,
     #mapWrap.map-light .leaflet-container{background:#eaecf2!important}
     #mapWrap.map-light .leaflet-control-attribution{
@@ -2507,11 +2518,15 @@
 
     .fy-skel{
       width:100%;aspect-ratio:16/10;border-radius:24px;
-      background:linear-gradient(100deg,rgba(255,255,255,.05) 30%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.05) 70%);
-      background-size:220% 100%;animation:fyShim 1.4s linear infinite;
+      background:rgba(255,255,255,.05);position:relative;overflow:hidden;
       border:1px solid rgba(255,255,255,.07);
     }
-    @keyframes fyShim{0%{background-position:120% 0}100%{background-position:-120% 0}}
+    /* Schimmer per transform wie .skelett – nicht ueber background-position
+       (das zeichnet die ganze Karte in jedem Bild neu). */
+    .fy-skel::after{content:'';position:absolute;inset:0;transform:translateX(-100%);
+      background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.05) 50%,transparent 70%);
+      animation:skelettWelle 1.4s linear infinite}
+    @media(prefers-reduced-motion:reduce){.fy-skel::after{animation:none}}
 
     .fy-empty{
       margin:0 16px;padding:30px 22px;text-align:center;
@@ -4278,11 +4293,13 @@
     .pz-a3{background:linear-gradient(135deg,#2BD98A,#38BDF8)}
     .pz-n{
       font-size:.84rem;font-weight:700;color:#fff;
-      animation:pzScharf 7s ease-in-out infinite;
+      animation:pzScharf 7s ease-in-out 1.7 forwards;
     }
     .pz-t{margin-left:auto;font-size:.72rem;color:#2BD98A;font-weight:700;
-      animation:pzScharf 7s ease-in-out infinite}
-    /* Der Name ist erst unlesbar und wird dann scharf – genau der
+      animation:pzScharf 7s ease-in-out 1.7 forwards}
+    /* Unschaerfe nicht endlos animieren: knapp zwei Runden, dann bleibt
+       der scharfe Stand (70 % der Runde) mit der Pro-Marke stehen.
+       Der Name ist erst unlesbar und wird dann scharf – genau der
        Moment, den Pro kauft. */
     @keyframes pzScharf{
       0%,38%   {filter:blur(5px);opacity:.55}
@@ -4297,11 +4314,11 @@
     }
     .pz-ohne{
       background:rgba(255,255,255,.08);color:var(--muted);
-      animation:pzOhne 7s ease-in-out infinite;
+      animation:pzOhne 7s ease-in-out 1.7 forwards;
     }
     .pz-mit{
       background:var(--grad-cta);color:#fff;
-      animation:pzMit 7s ease-in-out infinite;opacity:0;
+      animation:pzMit 7s ease-in-out 1.7 forwards;opacity:0;
     }
     @keyframes pzOhne{0%,38%{opacity:1}46%,100%{opacity:0}}
     @keyframes pzMit{0%,42%{opacity:0}50%,88%{opacity:1}96%,100%{opacity:0}}
@@ -4320,7 +4337,9 @@
     .nav-bell,.nav-create-btn,.nav-icon-btn,
     .prof-action-btn,.insta-tab,.sh-send,.sh-alle,.s-loeschen,
     .tour-skip,.oe-reset,.pro2-restore,.modal-x,
-    .mf-zeile button,.oe-zeile button,.chipset button{
+    .mf-zeile button,.oe-zeile button,.chipset button,
+    .mg-yes,.mg-no,.fa-ja,.fa-nein,.gastleiste button,.fy-empty-btn,.ze-knopf,
+    .bpt-knopf,.mreq-yes,.mreq-no,.cpro-btn,.konto-nein{
       position:relative;
     }
     .segbtn::after,.fy-modus button::after,.fy-neu::after,.oe-knopf::after,
@@ -4330,7 +4349,11 @@
     .sh-send::after,.sh-alle::after,.s-loeschen::after,
     .tour-skip::after,.oe-reset::after,.pro2-restore::after,
     .modal-x::after,.mf-zeile button::after,.oe-zeile button::after,
-    .chipset button::after{
+    .chipset button::after,
+    /* 22.10.: bisher 34–40 px ohne Erweiterung (.map-fab ist schon absolut) */
+    .mg-yes::after,.mg-no::after,.fa-ja::after,.fa-nein::after,.map-fab::after,
+    .gastleiste button::after,.fy-empty-btn::after,.ze-knopf::after,.bpt-knopf::after,
+    .mreq-yes::after,.mreq-no::after,.cpro-btn::after,.konto-nein::after{
       content:'';position:absolute;left:0;right:0;
       top:50%;transform:translateY(-50%);
       height:44px;min-width:44px;
@@ -4340,7 +4363,8 @@
     /* Kleine runde Knoepfe brauchen die Erweiterung auch zur Seite. */
     .mpro-x::after,.nav-bell::after,.nav-create-btn::after,
     .nav-icon-btn::after,.fy-neu::after,.s-loeschen::after,
-    .modal-x::after{
+    .modal-x::after,.mg-yes::after,.mg-no::after,.fa-ja::after,.fa-nein::after,
+    .map-fab::after{
       left:50%;right:auto;width:44px;transform:translate(-50%,-50%);
     }
 
@@ -4824,7 +4848,7 @@
     .gastleiste button{
       margin-left:auto;border:none;border-radius:980px;cursor:pointer;
       background:var(--grad-cta);color:#fff;
-      font-family:var(--font);font-size:.78rem;font-weight:800;padding:8px 15px;
+      font-family:var(--font);font-size:.78rem;font-weight:700;padding:8px 15px;
       -webkit-tap-highlight-color:transparent;
     }
     .konto-s{
@@ -6857,7 +6881,10 @@
     .mpro-zu{transition:opacity var(--takt-kurz) var(--kurve),transform var(--takt-kurz) var(--kurve)}
     @media(prefers-reduced-motion:reduce){
       .ptr.laeuft .ptr-voll{animation:ptrDreht 1.6s linear infinite}
-      .overlay:not(.open) .modal,#userProfOverlay:not(.open) .modal{transition:opacity var(--takt) ease}
+      /* Weniger Bewegung heisst ruhig ueberblenden, nicht springen:
+         --takt ist hier 1 ms, das Oeffnen dauert aber 200 ms. */
+      .overlay:not(.open) .modal,#userProfOverlay:not(.open) .modal{transition:opacity 160ms ease}
+      .overlay:not(.open){transition:opacity 160ms ease,visibility 0s linear 160ms}
     }
 
 
@@ -6962,7 +6989,10 @@
     #einsBuehne,#tourBuehne{touch-action:pan-y}
 
     /* Seite weicht hinter einem Fenster zurueck (siehe fensterOffenPruefen) */
-    .page{transform-origin:50% 0;transition:transform var(--feder-dauer) var(--feder),border-radius var(--feder-dauer) var(--feder)}
+    /* Nur transform animieren: ein animierter Radius auf dem ganzen
+       Scroll-Container zwingt WebKit zu einer Maske in jedem Bild.
+       Der Radius springt unter der Abdunkelung. */
+    .page{transform-origin:50% 0;transition:transform var(--feder-dauer) var(--feder)}
     body.fenster-offen:not(.tastatur-offen) .page.active{transform:scale(.94);border-radius:18px}
     @media(prefers-reduced-motion:reduce){ body.fenster-offen .page.active{transform:none;border-radius:0} }
 
@@ -7125,7 +7155,9 @@
     .pe-krone svg *{fill:#fff}
     .pe-warten .pe-krone{animation:peAtmen 1.6s ease-in-out infinite}
     .pe-fertig .pe-krone{animation:peSprung .6s cubic-bezier(.34,1.56,.64,1)}
-    @keyframes peAtmen{50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(255,45,118,.08)}}
+    /* Nur transform: der Schatten war wegen box-shadow:none!important (unten)
+       ohnehin unsichtbar, haette aber in jedem Bild neu gezeichnet. */
+    @keyframes peAtmen{50%{transform:scale(1.06)}}
     @keyframes peSprung{0%{transform:scale(.7)}100%{transform:scale(1)}}
     .pe-titel{font-size:1.45rem;font-weight:900;color:#fff;letter-spacing:-.02em}
     .pe-text{font-size:.92rem;color:var(--text2);max-width:300px;line-height:1.5}
@@ -7268,7 +7300,10 @@
       display:flex;justify-content:center;align-items:flex-start;padding-top:2px;
       -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 64px),transparent);
               mask-image:linear-gradient(to bottom,#000 calc(100% - 64px),transparent)}
-    .iphone-kamera{flex:none;will-change:transform}
+    /* Eigene GPU-Ebene nur fuer die sichtbare Tourkarte und die Pro-Werbung,
+       nicht fuer jede verdeckte Karte im DOM. */
+    .iphone-kamera{flex:none}
+    .tour-karte.on .iphone-kamera,.pw .iphone-kamera{will-change:transform}
     .iphone-fenster.mitte{padding-top:0;
       -webkit-mask-image:linear-gradient(to bottom,transparent,#000 56px,#000 calc(100% - 56px),transparent);
               mask-image:linear-gradient(to bottom,transparent,#000 56px,#000 calc(100% - 56px),transparent)}
@@ -7289,7 +7324,7 @@
     /* Tour-Motion */
     .iphone-finger{position:absolute;z-index:6;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
       background:rgba(255,255,255,.34);border:1.5px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(0,0,0,.35);
-      opacity:0;visibility:hidden;pointer-events:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+      opacity:0;visibility:hidden;pointer-events:none}
     /* Regeln, die in der App an einer ID haengen, fuer die Kopien */
     [data-tid="fySub"]{margin:-6px 16px 12px;font-size:.76rem;color:var(--muted)}
     [data-tid="detailKopf"] .modal-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -7365,7 +7400,8 @@
     .pw-recht{font-size:.64rem;line-height:1.4;color:var(--muted);margin-top:6px}
     .pw-links{display:flex;justify-content:center;gap:6px;font-size:.66rem;color:var(--muted);margin-top:4px}
     .pw-link{background:none;border:none;padding:0;color:var(--muted);font:inherit;text-decoration:underline;cursor:pointer}
-    .pw-spaeter{display:block;margin:6px auto 0;background:none;border:none;color:rgba(255,255,255,.6);font:600 .86rem var(--font);padding:8px 16px;cursor:pointer}
+    .pw-spaeter{display:block;margin:6px auto 0;background:none;border:none;color:rgba(255,255,255,.6);font:600 .86rem var(--font);padding:8px 16px;cursor:pointer;transition:opacity 140ms var(--kurve)}
+    .pw-spaeter:active{opacity:.6}
     .pw-zwei{position:relative}
     .pw-zwei>[data-tm="nach"]{opacity:0}
     @media (max-height:700px){.pw-v small{display:none}.pw-t{font-size:1.7rem}}
@@ -7443,7 +7479,7 @@
     .pf-knopf{min-height:44px!important;border-radius:12px!important;font-size:.94rem!important}
     /* Hauptknopf mittel und klein (Karten, Listen): immer Pink, nie die Weltfarbe */
     .card-cta,.schenk-ja,.bring-add button,.ein-send{min-height:44px!important;border-radius:12px!important;font-weight:700!important;letter-spacing:0!important}
-    .card-cta,.fy-go:not(.fy-go-voll),.popup-btn,.fy-empty-btn,.ze-knopf,.sh-send:not(.done),.nt-sys button,.bpt-knopf,
+    .card-cta,.fy-go:not(.fy-go-voll),.popup-btn,.fy-empty-btn,.ze-knopf,.sh-send:not(.done),.nt-sys button,.bpt-knopf,.gastleiste button,
     .mpro-btn,.mreq-yes,.nt-knopf.haupt,.fl-knopf.haupt,.btn-accent,.tb-knopf,.cpro-btn,.schenk-ja,.ein-send{
       background:var(--k-pink)!important;color:#fff!important;border-color:transparent!important;box-shadow:none!important}
     .fy-go,.fy-empty-btn,.ze-knopf,.sh-send,.bpt-knopf,.mpro-btn,.mreq-yes,.nt-knopf,.fl-knopf,.btn-accent,.tb-knopf,.cpro-btn,
@@ -7463,9 +7499,10 @@
     .settings-btn.danger,.danger-btn,.rep-danger,.schenk-weg,.cal-act.danger,.foto-knopf.gefahr,.sec-btn.vp-nein,.ein-mini.weg{
       color:var(--k-rot)!important;border-color:rgba(255,90,95,.3)!important;background:rgba(255,90,95,.08)!important}
     .settings-btn.danger .pk{color:var(--k-rot)!important}
-    .danger-btn.armed,.rep-danger.armed,.settings-btn.danger.armed,.mg-raus.armed,.sec-btn.vp-nein.armed{
+    .danger-btn.armed,.rep-danger.armed,.settings-btn.danger.armed,.mg-raus.armed,.sec-btn.vp-nein.armed,.ein-mini.weg.armed,.bring-del.armed,.ep-av-weg.armed{
       background:var(--k-rot)!important;color:#fff!important;border-color:transparent!important}
-    /* Textknopf: eine Linkfarbe */
+    /* Textknopf: eine Linkfarbe. Bewusst grau (Ausweg, nicht Aufforderung):
+       .konto-nein, .ort-nein, .pro-ang-nein, .pw-spaeter, .pw-link, .auth-vergessen */
     .tr-mehr,.such-kopf button,.fy-sub-knopf{color:var(--k-link)!important}
     /* Runde Symbolknoepfe in der Kopfzeile: rund statt eckig */
     .nav-bell,.nav-suche,.nav-icon-btn,.mg-yes,.mg-no,.fa-ja,.fa-nein{border-radius:50%!important}
@@ -7489,13 +7526,18 @@
       background:rgba(30,34,62,.97)!important;border:1px solid rgba(255,255,255,.08)!important;
       box-shadow:0 10px 28px rgba(0,0,0,.42)!important;gap:9px!important;
       font-size:.86rem!important;font-weight:500!important;letter-spacing:-.005em;
-      max-width:min(92vw,380px)!important;transform:translate(-50%,-16px) scale(.98)!important;transform-origin:50% 0!important;
-      transition:opacity 180ms var(--k-kurve),transform 320ms var(--k-kurve)!important}
-    .toast.show{transform:translate(-50%,0) scale(1)!important}
+      max-width:min(92vw,380px)!important;transform:translate(-50%,-16px) scale(.98);transform-origin:50% 0!important;
+      transition:opacity 180ms var(--k-kurve),transform 320ms var(--k-kurve)}
+    /* Ohne !important: die Wisch-Geste setzt transform/transition inline. */
+    .toast.show{transform:translate(-50%,0) scale(1)}
     .toast.ueber-tastatur{top:calc(env(safe-area-inset-top,0px) + 8px)!important}
     .toast-ic{flex:0 0 auto!important;width:auto!important;height:auto!important;background:none!important;border-radius:0!important}
     .toast-ic svg{width:17px!important;height:17px!important}
-    @media(prefers-reduced-motion:reduce){.toast,.toast.show{transform:translate(-50%,0)!important}}
+    @media(prefers-reduced-motion:reduce){.toast,.toast.show{transform:translate(-50%,0)}}
+    /* Waehrend GSAP ein transform fuehrt, keine CSS-Transition darauf –
+       sonst hinkt jedes Bild 140 ms hinterher und das Nachfedern verflacht. */
+    .gsap-an.gsap-an{transition:none!important}
+    .iphone-fenster[data-motion] *{transition-property:opacity,color,background-color,border-color!important}
 
   </style>
 </head>
@@ -7777,7 +7819,7 @@
       <button class="nav-suche" id="navSearchBtn" onclick="showPage('search')" aria-label="Nutzer suchen">
         <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <div class="nav-av js-nav-av" id="navAv" onclick="showPage('profile')"></div>
+      <div class="nav-av js-nav-av" id="navAv" role="button" tabindex="0" aria-label="Profil" onclick="showPage('profile')"></div>
     </div>
   </div>
 
@@ -7895,7 +7937,7 @@
         <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M20.2 3.8v4.6h-4.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.7" fill="url(#pkPink)"/><path transform="translate(18.6 17.6) scale(0.8)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
     </div>
-    <div class="oe-zurueck" id="oeReset" hidden onclick="oeFilterZuruecksetzen()">Filter zurücksetzen</div>
+    <div class="oe-zurueck" id="oeReset" hidden role="button" tabindex="0" onclick="oeFilterZuruecksetzen()">Filter zurücksetzen</div>
     <span class="oe-treffer" id="oeTreffer" hidden></span>
 
     <div class="fy-sub" id="fySub">Sortiert nach Nähe, Zeitpunkt und Andrang</div>
@@ -7959,7 +8001,7 @@
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="nav-av js-nav-av" onclick="showPage('profile')"></div>
+      <div class="nav-av js-nav-av" role="button" tabindex="0" aria-label="Profil" onclick="showPage('profile')"></div>
     </div>
   </div>
   <div class="chat-wrap">
@@ -7974,10 +8016,10 @@
 <div id="page-conv" class="page">
   <div class="conv-wrap">
     <div class="conv-hdr">
-      <button class="conv-back" onclick="convZurueck()">
+      <button class="conv-back" onclick="convZurueck()" aria-label="Zurück">
         <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg>
       </button>
-      <div class="chat-av" id="convAv" onclick="convProfilOeffnen()" style="cursor:pointer"></div>
+      <div class="chat-av" id="convAv" role="button" tabindex="0" aria-label="Profil" onclick="convProfilOeffnen()" style="cursor:pointer"></div>
       <div style="flex:1;min-width:0;cursor:pointer" onclick="convProfilOeffnen()">
         <div style="font-size:.95rem;font-weight:700;color:#fff" id="convName"></div>
         <div style="font-size:.75rem;color:var(--muted)" id="convSub"></div>
@@ -8026,7 +8068,7 @@
       </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="nav-av js-nav-av" onclick="showPage('profile')"></div>
+      <div class="nav-av js-nav-av" role="button" tabindex="0" aria-label="Profil" onclick="showPage('profile')"></div>
     </div>
   </div>
   <div class="calendar-wrap" id="calendarContent">
@@ -8187,7 +8229,7 @@
         </div>
         <div class="ep-av-knoepfe">
           <button type="button" class="ep-av-k" onclick="document.getElementById('avFile').click()">Bild ändern</button>
-          <button type="button" class="ep-av-k ep-av-weg" id="epAvWeg" onclick="avEntfernen()" hidden>Entfernen</button>
+          <button type="button" class="ep-av-k ep-av-weg" id="epAvWeg" onclick="avEntfernenTipp(this)" hidden>Entfernen</button>
         </div>
       </div>
       <div class="ep-sec">Über dich</div>
@@ -8271,18 +8313,18 @@
     <div class="create-panel" id="cpanel-1">
       <div class="cq">Was möchtest du erstellen?</div>
       <div class="cq-sub">Das legt fest, wer deine Party sehen kann.</div>
-      <div class="type-grid-pro">
-        <div class="type-card-pro sel-public" data-type="public" onclick="selTypePro('public',this)">
+      <div class="type-grid-pro" role="radiogroup" aria-label="Was möchtest du erstellen?">
+        <div class="type-card-pro sel-public" data-type="public" role="radio" aria-checked="true" tabindex="0" onclick="selTypePro('public',this)">
           <div class="tcp-icon" style="background:rgba(255,45,118,.12);color:#FF2D76"><svg class="pk" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="16" cy="8.4" r="2.8" fill="url(#pkViolett)"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="url(#pkViolett)" opacity=".55"/><path d="M13.6 14.2a5 5 0 0 1 7.9 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="8.4" r="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0z" fill="url(#pkPink)" opacity=".7"/><circle cx="8.8" cy="8.9" r="3.4" fill="url(#pkPink)"/><circle cx="8.8" cy="8.9" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 20.2a6.3 6.3 0 0 1 12.6 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Öffentliche Party</div><div class="tcp-desc">Jeder kann teilnehmen</div></div>
           <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
-        <div class="type-card-pro" data-type="private" onclick="selTypePro('private',this)">
+        <div class="type-card-pro" data-type="private" role="radio" aria-checked="false" tabindex="0" onclick="selTypePro('private',this)">
           <div class="tcp-icon" style="background:rgba(99,59,255,.12);color:#7C5CFC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Private Party</div><div class="tcp-desc">Nur mit persönlicher Einladung</div></div>
           <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
         </div>
-        <div class="type-card-pro" data-type="events" onclick="selTypePro('events',this)">
+        <div class="type-card-pro" data-type="events" role="radio" aria-checked="false" tabindex="0" onclick="selTypePro('events',this)">
           <div class="tcp-icon" style="background:rgba(255,215,0,.08);color:#FFD700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
           <div class="tcp-text"><div class="tcp-title">Event</div><div class="tcp-desc">Als Veranstalter oder Club</div></div>
           <div class="tcp-check"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
@@ -8526,7 +8568,7 @@
       </div>
 
       <div class="drink-box" id="drinkBox">
-        <div class="tog-row"><div><div class="drink-title">Getränkepauschale</div><div class="drink-sub">Getränke im Eintritt inbegriffen</div></div><button class="tog" id="drinkTog" onclick="togDrink()"></button></div>
+        <div class="tog-row"><div><div class="drink-title">Getränkepauschale</div><div class="drink-sub">Getränke im Eintritt inbegriffen</div></div><button class="tog" id="drinkTog" type="button" role="switch" aria-checked="false" aria-label="Getränkepauschale" onclick="togDrink()"></button></div>
         <div class="drink-fields" id="drinkFields">
           <div class="form-row" style="margin-top:12px">
             <div class="fg"><label>Betrag (CHF)</label><input type="number" id="fDrink" placeholder="z. B. 20" min="0" oninput="cPrevUpdate()"/></div>
@@ -8536,7 +8578,7 @@
       </div>
 
       <div class="drink-box">
-        <div class="tog-row"><div><div class="drink-title">Anmeldefrist</div><div class="drink-sub">Bis wann können sich Gäste anmelden?</div></div><button class="tog" id="deadlineTog" onclick="togDeadline()"></button></div>
+        <div class="tog-row"><div><div class="drink-title">Anmeldefrist</div><div class="drink-sub">Bis wann können sich Gäste anmelden?</div></div><button class="tog" id="deadlineTog" type="button" role="switch" aria-checked="false" aria-label="Anmeldefrist" onclick="togDeadline()"></button></div>
         <div class="drink-fields" id="deadlineFields">
           <div class="when-box" style="margin:12px 0 10px">
             <div class="when-day" id="dlSummary">—</div>
@@ -8566,7 +8608,7 @@
 
       <div class="cprev" id="cPrev"></div>
 
-      <div class="img-upload-pro" id="imgBox" onclick="document.getElementById('imgFile').click()">
+      <div class="img-upload-pro" id="imgBox" role="button" tabindex="0" onclick="document.getElementById('imgFile').click()">
         <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="prevImg(event)"/>
         <img alt="" loading="lazy" decoding="async" class="u-preview" id="imgPrev" style="display:none"/>
         <div class="u-overlay"><span>Bild ändern</span></div>
@@ -8904,7 +8946,7 @@
         </div>
         <div class="schenk-btns">
           <button class="schenk-ja" id="schenkBtn" onclick="proVerschenken()">Schenken</button>
-          <button class="schenk-weg" onclick="proZurueck()">Zurücknehmen</button>
+          <button class="schenk-weg" onclick="knopfWaehrend(this,proZurueck())">Zurücknehmen</button>
         </div>
         <div class="ein-leer" id="schenkStand" hidden></div>
 
@@ -8917,7 +8959,7 @@
         </div>
         <div class="schenk-btns">
           <button class="schenk-ja" id="d1Btn" onclick="dayOneVergeben()">Vergeben</button>
-          <button class="schenk-weg" onclick="dayOneEntfernen()">Entfernen</button>
+          <button class="schenk-weg" onclick="knopfWaehrend(this,dayOneEntfernen())">Entfernen</button>
         </div>
         <div class="ein-leer" id="d1Stand" hidden></div>
       </div>
@@ -9924,11 +9966,14 @@ function evIconKey(e){
    nicht mit offener Tastatur, nicht bei "Weniger Bewegung". */
 function fensterOffenPruefen(){
   const offen=[...document.querySelectorAll('.overlay.open')].some(o=>!o.classList.contains('up-vollseite'));
-  document.body.classList.toggle('fenster-offen',offen);
+  /* Die Vollbild-Karte liegt fixed in #page-main – ein transform auf der
+     Seite wuerde sie mitnehmen (sie sprang um scrollTop nach oben). */
+  const karteVoll=!!document.querySelector('#mapWrap.voll');
+  document.body.classList.toggle('fenster-offen',offen&&!karteVoll);
 }
 function seiteZurueck(anteil){
   const s=document.querySelector('.page.active');
-  if(!s)return;
+  if(!s||document.querySelector('#mapWrap.voll'))return;
   if(anteil==null){ s.style.transform=''; s.style.transition=''; return; }
   s.style.transition='none';
   s.style.transform='scale('+(.94+.06*anteil).toFixed(4)+')';
@@ -10028,6 +10073,9 @@ function initSwipeToClose(){
         uebergabe=scrollerVon(e.target);
         hoehe=modal.offsetHeight||1;
       }
+      modal.removeEventListener('touchmove',blattZug);
+      if(zieht||(uebergabe&&(uebergabe.scrollTop||0)<=hoehe*0.5))
+        modal.addEventListener('touchmove',blattZug,{passive:false});
       if(!zieht||!overlay.classList.contains('open'))return;
       if(lauf){ basis=lauf.stop().wert; lauf=null; }
       else basis=Bewegung.live(modal,'y');   // auch mitten im Aufgehen
@@ -10047,7 +10095,10 @@ function initSwipeToClose(){
       if(basis!==0){ modal.style.transition='none'; setze(basis); }
     },{passive:true});
 
-    modal.addEventListener('touchmove',e=>{
+    /* Nicht-passiv nur waehrend einer moeglichen Blatt-Geste (wie beim
+       Ziehen zum Aktualisieren) – sonst wartet iOS vor jedem Scrollen
+       im Fenster auf den Haupt-Thread. */
+    const blattZug=e=>{
       if(!zieht&&uebergabe){
         const yy=e.touches[0].clientY;
         if(uebergabe.scrollTop<=0&&e.touches.length===1){
@@ -10093,9 +10144,10 @@ function initSwipeToClose(){
       dy=ziel;
       setze(dy);
       mess.add(dy);
-    },{passive:false});
+    };
 
     const loslassen=()=>{
+      modal.removeEventListener('touchmove',blattZug);
       if(!zieht)return;
       zieht=false;
       const v=mess.v();
@@ -10239,7 +10291,9 @@ async function loadSearchHistory(){
 
 async function clearSearchHistory(){
   if(!cUser)return;
-  await sb.from("search_history").delete().eq("user_id",cUser.id);
+  const{error}=await sb.from("search_history").delete().eq("user_id",cUser.id);
+  // Nichts scheitert stumm
+  if(error){ console.warn('[suche] verlauf loeschen',error); toast(fehlerText(error),'error'); return; }
   document.getElementById("userSearchResults").innerHTML="";
 }
 
@@ -10709,13 +10763,17 @@ function tourAnzahl(){ return (TOUREN[tourSatz]||[]).length; }
    Weiterblaettern sauber gestoppt (Werte zurueck). Emil: starkes
    Ease-out, kurze Antworten auf das Tippen, nie aus scale(0).
    Weniger Bewegung: gar nichts davon (mitGsap). */
-let tourMotionStopp=null;
+let tourMotionStopp=null, tourMotionNr=0;
 function tourMotion(karte){
   if(tourMotionStopp){ tourMotionStopp(); tourMotionStopp=null; }
+  /* mitGsap kann verspaetet zurueckrufen (GSAP laedt noch) – dann darf
+     keine Endlos-Timeline mehr auf einer alten Karte starten. */
+  const nr=++tourMotionNr;
   const f=karte&&karte.querySelector('.iphone-fenster');
   if(!f)return;
   const art=f.dataset.motion;
   mitGsap((gsap,fertig)=>{
+    if(nr!==tourMotionNr||!f.isConnected){ fertig(); return; }
     const $=(sel)=>f.querySelector(sel);
     const ease='power3.out';
     const handy=$('.iphone'), schirm=$('.iphone-schirm'), finger=$('.iphone-finger');
@@ -10770,8 +10828,11 @@ function tourMotion(karte){
       const neu=$('[data-tm="neu"]');
       gsap.set(neu,{height:0,autoAlpha:0,overflow:'hidden'});
       tl.set(neu,{height:0,autoAlpha:0,overflow:'hidden'})
-        .to(neu,{height:'auto',duration:.45,ease:'expo.out'},'+=.4')
-        .to(neu,{autoAlpha:1,duration:.3},'<.1')
+        /* Platz sofort, dann nur transform/opacity – keine Hoehe, die
+           in jedem Bild den ganzen Mock neu layoutet. */
+        .to(neu,{height:'auto',duration:.01},'+=.4')
+        .fromTo(neu,{y:8},{y:0,duration:.3,ease:'expo.out'},'<')
+        .to(neu,{autoAlpha:1,duration:.3},'<')
         .to({}, {duration:2.4});
     }
     if(art==='plus'){
@@ -11102,7 +11163,7 @@ function tourBeispielProfil(markiere,fremd){
    nur mit Beispiel-Person */
 function tourFremdesProfil(schreiben){
   const stat=(z,t)=>'<div class="insta-stat"><div class="insta-stat-num">'+z+'</div><div class="insta-stat-lbl">'+t+'</div></div>';
-  const kopf='<div class="up-kopf"><button class="up-zurueck"><svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg></button>'
+  const kopf='<div class="up-kopf"><button class="up-zurueck" aria-hidden="true" tabindex="-1"><svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m14.5 5.8-6.2 6.2 6.2 6.2"/></svg></button>'
     +'<div class="up-kopf-titel">lena.meier</div><div class="up2-kopfaktion"></div></div>';
   const body='<div class="up-rolle"><div class="prof-wrap-insta up-seite">'
     +'<div class="prof-header"><div class="insta-av"><span>L</span></div><div class="prof-stats-row">'+stat(4,'Partys')+stat(212,'Follower')+stat(180,'Folgt')+'</div></div>'
@@ -11287,6 +11348,7 @@ function tourZurueck(){
 
 
 function tourFertig(){
+  tourMotionNr++;
   if(tourMotionStopp){ tourMotionStopp(); tourMotionStopp=null; }
   try{ localStorage.setItem(tourSatz==='pro'?TOUR_PRO_SCHLUESSEL:TOUR_SCHLUESSEL,'1'); }catch(e){}
   kontoMerkmalSetzen(tourSatz==='pro'?'tour_pro':'tour_start');
@@ -11437,7 +11499,16 @@ function proWerbungZeigen(weiter){
     el.classList.remove('da'); setTimeout(()=>{ el.remove(); (dann||weiter)&&(dann||weiter)(); },280); };
   el.querySelector('.pw-zu').onclick=()=>schliessen();
   el.querySelector('.pw-spaeter').onclick=()=>schliessen();
-  el.querySelector('.pw-cta').onclick=()=>schliessen(()=>{ startProUpgrade(); });
+  /* In der App bleibt die Werbung offen und der Knopf zeigt den Ladezustand,
+     bis das Kauf-Fenster von Apple da ist – vorher schloss sie sich, und
+     bis Apple kam, passierte sichtbar nichts. */
+  el.querySelector('.pw-cta').onclick=function(){
+    if(!istApp()||!cUser)return schliessen(()=>{ startProUpgrade(); });
+    if(this.disabled)return;
+    Promise.resolve(startProUpgrade(this))
+      .catch(e=>console.warn('[pro] kauf aus der Werbung',e))
+      .finally(()=>schliessen(()=>{}));
+  };
   const w=el.querySelector('.pw-wieder'); if(w)w.onclick=()=>schliessen(()=>{ proWiederherstellen(); });
   /* Masse wie in der Tour: Handy 1:1, Ausschnitt so hoch wie Platz da ist */
   const wurzel=document.documentElement.style;
@@ -11448,6 +11519,7 @@ function proWerbungZeigen(weiter){
     tourAusrichten(el);
     el.classList.add('da');
     mitGsap((gsap,fertig)=>{
+      if(zu||!el.isConnected){ fertig(); return; }
       const vor=el.querySelector('[data-tm="vor"]'), nach=el.querySelector('[data-tm="nach"]');
       gsap.fromTo(el.querySelector('.iphone'),{y:40,autoAlpha:0},{y:0,autoAlpha:1,duration:.6,ease:'expo.out',delay:.05});
       gsap.fromTo(el.querySelectorAll('.pw-t,.pw-s,.pw-v,.pw-fuss>*'),{y:12,autoAlpha:0},{y:0,autoAlpha:1,duration:.45,ease:'power3.out',stagger:.05,delay:.2});
@@ -11455,12 +11527,13 @@ function proWerbungZeigen(weiter){
       gsap.set(nach,{autoAlpha:0});
       tl.set(nach,{autoAlpha:0}).set(vor,{autoAlpha:1})
         .to({}, {duration:1.1})
-        /* der Wechsel: kurz unscharf, dann stehen die Namen da */
-        .to(vor,{filter:'blur(6px)',autoAlpha:0,duration:.35,ease:'power2.in'})
-        .fromTo(nach,{filter:'blur(6px)',autoAlpha:0},{filter:'blur(0px)',autoAlpha:1,duration:.45,ease:'expo.out'},'<.15')
+        /* der Wechsel: ueberblenden mit leichtem Massstab – keine
+           animierte Unschaerfe in der Endlosschleife (teuer auf grosser Flaeche) */
+        .to(vor,{autoAlpha:0,scale:.98,duration:.25,ease:'power2.out'})
+        .fromTo(nach,{autoAlpha:0,scale:1.02},{autoAlpha:1,scale:1,duration:.35,ease:'expo.out'},'<.08')
         .fromTo(nach.querySelectorAll('.fr-av span'),{scale:.7},{scale:1,duration:.4,ease:'back.out(2)',stagger:.08},'<.1')
         .to({}, {duration:2.4})
-        .to(nach,{autoAlpha:0,duration:.3}).to(vor,{autoAlpha:1,filter:'blur(0px)',duration:.3},'<');
+        .to(nach,{autoAlpha:0,duration:.3}).to(vor,{autoAlpha:1,scale:1,duration:.3},'<');
       el._stopp=()=>{ tl.kill(); fertig(); };
     });
   });
@@ -15470,7 +15543,8 @@ function zusageFeiern(btn){
     if(ctx.conditions.wenig)return;
     /* Von 0.96, nie aus dem Nichts; leichtes Nachfedern ist hier gewollt –
        es ist der eine Moment, der sich nach Erfolg anfuehlen soll. */
-    tl.fromTo(btn,{scale:.96},{scale:1,duration:.45,ease:'back.out(1.6)'},0);
+    btn.classList.add('gsap-an');
+    tl.fromTo(btn,{scale:.96},{scale:1,duration:.45,ease:'back.out(1.6)',onComplete:()=>btn.classList.remove('gsap-an')},0);
     const r=btn.getBoundingClientRect();
     const cx=r.left+r.width/2, cy=r.top+r.height/2, n=12;
     const farben=['#FF2D76','#FF5A45','#633BFF','#54A7FF','#4ade80'];
@@ -16883,6 +16957,23 @@ function epAvZeichnen(){
 /* Profilbild wieder entfernen – das fehlte: wer einmal ein Bild hatte,
    konnte es nur ersetzen. Die Datei wird geloescht, das Profil zeigt
    wieder die Initiale. */
+/* Das Bild wird geloescht – darum ein zweiter Tipp (wie Blockieren). */
+function avEntfernenTipp(btn){
+  if(!btn)return avEntfernen();
+  if(btn.disabled)return;
+  if(!btn.classList.contains('armed')){
+    btn.dataset.text=btn.textContent;
+    btn.classList.add('armed');
+    btn.textContent='Wirklich entfernen? Nochmals tippen';
+    btn._uhr=setTimeout(()=>{ if(btn.isConnected){ btn.classList.remove('armed'); btn.textContent=btn.dataset.text; } },4000);
+    return;
+  }
+  clearTimeout(btn._uhr);
+  btn.disabled=true;
+  Promise.resolve(avEntfernen())
+    .catch(e=>{ console.warn('[bild] entfernen',e); toast(fehlerText(e),'error'); })
+    .finally(()=>{ if(btn.isConnected){ btn.disabled=false; btn.classList.remove('armed'); btn.textContent=btn.dataset.text||'Entfernen'; } });
+}
 async function avEntfernen(){
   if(!cUser||!cProfile?.avatar_url||avLaeuft)return;
   avLaeuft=true;
@@ -17400,10 +17491,10 @@ function renderProPage(){
     </div>`;
 }
 
-async function startProUpgrade(){
+async function startProUpgrade(knopf){
   if(!cUser){kontoNoetig();return;}
   // In der iPhone-App schreibt Apple den Kaufweg vor
-  if(istApp()){ await proKaufenApple(); return; }
+  if(istApp()){ await proKaufenApple(knopf); return; }
   // Preis CHF 3.00 – gleiche Zahl wie im Apple-Kauf. Der alte Link mit 2.99
   // bleibt in Stripe bestehen, damit bisherige Abonnenten ihren Preis behalten.
   const STRIPE_PAYMENT_LINK='https://buy.stripe.com/eVq8wR4Z73OUbUg9LebAs01';
@@ -18725,11 +18816,14 @@ async function validateStep(step){
    Untertitel, Auswahl. Kurz (unter 400 ms), starkes Ease-out, aus der
    Richtung, in die man blaettert. Weniger Bewegung: nichts davon. */
 function schrittTeileZeigen(panel,richtung){
-  if(!window.gsap||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  /* true = GSAP fuehrt; dann laeuft die CSS-Animation des Panels nicht
+     zusaetzlich (sonst doppelter Weg und alles erst nach ~540 ms). */
+  if(!window.gsap||matchMedia('(prefers-reduced-motion: reduce)').matches)return false;
   const teile=[...panel.children].filter(el=>el.offsetParent!==null).slice(0,6);
-  if(!teile.length)return;
+  if(!teile.length)return false;
   const dx=richtung==='reinL'?-14:14;
-  window.gsap.fromTo(teile,{autoAlpha:0,x:dx},{autoAlpha:1,x:0,duration:.34,ease:'power3.out',stagger:.04,clearProps:'transform,opacity,visibility'});
+  window.gsap.fromTo(teile,{autoAlpha:0,x:dx},{autoAlpha:1,x:0,duration:.26,ease:'power3.out',stagger:.035,clearProps:'transform,opacity,visibility'});
+  return true;
 }
 async function goCreateStep(step,silent){
   if(!silent&&step>cStep&&!(await validateStep(cStep)))return;
@@ -18742,7 +18836,7 @@ async function goCreateStep(step,silent){
     if(!p)continue;
     p.style.display=(i===step)?'block':'none';
     p.classList.remove('rein','reinL');
-    if(i===step&&step!==cStep){ void p.offsetWidth; p.classList.add(richtung); schrittTeileZeigen(p,richtung); }
+    if(i===step&&step!==cStep){ if(!schrittTeileZeigen(p,richtung)){ void p.offsetWidth; p.classList.add(richtung); } }
   }
   cStep=step;
 
@@ -18990,7 +19084,7 @@ function cPrevUpdate(){
 function csetOn(groupId,el){
   document.querySelectorAll('#'+groupId+' .cset').forEach(b=>b.classList.toggle('on',b===el));
   if(el&&window.gsap&&!matchMedia('(prefers-reduced-motion: reduce)').matches)
-    window.gsap.fromTo(el,{scale:.94},{scale:1,duration:.32,ease:'back.out(2.4)',clearProps:'transform'});
+    { el.classList.add('gsap-an'); window.gsap.fromTo(el,{scale:.94},{scale:1,duration:.32,ease:'back.out(2.4)',clearProps:'transform',onComplete:()=>el.classList.remove('gsap-an')}); }
 }
 /* Die Gebühr hängt an Eintritt und Gästezahl, und die Frage nach den
    Zahlarten hängt am Eintritt. Beides wurde bisher nur nachgerechnet,
@@ -19032,8 +19126,9 @@ function selTypePro(type,el){
   currentType=type;
   document.querySelectorAll('.type-card-pro').forEach(c=>{
     c.className='type-card-pro';
+    c.setAttribute('aria-checked','false');
   });
-  if(el)el.classList.add('sel-'+type);
+  if(el){ el.classList.add('sel-'+type); el.setAttribute('aria-checked','true'); }
   // Show verify step for events
   const vs=document.getElementById('verify-step');
   if(vs)vs.style.display=type==='events'?'block':'none';
@@ -19455,6 +19550,16 @@ function submitVerify(){
   toast('Angaben gespeichert. Wir schauen sie an.','info');
 }
 
+/* VoiceOver: aria-checked folgt der Klasse .on – egal, wo sie gesetzt
+   wird (Umschalten, Zuruecksetzen, Bearbeiten laden). */
+{ const ariaSync=el=>el.setAttribute('aria-checked',el.classList.contains('on')?'true':'false');
+  const los=()=>['drinkTog','deadlineTog'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    ariaSync(el);
+    new MutationObserver(()=>ariaSync(el)).observe(el,{attributes:true,attributeFilter:['class']});
+  });
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',los); else los();
+}
 function togDrink(){
   drinkOn=!drinkOn;
   document.getElementById('drinkTog').classList.toggle('on',drinkOn);
@@ -19729,7 +19834,8 @@ async function amKnopfOnline(){
   if(!ruhig&&window.gsap){
     const haken=btn.querySelector('.knopf-haken path'), l=haken.getTotalLength?haken.getTotalLength():24;
     window.gsap.fromTo(haken,{strokeDasharray:l,strokeDashoffset:l},{strokeDashoffset:0,duration:.34,ease:'power2.out'});
-    window.gsap.fromTo(btn,{scale:.97},{scale:1,duration:.45,ease:'back.out(2)'});
+    btn.classList.add('gsap-an');
+    window.gsap.fromTo(btn,{scale:.97},{scale:1,duration:.45,ease:'back.out(2)',onComplete:()=>btn.classList.remove('gsap-an')});
     window.gsap.fromTo(btn.querySelector('span'),{autoAlpha:0,x:-6},{autoAlpha:1,x:0,duration:.3,ease:'power3.out',delay:.12});
   }
   await new Promise(r=>setTimeout(r,ruhig?450:850));
@@ -20015,7 +20121,7 @@ async function openUserProf(userId,zurueck){
     body.innerHTML='<div class="up-blockiert"><div class="bes-ic">'+pikto('blockiert',26)+'</div>'
       +'<b>Du hast diese Person blockiert</b>'
       +'<span>Ihr seht euch gegenseitig nicht. Hebst du die Blockierung auf, könnt ihr euch wieder folgen und schreiben.</span>'
-      +'<button class="nt-knopf" onclick="unblockUser(\''+p.id+'\').then(ok=>{if(ok)openUserProf(\''+p.id+'\',true);})">Blockierung aufheben</button></div>';
+      +'<button class="nt-knopf" onclick="const b=this;b.disabled=true;Promise.resolve(unblockUser(\''+p.id+'\')).then(ok=>{if(ok)openUserProf(\''+p.id+'\',true);else b.disabled=false;})">Blockierung aufheben</button></div>';
     return;
   }
 
@@ -20570,7 +20676,7 @@ async function renderInviteCard(eventId){
       +(weg?'':'<div class="ein-akt">'
         +'<button class="ein-send" onclick="einladungTeilen(\''+l.code+'\',\''+eventId+'\',\''+String(l.label||'').replace(/['"\\<>&]/g,'')+'\')">'
           +EIN_SVG.teilen+'Senden</button>'
-        +'<button class="ein-mini weg" onclick="einladungLoeschen(\''+l.id+'\',\''+eventId+'\')" aria-label="Löschen">'+EIN_SVG.muell+'</button>'
+        +'<button class="ein-mini weg" onclick="einladungLoeschenTipp(this,\''+l.id+'\',\''+eventId+'\')" aria-label="Löschen">'+EIN_SVG.muell+'</button>'
       +'</div>')
       +'</div>';
   }).join('');
@@ -20633,8 +20739,14 @@ async function einladungsartWechseln(eventId,persoenlich){
   renderInviteCard(eventId);
 }
 
+let linkErneuernLaeuft=false;
 async function offenenLinkErneuern(eventId){
-  const{error}=await sb.rpc('offenen_link_erneuern',{p_event:eventId});
+  // Ein Link (a) laesst sich nicht sperren – darum ueber eine Marke
+  if(linkErneuernLaeuft)return;
+  linkErneuernLaeuft=true;
+  let error;
+  try{ ({error}=await sb.rpc('offenen_link_erneuern',{p_event:eventId})); }
+  finally{ linkErneuernLaeuft=false; }
   if(error){toast(fehlerText(error),'error');return;}
   toast('Neuer Link erstellt. Der alte gilt nicht mehr.','success');
   renderInviteCard(eventId);
@@ -20692,6 +20804,33 @@ async function einladungTeilen(code,eventId,label){
 async function einladungKopieren(code){
   try{ await navigator.clipboard.writeText(einladungUrl(code)); amKnopfMelden('Kopiert'); }
   catch(err){ toast('Kopieren hat nicht geklappt. Halte den Link gedrückt und kopier ihn von Hand.','warn'); }
+}
+
+/* Zwei Tipps fuer Symbol-Knoepfe ohne Text (Muelleimer): erster Tipp
+   macht den Knopf rot ("armed") und sagt es per Hinweis und aria-label,
+   der zweite fuehrt aus. Waehrend des Aufrufs gesperrt. */
+function symbolZweiTipp(btn,los,frage){
+  if(!btn)return los();
+  if(btn.disabled)return;
+  if(!btn.classList.contains('armed')){
+    btn.dataset.text=btn.getAttribute('aria-label')||'';
+    btn.classList.add('armed');
+    btn.setAttribute('aria-label',frage);
+    toast(frage,'warn');
+    btn._uhr=setTimeout(()=>{ if(btn.isConnected){ btn.classList.remove('armed'); btn.setAttribute('aria-label',btn.dataset.text); } },4000);
+    return;
+  }
+  clearTimeout(btn._uhr);
+  btn.disabled=true;
+  // Promise.resolve: der Doppeltipp-Schutz (SCHREIBEND) gibt sonst undefined zurueck
+  Promise.resolve(los())
+    .catch(e=>{ console.warn('[knopf] zweiter Tipp',e); toast(fehlerText(e),'error'); })
+    .finally(()=>{ if(btn.isConnected){ btn.disabled=false; btn.classList.remove('armed'); btn.setAttribute('aria-label',btn.dataset.text); } });
+}
+/* Ein geloeschter Link ist sofort tot – wer ihn schon verschickt hat,
+   merkt es erst an den Gaesten. */
+function einladungLoeschenTipp(btn,id,eventId){
+  symbolZweiTipp(btn,()=>einladungLoeschen(id,eventId),'Wirklich löschen? Nochmals tippen');
 }
 
 async function einladungLoeschen(id,eventId){
@@ -20997,7 +21136,7 @@ function gruppeZeichnen(g){
         +'<button class="copy-btn" onclick="gruppeTeilen(\''+g.code+'\',\''+escAttr(String(g.name||'').replace(/[\'\\"<>&]/g,''))+'\')">Teilen</button></div>'
       : '')
     +'<div class="danger-zone"><div class="danger-lbl">Gruppe verlassen</div>'
-      +'<button class="danger-btn" onclick="gruppeVerlassen(\''+g.id+'\')">Verlassen</button>'
+      +'<button class="danger-btn" onclick="gruppeVerlassenTipp(this,\''+g.id+'\')">Verlassen</button>'
       +'<div class="danger-hint">'+(g.gruender
           ? 'Bist du die letzte Person, löst sich die Gruppe auf. Sonst übernimmt das älteste Mitglied.'
           : 'Du siehst die Gruppe und ihren Chat danach nicht mehr.')+'</div></div>';
@@ -21128,6 +21267,26 @@ async function gruppeEntscheiden(btn,gid,uid,ja){
     setTimeout(()=>zeileWeg(zeile),1400);
   }
   gruppenLaden();
+}
+
+/* Verlassen braucht einen zweiten Tipp (wie Blockieren): ist der Gruender
+   der Letzte, loest sich die Gruppe unwiderruflich auf. Waehrend des
+   Aufrufs gesperrt, damit ein Doppeltipp ihn nicht zweimal schickt. */
+function gruppeVerlassenTipp(btn,gid){
+  if(!btn)return gruppeVerlassen(gid);
+  if(btn.disabled)return;
+  if(!btn.classList.contains('armed')){
+    btn.dataset.text=btn.textContent;
+    btn.classList.add('armed');
+    btn.textContent='Wirklich verlassen? Nochmals tippen';
+    btn._uhr=setTimeout(()=>{ if(btn.isConnected){ btn.classList.remove('armed'); btn.textContent=btn.dataset.text; } },4000);
+    return;
+  }
+  clearTimeout(btn._uhr);
+  btn.disabled=true;
+  Promise.resolve(gruppeVerlassen(gid))
+    .catch(e=>{ console.warn('[gruppe] verlassen',e); toast(fehlerText(e),'error'); })
+    .finally(()=>{ if(btn.isConnected){ btn.disabled=false; btn.classList.remove('armed'); btn.textContent=btn.dataset.text||'Verlassen'; } });
 }
 
 async function gruppeVerlassen(gid){
@@ -22406,6 +22565,7 @@ const I18N_PAT=[
   [/^(\d+) Partys?$/,{en:"$1 parties", fr:"$1 soirées", it:"$1 feste"}],
   [/^Danach (.+) pro Monat\. Jederzeit kündbar\.$/,{en:"Then $1 per month. Cancel anytime.", fr:"Ensuite $1 par mois. Résiliable à tout moment.", it:"Poi $1 al mese. Disdici quando vuoi."}],
   [/^(.+) pro Monat\. Jederzeit kündbar\.$/,{en:"$1 per month. Cancel anytime.", fr:"$1 par mois. Résiliable à tout moment.", it:"$1 al mese. Disdici quando vuoi."}],
+  [/^7 Tage gratis, danach Laufzeit 1 Monat für (.+?)\. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst\. In der Testwoche jederzeit kostenlos kündbar\. Verwaltung in den iPhone-Einstellungen\.$/,{en:"7 days free, then 1 month for $1. Renews automatically for 1 month at a time unless you cancel at least 24 hours before it ends. Cancel free anytime during the trial week. Manage it in your iPhone settings.", fr:"7 jours gratuits, puis 1 mois pour $1. Se renouvelle automatiquement d’un mois si tu ne résilies pas au moins 24 heures avant la fin. Résiliable gratuitement pendant la semaine d’essai. Gestion dans les réglages de l’iPhone.", it:"7 giorni gratis, poi 1 mese a $1. Si rinnova automaticamente di 1 mese se non disdici almeno 24 ore prima della scadenza. Disdetta gratuita durante la settimana di prova. Gestione nelle impostazioni dell’iPhone."}],
   [/^7 Tage gratis, danach Laufzeit 1 Monat für (.+?)\. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst\. In der Testwoche jederzeit kostenlos kündbar\.(.*)$/,{en:"7 days free, then 1 month for $1. Renews automatically for 1 month at a time unless you cancel at least 24 hours before it ends. Cancel free anytime during the trial week.", fr:"7 jours gratuits, puis 1 mois pour $1. Se renouvelle automatiquement d’un mois si tu ne résilies pas au moins 24 heures avant la fin. Résiliable gratuitement pendant la semaine d’essai.", it:"7 giorni gratis, poi 1 mese a $1. Si rinnova automaticamente di 1 mese se non disdici almeno 24 ore prima della scadenza. Disdetta gratuita durante la settimana di prova."}],
   [/^(\d+) neue Party$/,{en:"$1 new party", fr:"$1 nouvelle soirée", it:"$1 nuova festa"}],
   [/^(\d+) neue Partys$/,{en:"$1 new parties", fr:"$1 nouvelles soirées", it:"$1 nuove feste"}],
@@ -22415,6 +22575,36 @@ const I18N_PAT=[
   [/^Party starten$/,{en:"Start a party", fr:"Lancer une soirée", it:"Organizza una festa"}],
   [/^HEUTE( · .+)?$/,{en:"TODAY$1", fr:"AUJOURD’HUI$1", it:"OGGI$1"}],
   [/^MORGEN( · .+)?$/,{en:"TOMORROW$1", fr:"DEMAIN$1", it:"DOMANI$1"}],
+  // Übersetzungs-Durchgang 22.10.
+  [/^Laufzeit 1 Monat für (.+?)\. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst\. Verwaltung in den iPhone-Einstellungen\.$/,{en:"1 month for $1. Renews automatically for 1 month at a time unless you cancel at least 24 hours before it ends. Manage it in your iPhone settings.", fr:"1 mois pour $1. Se renouvelle automatiquement d’un mois si tu ne résilies pas au moins 24 heures avant la fin. Gestion dans les réglages de l’iPhone.", it:"1 mese a $1. Si rinnova automaticamente di 1 mese se non disdici almeno 24 ore prima della scadenza. Gestione nelle impostazioni dell’iPhone."}],
+  [/^Laufzeit 1 Monat für (.+?)\. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst\.$/,{en:"1 month for $1. Renews automatically for 1 month at a time unless you cancel at least 24 hours before it ends.", fr:"1 mois pour $1. Se renouvelle automatiquement d’un mois si tu ne résilies pas au moins 24 heures avant la fin.", it:"1 mese a $1. Si rinnova automaticamente di 1 mese se non disdici almeno 24 ore prima della scadenza."}],
+  [/^@(.+) ist schon vergeben\. Probier einen anderen\.$/,{en:"@$1 is already taken. Try another one.", fr:"@$1 est déjà pris. Essaie un autre.", it:"@$1 è già occupato. Provane un altro."}],
+  [/^Du bist jetzt im anderen Konto$/,{en:"You’re now in the other account", fr:"Tu es maintenant dans l’autre compte", it:"Ora sei nell’altro account"}],
+  [/^Du bist jetzt (.+)$/,{en:"You’re now $1", fr:"Tu es maintenant $1", it:"Ora sei $1"}],
+  [/^Läuft gerade · seit (.+)$/,{en:"On now · since $1", fr:"En cours · depuis $1", it:"In corso · da $1"}],
+  [/^(?!\d)(.+) ist dabei$/,{en:"$1 is going", fr:"$1 y va", it:"$1 ci va"}],
+  [/^1 Party anzeigen$/,{en:"Show 1 party", fr:"Afficher 1 soirée", it:"Mostra 1 festa"}],
+  [/^(\d+) Partys anzeigen$/,{en:"Show $1 parties", fr:"Afficher $1 soirées", it:"Mostra $1 feste"}],
+  [/^(\d+) kommen$/,{en:"$1 are coming", fr:"$1 viennent", it:"$1 vengono"}],
+  [/^bis (\d+) Gäste$/,{en:"up to $1 guests", fr:"jusqu’à $1 invités", it:"fino a $1 ospiti"}],
+  [/^über (\d+) Gäste$/,{en:"over $1 guests", fr:"plus de $1 invités", it:"oltre $1 ospiti"}],
+  [/^@(.+) · Folgt dir$/,{en:"@$1 · Follows you", fr:"@$1 · Te suit", it:"@$1 · Ti segue"}],
+  [/^(\d+) aus der Gruppe kommen$/,{en:"$1 from the group are going", fr:"$1 du groupe y vont", it:"$1 del gruppo ci vanno"}],
+  [/^Gegründet von (.+) am (.+)$/,{en:"Started by $1 on $2", fr:"Créé par $1 le $2", it:"Creato da $1 il $2"}],
+  [/^Party erstellt, aber nicht in der Gruppe geteilt: (.+)$/,{en:"Party created, but not shared in the group: $1", fr:"Soirée créée, mais pas partagée dans le groupe : $1", it:"Festa creata, ma non condivisa nel gruppo: $1"}],
+  [/^In der Gruppe geteilt\. 1 Person eingeladen$/,{en:"Shared in the group. 1 person invited", fr:"Partagé dans le groupe. 1 personne invitée", it:"Condiviso nel gruppo. 1 persona invitata"}],
+  [/^In der Gruppe geteilt\. (\d+) Personen eingeladen$/,{en:"Shared in the group. $1 people invited", fr:"Partagé dans le groupe. $1 personnes invitées", it:"Condiviso nel gruppo. $1 persone invitate"}],
+  [/^Anfragen \((\d+)\)$/,{en:"Requests ($1)", fr:"Demandes ($1)", it:"Richieste ($1)"}],
+  [/^(\d{1,2}:\d{2}) Uhr \(am nächsten Morgen\)$/,{en:"$1 (next morning)", fr:"$1 (le lendemain matin)", it:"$1 (la mattina dopo)"}],
+  [/^(.+) bringt das mit$/,{en:"$1 is bringing this", fr:"$1 apporte ça", it:"$1 porta questo"}],
+  [/^Noch nicht sichtbar\. Gebühr von (.+) offen$/,{en:"Not visible yet. $1 fee outstanding", fr:"Pas encore visible. Frais de $1 en attente", it:"Non ancora visibile. Tariffa di $1 da pagare"}],
+  [/^(.+) und 1 weitere Person$/,{en:"$1 and 1 more person", fr:"$1 et 1 autre personne", it:"$1 e 1 altra persona"}],
+  [/^(.+) und (\d+) weitere Personen$/,{en:"$1 and $2 more people", fr:"$1 et $2 autres personnes", it:"$1 e altre $2 persone"}],
+  [/^Keine Benachrichtigungen von (.+)$/,{en:"No notifications from $1", fr:"Pas de notifications de $1", it:"Nessuna notifica da $1"}],
+  [/^Nur bei dir\. Schreibt (.+) wieder, ist der Chat zurück\.$/,{en:"Only for you. If $1 writes again, the chat comes back.", fr:"Seulement chez toi. Si $1 réécrit, le chat revient.", it:"Solo per te. Se $1 scrive di nuovo, la chat torna."}],
+  [/^Willkommen bei Pro, (.+)$/,{en:"Welcome to Pro, $1", fr:"Bienvenue dans Pro, $1", it:"Eccoti in Pro, $1"}],
+  [/^Kauf wird geprüft\. Pro wird aktiv, sobald (.+) ihn freigibt\.$/,{en:"Purchase is being checked. Pro turns on as soon as $1 approves it.", fr:"Achat en cours de vérification. Pro s’active dès sa validation par $1.", it:"Acquisto in verifica. Pro si attiva appena $1 lo approva."}],
+  [/^(Apple|Google Play) wird geöffnet…$/,{en:"Opening $1…", fr:"$1 s’ouvre…", it:"Apertura di $1…"}],
 ];
 
 function tr(txt){
@@ -22842,7 +23032,7 @@ async function besucherPunkt(){
 }
 function besucheSchalterZeigen(){
   const el=document.getElementById('setBesucheSchalter');
-  if(el)el.innerHTML=schalter(cProfile?.besuche_an!==false,'besucheSetzen(this)');
+  if(el)el.innerHTML=schalter(cProfile?.besuche_an!==false,'besucheSetzen(this)',false,'Profilbesuche');
 }
 async function besucheSetzen(btn,an){
   if(!cUser||!cProfile)return;
@@ -22957,8 +23147,9 @@ function pushWertZeigen(){
   const el=document.getElementById('setPushWert');
   if(el)el.textContent=cUser?pushWertText():'';
 }
-function schalter(an,klick,gesperrt){
+function schalter(an,klick,gesperrt,name){
   return '<button class="sw'+(an?' an':'')+'" role="switch" aria-checked="'+(an?'true':'false')+'"'
+    +(name?' aria-label="'+escAttr(name)+'"':'')
     +(gesperrt?' disabled':'')+' onclick="'+klick+'"><i></i></button>';
 }
 async function pushEinstOeffnen(){
@@ -22992,12 +23183,12 @@ function pushEinstZeichnen(){
   st.innerHTML=status;
   li.innerHTML=
     '<div class="push-zeile haupt"><div><b>Alle pausieren</b><span>Keine Push-Nachrichten, bis du es wieder einschaltest</span></div>'
-      +schalter(alle,"pushSetzen('alle',this)")+'</div>'
+      +schalter(alle,"pushSetzen('alle',this)",false,'Alle pausieren')+'</div>'
     +'<div class="set-frage">Was du bekommst</div>'
     +'<div class="push-gruppe'+(alle?' ruhig':'')+'">'
     +PUSH_GRUPPEN.filter(g=>!istVerein()||!['nachrichten','freunde','abzeichen'].includes(g.k))
       .map(g=>'<div class="push-zeile"><div><b>'+g.t+'</b><span>'+g.s+'</span></div>'
-        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"',this)",alle).replace('<button','<button data-k="'+g.k+'"')+'</div>').join('')
+        +schalter(!aus.includes(g.k)&&!alle,"pushSetzen('"+g.k+"',this)",alle,g.t).replace('<button','<button data-k="'+g.k+'"')+'</div>').join('')
     +'</div>'
     +'<div class="push-zeile fix"><div><b>Konto & Sicherheit</b><span>Verwarnungen, Sperren und wichtige Hinweise zu deinem Konto kommen immer an.</span></div>'
       +'<span class="push-immer">Immer an</span></div>';
@@ -23134,9 +23325,10 @@ async function warteAufFreischaltung(eventId){
 
 /* ── Pro: in der App über Apple, im Browser über Stripe ────────────── */
 
-async function proKaufenApple(){
+async function proKaufenApple(knopf){
   if(kaufGesperrt())return;
-  const btn=document.querySelector('.pro2-cta');
+  // knopf: der getippte Knopf (z. B. .pw-cta in der Pro-Werbung)
+  const btn=(knopf&&knopf.nodeType===1)?knopf:document.querySelector('.pro2-cta');
   const beschriftung=btn?.textContent||'Pro holen';
   if(btn){btn.disabled=true;btn.innerHTML='<span class="btn-spin"></span>'+storeName()+' wird geöffnet…';}
   const a=await nativeCall('pro_kaufen',{userId:cUser?.id},180000);
@@ -23160,12 +23352,22 @@ async function proWiederherstellen(){
   if(!cUser){kontoNoetig();return;}
   if(kaufGesperrt()||wiederherLaeuft)return;
   wiederherLaeuft=true;
+  /* Bis zu 60 s Wartezeit – der Knopf zeigt, dass etwas laeuft (Apple
+     prueft Restore gezielt). Aus der Pro-Werbung gibt es keinen Knopf
+     mehr (sie schliesst sich), dann wenigstens ein Hinweis. */
+  const btn=document.querySelector('.pro2-restore');
+  const alt=btn?btn.innerHTML:'';
+  if(btn){ btn.disabled=true; btn.classList.add('is-busy'); btn.innerHTML='<span class="btn-spin"></span>Einen Moment…'; }
+  else toast('Einen Moment…');
   try{
     const a=await nativeCall('pro_wiederherstellen',{userId:cUser.id},60000);
     if(a.pro){await warteAufPro();}
     else if(a.fehler)toast('Wiederherstellen gerade nicht möglich. Versuch es gleich nochmals.','error');
     else toast('Kein früherer Kauf gefunden','warn');
-  }finally{ wiederherLaeuft=false; }
+  }finally{
+    wiederherLaeuft=false;
+    if(btn&&btn.isConnected){ btn.disabled=false; btn.classList.remove('is-busy'); btn.innerHTML=alt; }
+  }
 }
 
 // RevenueCat meldet den Kauf an unseren Server; von dort kommt is_pro zurück
@@ -24408,7 +24610,7 @@ async function renderPlusCard(eventId){
       +'<div><div class="plus-t">Anfrage läuft: +'+n+'</div>'
       +'<div class="plus-s">Der Gastgeber hat noch nicht entschieden.</div>'
       +plusWerZeile(data)+'</div></div>'
-      +'<button class="plus-btn ghost" onclick="cancelPlusRequest(\''+data.id+'\',\''+eventId+'\')">Anfrage zurückziehen</button>'
+      +'<button class="plus-btn ghost" onclick="knopfWaehrend(this,cancelPlusRequest(\''+data.id+'\',\''+eventId+'\'))">Anfrage zurückziehen</button>'
       +'</div>';
     return;
   }
@@ -24566,6 +24768,14 @@ async function sendPlusRequest(eventId){
   renderPlusCard(eventId);
 }
 
+/* Knopf gesperrt, solange der Netzaufruf laeuft (kein Doppeltipp, und
+   man sieht, dass etwas passiert). */
+function knopfWaehrend(btn,arbeit){
+  if(btn)btn.disabled=true;
+  return Promise.resolve(arbeit)
+    .catch(e=>{ console.warn('[knopf] aufruf',e); toast(fehlerText(e),'error'); })
+    .finally(()=>{ if(btn&&btn.isConnected)btn.disabled=false; });
+}
 async function cancelPlusRequest(reqId,eventId){
   const{error}=await sb.from('event_guest_requests').delete().eq('id',reqId);
   if(error){toast('Anfrage nicht zurückgezogen. Versuch es nochmals.','error');return;}
@@ -25321,7 +25531,7 @@ async function renderBringList(eventId,isHost){
         +'<span class="bring-menge-zahl">'+mengeSauber(i.menge)+'</span>'
         +'<button type="button" onclick="bringMengeAendern(\''+i.id+'\',\''+eventId+'\','+mengeSauber(i.menge)+',1)" aria-label="Mehr"'+(mengeSauber(i.menge)>=99?' disabled':'')+'>+</button>'
       +'</div>':'')
-      +(isHost?'<button class="bring-del" onclick="delBring(\''+i.id+'\',\''+eventId+'\')" aria-label="Entfernen">'+trash+'</button>':'')
+      +(isHost?'<button class="bring-del" onclick="symbolZweiTipp(this,()=>delBring(\''+i.id+'\',\''+eventId+'\'),\'Wirklich entfernen? Nochmals tippen\')" aria-label="Entfernen">'+trash+'</button>':'')
       +'</div>';
   }).join('');
 
@@ -25471,6 +25681,7 @@ function mapVollbild(auf){
   const wrap=document.getElementById('mapWrap');
   if(!wrap)return;
   wrap.classList.toggle('voll',mapVoll);
+  fensterOffenPruefen();
   // Die Menueleiste weicht nur im Vollbild – im kleinen Kasten braucht
   // man sie, um weiterzugehen.
   document.getElementById('bnav')?.classList.toggle('nav-weg',mapVoll);
@@ -26160,7 +26371,7 @@ function convMenueZeichnen(){
     +    '<span class="cm-text"><b>Stummschalten</b><small>'
     +      (cmStand.stumm?'Keine Benachrichtigungen von '+esc(name):'Du bekommst bei jeder Nachricht eine Benachrichtigung')
     +    '</small></span>'
-    +    schalter(!!cmStand.stumm,'convStumm(!'+(!!cmStand.stumm)+')',laedt)
+    +    schalter(!!cmStand.stumm,'convStumm(!'+(!!cmStand.stumm)+')',laedt,'Stummschalten')
     +  '</div>'
     +'</div>'
 
@@ -26801,16 +27012,9 @@ function toast(msg,type='info'){
   t.innerHTML='<span class="toast-ic">'+TOAST_SYM[art]+'</span><span class="toast-txt"></span>';
   t.querySelector('.toast-txt').textContent=text;
 
-  /* Ueber dem, was unten klebt: Leiste und Gast-Leiste. */
-  let oben=window.innerHeight;
-  ['bnav','gastLeiste'].forEach(id=>{
-    const el=document.getElementById(id);
-    // offsetParent ist bei position:fixed immer null – darum ueber display pruefen
-    if(!el||el.hidden||el.classList.contains('hidden')||getComputedStyle(el).display==='none')return;
-    const r=el.getBoundingClientRect();
-    if(r.height>0&&r.top<oben)oben=r.top;
-  });
-  t.style.setProperty('--toast-unten',Math.max(0,Math.round(window.innerHeight-oben))+'px');
+  /* Frueher wurde hier --toast-unten ueber Leiste und Gast-Leiste
+     ausgemessen (erzwungenes Layout bei jedem Toast). Seit der Toast oben
+     sitzt (bottom:auto!important), war der Wert wirkungslos – entfernt. */
   // Ueber die Tastatur nur, wenn wirklich gerade getippt wird
   const feld=document.activeElement;
   const tippt=document.body.classList.contains('tastatur-offen')&&feld
@@ -26842,25 +27046,26 @@ function toastWeg(){
 (function toastGesten(){
   const t=document.getElementById('toast');
   if(!t)return;
-  /* Der Hinweis klebt beim Wegwischen am Finger (nach oben zaeh), und
-     mit Schwung oder ab 30 px geht er – sonst federt er zurueck. */
+  /* Der Hinweis sitzt oben: er klebt beim Wegwischen nach oben am Finger
+     (nach unten zaeh), und mit Schwung oder ab 30 px geht er – sonst
+     federt er zurueck. */
   let y0=null, dy=0;
   const mess=Bewegung.messer();
-  const setze=(y)=>{ t.style.transform=y?'translate(-50%,'+y.toFixed(1)+'px)':''; t.style.opacity=y>0?String(Math.max(0,1-y/90)):''; };
+  const setze=(y)=>{ t.style.transform=y?'translate(-50%,'+y.toFixed(1)+'px)':''; t.style.opacity=y<0?String(Math.max(0,1+y/60)):''; };
   t.addEventListener('click',toastWeg);
   t.addEventListener('touchstart',e=>{ y0=e.touches[0].clientY; dy=0; mess.reset(); clearTimeout(toastUhr); t.style.transition='none'; },{passive:true});
   t.addEventListener('touchmove',e=>{
     if(y0==null)return;
     const y=e.touches[0].clientY-y0;
-    dy=y<0?Bewegung.gummiband(y,120):y;
+    dy=y>0?Bewegung.gummiband(y,120):y;
     setze(dy); mess.add(dy);
   },{passive:true});
   t.addEventListener('touchend',()=>{
     if(y0==null)return;
     y0=null;
     const v=mess.v();
-    if(v>300||dy>30){
-      Bewegung.feder({von:dy,nach:dy+120,v,antwort:.25,schritt:setze,fertig:()=>{ t.style.transition='none'; toastWeg(); setze(0); requestAnimationFrame(()=>{t.style.transition='';}); }});
+    if(v<-300||dy<-30){
+      Bewegung.feder({von:dy,nach:dy-120,v,antwort:.25,schritt:setze,fertig:()=>{ t.style.transition='none'; toastWeg(); setze(0); requestAnimationFrame(()=>{t.style.transition='';}); }});
     }else{
       Bewegung.feder({von:dy,nach:0,v,daempfung:Math.abs(v)>300?.8:1,antwort:.3,schritt:setze,fertig:()=>{ setze(0); t.style.transition=''; toastUhr=setTimeout(toastWeg,2200); }});
     }
@@ -27249,6 +27454,17 @@ function avFaerben(wurzel){
   const los=()=>{ avFaerben(); avBeob.observe(document.body,{childList:true,subtree:true}); };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',los); else los();
 }
+
+/* Klickbare div mit role="button"/"radio" (Profilbild oben, Partytyp,
+   Titelbild …): Enter und Leertaste loesen wie bei einem Knopf aus. */
+document.addEventListener('keydown',ev=>{
+  if(ev.key!=='Enter'&&ev.key!==' ')return;
+  const el=ev.target;
+  if(!el||!el.matches||el.matches('button,a,input,textarea,select,[contenteditable]'))return;
+  if(!el.matches('[role="button"],[role="radio"]'))return;
+  ev.preventDefault();
+  el.click();
+});
 
 /* Blatt gescrollt? Dann zeigt der Kopf seinen weichen Auslauf. */
 document.addEventListener('scroll',ev=>{
