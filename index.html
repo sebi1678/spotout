@@ -10181,9 +10181,20 @@ async function kontoWegLoeschen(){
        andere (Profil, Partys, Nachrichten, Follows, Fotos …) haengt daran
        und geht in einem Zug mit. Vorher blieb der Zugang bestehen: wer
        sich danach nochmals anmeldete, landete in einem leeren Konto. */
+    /* Mit Apple angemeldet: Apple verlangt, dass die Anmeldung beim
+       Loeschen auch bei Apple widerrufen wird. Die App holt dafuer einen
+       frischen Code (kurz mit Face ID bestaetigen), der Server widerruft. */
+    const koerper={};
+    const provider=(cUser.app_metadata&&cUser.app_metadata.providers)||[];
+    if(istApp()&&provider.includes('apple')){
+      const r=await nativeCall('apple_code',null,120000);
+      if(r&&r.code)koerper.apple_code=r.code;
+      else if(r&&r.fehler==='abgebrochen')throw new Error('Bestätige das Löschen kurz mit Apple – sonst bleibt dein Konto bestehen.');
+      else console.warn('[huelle] Apple-Code fuer Widerruf fehlt:',r&&r.fehler);
+    }
     await pushTokenLoesen();
     // Ueber die Serverfunktion: sie kuendigt ein Stripe-Abo, bevor geloescht wird
-    const{data:weg,error:serverFehler}=await sb.functions.invoke('konto-loeschen',{body:{}});
+    const{data:weg,error:serverFehler}=await sb.functions.invoke('konto-loeschen',{body:koerper});
     if(!serverFehler&&weg?.ok){
       try{ kontenSchreiben(kontenLesen().filter(k=>k.id!==uid)); }catch(e){}
       kontoCacheWeg(uid);
