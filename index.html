@@ -9992,9 +9992,13 @@ function initSwipeToClose(){
     const laufZu=(ziel,v,daempfung,fertig)=>{
       if(lauf)lauf.stop();
       modal.style.transition='none';
-      lauf=Bewegung.feder({von:dy,nach:ziel,v,daempfung,antwort:.3,
+      /* Bei "Bewegung reduzieren" ruft feder fertig schon vor der Rueckgabe
+         auf – die Zuweisung setzte lauf danach wieder, und jede weitere
+         Beruehrung galt als Griff ins fliegende Blatt. */
+      const l=Bewegung.feder({von:dy,nach:ziel,v,daempfung,antwort:.3,
         schritt:(y)=>{dy=y;setze(y);},
         fertig:()=>{lauf=null;fertig();}});
+      lauf=l.laeuft()?l:null;
     };
 
     const darfHier=(ziel)=>{
@@ -10278,7 +10282,12 @@ async function init(){
         try{ nativePushAnmelden(); }catch(e){}
       }).catch(e=>console.warn('[profil]',e));
     }else{
-      await loadProf();kontoMerken();enterApp();
+      /* Wirft loadProf hier (Netz weg, kein gemerktes Profil), brach init
+         ab, und onAuthStateChange wurde nie angemeldet – danach tat weder
+         Anmelden noch Abmelden etwas. */
+      let ok=false;
+      try{ ok=await loadProf(); }catch(e){ console.warn('[profil]',e); toast(fehlerText(e),'warn'); }
+      if(ok&&cProfile){ kontoMerken(); enterApp(); }
     }
   }
   /* Ohne Konto auf einen Einladungslink getippt: die Einladung zeigen
@@ -10308,7 +10317,11 @@ async function init(){
         &&!document.getElementById('page-auth')?.classList.contains('active');
       cUser=s.user;
       if(schonDrin||kontoWechselLaeuft)return;
-      await loadProf();kontoMerken();enterApp();
+      /* Ein Fehler hier landete bei signInWithPassword, und der Knopf
+         blieb ohne Meldung auf "Anmelden…" stehen. */
+      let ok=false;
+      try{ ok=await loadProf(); }catch(e){ console.warn('[profil]',e); loginFehler(fehlerText(e),'error'); return; }
+      if(ok&&cProfile){ kontoMerken(); enterApp(); }
     }
     else if(ev==='SIGNED_OUT'){
       cUser=null;cProfile=null;
@@ -10322,13 +10335,16 @@ async function init(){
 async function loadProf(){
   // Die Tabelle gibt fremde Profile nur noch in den oeffentlichen Spalten heraus.
   // Das eigene kommt vollstaendig ueber mein_profil.
+  const uid=cUser?.id||null;
   const{data:eigen,error:profFehler}=await sb.rpc('mein_profil');
+  // Inzwischen abgemeldet oder anderes Konto: die Antwort gehoert nicht mehr hierher
+  if(!uid||cUser?.id!==uid)return false;
   const data=Array.isArray(eigen)?eigen[0]:eigen;
   /* Kein Netz oder Serverfehler: ein vorhandenes (gemerktes) Profil
      behalten statt es durch "nichts" zu ersetzen – sonst war die
      Profilseite leer und Bearbeiten stuerzte ab. */
-  if(profFehler){ console.warn('[profil]',profFehler.message); if(cProfile)return; throw profFehler; }
-  if(!data){ try{ await sb.auth.signOut({scope:'local'}); }catch(e){} return; }
+  if(profFehler){ console.warn('[profil]',profFehler.message); if(cProfile)return true; throw profFehler; }
+  if(!data){ try{ await sb.auth.signOut({scope:'local'}); }catch(e){} return false; }
   /* Geschlecht und Geburtsdatum stehen beim allerersten Anmelden nur
      im Konto, noch nicht im Profil – dann werden sie nachgetragen.
      Frueher wurde das Profil danach *immer* ein zweites Mal geholt,
@@ -10342,13 +10358,14 @@ async function loadProf(){
     if(!data.gender&&meta.gender)updates.gender=meta.gender;
     if(!data.birthdate&&meta.birthdate)updates.birthdate=meta.birthdate;
     if(Object.keys(updates).length){
-      await sb.from('profiles').update(updates).eq('id',cUser.id);
+      await sb.from('profiles').update(updates).eq('id',uid);
       nachgetragen=true;
     }
   }
   let updated=data;
   if(nachgetragen){
     const{data:eigen2}=await sb.rpc('mein_profil');
+    if(cUser?.id!==uid)return false;
     updated=Array.isArray(eigen2)?eigen2[0]:eigen2;
   }
   /* Hier stand ein Pfad, der die Wahl des Fluchtknopfs aus dem Konto
@@ -10368,6 +10385,7 @@ async function loadProf(){
   navFuerKontoart();          // Verein sieht eine andere Leiste
   vereinHomeUmschalten();
   profilMerken();
+  return true;
 }
 /* Das eigene Profil fuer den naechsten Start merken (nur auf diesem
    Geraet). Sensible Felder wie Geburtsdatum bleiben draussen. */
@@ -11347,7 +11365,9 @@ function alterNachtragen(){
     if(alter<16){
       fehler('SPOTOUT ist ab 16 Jahren. Dein Konto wird jetzt gelöscht.');
       knopf.disabled=true;
-      setTimeout(()=>kontoWegLoeschen(),2200);
+      /* Scheitert das Loeschen (Netz), meldet kontoWegLoeschen das – der
+         Knopf blieb aber gesperrt, und man sass fest. */
+      setTimeout(async()=>{ try{ await kontoWegLoeschen(); }catch(e){ console.warn('[konto] loeschen',e); } if(el.isConnected&&cUser)knopf.disabled=false; },2200);
       return;
     }
     fehler(''); knopf.disabled=true; knopf.textContent='Einen Moment…';
@@ -11792,8 +11812,9 @@ async function profilTeilen(){
     +'?u='+encodeURIComponent(cProfile.username||cUser.id);
   const text=(cProfile.full_name||cProfile.username)+' auf SPOTOUT';
   if(istApp()){
-    const a=await nativeCall('teilen',{text:text,url:adresse},20000);
-    if(a&&a.fehler&&a.fehler!=='abgebrochen')toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
+    // Wie einladungTeilen: das Blatt darf lange offen sein
+    const a=await nativeCall('teilen',{text:text,url:adresse},600000);
+    if(a&&a.fehler&&a.fehler!=='abgebrochen'&&a.fehler!=='zeitueberschreitung')toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
     return;
   }
   if(navigator.share){
@@ -11908,6 +11929,7 @@ async function kontoWechseln(id){
   /* Beides braucht noch die alte Sitzung, aber nicht einander – also
      gleichzeitig statt nacheinander. */
   await Promise.all([kontoMerken().catch(()=>{}), pushTokenLoesen().catch(()=>{})]);
+  let profilFehlt=null;
   try{
     let sitzung=null;
     try{
@@ -11947,7 +11969,21 @@ async function kontoWechseln(id){
         try{ nativePushAnmelden(); }catch(e){}
       }).catch(e=>console.warn('[profil]',e));
     }else{
-      await loadProf();
+      /* Die Sitzung von B steht hier schon. Ein Fehler beim Profil fiel
+         vorher ins catch unten: "Kontowechsel nicht möglich", aber man war
+         in B – ohne Profil und mit leeren Listen. Jetzt geht es in B
+         weiter, und das Profil wird nachgeladen. */
+      try{ await loadProf(); }
+      catch(e){
+        console.warn('[konten] Profil',e);
+        profilFehlt=e;
+        const fuer=cUser.id;
+        setTimeout(()=>{
+          if(cUser?.id!==fuer||cProfile)return;
+          loadProf().then(ok=>{ if(ok){ kontoMerken(); if(document.getElementById('page-profile')?.classList.contains('active'))renderProf(); } })
+            .catch(err=>console.warn('[profil]',err));
+        },3000);
+      }
     }
     kontoMerken();
     enterApp();
@@ -11955,7 +11991,8 @@ async function kontoWechseln(id){
     if(vonSeite==='profile'&&!istVerein())showPage('profile');
     wechselNotieren('fertig','Konto gewechselt');
     setTimeout(wechselBildWeg,180);
-    toast('Du bist jetzt '+(cProfile?.username?'@'+cProfile.username:(cProfile?.full_name||'im anderen Konto')),'success');
+    if(profilFehlt)toast(fehlerText(profilFehlt),'warn');
+    else toast('Du bist jetzt '+(cProfile?.username?'@'+cProfile.username:(cProfile?.full_name||'im anderen Konto')),'success');
     }catch(err){
     console.warn('[konten]',err);
     /* Nur wirklich verbrauchte Schluessel fliegen aus der Liste. Vorher
@@ -12289,7 +12326,8 @@ async function pwSpeichern(){
   }
   if(!btn||btn.disabled)return;
   btn.disabled=true; btn.textContent='Wird gespeichert…';
-  const{data,error}=await sb.auth.updateUser({password:pw});
+  let data,error;
+  try{ ({data,error}=await sb.auth.updateUser({password:pw})); }catch(e){ error=e; }
   btn.disabled=false; btn.textContent='Passwort speichern';
   if(error){
     const m=String(error.message||'').toLowerCase();
@@ -12307,7 +12345,9 @@ async function pwSpeichern(){
   feld.value=''; feld.type='password';
   pwAnsichtWeg();
   if(data?.user)cUser=data.user;
-  await loadProf(); kontoMerken(); enterApp();
+  let ok=false;
+  try{ ok=await loadProf(); }catch(e){ console.warn('[profil]',e); toast(fehlerText(e),'error'); return; }
+  if(ok&&cProfile){ kontoMerken(); enterApp(); }
 }
 
 /* Aus den Einstellungen: derselbe Link an die eigene Adresse. Ein
@@ -12333,7 +12373,8 @@ async function doLogin(){
   loginFehler('');
   const btn=document.querySelector('#auth-login .auth-submit-btn');
   if(btn){btn.textContent='Anmelden…';btn.disabled=true;}
-  const{error}=await sb.auth.signInWithPassword({email:em,password:pw});
+  let error;
+  try{ ({error}=await sb.auth.signInWithPassword({email:em,password:pw})); }catch(e){ error=e; }
   // Erst bei einem Fehler wieder frei – sonst startet ein zweiter Tipp die App doppelt
   if(btn&&error){btn.textContent='Anmelden';btn.disabled=false;}
   if(btn&&!error)setTimeout(()=>{btn.textContent='Anmelden';btn.disabled=false;},6000);
@@ -12851,7 +12892,9 @@ function spurenLoeschen(){
   window.__blocked=new Set();
   try{ evts=[]; }catch(e){}
   // Der schnelle Start merkt sich Blockliste und Abfragen – fuers naechste Konto neu
-  blocksBereit=null; evtsVorab=null; evtsZeit=0;
+  // evtsSeq++: eine laufende Abfrage des alten Kontos schreibt nichts mehr zurueck
+  blocksBereit=null; evtsVorab=null; evtsZeit=0; evtsSeq++;
+  try{ partyKartenGemerkt.clear(); treffenDabei.clear(); }catch(e){}
   try{ if(bearbeiteId)bearbeitenAbbrechen(); }catch(e){}
   bearbeiteId=null;
   try{ chatGeloescht=new Map(); chatGeloeschtFuer=null; }catch(e){}
@@ -13470,9 +13513,11 @@ async function loadEvts(opt){
   // stehen, bis die neue da ist – sonst springt die Seite nach jeder Aktion nach oben.
   if(!evts.length)['events','public','private'].forEach(t=>document.getElementById('grid-'+t).innerHTML=skelett(4,180));
   const abfrage=evtsVorab||evtsAbfrage(); evtsVorab=null;
-  const seq=++evtsSeq;
+  const seq=++evtsSeq, fuer=cUser?.id||null;
   const [{data,error}]=await Promise.all([abfrage,blocksBereit||Promise.resolve()]);
   if(seq!==evtsSeq)return;   // eine neuere Abfrage laeuft schon
+  // Inzwischen abgemeldet oder Konto gewechselt: die Partys des alten Kontos nicht zeigen
+  if((cUser?.id||null)!==fuer)return;
   if(error){
     /* Vorher blieben hier drei Drehraedchen fuer immer stehen. Wer im
        Keller steht, hat kein Netz – und sah eine App, die ewig laedt.
@@ -14234,6 +14279,8 @@ function renderFeed(){
       <h4>Unter ${COL_SHORT[col]} ist gerade nichts los</h4>
       ${fyLeerWeiter(col)}
     </div>`;
+    // "N neue Partys" passt nicht ueber "nichts los" – feedNeuHinweis laeuft hier nicht
+    document.getElementById('fyNeu')?.remove();
     return;
   }
 
@@ -14707,7 +14754,11 @@ function setzeHTML(el,html){
      dastanden. Stimmt das nicht mehr, wird neu gezeichnet. Im Zweifel
      lieber einmal zu viel zeichnen als einmal zu wenig - ein kurzes
      Blinken ist ein Schoenheitsfehler, eine leere Seite ist keiner. */
-  if(el.__letzterInhalt===html && el.childElementCount===el.__letzteKinder)return false;
+  /* Auch das erste Kind muss noch dasselbe sein: ein Leer- oder
+     Fehlerhinweis (per innerHTML gesetzt) hat genau 1 Kind – wie eine
+     Liste mit genau einer Party. Dann blieb der Hinweis stehen. */
+  if(el.__letzterInhalt===html && el.childElementCount===el.__letzteKinder
+     && el.firstElementChild===el.__ersterKnoten)return false;
   /* Stand vorher ein Ladekreis oder Platzhalter da, blendet der echte
      Inhalt kurz ein (die ersten sechs leicht versetzt) statt
      aufzuspringen. Sonst – bei jedem weiteren Zeichnen – nichts. */
@@ -14721,6 +14772,7 @@ function setzeHTML(el,html){
   }
   el.__letzterInhalt=html;
   el.__letzteKinder=el.childElementCount;
+  el.__ersterKnoten=el.firstElementChild;
   return true;
 }
 
@@ -15008,8 +15060,16 @@ async function openDetail(id){
     evts=[...evts,e];
   }
   window.__offenePartyId=id;
-  const{data:atts}=await sb.from('event_attendees').select('*,profiles(id,username,full_name,avatar_url)').eq('event_id',id);
+  const{data:atts,error:attFehler}=await sb.from('event_attendees').select('*,profiles(id,username,full_name,avatar_url)').eq('event_id',id);
   if(seq!==detailSeq)return;               // inzwischen zu oder eine andere Party
+  /* Ohne Gaesteliste stand "Ich bin dabei!" und "Noch niemand dabei" da,
+     auch fuer jemanden, der laengst angemeldet ist. */
+  if(attFehler){
+    console.warn('[detail] Gaesteliste',attFehler);
+    toast('Party nicht geladen. Prüf deine Verbindung und versuch es nochmals.','info');
+    if(!document.getElementById('detailOverlay')?.classList.contains('open'))window.__offenePartyId=null;
+    return;
+  }
   /* Begleitpersonen, die selbst ein Konto haben, sollen mit ihrem
      eigenen Bild dastehen und nicht als grauer Buchstabe. Eine Abfrage
      für alle zusammen – und nur dann, wenn es überhaupt welche gibt. */
@@ -15463,6 +15523,7 @@ async function toggleAtt(id,isAtt){
     btn.innerHTML='<span class="btn-spin"></span>'+(isAtt?'Wird ausgetragen…':'Wird angemeldet…');
   }
   try{
+    let neuDabei=false;   // nur ein echter neuer Eintrag zaehlt hoch
     if(isAtt){
       const{error}=await sb.from('event_attendees').delete().eq('event_id',id).eq('user_id',cUser.id);
       if(error)throw error;
@@ -15470,13 +15531,14 @@ async function toggleAtt(id,isAtt){
       const{error}=await sb.from('event_attendees').insert({event_id:id,user_id:cUser.id});
       // 23505 = bereits angemeldet, das ist kein Fehler für den Nutzer
       if(error&&error.code!=='23505')throw error;
+      neuDabei=!error;
         }
     /* Vorher: erst alle 500 Partys neu laden, dann das Fenster – der
        Ladekreis drehte ueber mehrere Rundwege. Jetzt nur die Zahl hier
        anpassen, das Fenster frisch zeichnen, und die Liste im
        Hintergrund nachziehen. */
     const ev=evts.find(x=>x.id===id);
-    if(ev&&!isAtt)ev.attending=(ev.attending||0)+1;   // beim Austragen kommt die genaue Zahl gleich vom Server
+    if(ev&&neuDabei)ev.attending=(ev.attending||0)+1;   // beim Austragen kommt die genaue Zahl gleich vom Server
     await openDetail(id);
     loadEvts();
     /* Zusagen ist die wichtigste Handlung in dieser App. Sie darf
@@ -15726,10 +15788,13 @@ async function renderCalendar(){
 
   // Angemeldete UND selbst erstellte Partys – als Gastgeber stand man vorher
   // gar nicht im eigenen Kalender.
+  const fuer=cUser.id;
   const[{data:atts,error:f1},{data:hosted,error:f2}]=await Promise.all([
     sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id).order('joined_at',{ascending:false}).limit(200),
     sb.from('events').select('*').eq('created_by',cUser.id).order('date',{ascending:false}).limit(200)
   ]);
+  // Inzwischen abgemeldet oder anderes Konto: nicht dessen Partys zeichnen
+  if(cUser?.id!==fuer)return;
   if(f1||f2){
     console.warn('[kalender] laden',f1||f2);
     // Was schon dastand, bleibt stehen – sonst die ehrliche Meldung
@@ -16364,7 +16429,8 @@ async function renderProf(){
      nacheinander (erst die eigenen Partys, dann die Zusagen, dann der
      Rest, danach noch die Zahlen) – jede Stufe kostet einen ganzen Weg
      zum Server, und keine brauchte das Ergebnis der vorherigen. */
-  const [{data:myEvts},{data:atts},{data:archiv},{data:abz},{data:abzStand},{data:fstats}]=await Promise.all([
+  const fuer=cUser.id;
+  const antworten=await Promise.all([
     sb.from('events').select('*').eq('created_by',cUser.id).order('date',{ascending:false}).limit(200),
     sb.from('event_attendees').select('*,events(*)').eq('user_id',cUser.id).order('joined_at',{ascending:false}).limit(200),
     sb.from('besucht_archiv').select('*').eq('user_id',cUser.id).order('datum',{ascending:false}).limit(300),
@@ -16372,6 +16438,19 @@ async function renderProf(){
     sb.from('abzeichen_stand').select('*').eq('user_id',cUser.id).maybeSingle(),
     sb.rpc('get_follow_stats',{p_user_id:cUser.id,p_viewer_id:cUser.id}),
   ]);
+  // Inzwischen abgemeldet oder anderes Konto: nichts vom alten zeichnen
+  if(cUser?.id!==fuer||!cProfile)return;
+  /* Bei schlechtem Netz waren die Daten leer: "Partys 0", "Noch keine
+     Partys erstellt", und der Abzeichen-Stand wurde geloescht. */
+  const ladeFehler=antworten.find(x=>x&&x.error)?.error;
+  if(ladeFehler){
+    console.warn('[profil] laden',ladeFehler);
+    const box=document.getElementById('profContent');
+    if(box&&!box.querySelector('.prof-wrap-insta'))setzeHTML(box,ladeFehlerHtml('renderProf()'));
+    else toast(fehlerText(ladeFehler),'warn');
+    return;
+  }
+  const [{data:myEvts},{data:atts},{data:archiv},{data:abz},{data:abzStand},{data:fstats}]=antworten;
   abzCache={eigene:(abz||[]).map(a=>a.schluessel),stand:abzStand||{}};
   const age=calcAge(cProfile.birthdate);
   // Die Striche blieben stehen, weil die Zahlen nie geholt wurden
@@ -17027,9 +17106,11 @@ async function startChatInnen(uid,name,un){
   if(uid===cUser.id)return;
   // Gibt es das Gespraech schon, geht es direkt hinein – auch ohne Pro
   // ("Antworten kannst du immer") und auch bei "Nur Anfragen"
-  const{data:schon}=await sb.from('conversations').select('*')
+  const{data:schon,error:sf}=await sb.from('conversations').select('*')
     .or(`and(user1_id.eq.${cUser.id},user2_id.eq.${uid}),and(user1_id.eq.${uid},user2_id.eq.${cUser.id})`)
     .maybeSingle();
+  // Netzfehler ist nicht "gibt es nicht" – sonst landete man auf der Pro-Seite
+  if(sf){toast(fehlerText(sf),'error');return;}
   if(schon){ closeDetail(); await openConv(schon.id,{id:uid,full_name:name,username:un}); return; }
   if(!cProfile?.is_pro){showPage('pro');toast('Neue Chats startest du mit Pro.','warn');return;}
   closeDetail();
@@ -17751,6 +17832,10 @@ async function openConv(cid,other){
   if(!nochHier())return;
   ntGespraechGelesen(cid);
   const gruppeHier=convGruppe;
+  /* Zwei openConv fuer dasselbe Gespraech (Doppeltipp auf eine Meldung):
+     waehrend der erste oben wartete, legte der zweite schon einen Kanal
+     an – und der ging hier verloren, lief aber weiter. */
+  if(convSub_){ const k=convSub_; convSub_=null; sb.removeChannel(k).catch(e=>console.warn('[chat] unsubscribe',e)); }
   /* Alle Änderungen, nicht nur neue: bearbeitete und selbstgelöschte
      Nachrichten kamen beim Gegenüber sonst erst nach dem Neuöffnen an. */
   convSub_=sb.channel('conv-'+cid)
@@ -19752,8 +19837,13 @@ function addrZeile(r){
         +'<div class="a-main">'+esc(main)+'</div><div class="a-sub">'+esc(sub)+'</div></div>';
 }
 
+/* Zaehler gegen spaete Antworten: Nominatim antwortet nicht in der
+   Reihenfolge der Anfragen. Eine alte Antwort ueberschrieb sonst die
+   Vorschlaege zur neueren Eingabe – oder eine schon bestaetigte Adresse. */
+let addrSeq=0;
 function addrSearch(val){
   clearTimeout(addrTimer);
+  const meine=++addrSeq;
   const box=document.getElementById('addrDrop');
   selLat=null;selLng=null;                 // getippt = noch nicht bestätigt
   if(!val||val.trim().length<3){box.classList.remove('show');setAddrHint('');return;}
@@ -19764,8 +19854,9 @@ function addrSearch(val){
           +'&countrycodes=ch&format=json&limit=8&accept-language=de&addressdetails=1'
           +'&layer=address,poi,natural,manmade&namedetails=1')
       .then(r=>r.json()).then(res=>{
+        if(meine!==addrSeq||selLat!=null)return;
         if(!Array.isArray(res)||!res.length){
-          keineAdresse(suchtext);
+          keineAdresse(suchtext,meine);
           return;
         }
         box.innerHTML=res.map(addrZeile).join('');
@@ -19774,7 +19865,7 @@ function addrSearch(val){
         box.querySelectorAll('.addr-item').forEach(el=>{
           el.addEventListener('click',()=>selAddr(el.dataset.name,el.dataset.lat,el.dataset.lng));
         });
-      }).catch(()=>{box.classList.remove('show');setAddrHint('warn','Die Adresssuche antwortet gerade nicht. Versuch es gleich nochmals.');});
+      }).catch(()=>{if(meine!==addrSeq||selLat!=null)return;box.classList.remove('show');setAddrHint('warn','Die Adresssuche antwortet gerade nicht. Versuch es gleich nochmals.');});
   },350);
 }
 
@@ -19783,12 +19874,13 @@ function addrSearch(val){
    Ort gesucht – "Waldhütte Rohr" findet Rohr – und der selbst getippte
    Name bleibt stehen. Die Party liegt damit am richtigen Dorf, und im
    Namen steht, wo genau. */
-async function keineAdresse(suchtext){
+async function keineAdresse(suchtext,meine){
   const box=document.getElementById('addrDrop');
   const woerter=suchtext.split(/[\s,]+/).filter(Boolean);
   if(woerter.length>=2){
     const ortWort=woerter[woerter.length-1];
     const treffer=await ortNachschlagen(ortWort);
+    if(meine!=null&&(meine!==addrSeq||selLat!=null))return;
     if(treffer){
       box.innerHTML='<div class="addr-item addr-item-eigen" data-lat="'+treffer.lat+'" '
         +'data-lng="'+treffer.lng+'" data-name="'+escAttr(suchtext)+'">'
@@ -19827,6 +19919,7 @@ function selAddr(name,lat,lng){
   const short=roh.includes(',')?roh.split(',').slice(0,3).join(',').trim():roh.trim();
   document.getElementById('fAddr').value=short;
   selLat=parseFloat(lat);selLng=parseFloat(lng);
+  addrSeq++;   // was noch unterwegs ist, gilt nicht mehr
   document.getElementById('addrDrop').classList.remove('show');
   document.getElementById('fAddr').closest('.fg')?.classList.remove('has-err');
   setAddrHint('ok','Adresse bestätigt');
@@ -20567,8 +20660,12 @@ async function neueEinladung(eventId,quelle){
     if(l?.code)einladungTeilen(l.code,eventId,label);
   }finally{
     einBusy=false;
-    const b=document.getElementById('einBtn');
-    if(b){b.disabled=false;b.textContent='Einladen';}
+    /* Den angetippten Knopf freigeben – #einBtn gibt es zweimal (Party-
+       Fenster und Verwalten), getElementById traf immer den ersten, und
+       in Verwalten blieb "Moment…" gesperrt stehen. */
+    [btn,document.getElementById('einBtn')].forEach(b=>{
+      if(b&&b.isConnected){b.disabled=false;b.textContent='Einladen';}
+    });
   }
 }
 
@@ -21063,8 +21160,11 @@ function grpAv(bild){
 
 /* Leute in die Gruppe holen. Derselbe Waehler wie beim Einladen zu
    einer Party – gleiche Kennungen (shRows, shNichts, .sh-send), damit
-   shareFiltern() und shareAnAlle() unveraendert mitarbeiten. Ein
-   zweiter Waehler daneben waere dieselbe Sache zweimal. */
+   shareFiltern() unveraendert mitarbeitet. Ein zweiter Waehler daneben
+   waere dieselbe Sache zweimal. Weil das Teilen-Fenster dieselben
+   Kennungen traegt (und beim Schliessen stehen bleibt), sucht alles
+   hier nur in #gruppeBody. "Alle" hat einen eigenen Weg (gruppeAnAlle):
+   shareAnAlle lud zur zuletzt geteilten Party ein statt in die Gruppe. */
 let grpEinladenId=null;
 async function gruppeKontakteWaehlen(gid){
   grpEinladenId=gid;
@@ -21107,8 +21207,8 @@ async function gruppeKontakteWaehlen(gid){
 
   const werkzeug=leute.length>5
     ? '<div class="sh-tools">'
-      +'<input class="sh-suche" id="shSuche" placeholder="Name suchen…" oninput="shareFiltern(this.value)" autocomplete="off"/>'
-      +'<button class="sh-alle" id="shAlle" onclick="shareAnAlle()">Alle</button>'
+      +'<input class="sh-suche" id="shSuche" placeholder="Name suchen…" oninput="shareFiltern(this.value,this)" autocomplete="off"/>'
+      +'<button class="sh-alle" id="grpAlle" onclick="gruppeAnAlle()">Alle</button>'
       +'</div>' : '';
 
   body.innerHTML='<div class="mg-sec">Wen holst du dazu?</div>'
@@ -21121,7 +21221,7 @@ async function gruppeKontakteWaehlen(gid){
 
 async function gruppeEinladen(uid){
   if(!grpEinladenId)return;
-  const btn=document.querySelector('#sh-'+uid+' .sh-send');
+  const btn=document.querySelector('#gruppeBody #sh-'+uid+' .sh-send');
   if(btn){btn.disabled=true;btn.textContent='…';}
   const{data,error}=await sb.rpc('gruppe_einladen',{p_group:grpEinladenId,p_user:uid});
   if(error){
@@ -21137,6 +21237,20 @@ async function gruppeEinladen(uid){
   if(btn){btn.textContent='Eingeladen';btn.classList.add('done');}
 }
 
+// Alle sichtbaren Kontakte in die Gruppe holen – nacheinander wie shareAnAlle
+async function gruppeAnAlle(){
+  const btn=document.getElementById('grpAlle');
+  const offen=[...document.querySelectorAll('#gruppeBody #shRows .mg-guest:not(.weg) .sh-send')]
+    .filter(b=>!b.disabled);
+  if(!offen.length){toast('Alle sind schon eingeladen.','warn');return;}
+  if(btn){btn.disabled=true;btn.textContent='…';}
+  for(const b of offen){
+    const id=b.closest('.mg-guest')?.id?.replace(/^sh-/,'');
+    if(id){ try{ await gruppeEinladen(id); }catch(e){ console.warn('[gruppe] einladen',e); } }
+  }
+  if(btn){btn.textContent='Fertig';}
+}
+
 /* Jemanden ganz neu zu SPOTOUT holen. Den Weg gab es schon – er war nur
    im Profil versteckt, wo ihn niemand sucht. */
 async function spotoutEinladen(){
@@ -21145,8 +21259,9 @@ async function spotoutEinladen(){
     +(cProfile?.username?('?u='+encodeURIComponent(cProfile.username)):'');
   const text='Komm auf SPOTOUT – da siehst du, welche Partys und Feste in der Schweiz laufen und wer hingeht.';
   if(istApp()){
-    const a=await nativeCall('teilen',{text:text,url:adresse},20000);
-    if(a&&a.fehler&&a.fehler!=='abgebrochen')toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
+    // Wie einladungTeilen: das Blatt darf lange offen sein
+    const a=await nativeCall('teilen',{text:text,url:adresse},600000);
+    if(a&&a.fehler&&a.fehler!=='abgebrochen'&&a.fehler!=='zeitueberschreitung')toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
     return;
   }
   if(navigator.share){
@@ -21210,10 +21325,14 @@ function treffenOeffnen(gid){
   // Vorschlag: heute, nächste volle Stunde – oder morgen, wenn es spät ist
   const jetzt=new Date();
   if(!treffenStand.tag||treffenStand.tag<trIsoTag(jetzt)){
-    const spaet=jetzt.getHours()>=21;
+    /* >= statt >: um 18:30 ist 19:00 die naechste volle Stunde. Vorher
+       kam 20:00, und um 20:xx fiel es auf 20:00 heute zurueck – in der
+       Vergangenheit, treffenSpeichern lehnte das ab. Ohne Treffer: morgen. */
+    const naechste=TREFFEN_ZEIT.find(z=>z>=trZwei(jetzt.getHours()+1)+':00');
+    const spaet=jetzt.getHours()>=21||!naechste;
     const d=new Date(); if(spaet)d.setDate(d.getDate()+1);
     treffenStand.tag=trIsoTag(d);
-    treffenStand.zeit=spaet?'19:00':TREFFEN_ZEIT.find(z=>z>trZwei(jetzt.getHours()+1)+':00')||'20:00';
+    treffenStand.zeit=spaet?'19:00':naechste;
   }
   const dEl=document.getElementById('trDatum'); if(dEl)dEl.min=trIsoTag(jetzt);
   treffenWahl('tag',treffenStand.tag,true);
@@ -21881,7 +22000,7 @@ async function renderShareContacts(alsEinladung){
   const werkzeug=leute.length>=2
     ? '<div class="sh-tools">'
       +(leute.length>5?'<input class="sh-suche" id="shSuche" placeholder="Name suchen" '
-        +'oninput="shareFiltern(this.value)" autocomplete="off"/>':'<span style="flex:1"></span>')
+        +'oninput="shareFiltern(this.value,this)" autocomplete="off"/>':'<span style="flex:1"></span>')
       +'<button class="sh-alle" id="shAlle" onclick="shareAnAlle()">Alle einladen</button>'
       +'</div>'
     : '';
@@ -21933,16 +22052,18 @@ async function sendEventToGroup(gid){
 }
 
 // Tippen filtert die Liste, ohne die Datenbank noch einmal zu fragen.
-function shareFiltern(text){
+function shareFiltern(text,feld){
   const q=String(text||'').trim().toLowerCase();
-  const rows=document.querySelectorAll('#shRows .mg-guest');
+  // Teilen-Fenster und Gruppe tragen dieselben Kennungen: nur im eigenen Fenster suchen
+  const wurzel=(feld&&feld.closest&&feld.closest('#shareBody,#gruppeBody'))||document;
+  const rows=wurzel.querySelectorAll('#shRows .mg-guest');
   let sichtbar=0;
   rows.forEach(r=>{
     const treffer=!q||(r.dataset.such||'').includes(q);
     r.classList.toggle('weg',!treffer);
     if(treffer)sichtbar++;
   });
-  const leer=document.getElementById('shNichts');
+  const leer=wurzel.querySelector('#shNichts');
   if(leer)leer.style.display=sichtbar?'none':'block';
 }
 
@@ -21951,8 +22072,8 @@ function shareFiltern(text){
    Ratenbremse von Supabase ausgeloest, und ein Teil waere still
    liegengeblieben. */
 async function shareAnAlle(){
-  const btn=document.getElementById('shAlle');
-  const offen=[...document.querySelectorAll('#shRows .mg-guest:not(.weg) .sh-send')]
+  const btn=document.querySelector('#shareBody #shAlle');
+  const offen=[...document.querySelectorAll('#shareBody #shRows .mg-guest:not(.weg) .sh-send')]
     .filter(b=>!b.disabled);
   if(!offen.length){toast('Alle sind schon eingeladen.','warn');return;}
   if(btn){btn.disabled=true;btn.textContent='…';}
@@ -21969,7 +22090,7 @@ async function shareAnAlle(){
 // löst über den Datenbank-Trigger eine Benachrichtigung aus.
 async function inviteToEvent(userId){
   if(!shareEv)return;
-  const btn=document.querySelector('#sh-'+userId+' .sh-send');
+  const btn=document.querySelector('#shareBody #sh-'+userId+' .sh-send');
   if(btn){btn.disabled=true;btn.textContent='…';}
   const{error}=await sb.from('event_invites')
     .insert({event_id:shareEv.id,user_id:userId,invited_by:cUser.id});
@@ -21986,7 +22107,7 @@ async function sendEventTo(userId){
   // Doppelt gesichert: auch von aussen aufgerufen wird ohne Pro nur
   // eingeladen. Die Datenbank weist das Gespraech ohnehin ab.
   if(!cProfile?.is_pro)return inviteToEvent(userId);
-  const btn=document.querySelector('#sh-'+userId+' .sh-send');
+  const btn=document.querySelector('#shareBody #sh-'+userId+' .sh-send');
   if(btn){btn.disabled=true;btn.textContent='…';}
   try{
     let{data:conv}=await sb.from('conversations').select('*')
@@ -22030,8 +22151,11 @@ async function shareVia(art){
   }
   if(art==='share'){
     if(istApp()){
-      const a=await nativeCall('teilen',{text:txtRoh,url},30000);
-      if(!a.fehler)return;
+      /* Die Huelle antwortet erst, wenn das Teilen-Blatt zugeht – das kann
+         dauern. Vorher nach 30 s "Link kopiert", waehrend das Blatt noch
+         offen war. Abgebrochen ist auch kein Grund fuer einen Ersatzweg. */
+      const a=await nativeCall('teilen',{text:txtRoh,url},600000);
+      if(!a||!a.fehler||a.fehler==='abgebrochen'||a.fehler==='zeitueberschreitung')return;
     }
     if(navigator.share){
       try{ await navigator.share({title:shareEv.name||'SPOTOUT',text:txtRoh,url}); return; }
@@ -22968,12 +23092,21 @@ async function gebuehrKaufenApple(eventId,betrag){
     if(btn){btn.disabled=false;btn.textContent='Jetzt bezahlen';}
     return;
   }
+  /* Die Sperre oben liest den lokalen Stand – also gleich hier setzen,
+     nicht erst nach Erfolg. Sonst konnte nach Zeitueberschreitung oder
+     Kaufanfrage an die Eltern sofort die Gebuehr fuer eine zweite Party
+     starten, und Apples spaete Rueckmeldung schaltete die falsche frei. */
+  if(cProfile){cProfile.pending_fee_event_id=eventId;cProfile.pending_fee_at=new Date().toISOString();}
 
   const a=await nativeCall('gebuehr_kaufen',{userId:cUser.id,produkt},180000);
   if(btn){btn.disabled=false;btn.textContent='Jetzt bezahlen';}
 
   if(a.fehler){
-    if(/abgebrochen|cancel/i.test(a.fehler))return;
+    // Selbst abgebrochen: es ist nichts unterwegs, die Sperre faellt weg
+    if(/abgebrochen|cancel/i.test(a.fehler)){
+      if(cProfile&&cProfile.pending_fee_event_id===eventId){ cProfile.pending_fee_event_id=null; cProfile.pending_fee_at=null; }
+      return;
+    }
     toast('Kauf gerade nicht möglich. Versuch es gleich nochmals.','error');
     return;
   }
@@ -23653,13 +23786,18 @@ function ntZeit(iso){
 
 async function loadNotifs(){
   if(!cUser)return;
+  /* Nach jedem await pruefen, ob noch dasselbe Konto da ist – sonst
+     zeichnete eine spaete Antwort nach Abmelden oder Kontowechsel die
+     Glocke (und die Zahl am App-Symbol) des alten Kontos. */
+  const uid=cUser.id;
   const [{data,error},{data:anfr}]=await Promise.all([
     sb.from('notifications').select('*')
-      .eq('user_id',cUser.id).order('created_at',{ascending:false}).limit(50),
+      .eq('user_id',uid).order('created_at',{ascending:false}).limit(50),
     // Offene Follow-Anfragen stehen gesammelt oben – wie auf Instagram
     sb.from('follow_anfragen').select('von,created_at,profiles:von(id,username,full_name,avatar_url)')
-      .eq('an',cUser.id).order('created_at',{ascending:false}).limit(100),
+      .eq('an',uid).order('created_at',{ascending:false}).limit(100),
   ]);
+  if(cUser?.id!==uid)return;
   window.__anfragen=anfr||[];
   // Fragt jemand nach einer Erledigung erneut an, ist es wieder eine offene Anfrage
   (anfr||[]).forEach(a=>{ try{ ntErledigt.delete(a.von); }catch(e){} });
@@ -23669,6 +23807,7 @@ async function loadNotifs(){
   const fehlen=[...new Set(list.map(n=>n.actor_id).filter(id=>id&&!ntLeute.has(id)))];
   if(fehlen.length){
     const{data:leute}=await sb.from('profiles').select('id,username,full_name,avatar_url').in('id',fehlen);
+    if(cUser?.id!==uid)return;
     (leute||[]).forEach(p=>ntLeute.set(p.id,p));
   }
   window.__notifs=list;
@@ -23816,8 +23955,13 @@ async function ntBeitritt(btn,eventId,uid,ja){
   const akt=btn?.closest('.nt-akt');
   akt?.querySelectorAll('button').forEach(k=>k.disabled=true);
   const k='b:'+eventId+':'+uid;
-  const{data:a}=await sb.from('event_beitritt_anfragen').select('id,status')
-    .eq('event_id',eventId).eq('user_id',uid).maybeSingle();
+  /* Ein Lesefehler wurde vorher zu "Schon erledigt", und Bestaetigen und
+     Ablehnen waren fuer die ganze Sitzung weg. Und gibt es mehrere
+     Anfragen (frueher abgelehnt, neu gestellt), zaehlt die offene. */
+  const{data:reihen,error:le}=await sb.from('event_beitritt_anfragen').select('id,status')
+    .eq('event_id',eventId).eq('user_id',uid);
+  if(le){ toast(fehlerText(le),'error'); akt?.querySelectorAll('button').forEach(x=>x.disabled=false); return; }
+  const a=(reihen||[]).find(x=>x.status==='offen')||(reihen||[])[0]||null;
   if(!a||a.status!=='offen'){
     ntErledigt.set(k,a?.status==='angenommen'?'Bestätigt':a?.status==='abgelehnt'?'Abgelehnt':'Schon erledigt');
     renderNotifs(); return;
@@ -23835,8 +23979,10 @@ async function ntFolgeLaden(){
   const ids=[...new Set((window.__notifs||[]).filter(n=>n.art==='neuer_follower'&&n.actor_id&&!ntFolge.has(n.actor_id)).map(n=>n.actor_id))];
   if(!ids.length)return;
   ntFolgeLaeuft=true;
+  const uid=cUser.id;
   try{
     const{data}=await sb.rpc('folge_status',{p_ids:ids});
+    if(cUser?.id!==uid){ ntFolgeLaeuft=false; return; }
     (data||[]).forEach(r=>ntFolge.set(r.id,r));
     ids.forEach(id=>{ if(!ntFolge.has(id))ntFolge.set(id,{ich_folge:false,folgt_mir:true,angefragt:false}); });
   }catch(e){}
@@ -25485,14 +25631,23 @@ window.addEventListener('load',()=>{
   else setTimeout(los,2500);
 });
 
+/* Pro Adresse ein Skript: ein zweiter Versuch nach Zeitueberschreitung
+   wartet auf das noch laufende statt es doppelt einzubinden. */
+const googleSkripte=new Map();
 function googleKarteLaden(){
   if(googleGeladen)return googleGeladen;
   googleGeladen=new Promise((fertig,daneben)=>{
-    const skript=(url)=>new Promise((ja,nein)=>{
-      const el=document.createElement('script');
-      el.src=url; el.async=true; el.onload=ja; el.onerror=nein;
-      document.head.appendChild(el);
-    });
+    const skript=(url)=>{
+      if(googleSkripte.has(url))return googleSkripte.get(url);
+      const p=new Promise((ja,nein)=>{
+        const el=document.createElement('script');
+        el.src=url; el.async=true; el.onload=ja;
+        el.onerror=(e)=>{ googleSkripte.delete(url); el.remove(); nein(e); };
+        document.head.appendChild(el);
+      });
+      googleSkripte.set(url,p);
+      return p;
+    };
     const zeitgrenze=setTimeout(()=>daneben(new Error('Zeit abgelaufen')),12000);
     /* Beide gleichzeitig. Vorher lud erst Google, danach der Aufsatz –
        zwei Wege zum Server nacheinander, obwohl der Aufsatz nur Leaflet
@@ -25514,6 +25669,9 @@ function googleKarteLaden(){
       })
       .catch((err)=>{ clearTimeout(zeitgrenze); daneben(err); });
   });
+  /* Wie bei leafletLaden: ein Fehlschlag (kein Netz beim Start) galt
+     sonst fuer die ganze Sitzung, und es blieb bei OpenStreetMap. */
+  googleGeladen.catch(err=>{ console.warn('[karte] Google',err); if(!googleBereit)googleGeladen=null; });
   return googleGeladen;
 }
 
@@ -26479,14 +26637,6 @@ function schnellRaus(){
      und der Netzweg entfaellt. */
   let weg=false;
   const merken=()=>{ if(document.visibilityState==='hidden')weg=true; };
-  /* Nur diese zwei Signale. "blur" waere verlockend, taugt aber
-     nicht: in einer WebView loest schon das Wegklappen der Tastatur
-     ein blur aus – dann bliebe der Netzweg aus, obwohl gar nichts
-     geoeffnet hat. Lieber einmal zu viel Safari als ein Knopf, der
-     manchmal nichts tut. */
-  document.addEventListener('visibilitychange',merken);
-  window.addEventListener('pagehide',merken,{once:true});
-
   /* In der SPOTOUT-App: Die Huelle oeffnet die Ziel-App selbst und weiss
      sicher, ob das geklappt hat – nur wenn nicht, nimmt sie die Website.
      Der Zeitmesser unten taugt dort nicht: die Huelle oeffnet das Schema
@@ -26511,6 +26661,15 @@ function schnellRaus(){
     return;
   }
 
+  /* Erst hier anhaengen: im App-Zweig oben wurde nie abgemeldet, und
+     jeder Tipp liess einen Horcher mehr zurueck. */
+  /* Nur diese zwei Signale. "blur" waere verlockend, taugt aber
+     nicht: in einer WebView loest schon das Wegklappen der Tastatur
+     ein blur aus – dann bliebe der Netzweg aus, obwohl gar nichts
+     geoeffnet hat. Lieber einmal zu viel Safari als ein Knopf, der
+     manchmal nichts tut. */
+  document.addEventListener('visibilitychange',merken);
+  window.addEventListener('pagehide',merken,{once:true});
   try{ location.href=ziel.app; }catch(e){}
   setTimeout(()=>{
     document.removeEventListener('visibilitychange',merken);
@@ -26668,10 +26827,8 @@ function toast(msg,type='info'){
   t.className='toast show '+art+lage;
   clearTimeout(toastUhr);
   toastUhr=setTimeout(toastWeg,dauer);
-
-  if((art==='error'||art==='warn')&&typeof istApp==='function'&&istApp()){
-    try{ nativeCall('haptik',{art:'mittel'},1500); }catch(e){}
-  }
+  /* Hier stand ein zweites Klopfen ('mittel') fuer Fehler und Warnungen –
+     zusaetzlich zum Muster oben. Jede Fehlermeldung vibrierte doppelt. */
 }
 
 function toastWeg(){
@@ -27108,7 +27265,11 @@ document.addEventListener('scroll',ev=>{
     'neueEinladung','einladungLoeschen','doJoin','inviteToEvent','sendEventTo',
     'sendPlusRequest','cancelPlusRequest',
     'addBring','delBring','toggleBring','claimFromSheet',
-    'sendReport','blockUser','unblockUser','deleteAccount',
+    /* unblockUser nicht: die Sperre gilt pro Name, nicht pro Person. Wer
+       schnell bei A und dann bei B "Aufheben" tippte, bekam fuer B
+       undefined zurueck – still nichts (und .then darauf warf). Die
+       Knoepfe sperren sich dort selbst, Loeschen doppelt schadet nicht. */
+    'sendReport','blockUser','deleteAccount',
     'alleGelesen','castVote','confirmSuggest',
     'createGroup','toggleGroupStatus','confirmJoinGroup',
     'proKaufenApple','gebuehrKaufenApple','gebuehrBezahlen',
