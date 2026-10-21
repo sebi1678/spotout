@@ -7334,11 +7334,13 @@
     .pw.da{opacity:1}
     .pw{overflow-y:auto;overscroll-behavior:contain}
     .pw.an{z-index:9900;justify-content:space-between}
-    .an-inhalt{position:relative;padding:12vh 24px 0}
-    .an-ic{display:flex;width:52px;height:52px;border-radius:16px;align-items:center;justify-content:center;background:rgba(255,255,255,.06);margin-bottom:18px}
-    .an-feld{display:block}
+    .an-inhalt{position:relative;padding:8vh 24px 0}
+    .an-feld{display:block;margin-bottom:14px}
+    .an-at{position:relative}
+    .an-at b{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2,rgba(255,255,255,.6));font:600 16px var(--font);pointer-events:none}
+    .an-at input{padding-left:32px !important}
     .an-feld span{display:block;font-size:.8rem;font-weight:700;color:var(--text2,rgba(255,255,255,.72));margin:0 0 6px}
-    .an-feld input{width:100%;height:52px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font:600 16px var(--font);padding:0 14px;color-scheme:dark;box-sizing:border-box}
+    .an-feld input{-webkit-appearance:none;appearance:none;line-height:normal;width:100%;height:52px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font:600 16px var(--font);padding:0 14px;color-scheme:dark;box-sizing:border-box}
     .an-fehler{margin-top:10px;font-size:.88rem;color:#FF5A5F;font-weight:600}
     .pw.an .pw-recht a{color:inherit;text-decoration:underline}
     .pw::before{content:"";position:absolute;left:50%;top:-120px;width:520px;height:420px;transform:translateX(-50%);pointer-events:none;
@@ -11290,15 +11292,23 @@ function tourFertig(){
    Laufzeit, Verlaengerung, Kuendigung, Wiederherstellen, Bedingungen. */
 function alterNachtragen(){
   if(document.getElementById('alterNach'))return;
+  /* Wer mit Apple oder Google kommt, hat noch nichts gewaehlt: kein Name
+     (Apple gibt ihn oft nicht heraus), ein Benutzername aus der Mail-
+     Adresse, kein Geburtsdatum. Hier wird das einmal nachgeholt – so wie
+     bei der Registrierung mit E-Mail. Solange das Geburtsdatum fehlt,
+     erlaubt die Datenbank, Name und Benutzername frei zu setzen. */
+  const meta=(cUser&&cUser.user_metadata)||{};
+  const startName=(cProfile.full_name||meta.full_name||meta.name||'').trim();
+  const ausName=n=>String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20);
   const el=document.createElement('div');
-  el.id='alterNach'; el.className='pw an'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','Geburtsdatum');
-  const heute=new Date(), max=new Date(heute.getFullYear()-16,heute.getMonth(),heute.getDate());
-  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  el.id='alterNach'; el.className='pw an'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','Konto einrichten');
   el.innerHTML='<div class="an-inhalt">'
-      +'<span class="an-ic">'+pikto('kalender',26,'pk-bunt')+'</span>'
       +'<h2 class="pw-t">Fast geschafft.</h2>'
-      +'<p class="pw-s">SPOTOUT ist ab 16. Gib einmal dein Geburtsdatum an. Andere sehen es nicht.</p>'
-      +'<label class="an-feld"><span>Geburtsdatum</span><input type="date" id="anDatum" max="'+iso(max)+'" min="1900-01-01"/></label>'
+      +'<p class="pw-s">Noch drei Angaben, dann bist du drin. Dein Geburtsdatum sieht niemand.</p>'
+      +'<label class="an-feld"><span>Name</span><input type="text" id="anName" autocomplete="name" autocapitalize="words" maxlength="40" placeholder="Vor- und Nachname"/></label>'
+      +'<label class="an-feld"><span>Benutzername</span><div class="an-at"><b>@</b><input type="text" id="anUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20" placeholder="dein_name"/></div></label>'
+      +'<label class="an-feld"><span>Geburtsdatum</span><input type="text" id="anDatum" inputmode="numeric" autocomplete="bday" maxlength="10" placeholder="TT.MM.JJJJ"/></label>'
       +'<div class="an-fehler" id="anFehler" hidden></div>'
     +'</div>'
     +'<div class="pw-fuss">'
@@ -11309,27 +11319,56 @@ function alterNachtragen(){
   document.body.appendChild(el);
   if(typeof applyLang==='function'&&LANG!=='de')applyLang();
   requestAnimationFrame(()=>el.classList.add('da'));
+  const fName=el.querySelector('#anName'), fUser=el.querySelector('#anUser'), fDatum=el.querySelector('#anDatum');
+  fName.value=startName;
+  fUser.value=ausName(startName)||cProfile.username||'';
+  let userSelbst=false;
+  fName.addEventListener('input',()=>{ if(!userSelbst)fUser.value=ausName(fName.value); });
+  fUser.addEventListener('input',()=>{ userSelbst=true; const v=ausName(fUser.value); if(v!==fUser.value)fUser.value=v; });
+  // Wie bei der Registrierung: die Punkte setzen sich beim Tippen selbst
+  fDatum.addEventListener('input',()=>{
+    const roh=fDatum.value.replace(/[^0-9]/g,'').slice(0,8);
+    let aus=roh.slice(0,2); if(roh.length>2)aus+='.'+roh.slice(2,4); if(roh.length>4)aus+='.'+roh.slice(4,8);
+    fDatum.value=aus;
+  });
   const fehler=t=>{ const f=el.querySelector('#anFehler'); f.textContent=t; f.hidden=!t; };
   el.querySelector('#anRaus').onclick=()=>{ el.remove(); doLogout(); };
   const knopf=el.querySelector('#anWeiter');
   knopf.onclick=async()=>{
-    const wert=el.querySelector('#anDatum').value;
-    if(!wert){ fehler('Bitte gib dein Geburtsdatum ein.'); return; }
-    if(wert>iso(max)){
+    const name=fName.value.trim(), user=ausName(fUser.value);
+    if(!name){ fehler('Wie heisst du?'); fName.focus(); return; }
+    if(user.length<3){ fehler('Der Benutzername braucht mindestens 3 Zeichen.'); fUser.focus(); return; }
+    const m=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(fDatum.value.trim());
+    const d=m&&new Date(+m[3],+m[2]-1,+m[1]);
+    if(!m||!d||d.getDate()!==+m[1]||d.getMonth()!==+m[2]-1){ fehler('Bitte gib dein Geburtsdatum so ein: TT.MM.JJJJ'); fDatum.focus(); return; }
+    const heute=new Date(); let alter=heute.getFullYear()-d.getFullYear();
+    if(heute.getMonth()<d.getMonth()||(heute.getMonth()===d.getMonth()&&heute.getDate()<d.getDate()))alter--;
+    if(alter<0||alter>120){ fehler('Bitte prüf dein Geburtsdatum.'); fDatum.focus(); return; }
+    if(alter<16){
       fehler('SPOTOUT ist ab 16 Jahren. Dein Konto wird jetzt gelöscht.');
       knopf.disabled=true;
       setTimeout(()=>kontoWegLoeschen(),2200);
       return;
     }
     fehler(''); knopf.disabled=true; knopf.textContent='Einen Moment…';
-    const{error}=await sb.from('profiles').update({birthdate:wert}).eq('id',cUser.id);
+    const zurueck=()=>{ knopf.disabled=false; knopf.textContent='Weiter'; };
+    if(user!==cProfile.username){
+      const{data:belegt}=await sb.from('profiles').select('id').eq('username',user).neq('id',cUser.id).maybeSingle();
+      if(belegt){ zurueck(); fehler('@'+user+' ist schon vergeben. Probier einen anderen.'); fUser.focus(); return; }
+    }
+    const iso=m[3]+'-'+m[2]+'-'+m[1];
+    const neu={birthdate:iso};
+    if(name!==cProfile.full_name)neu.full_name=name;
+    if(user!==cProfile.username)neu.username=user;
+    const{error}=await sb.from('profiles').update(neu).eq('id',cUser.id);
     if(error){
-      knopf.disabled=false; knopf.textContent='Weiter';
+      zurueck();
+      if(error.code==='23505'){ fehler('@'+user+' ist schon vergeben. Probier einen anderen.'); return; }
       fehler(fehlerText(error));
-      console.warn('[huelle] Geburtsdatum',error.message);
+      console.warn('[huelle] Konto einrichten',error.message);
       return;
     }
-    cProfile.birthdate=wert; profilMerken();
+    Object.assign(cProfile,neu); profilMerken(); updNavAv();
     el.classList.remove('da'); setTimeout(()=>el.remove(),280);
   };
 }
@@ -11467,8 +11506,8 @@ function einstiegKarten(){
   return [
     {
       feld:'raus',
-      frage:'Party zäh? Wohin fliehst du?',
-      hilfe:'Dann steht oben rechts ein Knopf. Ein Tipp – und du bist mitten im Scrollen, ohne dass jemand merkt, dass du dich langweilst.',
+      frage:'Angst vor Huzz?',
+      hilfe:'Dann steht oben rechts ein Knopf. Ein Tipp, und du bist weg: TikTok, Reels oder Shorts. Oder du checkst ganz unauffällig das Wetter.',
       wahl:[
         {wert:'tiktok',    ic:'tiktok',    t:'TikTok',          s:''},
         {wert:'instagram', ic:'instagram', t:'Instagram Reels', s:''},
