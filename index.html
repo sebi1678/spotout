@@ -2252,6 +2252,15 @@
       filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.92) saturate(.85);
     }
     #mapWrap.map-osm.map-light .leaflet-tile-pane{filter:none}
+    /* Bis Google bereit ist: ruhige dunkle Flaeche mit sanftem Schimmer
+       statt der umgefaerbten OpenStreetMap, die kurz aufblitzte. */
+    #mapWrap.map-laedt .leaflet-container{background:#121733!important}
+    #mapWrap.map-laedt.map-light .leaflet-container{background:#e4e7ef!important}
+    #mapWrap.map-laedt::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+      background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.05) 50%,rgba(255,255,255,0) 70%);
+      background-size:220% 100%;animation:kartenSchimmer 1.4s linear infinite}
+    @keyframes kartenSchimmer{from{background-position:120% 0}to{background-position:-120% 0}}
+    @media (prefers-reduced-motion:reduce){#mapWrap.map-laedt::after{animation:none}}
     #mapWrap.map-light #map,
     #mapWrap.map-light .leaflet-container{background:#eaecf2!important}
     #mapWrap.map-light .leaflet-control-attribution{
@@ -25959,7 +25968,7 @@ function applyMapTheme(){
      sonst sah man zuerst die umgedrehte OpenStreetMap und einen Moment
      spaeter eine andere Karte darueber. */
   if(googleBereit){
-    wrapEl?.classList.remove('map-osm');
+    wrapEl?.classList.remove('map-osm','map-laedt');
     const g=L.gridLayer.googleMutant({type:'roadmap',styles:mapTheme==='light'?[]:GOOGLE_DUNKEL,maxZoom:20});
     setzen(g);
     /* Liefert Google nach 2.5 s noch nichts (Schluessel abgelehnt, kein
@@ -25975,11 +25984,22 @@ function applyMapTheme(){
     },2500);
     return;
   }
-  wrapEl?.classList.add('map-osm');          // bis Google da ist: OSM-Darstellung
-  setzen(osmEbene());
+  /* Bis Google da ist: eine ruhige Ladeflaeche (map-laedt). Frueher
+     stand hier OpenStreetMap mit umgedrehten Farben – das blitzte bei
+     fast jedem ersten Oeffnen kurz als seltsame Karte auf. OpenStreetMap
+     kommt jetzt nur noch, wenn Google nicht laedt. */
+  wrapEl?.classList.add('map-laedt');
+  const ersatz=()=>{
+    if(!mapInst||(mapTiles&&mapTiles.options&&mapTiles.options.type==='roadmap'))return;
+    wrapEl?.classList.remove('map-laedt');
+    wrapEl?.classList.add('map-osm');
+    setzen(osmEbene());
+  };
+  const notfall=setTimeout(()=>{ console.warn('[karte] Google braucht zu lange, nehme OpenStreetMap'); ersatz(); },5000);
 
   googleKarteLaden().then(()=>{
     if(!mapInst)return;
+    clearTimeout(notfall);
     const vorher=mapTiles;
     const g=L.gridLayer.googleMutant({
       type:'roadmap',
@@ -25990,16 +26010,18 @@ function applyMapTheme(){
     /* Die alte Ebene erst wegnehmen, wenn die neue wirklich Kacheln
        zeigt – sonst blitzt zwischendrin der leere Grund auf. */
     const weg=()=>{
-      wrapEl?.classList.remove('map-osm');
-      if(vorher&&vorher.remove)vorher.remove();
+      wrapEl?.classList.remove('map-osm','map-laedt');
+      if(vorher&&vorher!==g&&vorher.remove)vorher.remove();
     };
     let getan=false;
     const einmal=()=>{ if(getan)return; getan=true; weg(); };
     g.once('load',einmal);
     setTimeout(einmal,1800);
   }).catch((err)=>{
-    // Kein Netz, Schluessel abgelehnt: OpenStreetMap liegt schon da.
-    console.warn('[karte] Google nicht verfügbar, bleibe bei OpenStreetMap', err);
+    // Kein Netz, Schluessel abgelehnt: dann OpenStreetMap
+    clearTimeout(notfall);
+    console.warn('[karte] Google nicht verfügbar, nehme OpenStreetMap', err);
+    ersatz();
   });
 }
 
