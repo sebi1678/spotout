@@ -7409,6 +7409,9 @@
     .bub{overflow-wrap:anywhere}
     .bub-link{color:inherit;text-decoration:underline;text-underline-offset:2px}
     /* Gruppen: drei gleichwertige Aktionen, Liste mit Rand */
+    .grp-melden{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;margin:14px 0 0;
+      background:none;border:0;color:var(--text2,rgba(255,255,255,.6));font:600 .85rem var(--font);cursor:pointer}
+    .grp-melden:active{opacity:.6}
     .grp-aktionen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
     .grp-aktion{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:74px;padding:10px 6px;
       border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;
@@ -21138,6 +21141,7 @@ function gruppeZeichnen(g){
         +'<div class="grp-code"><code>'+esc(grpUrl(g.code))+'</code>'
         +'<button class="copy-btn" onclick="gruppeTeilen(\''+g.code+'\',\''+escAttr(String(g.name||'').replace(/[\'\\"<>&]/g,''))+'\')">Teilen</button></div>'
       : '')
+    +(!g.gruender?'<button class="grp-melden" onclick="openReport(\'group\',\''+g.id+'\',\''+String(g.name||'').replace(/[\'\\"<>&]/g,'')+'\')">'+pikto('melden',16)+'<span>Gruppe melden</span></button>':'')
     +'<div class="danger-zone"><div class="danger-lbl">Gruppe verlassen</div>'
       +'<button class="danger-btn" onclick="gruppeVerlassenTipp(this,\''+g.id+'\')">Verlassen</button>'
       +'<div class="danger-hint">'+(g.gruender
@@ -23530,6 +23534,16 @@ const REP_GRUENDE={
     ['anderes','anderes','Etwas anderes'],
   ],
 };
+/* Gruppen: Name, Beschreibung und Bild stammen von Nutzern (App-Review 1.2).
+   Die Gruende nutzen bestehende Schluessel, damit meldegrund_text sie kennt. */
+REP_GRUENDE.group=[
+  ['hass','hass','Hass oder Beleidigung'],
+  ['sexuell','sexuell','Sexuelle Inhalte'],
+  ['belaestigung','belaestigung','Belästigung oder Drohung'],
+  ['gewalt','gefaehrlich','Gefährlich: Gewalt, Waffen, Drogen'],
+  ['spam','spam','Spam, Werbung oder Betrug'],
+  ['anderes','anderes','Etwas anderes'],
+];
 REP_GRUENDE.photo=[
   ['belaestigung','ohne_einverstaendnis','Zeigt mich oder jemanden ohne Einverständnis'],
   ['sexuell','sexuell','Nacktheit oder sexuelle Inhalte'],
@@ -23541,7 +23555,7 @@ REP_GRUENDE.photo=[
 const REP_PK={belaestigung:'belaestigung',hass:'hass',sexuell:'sexuell',fake_profil:'fake',unter16:'unter16',
   spam:'spam',anderes:'anderes',erfunden:'erfunden',falsche_angaben:'falsch',gefaehrlich:'gefahr',
   ohne_einverstaendnis:'ohne_ok',gewalt:'gewalt'};
-const REP_TITEL={user:'Person melden',event:'Party melden',message:'Nachricht melden',photo:'Foto melden'};
+const REP_TITEL={user:'Person melden',event:'Party melden',message:'Nachricht melden',photo:'Foto melden',group:'Gruppe melden'};
 const REP_HAKEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5 10-10"/></svg>';
 let repWahl=null;
 
@@ -23768,7 +23782,7 @@ async function moderationOeffnen(){
   const{data,error}=await sb.rpc('moderation_uebersicht');
   if(error){ box.innerHTML='<div class="up-empty">'+esc(fehlerText(error))+'</div>'; return; }
   const m=data?.meldungen||[], sk=data?.sanktionen||[];
-  const artText={event:'Party',photo:'Foto',message:'Nachricht',user:'Profil'};
+  const artText={event:'Party',photo:'Foto',message:'Nachricht',user:'Profil',group:'Gruppe'};
   const statusText={offen:'Offen',geprueft:'Gezählt',entfernt:'Entfernt',abgelehnt:'Abgewiesen'};
   const sanktText={verwarnung:'Verwarnung',sperre_7_tage:'7 Tage gesperrt',sperre_dauerhaft:'Dauerhaft gesperrt'};
   const zeit=t=>new Date(t).toLocaleString(locale(),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
