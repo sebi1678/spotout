@@ -5489,26 +5489,9 @@
     /* ── Verwarnung, Sperre, Moderation ── */
     .mg-req-s{font-size:.74rem;color:var(--muted);margin-top:1px}
     .mg-req-text{font-size:.8rem;line-height:1.45;color:var(--text);margin-top:3px;overflow-wrap:anywhere}
-    /* Private Partys, die man anfragen kann */
-    .po-kopf{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:18px 16px 4px}
-    .po-kopf b{font-size:1rem;font-weight:800;color:#fff}
-    .po-kopf span{font-size:.74rem;color:var(--text2)}
-    .po-erkl{padding:0 16px 10px;font-size:.78rem;line-height:1.5;color:var(--text2)}
-    .po-liste{display:flex;flex-direction:column;gap:14px;padding:0 16px 16px}
-    .po-karte{border-radius:20px;overflow:hidden;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
-    .po-bild{position:relative;aspect-ratio:16/9;background:linear-gradient(150deg,#0d0020,#1a0035)}
-    .po-bild img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-    .po-bild .po-chip{position:absolute;left:12px;top:12px;max-width:calc(100% - 24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-      padding:4px 9px;border-radius:9px;background:rgba(9,13,36,.78);color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.03em}
-    .po-body{padding:14px 16px 16px}
-    .po-name{font-size:1.05rem;font-weight:800;color:#fff;line-height:1.25;overflow-wrap:anywhere}
-    .po-zeile{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:.8rem;color:var(--text2);min-width:0}
-    .po-zeile span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .po-host{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.78rem;color:var(--text2)}
-    .po-host .av-sm{width:24px;height:24px;font-size:.7rem}
-    .po-knopf{margin-top:14px;width:100%}
-    .po-stand{margin-top:14px;padding:11px 14px;border-radius:13px;background:rgba(124,92,252,.13);color:#cdbcff;font-size:.8rem;font-weight:700;text-align:center}
-    .po-stand.nein{background:rgba(255,255,255,.05);color:var(--text2)}
+    /* Anfrage an eine private Party (Freunde) */
+    .an-name{font-size:1.05rem;font-weight:800;color:#fff;line-height:1.25;overflow-wrap:anywhere}
+    .an-zeile{margin-top:6px;font-size:.8rem;color:var(--text2)}
     .an-text{width:100%;min-height:110px;resize:vertical;margin-top:10px}
     .an-zaehler{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text2);margin-top:6px}
     .an-zaehler.zu-kurz b{color:#FF5A45}
@@ -8118,8 +8101,6 @@
       <div class="col-desc" style="color:rgba(255,255,255,.5);font-size:.78rem">Private Partys</div>
     </div>
     <div class="grid" id="grid-private"></div>
-    <!-- Private Partys anderer, die offen fuer Anfragen sind (privOffenLaden) -->
-    <div id="privOffen"></div>
   </div>
 
   <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
@@ -8696,12 +8677,12 @@
           </button>
         </div>
         <div class="einw-hinweis" id="einwHinweis"></div>
-        <!-- Private Party, die man trotzdem finden kann: ohne Adresse unter
-             "Privat", wer kommen will, fragt mit ein paar Worten an. -->
+        <!-- Freunde (gegenseitig gefolgt) sehen die Party und fragen an;
+             alle anderen nur mit Einladung oder Link. -->
         <div class="drink-box" style="margin-top:14px">
-          <div class="tog-row"><div><div class="drink-title">Unter «Privat» öffentlich zeigen</div>
-            <div class="drink-sub">Alle sehen die Party ohne Adresse und können mit ein paar Worten anfragen. Du entscheidest, wer kommt.</div></div>
-            <button class="tog" id="offenTog" type="button" role="switch" aria-checked="false" aria-label="Unter Privat öffentlich zeigen" onclick="togOffen()"></button></div>
+          <div class="tog-row"><div><div class="drink-title">Freunde dürfen sehen und anfragen</div>
+            <div class="drink-sub">Alle, die dir folgen und denen du folgst, sehen die Party mit Adresse und können mit ein paar Worten anfragen. Du entscheidest, wer kommt. Aus: nur mit Einladung oder Link.</div></div>
+            <button class="tog" id="offenTog" type="button" role="switch" aria-checked="false" aria-label="Freunde dürfen sehen und anfragen" onclick="togOffen()"></button></div>
         </div>
       </div>
 
@@ -14236,7 +14217,6 @@ async function loadEvts(opt){
   filterAll(false);
   feedMerken();
   if(istVerein())renderVereinHome();
-  privOffenLaden().catch(err=>console.warn('[privat offen]',err));
   ladeFreunde().then(()=>{
     if(typeof filterAll==='function')filterAll(false);
   }).catch(err=>console.warn('[freunde]',err));
@@ -14956,15 +14936,6 @@ function renderFeed(){
     }
   }
 
-  /* Privat ohne Einladung, aber mit Partys offen fuer Anfragen: kein
-     "nichts los", sondern dorthin zeigen (privOffenZeichnen, darunter). */
-  if(!top.length&&col==='private'&&(privOffen||[]).length){
-    wrap.innerHTML='<div class="fy-empty"><h4>Noch keine Einladung</h4>'
-      +'<p>Aber '+(privOffen.length===1?'eine private Party ist':privOffen.length+' private Partys sind')+' offen für Anfragen.</p>'
-      +'<button class="fy-empty-btn" onclick="document.getElementById(\'privOffen\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})">Ansehen</button></div>';
-    document.getElementById('fyNeu')?.remove();
-    return;
-  }
   if(!top.length){
     wrap.innerHTML=`<div class="fy-empty">
       <div class="fy-empty-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg></div>
@@ -15986,6 +15957,9 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
       +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="m5 12.5 5 5 9-10"/></svg>'
       +'Du bist dabei<span class="attend-sub">Tippen zum Austragen</span></button>';
   }
+  // Private Party, sichtbar fuer Freunde: erst klaeren, ob eingeladen (anfrageStandLaden)
+  if(e.type==='private'&&e.offen_anfragen)
+    return '<div id="anfrageStand" data-ev="'+e.id+'">'+attNote('Einen Moment …')+'</div>';
   /* Preis und Zahlart ("bar vor Ort") stehen in der Kachel direkt
      darueber. Unter dem Knopf standen sie ein zweites und drittes Mal. */
   return '<button class="attend-btn" id="attendBtn" style="background:'+w.btnBg+';color:'+w.btnColor+'" onclick="toggleAtt(\''+e.id+'\',false)">'
@@ -16336,6 +16310,7 @@ async function openDetail(id){
   const listeOffen=canSeeAtts&&attCount>0;
   const sperreDa=!canSeeAtts&&attCount>0&&!(isOver&&isExpired&&!isHost);
   if(frBox)frBox.innerHTML=(istVorbei(e)||listeOffen)?'':freundeZeile(e.id,true,sperreDa);
+  if(document.getElementById('anfrageStand'))anfrageStandLaden(e).catch(err=>console.warn('[anfrage]',err));
   if(e.type==='private'&&isAtt&&!isHost)renderPlusCard(e.id);
 }
 
@@ -20516,9 +20491,7 @@ function submitVerify(){
   });
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',los); else los();
 }
-/* Private Party unter "Privat" fuer alle sichtbar (ohne Adresse), mit
-   Anfrage. Die Adresse schuetzt die Datenbank: die Liste fuer Fremde kommt
-   aus private_partys_offen(), nicht aus der Tabelle events. */
+/* Private Party fuer Freunde sichtbar, mit Anfrage (siehe anfrageStandLaden). */
 let offenAnfragen=false;
 function offenSetzen(an){
   offenAnfragen=!!an;
@@ -20527,65 +20500,47 @@ function offenSetzen(an){
 }
 function togOffen(){ offenSetzen(!offenAnfragen); nativeHaptik('leicht'); }
 
-/* ── Private Partys, offen fuer Anfragen ───────────────────────────
-   Unter "Privat" stehen sonst nur Partys, zu denen man eingeladen ist.
-   Dazu kommen jetzt die, deren Host sie zeigen will: ohne Adresse, nur
-   mit Ort. Wer kommen will, schreibt in ein paar Worten, warum – der
-   Host bestaetigt wie bei einem Einladungslink ("Moechten dabei sein").
-   Gibt es die Funktion in der Datenbank noch nicht, bleibt alles still. */
-let privOffen=[], privOffenAus=false;
-async function privOffenLaden(){
-  if(!cUser||privOffenAus||istVerein()){ privOffen=[]; privOffenZeichnen(); return; }
-  const{data,error}=await sb.rpc('private_partys_offen');
-  if(error){
-    if(/PGRST202|42883|could not find|does not exist/i.test(String(error.code)+error.message))privOffenAus=true;
-    else console.warn('[privat offen]',error.message);
-    privOffen=[]; privOffenZeichnen(); return;
+/* ── Private Partys: Freunde duerfen anfragen ─────────────────────
+   Schaltet der Host "Freunde duerfen sehen und anfragen" ein, sehen alle,
+   die ihm gegenseitig folgen, die Party ganz normal – mit Adresse (das
+   regelt die Datenbank: "Events sichtbar" + sind_freunde). Dabei sein
+   koennen sie nur mit Einladung oder Link; sonst fragen sie mit ein paar
+   Worten an, und der Host entscheidet unter "Moechten dabei sein".
+   Den Stand der eigenen Anfrage holt anfrageStandLaden nach dem Zeichnen. */
+async function anfrageStandLaden(e){
+  const box=document.getElementById('anfrageStand');
+  if(!box||!cUser||box.dataset.ev!==e.id)return;
+  const[{data:inv},{data:anf}]=await Promise.all([
+    sb.from('event_invites').select('event_id').eq('event_id',e.id).eq('user_id',cUser.id).limit(1),
+    sb.from('event_beitritt_anfragen').select('status').eq('event_id',e.id).eq('user_id',cUser.id).limit(1),
+  ]);
+  if(!box.isConnected)return;
+  const st=anf?.[0]?.status||null;
+  e.meine_anfrage=st;
+  if(inv&&inv.length||st==='angenommen'){
+    // Eingeladen oder schon bestaetigt: ganz normal dabei sein
+    box.outerHTML='<button class="attend-btn" id="attendBtn" onclick="toggleAtt(\''+e.id+'\',false)">Ich bin dabei!</button>';
+    return;
   }
-  const meine=new Set((evts||[]).map(e=>e.id));
-  privOffen=(data||[]).filter(p=>p.created_by!==cUser.id&&!meine.has(p.id));
-  privOffenZeichnen();
-}
-function privOffenZeichnen(){
-  const box=document.getElementById('privOffen');
-  if(!box)return;
-  const liste=privOffen.filter(p=>typeof imUmkreis!=='function'||p.lat==null||imUmkreis({...p,type:'public'}));
-  // Der Feed oben sagt sonst "nichts los", obwohl hier etwas steht
-  if(curCol==='private'&&typeof renderFeed==='function')try{ renderFeed(); }catch(e){}
-  if(!liste.length){ box.innerHTML=''; return; }
-  box.innerHTML='<div class="po-kopf"><b>Offen für Anfragen</b><span>'+liste.length+'</span></div>'
-    +'<div class="po-erkl">Private Partys, bei denen du fragen kannst, ob du kommen darfst. Die Adresse siehst du, sobald der Host Ja sagt.</div>'
-    +'<div class="po-liste">'+liste.map(p=>{
-      const bild=p.image_url?'<img alt="" decoding="async" src="'+escAttr(p.image_url)+'"/>':'';
-      const host=p.host_name||p.host_username||'Host';
-      const av=p.host_avatar?'<img alt="" decoding="async" src="'+escAttr(p.host_avatar)+'"/>':anfang(host);
-      const stand=p.meine_anfrage==='offen'
-        ?'<div class="po-stand">Anfrage gesendet · wartet auf Antwort</div>'
-        :p.meine_anfrage==='abgelehnt'
-        ?'<div class="po-stand nein">Diesmal nicht</div>'
-        :'<button class="sub-btn sub-public po-knopf" onclick="event.stopPropagation();anfrageOeffnen(\''+p.id+'\')">Anfragen</button>';
-      return '<div class="po-karte" role="button" tabindex="0" onclick="anfrageOeffnen(\''+p.id+'\')">'
-        +'<div class="po-bild">'+bild+'<span class="po-chip">Privat · Offen für Anfragen</span></div>'
-        +'<div class="po-body">'
-          +'<div class="po-name">'+esc(p.name||'Private Party')+'</div>'
-          +'<div class="po-zeile">'+pikto('datum',14,'d-sym')+'<span>'+esc(fmtD(p.date)+' · '+zeitText(p.time))+'</span></div>'
-          +'<div class="po-zeile">'+pikto('ort',14,'d-sym')+'<span>'+esc(p.ort||'Schweiz')+' · Adresse nach Zusage</span></div>'
-          +'<div class="po-host"><div class="av-sm">'+av+'</div><span>von '+esc(host)+(p.gaeste_zahl?' · '+zahlText(p.gaeste_zahl)+' dabei':'')+'</span></div>'
-          +stand
-        +'</div></div>';
-    }).join('')+'</div>';
+  box.innerHTML=st==='offen'
+    ?attNote('Anfrage gesendet · wartet auf Antwort')
+      +'<button class="wl-raus" onclick="anfrageOeffnen(\''+e.id+'\')">Text ändern</button>'
+    :st==='abgelehnt'
+    ?attNote('Der Host hat diesmal abgesagt.')
+    :'<button class="attend-btn" onclick="anfrageOeffnen(\''+e.id+'\')">Anfragen<span class="attend-sub">Als Freund mit ein paar Worten</span></button>';
 }
 
 function anfrageOeffnen(id){
   if(!cUser){ kontoNoetig(); return; }
-  const p=privOffen.find(x=>x.id===id); if(!p)return;
+  const p=(evts||[]).find(x=>x.id===id); if(!p)return;
   const body=document.getElementById('anfrageBody'); if(!body)return;
+  const ort=String(p.address||'').split(',').slice(-1)[0].trim()||'Schweiz';
   if(p.meine_anfrage==='abgelehnt'){
     body.innerHTML='<p class="sk-text">Der Host hat diesmal abgesagt. Du kannst nicht nochmals anfragen.</p>'
       +'<button class="sub-btn sub-public" onclick="closeOverlay(\'anfrageOverlay\')">Okay</button>';
   }else{
-    body.innerHTML='<div class="po-name">'+esc(p.name||'Private Party')+'</div>'
-      +'<div class="po-zeile">'+esc(fmtD(p.date)+' · '+zeitText(p.time)+' · '+(p.ort||'Schweiz'))+'</div>'
+    body.innerHTML='<div class="an-name">'+esc(p.name||'Private Party')+'</div>'
+      +'<div class="an-zeile">'+esc(fmtD(p.date)+' · '+zeitText(p.time)+' · '+ort)+'</div>'
       +'<div class="csec" style="margin-top:18px">Warum sollten wir kommen?</div>'
       +'<textarea class="rep-note an-text" id="anText" maxlength="300" '
         +'placeholder="z. B. Wir sind zu zweit, kennen Lena von der Uni und bringen Getränke mit." '
@@ -20595,7 +20550,7 @@ function anfrageOeffnen(id){
       +'<button class="sub-btn sub-public" id="anSenden" style="margin-top:14px" disabled onclick="anfrageSenden(\''+p.id+'\')">'
         +(p.meine_anfrage==='offen'?'Text ändern':'Anfrage senden')+'</button>'
       +'<div class="sk-anonym" style="margin-top:12px">'+pikto('datenschutz',16)
-        +'<span>Der Host sieht dein Profil und deinen Text. Die Adresse bekommst du, wenn er Ja sagt.</span></div>';
+        +'<span>Der Host sieht dein Profil und deinen Text und entscheidet, ob du kommst.</span></div>';
   }
   document.getElementById('anfrageOverlay')?.classList.add('open');
   setTimeout(()=>document.getElementById('anText')?.focus(),120);
@@ -20626,17 +20581,19 @@ async function anfrageSenden(id){
   const text={text_zu_kurz:'Schreib mindestens 10 Zeichen, warum du kommen möchtest.',
     abgelehnt:'Der Host hat diesmal abgesagt.',schon_dabei:'Du bist schon dabei.',
     vorbei:'Für diese Party kann man nicht mehr anfragen.',gibt_es_nicht:'Diese Party ist nicht mehr offen.',
-    eigene_party:'Das ist deine eigene Party.',gesperrt:'Dein Konto ist gerade gesperrt.'}[data];
+    eigene_party:'Das ist deine eigene Party.',gesperrt:'Dein Konto ist gerade gesperrt.',
+    nur_freunde:'Anfragen können nur Freunde des Hosts (ihr folgt euch gegenseitig).'}[data];
   if(data!=='angefragt'){
     zeig(text||'Das hat nicht geklappt. Versuch es nochmals.');
     if(b){ b.disabled=false; b.textContent='Anfrage senden'; }
     return;
   }
   nativeHaptik('erfolg');
-  const p=privOffen.find(x=>x.id===id); if(p)p.meine_anfrage='offen';
-  privOffenZeichnen();
+  const p=(evts||[]).find(x=>x.id===id); if(p)p.meine_anfrage='offen';
+  const stand=document.getElementById('anfrageStand');
+  if(stand&&p)anfrageStandLaden(p);
   document.getElementById('anfrageBody').innerHTML='<div class="rep-ok"><div class="rep-ok-ic">'+REP_HAKEN+'</div>'
-    +'<b>Anfrage gesendet</b><span>Der Host bekommt eine Mitteilung. Sagt er Ja, steht die Party in deinem Kalender – samt Adresse.</span></div>'
+    +'<b>Anfrage gesendet</b><span>Der Host bekommt eine Mitteilung. Sagt er Ja, bist du dabei und die Party steht in deinem Kalender.</span></div>'
     +'<button class="sub-btn sub-public" onclick="closeOverlay(\'anfrageOverlay\')">Fertig</button>';
 }
 
@@ -20865,7 +20822,7 @@ async function submitEventInner(){
   if(error){
     if(/offen_anfragen/i.test(String(error.message||''))){
       console.warn('[create] offen_anfragen',error);
-      toast('«Öffentlich zeigen» ist noch nicht verfügbar. Schalte es aus oder versuch es später.','error');
+      toast('«Freunde dürfen anfragen» ist noch nicht verfügbar. Schalte es aus oder versuch es später.','error');
       return;
     }
     // Lieber nicht veroeffentlichen als eine 18+-Party ohne Grenze
@@ -26102,11 +26059,11 @@ async function openManage(eventId){
         '<button type="button" class="cset'+(Number(ev.mindestalter||0)===a?' on':'')+'" data-alter="'+a+'" '
         +'onclick="this.parentNode.querySelectorAll(\'.cset\').forEach(b=>b.classList.toggle(\'on\',b===this))">'+t+'</button>').join('')
       +'</div><div class="ep-help">Wer jünger ist, sieht die Party nicht mehr – auch wer schon angemeldet ist.</div></div>')
-    +(priv?'<div class="fg"><label>Unter «Privat» öffentlich zeigen</label><div class="chipset" id="mg-offen">'
-      +[[false,'Nein, nur Eingeladene'],[true,'Ja, Leute dürfen anfragen']].map(([w,t])=>
+    +(priv?'<div class="fg"><label>Wer darf die Party sehen?</label><div class="chipset" id="mg-offen">'
+      +[[false,'Nur mit Einladung oder Link'],[true,'Freunde dürfen sehen und anfragen']].map(([w,t])=>
         '<button type="button" class="cset'+(!!ev.offen_anfragen===w?' on':'')+'" data-offen="'+w+'" '
         +'onclick="this.parentNode.querySelectorAll(\'.cset\').forEach(b=>b.classList.toggle(\'on\',b===this))">'+t+'</button>').join('')
-      +'</div><div class="ep-help">Fremde sehen die Party ohne Adresse und fragen mit ein paar Worten an. Du entscheidest unter «Möchten dabei sein».</div></div>':'')
+      +'</div><div class="ep-help">Freunde = ihr folgt euch gegenseitig. Sie sehen die Party mit Adresse und fragen mit ein paar Worten an. Du entscheidest unter «Möchten dabei sein».</div></div>':'')
     +(priv?'<div class="fg"><label>Playlist (Spotify)</label>'
       +'<input type="text" id="mg-spotify" inputmode="url" autocapitalize="off" spellcheck="false" '
       +'placeholder="https://open.spotify.com/playlist/…" value="'+escAttr(ev.spotify_url||'')+'"/>'
