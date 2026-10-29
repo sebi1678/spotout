@@ -932,6 +932,23 @@
 
     /* ── GRIDS ── */
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 16px}
+    /* Öffentlich und Privat: grosse Karten wie im Feed, eine pro Zeile –
+       auch auf breiten Bildschirmen (.grid.gross schlaegt die
+       Spaltenregeln in den @media weiter unten). */
+    .grid.gross{grid-template-columns:1fr;gap:16px}
+    .col-panel.alles-oben .col-header{display:none}
+    /* Datum-Pille und Altersabzeichen teilen sich eine halbe Kachel.
+       Passt beides nicht nebeneinander, rutscht das Abzeichen unter die
+       Pille (rechts), statt sie zu ueberdecken oder die Uhrzeit
+       abzuschneiden. Erst wenn die Pille allein zu breit ist: "…". */
+    .card-badges{flex-wrap:wrap;row-gap:6px}
+    .card-badges>.card-tag{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .card-badges>:not(.card-tag){flex-shrink:0;margin-left:auto}
+    /* Feed-Karte: vier Chips passen nicht immer in eine Zeile – dann
+       umbrechen statt uebereinander. */
+    .fy-top{flex-wrap:wrap;row-gap:6px}
+    /* Karte-Popup ist 186 px breit: lange Orte ohne Leerschlag umbrechen */
+    .popup-meta{overflow-wrap:anywhere}
     /* Der Weg zu mehr, statt einer Liste ohne Ende. Volle Breite,
        damit er nicht wie eine halbe Kachel aussieht. */
     .grid-mehr{
@@ -5471,6 +5488,30 @@
     @media(prefers-reduced-motion:reduce){.bnav-btn.active .pk{animation:none}.pk{transition:none}}
     /* ── Verwarnung, Sperre, Moderation ── */
     .mg-req-s{font-size:.74rem;color:var(--muted);margin-top:1px}
+    .mg-req-text{font-size:.8rem;line-height:1.45;color:var(--text);margin-top:3px;overflow-wrap:anywhere}
+    /* Private Partys, die man anfragen kann */
+    .po-kopf{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:18px 16px 4px}
+    .po-kopf b{font-size:1rem;font-weight:800;color:#fff}
+    .po-kopf span{font-size:.74rem;color:var(--text2)}
+    .po-erkl{padding:0 16px 10px;font-size:.78rem;line-height:1.5;color:var(--text2)}
+    .po-liste{display:flex;flex-direction:column;gap:14px;padding:0 16px 16px}
+    .po-karte{border-radius:20px;overflow:hidden;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+    .po-bild{position:relative;aspect-ratio:16/9;background:linear-gradient(150deg,#0d0020,#1a0035)}
+    .po-bild img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .po-bild .po-chip{position:absolute;left:12px;top:12px;max-width:calc(100% - 24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      padding:4px 9px;border-radius:9px;background:rgba(9,13,36,.78);color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.03em}
+    .po-body{padding:14px 16px 16px}
+    .po-name{font-size:1.05rem;font-weight:800;color:#fff;line-height:1.25;overflow-wrap:anywhere}
+    .po-zeile{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:.8rem;color:var(--text2);min-width:0}
+    .po-zeile span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .po-host{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.78rem;color:var(--text2)}
+    .po-host .av-sm{width:24px;height:24px;font-size:.7rem}
+    .po-knopf{margin-top:14px;width:100%}
+    .po-stand{margin-top:14px;padding:11px 14px;border-radius:13px;background:rgba(124,92,252,.13);color:#cdbcff;font-size:.8rem;font-weight:700;text-align:center}
+    .po-stand.nein{background:rgba(255,255,255,.05);color:var(--text2)}
+    .an-text{width:100%;min-height:110px;resize:vertical;margin-top:10px}
+    .an-zaehler{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text2);margin-top:6px}
+    .an-zaehler.zu-kurz b{color:#FF5A45}
     .sk-kopf{width:56px;height:56px;margin:4px auto 14px;border-radius:18px;display:flex;align-items:center;justify-content:center;
       color:#FFC24B;background:rgba(255,194,75,.12)}
     .sk-kopf.gross{width:72px;height:72px;border-radius:22px;color:#FF6B7A;background:rgba(255,90,110,.12)}
@@ -7349,8 +7390,15 @@
     .iphone-app .bnav{position:relative!important;bottom:auto!important}
     /* Eventfrog-Karten: gleich wie eigene, mit kleinem Herkunftshinweis */
     .card-extern{position:relative}
-    .card-extern::after{content:'Tickets · Eventfrog';position:absolute;right:8px;top:8px;padding:3px 7px;border-radius:7px;
-      background:rgba(9,13,36,.78);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.02em}
+    /* Der Hinweis stand oben rechts im Bild und lag auf dem Handy ueber
+       der Datum-Pille ("FR., 31. OKT. · 21:00"). Jetzt eine eigene Zeile
+       unter dem Ort – dort hat er Platz und kuerzt notfalls mit "…". */
+    .card-extern .card-loc[data-ef]{margin-bottom:6px}
+    .card-extern .card-loc[data-ef]::after{content:'Tickets · Eventfrog';display:block;margin-top:2px;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+      color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.02em;opacity:.8}
+    .card-extern .ef-credit{margin:-3px 0 8px}
+    .fy-credit{margin-top:0}
     .ef-credit{font-size:.6rem;color:var(--text2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .ef-quelle{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:6px;
       padding:14px 8px 4px;font-size:.72rem;color:var(--text2);text-align:center}
@@ -8070,6 +8118,8 @@
       <div class="col-desc" style="color:rgba(255,255,255,.5);font-size:.78rem">Private Partys</div>
     </div>
     <div class="grid" id="grid-private"></div>
+    <!-- Private Partys anderer, die offen fuer Anfragen sind (privOffenLaden) -->
+    <div id="privOffen"></div>
   </div>
 
   <div style="height:calc(var(--bnav-h) + var(--safe-bottom) + 20px)"></div>
@@ -8646,6 +8696,13 @@
           </button>
         </div>
         <div class="einw-hinweis" id="einwHinweis"></div>
+        <!-- Private Party, die man trotzdem finden kann: ohne Adresse unter
+             "Privat", wer kommen will, fragt mit ein paar Worten an. -->
+        <div class="drink-box" style="margin-top:14px">
+          <div class="tog-row"><div><div class="drink-title">Unter «Privat» öffentlich zeigen</div>
+            <div class="drink-sub">Alle sehen die Party ohne Adresse und können mit ein paar Worten anfragen. Du entscheidest, wer kommt.</div></div>
+            <button class="tog" id="offenTog" type="button" role="switch" aria-checked="false" aria-label="Unter Privat öffentlich zeigen" onclick="togOffen()"></button></div>
+        </div>
       </div>
 
     </div>
@@ -8817,6 +8874,62 @@
         </button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ════ EVENTFROG-EVENT ════
+     Eigenes, schlankes Fenster statt sofort die Ticketseite: man soll
+     erst sehen, was, wann und wo – und es sich merken koennen. Steht vor
+     dem Routen-Fenster, damit "Womit navigieren?" darueber aufgeht. -->
+<style>
+  .ef-hero{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#633BFF,#54A7FF)}
+  .ef-hero img{width:100%;height:100%;object-fit:cover;display:block}
+  .ef-hero::after{content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to top,rgba(9,13,36,.9) 0%,rgba(9,13,36,.15) 55%,rgba(9,13,36,0) 100%)}
+  .ef-hero-leer{display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.75)}
+  .ef-hero-leer svg{width:44px;height:44px}
+  .ef-inhalt{padding:16px 20px 24px}
+  .ef-kat{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+    color:#9DB8FF;background:rgba(99,59,255,.16);border:1px solid rgba(99,59,255,.4);
+    padding:3px 9px;border-radius:980px;margin-bottom:10px}
+  .ef-titel{font-size:1.35rem;font-weight:800;color:#fff;line-height:1.2;margin:0 0 16px;letter-spacing:-.01em}
+  .ef-zeile{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;
+    padding:12px 14px;margin-bottom:10px;color:#fff;font:inherit}
+  button.ef-zeile{cursor:pointer}
+  button.ef-zeile:active{transform:scale(var(--druck,.98))}
+  .ef-zeile>svg{width:20px;height:20px;flex:none;margin-top:2px;color:#FF5A45}
+  .ef-zeile small{display:block;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .ef-zeile b{display:block;font-size:.92rem;font-weight:700}
+  .ef-zeile span{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
+  .ef-zeile>svg.ef-pfeil{width:16px;height:16px;margin:auto 0 auto auto;color:var(--muted)}
+  .ef-knoepfe{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+  .ef-haupt{height:52px;border:0;border-radius:16px;font:inherit;font-weight:800;font-size:.98rem;color:#fff;cursor:pointer;
+    background:linear-gradient(135deg,#FF2D76,#FF5A45);box-shadow:0 4px 20px rgba(255,45,118,.18)}
+  .ef-zweit-reihe{display:flex;gap:10px}
+  .ef-zweit{flex:1;min-height:46px;border-radius:14px;font:inherit;font-weight:700;font-size:.86rem;color:#fff;cursor:pointer;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 12px}
+  .ef-zweit svg{width:17px;height:17px;flex:none}
+  .ef-zweit.an{background:rgba(99,59,255,.18);border-color:rgba(99,59,255,.55)}
+  .ef-haupt:active,.ef-zweit:active{transform:scale(var(--druck,.97))}
+  .ef-nachweis{margin-top:16px;font-size:.72rem;color:var(--muted);line-height:1.5}
+  .ef-nachweis a{color:inherit}
+  /* Kleiner Hinweis im Kalender: dieser Eintrag kommt von Eventfrog */
+  .cal-ef-badge{font-size:.55rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+    color:#9DB8FF;background:rgba(84,167,255,.12);border:1px solid rgba(84,167,255,.32);
+    padding:2px 7px;border-radius:980px;margin-left:6px;vertical-align:middle}
+</style>
+<div class="overlay" id="externOverlay" onclick="closeIfOutside(event,'externOverlay')">
+  <div class="modal"><div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Event</div>
+      <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('externOverlay')">
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="externInhalt" style="padding:0"></div>
   </div>
 </div>
 
@@ -9135,6 +9248,17 @@
       <button class="modal-x" onclick="closeOverlay('moderationOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body"><div id="moderationListe"></div></div>
+  </div>
+</div>
+
+<div class="overlay" id="anfrageOverlay" onclick="closeIfOutside(event,'anfrageOverlay')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Anfragen</div>
+      <button class="modal-x" onclick="closeOverlay('anfrageOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    </div>
+    <div class="modal-body" id="anfrageBody"></div>
   </div>
 </div>
 
@@ -14112,6 +14236,7 @@ async function loadEvts(opt){
   filterAll(false);
   feedMerken();
   if(istVerein())renderVereinHome();
+  privOffenLaden().catch(err=>console.warn('[privat offen]',err));
   ladeFreunde().then(()=>{
     if(typeof filterAll==='function')filterAll(false);
   }).catch(err=>console.warn('[freunde]',err));
@@ -14451,6 +14576,8 @@ function setFyModus(m){
   document.getElementById('fyM-fuer')?.classList.toggle('on', m==='fuer_dich');
   document.getElementById('fyM-beliebt')?.classList.toggle('on', m==='beliebt');
   renderFeed();
+  // Das Raster laesst weg, was oben steht – oben steht jetzt anderes
+  ['events','public'].forEach(t=>renderGrid(t,gridListe[t]||[]));
 }
 
 function beliebtScore(e){
@@ -14539,7 +14666,8 @@ function fyScore(e,now){
   // 4) Kleine Boni
   if(e.verified) s+=6;                     // wirklich geprüfte Veranstalter
   if(e.image_url)                   s+=8;   // Karte mit Bild wirkt stärker
-  if(!e.price||e.price==0)          s+=3;   // gratis zieht
+  // gratis zieht – bei Eventfrog steht price:0 nur, weil der Preis unbekannt ist
+  if(!e.extern&&(!e.price||e.price==0)) s+=3;
   if(e._fillRate>=.8&&e._fillRate<1)s+=5;   // "fast voll" erzeugt Sog
 
   // 5) Eigene Events braucht man sich nicht empfehlen zu lassen
@@ -14794,15 +14922,21 @@ function renderFeed(){
   if(cat){cat.textContent=COL_SHORT[col];cat.style.color=worldVars(col).accent;cat.style.borderColor=worldVars(col).border;cat.style.background=worldVars(col).pill;}
   /* Der Satz sah aus wie eine Feststellung, war aber eine
      Aufforderung – ohne dass man ihn antippen konnte. */
+  const top=feedAuswahl(col);
   const sub=document.getElementById('fySub');
   if(sub){
     const ohneOrt = fyModusJetzt()!=='beliebt' && userLat==null;
     sub.classList.toggle('fy-sub-knopf', ohneOrt);
     sub.onclick = ohneOrt ? requestLocation : null;
+    /* Eventfrog liefert keine Anmeldungen – "Andrang" oder "am meisten
+       los" waere dort eine leere Behauptung. */
+    const mitExtern=col==='events'&&top.some(e=>e.extern);
+    const nurExtern=mitExtern&&top.every(e=>e.extern);
     sub.textContent = fyModusJetzt()==='beliebt'
-      ? 'Wo gerade am meisten los ist'
-      : ((userLat!=null)?'Sortiert nach Nähe, Zeitpunkt und Andrang'
-                        :'Standort freigeben für Partys um dich herum');
+      ? (nurExtern?(userLat!=null?'Sortiert nach Nähe und Zeitpunkt':'Sortiert nach Zeitpunkt')
+                  :'Wo gerade am meisten los ist')
+      : ((userLat!=null)?(mitExtern?'Sortiert nach Nähe und Zeitpunkt':'Sortiert nach Nähe, Zeitpunkt und Andrang')
+                        :(col==='events'?'Standort freigeben für Events um dich herum':'Standort freigeben für Partys um dich herum'));
   }
   const ttl=document.querySelector('#fySection .fy-title');
   if(ttl&&ttl.childNodes[1])ttl.childNodes[1].textContent = fyModusJetzt()==='beliebt'?'Beliebt':'Für dich';
@@ -14822,29 +14956,16 @@ function renderFeed(){
     }
   }
 
-  const now=new Date();
-
-  // ── Kandidaten aufbereiten ──
-  const pool=evts.map(e=>{
-    const start=evStart(e);
-    if(!start)return null;
-    const cap=e.capacity||0;
-    return{
-      ...e,
-      _start:start,
-      _hUntil:(start-now)/36e5,
-      _dist:(userLat!=null&&userLng!=null&&e.lat!=null&&e.lng!=null)?distKm(userLat,userLng,e.lat,e.lng):null,
-      _fillRate:cap>0?Math.min(1,(e.attending||0)/cap):0
-    };
-  }).filter(e=>e&&e.type===col&&!istVorbei(e)
-              // Die eigene Party muss man sich nicht empfehlen lassen –
-              // unter "Meine Partys" und im Kalender steht sie weiterhin.
-              && e.created_by!==cUser?.id
-              // Dieselben Filter wie die Liste darunter (Gratis, Umkreis …)
-              && (col!=='public'||typeof oePasst!=='function'||oePasst(e))
-              && (col==='private'||typeof imUmkreis!=='function'||imUmkreis(e)));
-
-  if(!pool.length){
+  /* Privat ohne Einladung, aber mit Partys offen fuer Anfragen: kein
+     "nichts los", sondern dorthin zeigen (privOffenZeichnen, darunter). */
+  if(!top.length&&col==='private'&&(privOffen||[]).length){
+    wrap.innerHTML='<div class="fy-empty"><h4>Noch keine Einladung</h4>'
+      +'<p>Aber '+(privOffen.length===1?'eine private Party ist':privOffen.length+' private Partys sind')+' offen für Anfragen.</p>'
+      +'<button class="fy-empty-btn" onclick="document.getElementById(\'privOffen\')?.scrollIntoView({behavior:\'smooth\',block:\'start\'})">Ansehen</button></div>';
+    document.getElementById('fyNeu')?.remove();
+    return;
+  }
+  if(!top.length){
     wrap.innerHTML=`<div class="fy-empty">
       <div class="fy-empty-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg></div>
       <h4>Unter ${COL_SHORT[col]} ist gerade nichts los</h4>
@@ -14855,71 +14976,134 @@ function renderFeed(){
     return;
   }
 
-  const beliebt=fyModusJetzt()==='beliebt';
-  const scored=beliebt
-    ? pool.map(e=>({...e,_score:beliebtScore(e)})).sort((a,b)=>b._score-a._score)
-    : pool.map(e=>({...e,_score:fyScore(e,now)})).sort((a,b)=>b._score-a._score);
+  setzeHTML(wrap,`<div class="fy-list">${top.map(grossKarteHTML).join('')}</div>`);
+  feedNeuHinweis(col);
+}
+
+/* Start, Stunden bis dahin, Entfernung und Auslastung einmal ausrechnen –
+   Feed und grosses Raster brauchen dieselben Werte. Ohne Datum bleibt
+   _start leer (der Feed laesst solche weg, das Raster zeigt sie trotzdem). */
+function feedAufbereiten(e,now){
+  const start=evStart(e);
+  const cap=e.capacity||0;
+  return{
+    ...e,
+    _start:start,
+    _hUntil:start?(start-now)/36e5:undefined,
+    _dist:(userLat!=null&&userLng!=null&&e.lat!=null&&e.lng!=null)?distKm(userLat,userLng,e.lat,e.lng):null,
+    _fillRate:cap>0?Math.min(1,(e.attending||0)/cap):0
+  };
+}
+
+// Bei privaten Partys gibt es nur "Für dich" – unabhaengig vom offenen Reiter
+function fyModusFuer(col){ return col==='private'?'fuer_dich':fyModus; }
+
+/* Was der Feed fuer eine Kategorie oben zeigt. Eine eigene Funktion,
+   damit das grosse Raster darunter genau diese Partys weglassen kann –
+   sonst stuende jede zweimal untereinander. */
+function feedAuswahl(col){
+  const now=new Date();
+  /* Unter Events gehoeren die Eventfrog-Events dazu (nur in der Naehe,
+     wie im Raster) – sonst stand oben "nichts los" ueber einer vollen
+     Liste. */
+  const quelle=col==='events'?evts.concat(externNachNaehe(externeEvents)):evts;
+  const pool=quelle.filter(e=>e.type===col&&!istVorbei(e)
+              // Die eigene Party muss man sich nicht empfehlen lassen –
+              // unter "Meine Partys" und im Kalender steht sie weiterhin.
+              // (!created_by: Eventfrog hat keinen; ohne Anmeldung galt
+              // undefined===undefined sonst als "eigene".)
+              && (!e.created_by||e.created_by!==cUser?.id)
+              // Dieselben Filter wie die Liste darunter (Gratis, Umkreis …)
+              && (col!=='public'||typeof oePasst!=='function'||oePasst(e))
+              && (col==='private'||typeof imUmkreis!=='function'||imUmkreis(e)))
+    .map(e=>feedAufbereiten(e,now)).filter(e=>e._start);
+  if(!pool.length)return [];
+
+  const nachFy=l=>l.map(e=>({...e,_score:fyScore(e,now)})).sort((a,b)=>b._score-a._score);
   /* Vorher vier. Danach ging es unten in den kleinen Karten weiter,
      und der Wechsel mitten im Scrollen sah aus wie ein Bruch. */
   const FY_ANZAHL=12;
-  const top=beliebt?scored.slice(0,FY_ANZAHL):fyDiversify(scored,FY_ANZAHL);
+  if(fyModusFuer(col)!=='beliebt')return fyDiversify(nachFy(pool),FY_ANZAHL);
+  /* Beliebt: Eventfrog liefert weder Anmeldungen noch Aufrufe – alle
+     haetten 0 Punkte und stuenden in zufaelliger Reihenfolge. Darum
+     zuerst die eigenen, bei denen wirklich etwas los ist, danach der
+     Rest nach Naehe und Zeitpunkt. */
+  const mitZahl=pool.map(e=>({...e,_score:beliebtScore(e)}));
+  const vorne=mitZahl.filter(e=>!e.extern&&e._score>0).sort((a,b)=>b._score-a._score);
+  const hinten=nachFy(mitZahl.filter(e=>e.extern||e._score<=0));
+  return vorne.concat(hinten).slice(0,FY_ANZAHL);
+}
 
+/* Ids, die der Feed fuer diese Kategorie oben zeigt. Bei Suche ist der
+   Feed aus (fuer Vereine ausgeblendet) – dann zeigt das Raster alles. */
+function feedObenIds(type){
+  const q=(document.getElementById('searchInput')?.value||'').trim();
+  if(q||istVerein())return new Set();
+  return new Set(feedAuswahl(type).map(e=>e.id));
+}
+
+/* Die grosse Karte des Feeds. Auch das Raster unter Öffentlich und
+   Privat nimmt sie, damit beide gleich aussehen. Erwartet ein Objekt
+   aus feedAufbereiten. Eventfrog-Events (e.extern) fuehren zu den
+   Tickets, ohne Gaestezahl und ohne "Gratis" – den Preis kennen wir nicht. */
+function grossKarteHTML(e){
   const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   const pinSm=pikto('ort',14,'d-sym');
   const calSm=pikto('datum',14,'d-sym');
   const users=pikto('gaeste',13,'d-sym');
+  const ext=!!e.extern;
+  const w=worldVars(e.type);
+  const tot=(e.price||0)+(e.drink_price||0);
+  const free=tot===0;
+  const r=fyReason(e);
+  const att=e.attending||0;
+  const voll=!ext&&istVoll(e);
+  const typeLabel=e.type==='events'?'Event':e.type==='public'?'Öffentlich':'Privat';
+  const auf=ext?"externOeffnen('"+e.extern.id+"')":"openDetail('"+e.id+"')";
+  const credit=ext&&e.extern.bild_credit?'<div class="ef-credit fy-credit">Foto: '+esc(e.extern.bild_credit)+'</div>':'';
 
-  const cards=top.map(e=>{
-    const w=worldVars(e.type);
-    const tot=(e.price||0)+(e.drink_price||0);
-    const free=tot===0;
-    const r=fyReason(e);
-    const att=e.attending||0;
-    const typeLabel=e.type==='events'?'Event':e.type==='public'?'Öffentlich':'Privat';
+  // Das Titelbild des Hosts trägt die Karte; ohne Bild ein farbiger Verlauf
+  const media=e.image_url
+    ? `<img src="${escAttr(e.image_url)}" loading="lazy" alt=""/>`
+    : `<div class="fy-fallback" style="background:${gradBg(e.type,e.category)}">
+         <div class="fy-orb fy-orb-a" style="background:radial-gradient(circle,${w.accent}40,transparent 70%)"></div>
+         <div class="fy-orb fy-orb-b" style="background:radial-gradient(circle,${w.accent}22,transparent 70%)"></div>
+         <div class="fy-fallback-ic" style="color:${w.accent}">${iconSvg(evIconKey(e),64)}</div>
+       </div>`;
 
-    // Das Titelbild des Hosts trägt die Karte; ohne Bild ein farbiger Verlauf
-    const media=e.image_url
-      ? `<img src="${escAttr(e.image_url)}" loading="lazy" alt=""/>`
-      : `<div class="fy-fallback" style="background:${gradBg(e.type,e.category)}">
-           <div class="fy-orb fy-orb-a" style="background:radial-gradient(circle,${w.accent}40,transparent 70%)"></div>
-           <div class="fy-orb fy-orb-b" style="background:radial-gradient(circle,${w.accent}22,transparent 70%)"></div>
-           <div class="fy-fallback-ic" style="color:${w.accent}">${iconSvg(evIconKey(e),64)}</div>
-         </div>`;
-
-    return `<article class="fy-card" data-world="${e.type}" onclick="openDetail('${e.id}')"
-        role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail('${e.id}')}"
-        aria-label="${escAttr(e.name||'Event')}">
-      <div class="fy-media">
-        ${media}
-        <div class="fy-scrim"></div>
-        <div class="fy-top">
-          <span class="fy-chip" style="color:${w.accent};border-color:${w.border};background:rgba(0,0,0,.68)">${typeLabel}</span>
-          ${alterMark(e,true)}
-          ${/* "Ausgebucht" steht unten auf dem Knopf – oben nicht nochmals */''}
-          ${(!istVoll(e)&&att>0)?`<span class="fy-chip fy-chip-dark">${users}${att} dabei</span>`:''}
-          ${feedNeuIds.has(e.id)?'<span class="fy-chip fy-neu">Neu</span>':''}
-        </div>
-        <div class="fy-reason${r.roh?' fy-reason-zahl':''}" style="color:${w.accent}">${r.ic}${r.txt}</div>
+  return `<article class="fy-card${ext?' fy-extern':''}" data-world="${e.type}" onclick="${auf}"
+      role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${auf}}"
+      aria-label="${escAttr((e.name||'Event')+(ext?' – Tickets bei Eventfrog':''))}">
+    <div class="fy-media">
+      ${media}
+      <div class="fy-scrim"></div>
+      <div class="fy-top">
+        <span class="fy-chip" style="color:${w.accent};border-color:${w.border};background:rgba(0,0,0,.68)">${typeLabel}</span>
+        ${alterMark(e,true)}
+        ${/* "Ausgebucht" steht unten auf dem Knopf – oben nicht nochmals.
+             Eventfrog hat keine Gaestezahl, dort steht die Quelle. */''}
+        ${ext?'<span class="fy-chip fy-chip-dark">Eventfrog</span>'
+             :(!voll&&att>0)?`<span class="fy-chip fy-chip-dark">${users}${att} dabei</span>`:''}
+        ${!ext&&feedNeuIds.has(e.id)?'<span class="fy-chip fy-neu">Neu</span>':''}
       </div>
-      <div class="fy-body">
-        <div class="fy-ccat" style="color:${w.accent}">${esc(e.category||typeLabel)}</div>
-        <h3 class="fy-name">${esc(e.name||'Party')}</h3>
-        <div class="fy-info">
-          <div class="fy-row">${calSm}<span>${fyWhen(e)}</span></div>
-          <div class="fy-row">${pinSm}<span>${esc(e.address||'Schweiz')}</span></div>
-        </div>
-        ${freundeZeile(e.id)}
-        <div class="fy-foot">
-          <div class="fy-price${free?' free':''}">${free?'Gratis':chf(tot)}</div>
-          <button class="fy-go${istVoll(e)?' fy-go-voll':''}" style="${istVoll(e)?'':'background:'+w.btnBg+';color:'+w.btnColor}"
-            onclick="event.stopPropagation();openDetail('${e.id}')">${istVoll(e)?'Ausgebucht':'Ansehen'+arrow}</button>
-        </div>
+      <div class="fy-reason${r.roh?' fy-reason-zahl':''}" style="color:${w.accent}">${r.ic}${r.txt}</div>
+    </div>
+    <div class="fy-body">
+      <div class="fy-ccat" style="color:${w.accent}">${esc(e.category||typeLabel)}</div>
+      <h3 class="fy-name">${esc(e.name||'Party')}</h3>
+      <div class="fy-info">
+        ${e._start?`<div class="fy-row">${calSm}<span>${fyWhen(e)}</span></div>`:''}
+        <div class="fy-row">${pinSm}<span>${esc(e.address||'Schweiz')}</span></div>
+        ${credit}
       </div>
-    </article>`;
-  }).join('');
-
-  setzeHTML(wrap,`<div class="fy-list">${cards}</div>`);
-  feedNeuHinweis(col);
+      ${ext?'':freundeZeile(e.id)}
+      <div class="fy-foot">
+        <div class="fy-price${!ext&&free?' free':''}">${ext?'Tickets':free?'Gratis':chf(tot)}</div>
+        <button class="fy-go${voll?' fy-go-voll':''}" style="${voll?'':'background:'+w.btnBg+';color:'+w.btnColor}"
+          onclick="event.stopPropagation();${auf}">${voll?'Ausgebucht':'Ansehen'+arrow}</button>
+      </div>
+    </div>
+  </article>`;
 }
 
 // Empfehlungen neu mischen (Button in der Kopfzeile)
@@ -15157,15 +15341,33 @@ function gridMehr(type){
    das direkte Laden ihrer Bilder). Gibt es die Tabelle noch nicht, bleibt
    hier alles still. Felder: id, titel, beginn (timestamptz), ort_name,
    adresse, lat, lng, bild_url, ticket_url, kategorie. */
-let externeEvents=[], externeAus=false;
+let externeEvents=[], externeAus=false, externeMitOrt=false;
 async function externeLaden(){
   if(externeAus)return;
   try{
-    const{data,error}=await sb.from('externe_events').select('id,titel,beginn,ort_name,adresse,lat,lng,bild_url,bild_credit,ticket_url,kategorie')
-      .gte('beginn',new Date(Date.now()-3*3600e3).toISOString()).order('beginn',{ascending:true}).limit(150);
+    // ende fuer "bis …" im Event-Fenster und den Kalender
+    /* Vorher die ersten 150 der ganzen Schweiz – das reichte gerade bis
+       morgen. Mit Standort: alles im Umkreis von ~60 km fuer drei Wochen
+       (Rechteck, externNachNaehe schneidet danach genau zu). Ohne: die
+       naechste Woche der ganzen Schweiz. */
+    const ab=new Date(Date.now()-3*3600e3).toISOString();
+    let q=sb.from('externe_events').select('id,titel,beginn,ende,ort_name,adresse,lat,lng,bild_url,bild_credit,ticket_url,kategorie')
+      .gte('beginn',ab);
+    if(typeof userLat==='number'&&typeof userLng==='number'){
+      q=q.lte('beginn',new Date(Date.now()+21*864e5).toISOString())
+        .gte('lat',userLat-0.55).lte('lat',userLat+0.55).gte('lng',userLng-0.8).lte('lng',userLng+0.8);
+    }else{
+      q=q.lte('beginn',new Date(Date.now()+7*864e5).toISOString());
+    }
+    externeMitOrt=typeof userLat==='number';
+    const{data,error}=await q.order('beginn',{ascending:true}).limit(1000);
     if(error){ if(/PGRST205|42P01|does not exist|schema cache/i.test(error.message+error.code))externeAus=true; else console.warn('[eventfrog]',error.message); return; }
     externeEvents=(data||[]).map(x=>{ const d=new Date(x.beginn);
-      return {id:'ef-'+x.id, extern:x, type:'events', name:x.titel, date:x.beginn.slice(0,10),
+      // Bildnachweise wie "-" oder "." sind keine: weglassen statt "Foto: -"
+      if(x.bild_credit&&!/[0-9A-Za-zÀ-ÿ]{2}/.test(x.bild_credit))x.bild_credit=null;
+      // Datum in Ortszeit: slice(0,10) war UTC – nach Mitternacht einen Tag daneben
+      const tag=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      return {id:'ef-'+x.id, extern:x, type:'events', name:x.titel, date:tag,
         time:d.toTimeString().slice(0,5), address:[x.ort_name,x.adresse].filter(Boolean).join(', '),
         image_url:x.bild_url, category:x.kategorie||'Event', price:0, drink_price:0, attending:0, status:'live', lat:x.lat, lng:x.lng}; });
     if(document.getElementById('page-main')?.classList.contains('active'))filterAll();
@@ -15191,16 +15393,197 @@ function externKarte(e){
 function externQuelle(){
   return '<div class="ef-quelle">Weitere Events von <a href="https://eventfrog.ch" target="_blank" rel="noopener">Eventfrog</a></div>';
 }
+/* ── Eventfrog-Event im eigenen Fenster ───────────────────────────
+   Frueher ging ein Tipp sofort auf die Ticketseite – man verliess die
+   App, ohne zu wissen wann und wo. Jetzt erst ein schlankes Fenster mit
+   den Eckdaten; Tickets sind einen Tipp weiter. Das Event kommt aus der
+   geladenen Liste oder, falls es dort gerade fehlt (Kalender), aus der
+   gemerkten Momentaufnahme. */
+let efOffen=null;
+function efFinden(id){
+  const x=externeEvents.find(e=>e.extern.id===id)?.extern;
+  if(x)return x;
+  return efKalenderLesen().find(k=>k.id===id)||null;
+}
 function externOeffnen(id){
-  const x=externeEvents.find(e=>e.extern.id===id)?.extern; if(!x?.ticket_url)return;
-  if(istApp())location.href=x.ticket_url; else window.open(x.ticket_url,'_blank','noopener');
+  const x=efFinden(id);
+  if(!x){ toast('Dieses Event gibt es nicht mehr.','warn'); return; }
+  efOffen=x;
+  efZeichnen();
+  const o=document.getElementById('externOverlay');
+  o?.querySelector('.modal')?.scrollTo?.(0,0);
+  o?.classList.add('open');
+}
+// Ende wie istVorbei: angegebener Schluss, sonst Beginn + 6 Stunden
+function efEnde(x){
+  const st=Date.parse(x?.beginn), en=x?.ende?Date.parse(x.ende):NaN;
+  return isNaN(en)||en<st ? st+6*36e5 : en;
+}
+function efWann(x){
+  const d=new Date(x.beginn);
+  if(isNaN(d))return '';
+  const uhr=t=>zeitText(t.toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit',hour12:false}));
+  let s=d.toLocaleDateString(locale(),{weekday:'long',day:'numeric',month:'long'})+' · '+uhr(d);
+  const en=x.ende?new Date(x.ende):null;
+  if(en&&!isNaN(en)&&en>d){
+    // Am selben Tag (oder in der Nacht danach bis 6 Uhr) reicht die Uhrzeit
+    const naechteMorgen=en-d<864e5&&en.getHours()<6;
+    s+=' – '+(en.toDateString()===d.toDateString()||naechteMorgen
+      ? uhr(en)
+      : en.toLocaleDateString(locale(),{weekday:'short',day:'numeric',month:'short'})+' · '+uhr(en));
+  }
+  return s;
+}
+function efZeichnen(){
+  const x=efOffen, box=document.getElementById('externInhalt');
+  if(!x||!box)return;
+  const im=efImKalender(x.id);
+  const ic={
+    zeit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    ort:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+    pfeil:'<svg class="ef-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>',
+    kal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>',
+    teilen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
+  };
+  const hero=x.bild_url
+    ? '<div class="ef-hero"><img decoding="async" src="'+escAttr(x.bild_url)+'" alt=""/></div>'
+    : '<div class="ef-hero ef-hero-leer">'+ic.kal+'</div>';
+  const ort=x.ort_name||'', adr=x.adresse||'';
+  const hatOrt=!!(ort||adr||x.lat!=null);
+  const wo=hatOrt
+    ? '<button class="ef-zeile" onclick="efRoute(\''+escAttr(x.id)+'\')" aria-label="'
+        +escAttr('Route zu '+[ort,adr].filter(Boolean).join(', '))+'">'
+      +ic.ort+'<div><small>Wo</small><b>'+esc(ort||adr)+'</b>'+(ort&&adr?'<span>'+esc(adr)+'</span>':'')+'</div>'+ic.pfeil+'</button>'
+    : '';
+  box.innerHTML=hero
+    +'<div class="ef-inhalt">'
+    +(x.kategorie?'<div class="ef-kat">'+esc(x.kategorie)+'</div>':'')
+    +'<h2 class="ef-titel">'+esc(x.titel||'Event')+'</h2>'
+    +'<div class="ef-zeile">'+ic.zeit+'<div><small>Wann</small><b>'+esc(efWann(x))+'</b></div></div>'
+    +wo
+    +'<div class="ef-knoepfe">'
+      +(x.ticket_url?'<button class="ef-haupt" onclick="efTickets()" aria-label="Tickets bei Eventfrog (öffnet Eventfrog)">Tickets bei Eventfrog</button>':'')
+      +'<div class="ef-zweit-reihe">'
+        +'<button class="ef-zweit'+(im?' an':'')+'" id="efKalKnopf" onclick="efKalenderTipp()" aria-pressed="'+im+'" aria-label="'
+          +(im?'Aus meinem Kalender entfernen':'In meinen Kalender')+'">'+ic.kal+'<span>'+(im?'Im Kalender ✓ – entfernen':'In meinen Kalender')+'</span></button>'
+        +(x.ticket_url?'<button class="ef-zweit" style="flex:0 0 auto" onclick="efTeilen()" aria-label="Teilen">'+ic.teilen+'<span class="s-label">Teilen</span></button>':'')
+      +'</div>'
+    +'</div>'
+    +'<div class="ef-nachweis">'
+      +(x.bild_credit?'<div>Foto: '+esc(x.bild_credit)+'</div>':'')
+      +'<div>Quelle: <a href="https://eventfrog.ch" target="_blank" rel="noopener">Eventfrog</a></div>'
+    +'</div>'
+    +'</div>';
+  // Uebersetzt wird von selbst (MutationObserver, planeUebersetzung)
+}
+function efTickets(){
+  const u=efOffen?.ticket_url; if(!u)return;
+  if(istApp())location.href=u; else window.open(u,'_blank','noopener');
+}
+// Gleiches Muster wie openRoute: gemerkte Karten-App, sonst einmal fragen
+function efRoute(id){
+  const x=efFinden(id)||efOffen; if(!x)return;
+  const e={lat:x.lat??null,lng:x.lng??null,address:[x.ort_name,x.adresse].filter(Boolean).join(', ')};
+  if(!routeZiel(e)){toast('Keine Adresse hinterlegt','warn');return;}
+  const gemerkt=kartenAppGespeichert();
+  if(KARTEN_APPS[gemerkt]){routeOeffnen(e,gemerkt);return;}
+  window.__routeEv=e;
+  const m=document.getElementById('routeMerken'); if(m)m.checked=true;
+  document.getElementById('routeOverlay')?.classList.add('open');
+}
+async function efTeilen(){
+  const x=efOffen, url=x?.ticket_url; if(!url)return;
+  // Der Text OHNE Link – den haengt das Teilen-Blatt selbst hinten an.
+  const txt=(x.titel||'Event')+' – '+efWann(x)+(x.ort_name?' · '+x.ort_name:'');
+  if(istApp()){
+    const a=await nativeCall('teilen',{text:txt,url},600000);
+    if(!a||!a.fehler||a.fehler==='abgebrochen')return;
+  }
+  if(navigator.share){
+    try{ await navigator.share({title:x.titel||'Event',text:txt,url}); return; }
+    catch(err){ if(err?.name==='AbortError')return; }
+  }
+  try{ await navigator.clipboard.writeText(url); if(!amKnopfMelden('Link kopiert'))toast('Link kopiert','success'); }
+  catch(err){ console.warn('[eventfrog] teilen',err); toast('Teilen hat nicht geklappt.','warn'); }
+}
+
+/* ── Eventfrog-Events im SPOTOUT-Kalender ──────────────────────────
+   Eine Tabelle dafuer gibt es (noch) nicht. Darum merkt sich das Geraet
+   sie, pro Konto, als kleine Momentaufnahme – so laesst sich das Event
+   auch oeffnen, wenn es nicht mehr in externeEvents steht. Nur diese
+   zwei Funktionen wissen, wo es liegt: kommt spaeter eine Tabelle,
+   wird nur hier gelesen und geschrieben, der Rest bleibt. Bis dahin
+   gilt: anderes Geraet = keine Eventfrog-Eintraege, und das Kalender-
+   Widget der iOS-App (liest nur die Datenbank) kennt sie nicht. */
+function efKalenderSchluessel(){ return cUser?.id?'spotout_ef_kalender_'+cUser.id:''; }
+function efKalenderLesen(){
+  const k=efKalenderSchluessel(); if(!k)return [];
+  try{
+    const roh=JSON.parse(localStorage.getItem(k)||'[]');
+    if(!Array.isArray(roh))return [];
+    // Vorbei ist vorbei: abgelaufene gleich aussortieren
+    const jetzt=Date.now();
+    const gueltig=roh.filter(x=>x&&x.id&&x.beginn&&efEnde(x)>jetzt);
+    if(gueltig.length!==roh.length){ try{ localStorage.setItem(k,JSON.stringify(gueltig)); }catch(_){} }
+    return gueltig;
+  }catch(err){ console.warn('[eventfrog] kalender lesen',err); return []; }
+}
+function efKalenderSetzen(x,an){
+  const k=efKalenderSchluessel(); if(!k||!x?.id)return false;
+  try{
+    const liste=efKalenderLesen().filter(y=>y.id!==x.id);
+    if(an)liste.push({id:String(x.id).replace(/^ef-/,''), titel:x.titel||'', beginn:x.beginn, ende:x.ende||null,
+      ort_name:x.ort_name||'', adresse:x.adresse||'', lat:x.lat??null, lng:x.lng??null,
+      bild_url:x.bild_url||'', bild_credit:x.bild_credit||'', ticket_url:x.ticket_url||'',
+      kategorie:x.kategorie||'', gespeichert:new Date().toISOString()});
+    localStorage.setItem(k,JSON.stringify(liste));
+    return true;
+  }catch(err){ console.warn('[eventfrog] kalender speichern',err); return false; }
+}
+function efImKalender(id){ return efKalenderLesen().some(k=>k.id===id); }
+function efKalenderTipp(){
+  if(!cUser){ kontoNoetig('Für deinen Kalender brauchst du ein Konto.'); return; }
+  const x=efOffen; if(!x)return;
+  const an=!efImKalender(x.id);
+  // Beim Lesen fiele es sofort wieder heraus – lieber ehrlich sagen
+  if(an&&efEnde(x)<=Date.now()){ toast('Dieses Event ist schon vorbei.','warn'); return; }
+  if(!efKalenderSetzen(x,an)){ toast('Speichern hat nicht geklappt.','warn'); return; }
+  efZeichnen();
+  toast(an?'Im Kalender gemerkt':'Aus dem Kalender entfernt','success');
+  // Steht der Kalender schon, gleich nachziehen – nicht erst beim naechsten Besuch
+  const cl=document.getElementById('calendarList');
+  if(cl?.dataset.geladen)renderCalendar().catch(err=>console.warn('[kalender]',err));
+}
+// Eintrag im Kalender in der Form, die renderCalendar/calRow erwarten
+function efAlsKalEintrag(x){
+  const st=new Date(x.beginn), p=n=>String(n).padStart(2,'0');
+  return {id:'ef-'+x.id, _ef:x, type:'events', name:x.titel, image_url:x.bild_url||'', category:x.kategorie||'Event',
+    address:[x.ort_name,x.adresse].filter(Boolean).join(', '), lat:x.lat, lng:x.lng,
+    date:st.getFullYear()+'-'+p(st.getMonth()+1)+'-'+p(st.getDate()), time:p(st.getHours())+':'+p(st.getMinutes()),
+    _mine:false, _start:st, _end:new Date(efEnde(x))};
 }
 
 function renderGrid(type,list){
   gridListe[type]=list;
   const g=document.getElementById('grid-'+type);
+  /* Kleine Kacheln nur unter Events. Öffentliche und private Partys
+     bekommen dieselben grossen Karten wie der Feed – zwei Groessen
+     untereinander sahen aus wie ein Bruch. */
+  const gross=type!=='events';
+  g.classList.toggle('gross',gross);
+  // Was oben im Feed steht, nicht gleich darunter nochmals zeigen
+  const oben=feedObenIds(type);
+  const alle=list;
+  list=list.filter(e=>!oben.has(e.id));
   // Eventfrog-Events haengen hinten an die eigenen Events an
-  const extern=type==='events'?externNachNaehe(externeEvents):[];
+  const externAlle=type==='events'?externNachNaehe(externeEvents):[];
+  const extern=externAlle.filter(e=>!oben.has(e.id));
+  /* Alles steht schon oben: kein "nichts los" und keine leere
+     Ueberschrift. Die Nennung von Eventfrog bleibt. */
+  const allesOben=!list.length&&!extern.length&&(alle.length>0||externAlle.length>0);
+  if(type!=='private')g.closest('.col-panel')?.classList.toggle('alles-oben',allesOben&&!externAlle.length);
+  if(allesOben){ setzeHTML(g,externAlle.length?externQuelle():''); return; }
+  const karte=gross?(e=>grossKarteHTML(feedAufbereiten(e,new Date()))):cardHTML;
   if(!list.length&&extern.length){ setzeHTML(g,extern.slice(0,40).map(externKarte).join('')+externQuelle()); return; }
   if(!list.length){
     const w=worldVars(type);
@@ -15222,12 +15605,13 @@ function renderGrid(type,list){
   const grenze=Math.min(gridZeigt[type]||GRID_SCHRITT, list.length);
   const rest=list.length-grenze;
   const pfeil='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
-  setzeHTML(g,list.slice(0,grenze).map(e=>cardHTML(e)).join('')
+  setzeHTML(g,list.slice(0,grenze).map(e=>karte(e)).join('')
     +(rest>0
       ? '<button class="grid-mehr" onclick="gridMehr(\''+type+'\')">'
         +'Noch '+rest+(rest===1?' Party':' Partys')+' anzeigen'+pfeil+'</button>'
+      // "alle" zaehlt die oben im Feed mit – sonst stimmt die Zahl nicht
       : (list.length>GRID_SCHRITT
-          ? '<div class="grid-ende">Das waren alle '+list.length+'.</div>'
+          ? '<div class="grid-ende">Das waren alle '+alle.length+'.</div>'
           : ''))
     +(rest<=0&&extern.length?extern.slice(0,40).map(externKarte).join('')+externQuelle():''));
 }
@@ -15389,7 +15773,7 @@ function cardHTML(e){
     ${distP?'<div style="position:absolute;bottom:12px;left:12px;z-index:3"><span class="pill pill-dark" style="font-size:.62rem">'+D_SYM.ort+' '+distP+'</span></div>':''}
   </div>
   <div class="card-body">
-    <div style="font-size:.65rem;font-weight:700;color:${w.text};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">${esc(e.category||typeLabel)}</div>
+    <div style="font-size:.65rem;font-weight:700;color:${w.text};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.category||typeLabel)}</div>
     <div class="card-name">${esc(e.name)}</div>
     ${(e.profiles?.kontoart==='verein' && e.created_by!==cUser?.id)
       ? '<div class="card-host">'+vereinMarke()+'<span class="card-host-n">'+esc(e.profiles.full_name||e.profiles.username||'')+'</span></div>'
@@ -16397,6 +16781,11 @@ async function renderCalendar(){
     const st=evStart(e)||new Date(e.date+'T20:00:00');
     return{...e,_start:st,_end:evEnde(e)||new Date(st.getTime()+6*36e5)};
   }).filter(e=>!isNaN(e._start));
+  /* Gemerkte Eventfrog-Events liegen im Geraet (efKalenderLesen) und
+     reihen sich nach Zeit zwischen die eigenen Partys. Geht dabei etwas
+     schief, fehlen nur sie – die Partys aus der Datenbank bleiben. */
+  try{ efKalenderLesen().forEach(x=>{ const e=efAlsKalEintrag(x); if(!isNaN(e._start))all.push(e); }); }
+  catch(err){ console.warn('[kalender] eventfrog',err); }
 
   const upcoming=all.filter(e=>e._end>=now).sort((a,b)=>a._start-b._start);
   const past=all.filter(e=>e._end<now).sort((a,b)=>b._start-a._start);
@@ -16419,10 +16808,10 @@ async function renderCalendar(){
     const w=worldVars(e.type);
     const kopf='<div class="cal-next-kopf">'
       +'<span class="cal-next-tag" style="color:'+w.accent+';border-color:'+w.border+'">'
-        +(e._mine?'Deine Party':'Als Nächstes')+'</span>'
+        +(e._mine?'Deine Party':e._ef?'Eventfrog':'Als Nächstes')+'</span>'
       +'<div class="cal-count"><div class="cal-count-num" id="calCountNum" data-ts="'+e._start.getTime()+'">–</div>'
       +'<div class="cal-count-lbl" id="calCountLbl">bis Start</div></div></div>';
-    html+='<div class="cal-next" onclick="openDetail(\''+e.id+'\')" style="--w-akzent:'+w.accent+'">'
+    html+='<div class="cal-next" onclick="'+calKlick(e)+'" style="--w-akzent:'+w.accent+'">'
       +(e.image_url
         ? '<div class="cal-next-media"><img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
           +'<div class="cal-next-scrim"></div>'+kopf+'</div>'
@@ -16431,7 +16820,7 @@ async function renderCalendar(){
       +'<div class="cal-next-name">'+esc(e.name||'Party')+(e._mine?'<span class="cal-host-badge">Gastgeber</span>':'')+'</div>'
       +'<div class="cal-next-meta">'+fyWhen(e)+'</div>'
       +'<div class="cal-next-meta">'+esc(e.address||'')+'</div>'
-      +calActs(e,true)
+      +(e._ef?efCalActs(e):calActs(e,true))
       +'</div></div>';
   }
 
@@ -16477,17 +16866,36 @@ function calRow(e,isPast){
     :'<div class="cal-bild cal-bild-leer" style="background:'+gradBg(e.type,e.category)
       +';color:'+w.accent+'">'+iconSvg(evIconKey(e),20)+'</div>';
   const ort=esc((e.address||'').split(',')[0]);
-  return '<div class="cal-item'+(isPast?' cal-past':'')+'" style="--w-akzent:'+w.accent+'" onclick="openDetail(\''+e.id+'\')">'
+  return '<div class="cal-item'+(isPast?' cal-past':'')+'" style="--w-akzent:'+w.accent+'" onclick="'+calKlick(e)+'">'
     +'<div class="cal-date"><div class="cal-day">'+d.toLocaleDateString(locale(),{weekday:'short'})+'</div>'
     +'<div class="cal-num">'+d.getDate()+'</div>'
     +'<div class="cal-mon">'+d.toLocaleDateString(locale(),{month:'short'})+'</div></div>'
     +img
     +'<div class="cal-info"><div class="cal-name">'+esc(e.name||'Party')
-      +(e._mine?'<span class="cal-host-badge">Gastgeber</span>':'')+'</div>'
-    +'<div class="cal-meta">'+zeitText(d.toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'}))
+      +(e._mine?'<span class="cal-host-badge">Gastgeber</span>':'')
+      +'</div>'
+    // Hinweis in der zweiten Zeile – im Namen schnitt ihn die Ellipse ab
+    +'<div class="cal-meta">'+(e._ef?'<span class="cal-ef-badge" style="margin:0 6px 0 0">Eventfrog</span>':'')+zeitText(d.toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'}))
       +(ort?' · '+ort:'')+'</div></div>'
     +'<svg class="cal-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 6 15 12 9 18"/></svg>'
     +'</div>';
+}
+
+// Eventfrog-Eintraege oeffnen ihr eigenes Fenster, nicht openDetail
+function calKlick(e){
+  return e._ef ? "externOeffnen('"+escAttr(e._ef.id)+"')" : "openDetail('"+e.id+"')";
+}
+/* Aktionen fuer einen Eventfrog-Eintrag: Route und Tickets. Kein
+   "Kalender"/"Absagen" wie bei Partys – Entfernen geht im Event-Fenster. */
+function efCalActs(e){
+  const pin='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>';
+  const tic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9a2 2 0 0 0 0 6v3h18v-3a2 2 0 0 0 0-6V6H3z"/><path d="M14 6v12" stroke-dasharray="2 2"/></svg>';
+  const id=escAttr(e._ef.id);
+  let h='<div class="cal-acts" onclick="event.stopPropagation()">';
+  h+='<button class="cal-act" onclick="efRoute(\''+id+'\')">'+pin+'Route</button>';
+  if(e._ef.ticket_url)h+='<button class="cal-act" onclick="efOffen=efFinden(\''+id+'\');efTickets()" aria-label="Tickets bei Eventfrog">'+tic+'Tickets</button>';
+  h+='</div>';
+  return h;
 }
 
 // Aktionen: Route, in den Telefonkalender, absagen
@@ -19097,6 +19505,7 @@ function openCreate(type){
   ['fEnde','fDress','fSpotify','fDrink','fDrinkDesc'].forEach(id=>{const el=document.getElementById(id); if(el)el.value='';});
   document.querySelectorAll('#zahlPresets .cset').forEach(b=>b.classList.toggle('on',b.dataset.z==='bar'));
   linkModus='pers';
+  offenSetzen(false);
   try{ linkModusZeigen(); }catch(err){}
   const bdi=document.getElementById('bringDraftInput');
   if(bdi)bdi.value='';
@@ -19158,6 +19567,7 @@ function entwurfSammeln(){
     lat:selLat, lng:selLng,
     dress:dressWahl,
     alter:alterWahl,
+    offen:offenAnfragen,
     ende:endeWahl,
     getraenke:drinkOn,
     frist:deadlineOn,
@@ -19220,6 +19630,7 @@ function entwurfFortsetzen(){
     selLat=e.lat; selLng=e.lng;
     dressWahl=e.dress||'';
     alterSetzen(e.alter||null);
+    offenSetzen(!!e.offen);
     endeWahl=e.ende||'';
     drinkOn=!!e.getraenke;
     deadlineOn=!!e.frist;
@@ -20105,6 +20516,130 @@ function submitVerify(){
   });
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',los); else los();
 }
+/* Private Party unter "Privat" fuer alle sichtbar (ohne Adresse), mit
+   Anfrage. Die Adresse schuetzt die Datenbank: die Liste fuer Fremde kommt
+   aus private_partys_offen(), nicht aus der Tabelle events. */
+let offenAnfragen=false;
+function offenSetzen(an){
+  offenAnfragen=!!an;
+  const t=document.getElementById('offenTog');
+  if(t){ t.classList.toggle('on',offenAnfragen); t.setAttribute('aria-checked',String(offenAnfragen)); }
+}
+function togOffen(){ offenSetzen(!offenAnfragen); nativeHaptik('leicht'); }
+
+/* ── Private Partys, offen fuer Anfragen ───────────────────────────
+   Unter "Privat" stehen sonst nur Partys, zu denen man eingeladen ist.
+   Dazu kommen jetzt die, deren Host sie zeigen will: ohne Adresse, nur
+   mit Ort. Wer kommen will, schreibt in ein paar Worten, warum – der
+   Host bestaetigt wie bei einem Einladungslink ("Moechten dabei sein").
+   Gibt es die Funktion in der Datenbank noch nicht, bleibt alles still. */
+let privOffen=[], privOffenAus=false;
+async function privOffenLaden(){
+  if(!cUser||privOffenAus||istVerein()){ privOffen=[]; privOffenZeichnen(); return; }
+  const{data,error}=await sb.rpc('private_partys_offen');
+  if(error){
+    if(/PGRST202|42883|could not find|does not exist/i.test(String(error.code)+error.message))privOffenAus=true;
+    else console.warn('[privat offen]',error.message);
+    privOffen=[]; privOffenZeichnen(); return;
+  }
+  const meine=new Set((evts||[]).map(e=>e.id));
+  privOffen=(data||[]).filter(p=>p.created_by!==cUser.id&&!meine.has(p.id));
+  privOffenZeichnen();
+}
+function privOffenZeichnen(){
+  const box=document.getElementById('privOffen');
+  if(!box)return;
+  const liste=privOffen.filter(p=>typeof imUmkreis!=='function'||p.lat==null||imUmkreis({...p,type:'public'}));
+  // Der Feed oben sagt sonst "nichts los", obwohl hier etwas steht
+  if(curCol==='private'&&typeof renderFeed==='function')try{ renderFeed(); }catch(e){}
+  if(!liste.length){ box.innerHTML=''; return; }
+  box.innerHTML='<div class="po-kopf"><b>Offen für Anfragen</b><span>'+liste.length+'</span></div>'
+    +'<div class="po-erkl">Private Partys, bei denen du fragen kannst, ob du kommen darfst. Die Adresse siehst du, sobald der Host Ja sagt.</div>'
+    +'<div class="po-liste">'+liste.map(p=>{
+      const bild=p.image_url?'<img alt="" decoding="async" src="'+escAttr(p.image_url)+'"/>':'';
+      const host=p.host_name||p.host_username||'Host';
+      const av=p.host_avatar?'<img alt="" decoding="async" src="'+escAttr(p.host_avatar)+'"/>':anfang(host);
+      const stand=p.meine_anfrage==='offen'
+        ?'<div class="po-stand">Anfrage gesendet · wartet auf Antwort</div>'
+        :p.meine_anfrage==='abgelehnt'
+        ?'<div class="po-stand nein">Diesmal nicht</div>'
+        :'<button class="sub-btn sub-public po-knopf" onclick="event.stopPropagation();anfrageOeffnen(\''+p.id+'\')">Anfragen</button>';
+      return '<div class="po-karte" role="button" tabindex="0" onclick="anfrageOeffnen(\''+p.id+'\')">'
+        +'<div class="po-bild">'+bild+'<span class="po-chip">Privat · Offen für Anfragen</span></div>'
+        +'<div class="po-body">'
+          +'<div class="po-name">'+esc(p.name||'Private Party')+'</div>'
+          +'<div class="po-zeile">'+pikto('datum',14,'d-sym')+'<span>'+esc(fmtD(p.date)+' · '+zeitText(p.time))+'</span></div>'
+          +'<div class="po-zeile">'+pikto('ort',14,'d-sym')+'<span>'+esc(p.ort||'Schweiz')+' · Adresse nach Zusage</span></div>'
+          +'<div class="po-host"><div class="av-sm">'+av+'</div><span>von '+esc(host)+(p.gaeste_zahl?' · '+zahlText(p.gaeste_zahl)+' dabei':'')+'</span></div>'
+          +stand
+        +'</div></div>';
+    }).join('')+'</div>';
+}
+
+function anfrageOeffnen(id){
+  if(!cUser){ kontoNoetig(); return; }
+  const p=privOffen.find(x=>x.id===id); if(!p)return;
+  const body=document.getElementById('anfrageBody'); if(!body)return;
+  if(p.meine_anfrage==='abgelehnt'){
+    body.innerHTML='<p class="sk-text">Der Host hat diesmal abgesagt. Du kannst nicht nochmals anfragen.</p>'
+      +'<button class="sub-btn sub-public" onclick="closeOverlay(\'anfrageOverlay\')">Okay</button>';
+  }else{
+    body.innerHTML='<div class="po-name">'+esc(p.name||'Private Party')+'</div>'
+      +'<div class="po-zeile">'+esc(fmtD(p.date)+' · '+zeitText(p.time)+' · '+(p.ort||'Schweiz'))+'</div>'
+      +'<div class="csec" style="margin-top:18px">Warum sollten wir kommen?</div>'
+      +'<textarea class="rep-note an-text" id="anText" maxlength="300" '
+        +'placeholder="z. B. Wir sind zu zweit, kennen Lena von der Uni und bringen Getränke mit." '
+        +'oninput="anfrageTippen()"></textarea>'
+      +'<div class="an-zaehler" id="anZaehler"><b>Mindestens 10 Zeichen</b><span>0/300</span></div>'
+      +'<div class="rfehler" id="anFehler" hidden></div>'
+      +'<button class="sub-btn sub-public" id="anSenden" style="margin-top:14px" disabled onclick="anfrageSenden(\''+p.id+'\')">'
+        +(p.meine_anfrage==='offen'?'Text ändern':'Anfrage senden')+'</button>'
+      +'<div class="sk-anonym" style="margin-top:12px">'+pikto('datenschutz',16)
+        +'<span>Der Host sieht dein Profil und deinen Text. Die Adresse bekommst du, wenn er Ja sagt.</span></div>';
+  }
+  document.getElementById('anfrageOverlay')?.classList.add('open');
+  setTimeout(()=>document.getElementById('anText')?.focus(),120);
+}
+function anfrageTippen(){
+  const t=(document.getElementById('anText')?.value||'').trim();
+  const z=document.getElementById('anZaehler');
+  if(z){
+    z.classList.toggle('zu-kurz',t.length>0&&t.length<10);
+    z.innerHTML='<b>'+(t.length<10?'Mindestens 10 Zeichen':'Passt')+'</b><span>'+t.length+'/300</span>';
+  }
+  const b=document.getElementById('anSenden'); if(b)b.disabled=t.length<10;
+}
+async function anfrageSenden(id){
+  const t=(document.getElementById('anText')?.value||'').trim();
+  const f=document.getElementById('anFehler');
+  const zeig=x=>{ if(f){ f.textContent=x||''; f.hidden=!x; } };
+  if(t.length<10){ zeig('Schreib mindestens 10 Zeichen, warum du kommen möchtest.'); return; }
+  const b=document.getElementById('anSenden');
+  if(b){ b.disabled=true; b.innerHTML='<span class="btn-spin"></span>Wird gesendet…'; }
+  const{data,error}=await sb.rpc('party_anfragen',{p_event:id,p_text:t});
+  if(error){
+    console.warn('[anfrage]',error);
+    zeig(fehlerText(error));
+    if(b){ b.disabled=false; b.textContent='Anfrage senden'; }
+    return;
+  }
+  const text={text_zu_kurz:'Schreib mindestens 10 Zeichen, warum du kommen möchtest.',
+    abgelehnt:'Der Host hat diesmal abgesagt.',schon_dabei:'Du bist schon dabei.',
+    vorbei:'Für diese Party kann man nicht mehr anfragen.',gibt_es_nicht:'Diese Party ist nicht mehr offen.',
+    eigene_party:'Das ist deine eigene Party.',gesperrt:'Dein Konto ist gerade gesperrt.'}[data];
+  if(data!=='angefragt'){
+    zeig(text||'Das hat nicht geklappt. Versuch es nochmals.');
+    if(b){ b.disabled=false; b.textContent='Anfrage senden'; }
+    return;
+  }
+  nativeHaptik('erfolg');
+  const p=privOffen.find(x=>x.id===id); if(p)p.meine_anfrage='offen';
+  privOffenZeichnen();
+  document.getElementById('anfrageBody').innerHTML='<div class="rep-ok"><div class="rep-ok-ic">'+REP_HAKEN+'</div>'
+    +'<b>Anfrage gesendet</b><span>Der Host bekommt eine Mitteilung. Sagt er Ja, steht die Party in deinem Kalender – samt Adresse.</span></div>'
+    +'<button class="sub-btn sub-public" onclick="closeOverlay(\'anfrageOverlay\')">Fertig</button>';
+}
+
 function togDrink(){
   drinkOn=!drinkOn;
   document.getElementById('drinkTog').classList.toggle('on',drinkOn);
@@ -20324,9 +20859,15 @@ async function submitEventInner(){
     spotify_url:priv?spotifyLink(document.getElementById('fSpotify')?.value):null,
     /* Nur mitschicken, wenn eine Grenze gewaehlt ist: so laeuft das
        Erstellen auch, solange die Spalte in der Datenbank noch fehlt. */
-    ...(!priv&&alterWahl?{mindestalter:alterWahl}:{})
+    ...(!priv&&alterWahl?{mindestalter:alterWahl}:{}),
+    ...(priv&&offenAnfragen?{offen_anfragen:true}:{})
   }).select().single();
   if(error){
+    if(/offen_anfragen/i.test(String(error.message||''))){
+      console.warn('[create] offen_anfragen',error);
+      toast('«Öffentlich zeigen» ist noch nicht verfügbar. Schalte es aus oder versuch es später.','error');
+      return;
+    }
     // Lieber nicht veroeffentlichen als eine 18+-Party ohne Grenze
     if(/mindestalter/i.test(String(error.message||''))){
       console.warn('[create] mindestalter',error);
@@ -20345,7 +20886,7 @@ async function submitEventInner(){
 
   ['fName','fPrice','fCap','fDesc','fDrink','fDrinkDesc','fAddr','fDeadlineDate','fSpotify'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   drinkOn=false;deadlineOn=false;upImg=null;bringDraft=[];dressWahl='';endeWahl='';alterSetzen(null);
-  linkModus='pers';
+  linkModus='pers';offenSetzen(false);
   entwurfWeg(true);            // veroeffentlicht ist nicht mehr Entwurf
   document.getElementById('fgDress')&&(document.getElementById('fgDress').style.display='none');
   document.querySelectorAll('#dressPresets .cset').forEach((b,i)=>b.classList.toggle('on',i===0));
@@ -23170,6 +23711,9 @@ const I18N_PAT=[
   [/^Willkommen bei Pro, (.+)$/,{en:"Welcome to Pro, $1", fr:"Bienvenue dans Pro, $1", it:"Eccoti in Pro, $1"}],
   [/^Kauf wird geprüft\. Pro wird aktiv, sobald (.+) ihn freigibt\.$/,{en:"Purchase is being checked. Pro turns on as soon as $1 approves it.", fr:"Achat en cours de vérification. Pro s’active dès sa validation par $1.", it:"Acquisto in verifica. Pro si attiva appena $1 lo approva."}],
   [/^(Apple|Google Play) wird geöffnet…$/,{en:"Opening $1…", fr:"$1 s’ouvre…", it:"Apertura di $1…"}],
+  // Eventfrog-Fenster (29.10.)
+  [/^Foto: (.+)$/,{en:"Photo: $1", fr:"Photo : $1", it:"Foto: $1"}],
+  [/^Route zu (.+)$/,{en:"Directions to $1", fr:"Itinéraire vers $1", it:"Percorso per $1"}],
 ];
 
 function tr(txt){
@@ -25451,6 +25995,13 @@ async function openManage(eventId){
   if(!ev){body.innerHTML='<div class="up-empty">Party nicht gefunden.</div>';return;}
   if(ev.created_by!==cUser?.id){body.innerHTML='<div class="up-empty">Das kann nur der Gastgeber.</div>';return;}
   mgEvent=ev;
+  /* Die Texte der Anfragen einzeln: die Spalte nachricht kommt erst mit
+     sql-private-anfragen. Fehlt sie, bleibt es bei "ueber deinen Link". */
+  const beitrittTexte=new Map();
+  if((beitritte||[]).length){
+    const{data:tx,error:te}=await sb.from('event_beitritt_anfragen').select('id,nachricht').in('id',beitritte.map(b=>b.id));
+    if(!te)(tx||[]).forEach(t=>{ if(t.nachricht)beitrittTexte.set(t.id,t.nachricht); });
+  }
 
   const priv=ev.type==='private';
   const offen=(reqs||[]).filter(r=>r.status==='pending');
@@ -25483,7 +26034,10 @@ async function openManage(eventId){
         return '<div class="mg-req">'
           +'<div class="av-sm">'+av+'</div>'
           +'<div style="flex:1;min-width:0"><div class="mg-req-n">'+esc(nm)+'</div>'
-          +'<div class="mg-req-s">über deinen Einladungslink</div></div>'
+          /* Wer ueber "Offen fuer Anfragen" kommt, schreibt ein paar Worte dazu */
+          +(beitrittTexte.get(b.id)
+            ?'<div class="mg-req-text">„'+esc(beitrittTexte.get(b.id))+'“</div>'
+            :'<div class="mg-req-s">über deinen Einladungslink</div>')+'</div>'
           +'<button class="mg-yes" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',true)" aria-label="Bestätigen"><svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg></button>'
           +'<button class="mg-no" onclick="beitrittEntscheiden(this,\''+b.id+'\',\''+ev.id+'\',false)" aria-label="Ablehnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 7l10 10M17 7 7 17"/></svg></button>'
           +'</div>';
@@ -25548,6 +26102,11 @@ async function openManage(eventId){
         '<button type="button" class="cset'+(Number(ev.mindestalter||0)===a?' on':'')+'" data-alter="'+a+'" '
         +'onclick="this.parentNode.querySelectorAll(\'.cset\').forEach(b=>b.classList.toggle(\'on\',b===this))">'+t+'</button>').join('')
       +'</div><div class="ep-help">Wer jünger ist, sieht die Party nicht mehr – auch wer schon angemeldet ist.</div></div>')
+    +(priv?'<div class="fg"><label>Unter «Privat» öffentlich zeigen</label><div class="chipset" id="mg-offen">'
+      +[[false,'Nein, nur Eingeladene'],[true,'Ja, Leute dürfen anfragen']].map(([w,t])=>
+        '<button type="button" class="cset'+(!!ev.offen_anfragen===w?' on':'')+'" data-offen="'+w+'" '
+        +'onclick="this.parentNode.querySelectorAll(\'.cset\').forEach(b=>b.classList.toggle(\'on\',b===this))">'+t+'</button>').join('')
+      +'</div><div class="ep-help">Fremde sehen die Party ohne Adresse und fragen mit ein paar Worten an. Du entscheidest unter «Möchten dabei sein».</div></div>':'')
     +(priv?'<div class="fg"><label>Playlist (Spotify)</label>'
       +'<input type="text" id="mg-spotify" inputmode="url" autocapitalize="off" spellcheck="false" '
       +'placeholder="https://open.spotify.com/playlist/…" value="'+escAttr(ev.spotify_url||'')+'"/>'
@@ -25647,6 +26206,11 @@ async function saveManage(){
     if(alterKnopf){
       const a=Number(alterKnopf.dataset.alter)||null;
       if(a!==(Number(mgEvent.mindestalter)||null))patch.mindestalter=a;
+    }
+    const offenKnopf=document.querySelector('#mg-offen .cset.on');
+    if(offenKnopf){
+      const o=offenKnopf.dataset.offen==='true';
+      if(o!==!!mgEvent.offen_anfragen)patch.offen_anfragen=o;
     }
     const capEl=document.getElementById('mg-cap');
     // Wird die Party verschoben, wandert die Anmeldefrist mit
@@ -26881,6 +27445,8 @@ function ortUebernehmen(lat,lng){
   document.getElementById('locBanner')?.classList.add('show');
   ortNamen(lat,lng);
   filterAll();
+  // Eventfrog war ohne Standort nur fuer eine Woche geladen – jetzt fuer die Gegend
+  if(!externeMitOrt)externeLaden();
   if(mapVis&&mapInst)mapFitAll();
   return true;
 }
