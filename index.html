@@ -5489,6 +5489,38 @@
     /* ── Verwarnung, Sperre, Moderation ── */
     .mg-req-s{font-size:.74rem;color:var(--muted);margin-top:1px}
     .mg-req-text{font-size:.8rem;line-height:1.45;color:var(--text);margin-top:3px;overflow-wrap:anywhere}
+    /* ── Statistik (nur Betreiber) ── */
+    .st-einstieg{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:12px 16px 4px;padding:13px 14px;
+      border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:var(--text);
+      font-family:var(--font);text-align:left;cursor:pointer}
+    .st-einstieg b{display:block;font-size:.92rem;color:#fff}
+    .st-einstieg small{display:block;font-size:.74rem;color:var(--text2);margin-top:2px}
+    .st-einstieg>span:nth-child(2){flex:1;min-width:0}
+    .st-ein-ic{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#FF2D76,#FF5A45);color:#fff;flex-shrink:0}
+    .st-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+    .st-zeit{margin:0}
+    .st-neu{background:none;border:0;color:var(--text2);font:inherit;font-size:.74rem;cursor:pointer;padding:6px 0}
+    .st-raster{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .st-k{padding:12px 13px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);min-width:0}
+    .st-k b{display:block;font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+    .st-k.gross b{font-size:1.7rem}
+    .st-k span{display:block;font-size:.76rem;color:var(--text);margin-top:2px}
+    .st-k small{display:block;font-size:.68rem;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .st-k.warn{border-color:rgba(255,90,69,.5)}
+    .st-chart{margin-top:14px;padding:13px 13px 10px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+    .st-c-titel{font-size:.8rem;font-weight:700;color:#fff}
+    .st-c-wert{font-size:.76rem;color:var(--text2);margin:3px 0 9px;min-height:1.2em;font-variant-numeric:tabular-nums}
+    .st-c-wert b{color:#fff;font-size:.95rem}
+    .st-chart svg{display:block;width:100%;height:110px;touch-action:none;overflow:visible}
+    .st-bar{fill:#FF2D76;opacity:.85}
+    .st-hit{fill:transparent}
+    .st-chart g.an .st-bar{opacity:1;fill:#FF5A45}
+    .st-chart g.an .st-hit{fill:rgba(255,255,255,.06)}
+    .st-achse{stroke:rgba(255,255,255,.15);stroke-width:1}
+    .st-c-unten{display:flex;justify-content:space-between;font-size:.66rem;color:var(--text2);margin-top:6px}
+    .st-mod{margin-top:12px;background:rgba(255,255,255,.07)!important;color:#fff!important}
+    .st-fuss{font-size:.7rem;line-height:1.5;color:var(--text2);margin:14px 0 4px}
     /* Anfrage an eine private Party (Freunde) */
     .an-name{font-size:1.05rem;font-weight:800;color:#fff;line-height:1.25;overflow-wrap:anywhere}
     .an-zeile{margin-top:6px;font-size:.8rem;color:var(--text2)}
@@ -5848,7 +5880,11 @@
       display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:4px 0 2px;
       font-size:.74rem;color:var(--text2);
     }
-    .card-host-n{min-width:0;overflow-wrap:anywhere}
+    .card-host-n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .card-host-n b{color:var(--text);font-weight:700}
+    .fy-host{display:flex;align-items:center;gap:8px;margin:6px 0 2px;font-size:.8rem;color:var(--text2);min-width:0}
+    .fy-host .av-sm{width:22px;height:22px;font-size:.62rem;flex-shrink:0}
+    .d-gastgeber[role=button]{cursor:pointer}
 
     /* ══════════ REGISTRIERUNG: RUHIGER ══════════
        Vorher lag zwischen Beschriftung und ihrem Feld fast derselbe Abstand
@@ -9221,6 +9257,17 @@
 <div class="sperr-seite" id="sperrSeite" hidden><div class="sperr-inhalt" id="sperrInhalt"></div></div>
 
 <!-- ════ MODERATION (Betreiber) ════ -->
+<div class="overlay" id="statistikOverlay" onclick="closeIfOutside(event,'statistikOverlay')">
+  <div class="modal no-swipe st-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Statistik</div>
+      <button class="modal-x" onclick="closeOverlay('statistikOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="statistikBody"></div></div>
+  </div>
+</div>
+
 <div class="overlay" id="moderationOverlay" onclick="closeIfOutside(event,'moderationOverlay')">
   <div class="modal no-swipe">
     <div class="modal-handle"></div>
@@ -13445,6 +13492,7 @@ piktosEinsetzen();
 let seitenFassung=null;
 fetch(location.pathname,{method:'HEAD',cache:'no-store'}).then(r=>{seitenFassung=r.headers.get('etag');}).catch(()=>{});
 window.__huelleZurueck=async()=>{
+  aufrufZaehlen();
   try{
     const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'});
     const f=r.headers.get('etag');
@@ -15062,6 +15110,7 @@ function grossKarteHTML(e){
     <div class="fy-body">
       <div class="fy-ccat" style="color:${w.accent}">${esc(e.category||typeLabel)}</div>
       <h3 class="fy-name">${esc(e.name||'Party')}</h3>
+      ${ext?'':hostZeile(e)}
       <div class="fy-info">
         ${e._start?`<div class="fy-row">${calSm}<span>${fyWhen(e)}</span></div>`:''}
         <div class="fy-row">${pinSm}<span>${esc(e.address||'Schweiz')}</span></div>
@@ -15746,9 +15795,7 @@ function cardHTML(e){
   <div class="card-body">
     <div style="font-size:.65rem;font-weight:700;color:${w.text};text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.category||typeLabel)}</div>
     <div class="card-name">${esc(e.name)}</div>
-    ${(e.profiles?.kontoart==='verein' && e.created_by!==cUser?.id)
-      ? '<div class="card-host">'+vereinMarke()+'<span class="card-host-n">'+esc(e.profiles.full_name||e.profiles.username||'')+'</span></div>'
-      : ''}
+    ${e.extern?'':hostZeile(e,true)}
     <div class="card-loc">${esc(e.address?.split(',')[0]||'Schweiz')}</div>
     ${istVorbei(e)?'':(freundeZeile(e.id)||(attCount>=3?'<div class="card-zahl">'+attCount+' gehen hin</div>':''))}
     ${istVorbei(e)
@@ -17489,6 +17536,7 @@ async function renderProf(){
         </button>
         ${!cProfile.is_pro&&!istVerein()?'<button class="prof-action-btn pro-action" onclick="showPage(\'pro\')">'+PRO_STERN+'Pro werden</button>':''}
       </div>
+      ${cProfile.ist_admin?'<button class="st-einstieg" onclick="statistikOeffnen()"><span class="st-ein-ic">'+ST_IC+'</span><span><b>Statistik</b><small>Nutzer, Aufrufe, Partys – nur für dich als Betreiber</small></span><svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg></button>':''}
 
       <!-- TABS -->
       <div class="insta-tabs mit-strich">
@@ -24832,6 +24880,145 @@ function sperrSeiteZeigen(s){
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&cUser)sanktionPruefen(false); });
 
 /* ══════════ MODERATION (nur Betreiber) ══════════ */
+/* ══════════ STATISTIK (nur Betreiber) ══════════
+   Im eigenen Profil, sichtbar nur mit ist_admin – und auch dann
+   entscheidet die Datenbank (admin_statistik wirft SPOTOUT_NUR_ADMIN).
+   Aufrufe zaehlt aufruf_zaehlen: einmal pro Seitenladen bzw. Rueckkehr in
+   die App, hoechstens alle 30 Minuten. Gaeste ueber eine zufaellige
+   Geraete-ID, ohne Personendaten. */
+const ST_IC='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16v-5M12 16V7M17 16v-8"/></svg>';
+const GERAET_SCHLUESSEL='spotout_geraet';
+let aufrufZuletzt=0;
+function aufrufZaehlen(){
+  if(Date.now()-aufrufZuletzt<30*60e3)return;
+  aufrufZuletzt=Date.now();
+  let id='';
+  try{
+    id=localStorage.getItem(GERAET_SCHLUESSEL)||'';
+    if(!id){
+      id=((crypto.randomUUID&&crypto.randomUUID())||(Math.random().toString(36).slice(2)+Date.now().toString(36))).replace(/[^A-Za-z0-9_-]/g,'').slice(0,32);
+      localStorage.setItem(GERAET_SCHLUESSEL,id);
+    }
+  }catch(e){}
+  const pf=istApp()?(NATIV?.plattform==='android'?'android':'ios'):'web';
+  sb.rpc('aufruf_zaehlen',{p_geraet:id,p_plattform:pf}).then(({error})=>{
+    if(error&&!/PGRST202|42883|could not find/i.test(String(error.code)+error.message))console.warn('[aufruf]',error.message);
+  });
+}
+// Erst wenn klar ist, ob jemand angemeldet ist
+window.addEventListener('load',()=>setTimeout(aufrufZaehlen,4000));
+
+let stTage=30, stDaten=null;
+async function statistikOeffnen(tage){
+  if(!cProfile?.ist_admin)return;
+  if(tage)stTage=tage;
+  const box=document.getElementById('statistikBody');
+  if(!box)return;
+  document.getElementById('statistikOverlay')?.classList.add('open');
+  if(!stDaten)box.innerHTML=skelettZeilen(5);
+  const{data,error}=await sb.rpc('admin_statistik',{p_tage:stTage});
+  if(error){
+    console.warn('[statistik]',error);
+    box.innerHTML='<div class="up-empty">'+(/PGRST202|could not find/i.test(String(error.code)+error.message)
+      ?'Die Statistik ist in der Datenbank noch nicht eingerichtet.'
+      :esc(fehlerText(error)))+'</div>';
+    return;
+  }
+  stDaten=data;
+  statistikZeichnen();
+}
+
+function statistikZeichnen(){
+  const d=stDaten, box=document.getElementById('statistikBody');
+  if(!d||!box)return;
+  const z=n=>Number(n||0).toLocaleString('de-CH');
+  const k=(wert,titel,sub,cls)=>'<div class="st-k'+(cls?' '+cls:'')+'"><b>'+z(wert)+'</b><span>'+titel+'</span>'+(sub?'<small>'+sub+'</small>':'')+'</div>';
+  const gg=(a,b)=>{ const x=Number(a||0)-Number(b||0); return (x>0?'+':x<0?'−':'±')+z(Math.abs(x))+' ggü. gestern'; };
+  const n=d.nutzer||{}, a=d.aufrufe||{}, p=d.partys||{}, an=d.anmeldungen||{}, ef=d.eventfrog||{}, so=d.sozial||{}, mo=d.moderation||{};
+  const proAnteil=n.gesamt?Math.round(100*n.pro/n.gesamt)+' % aller Konten':'';
+  const stand=new Date(d.stand).toLocaleString(locale(),{hour:'2-digit',minute:'2-digit'});
+  box.innerHTML=
+    '<div class="st-kopf"><div class="chipset st-zeit">'
+      +[7,30,90].map(t=>'<button class="cset'+(t===stTage?' on':'')+'" onclick="statistikOeffnen('+t+')">'+t+' Tage</button>').join('')
+    +'</div><button class="st-neu" onclick="statistikOeffnen()" aria-label="Aktualisieren">Stand '+stand+' ↻</button></div>'
+    +'<div class="mg-sec">Heute</div><div class="st-raster">'
+      +k(a.besucher_heute,'Besucher',gg(a.besucher_heute,a.besucher_gestern),'gross')
+      +k(a.heute,'Aufrufe',gg(a.heute,a.gestern),'gross')
+      +k(n.aktiv_heute,'Aktive Nutzer','angemeldet und geöffnet')
+      +k(n.neu_heute,'Neue Nutzer','registriert')
+      +k(a.app_heute,'In der App','von den Besuchern')
+      +k(an.heute,'Anmeldungen','zu Partys')
+    +'</div>'
+    +stBalken(d.reihe,'besucher','Besucher pro Tag','Besucher')
+    +stBalken(d.reihe,'neu','Neue Nutzer pro Tag','neue Nutzer')
+    +stBalken(d.reihe,'anmeldungen','Anmeldungen zu Partys pro Tag','Anmeldungen')
+    +'<div class="mg-sec">Nutzer</div><div class="st-raster">'
+      +k(n.gesamt,'Konten','ohne Vereine')+k(n.pro,'Pro',proAnteil)
+      +k(n.aktiv_7,'Aktiv 7 Tage')+k(n.aktiv_30,'Aktiv 30 Tage')
+      +k(n.neu_7,'Neu 7 Tage')+k(n.neu_30,'Neu 30 Tage')
+      +k(n.vereine,'Vereine')+k(n.gesperrt,'Gesperrt')
+      +k(a.besucher_7,'Besucher 7 Tage','verschiedene')+k(a.besucher_30,'Besucher 30 Tage','verschiedene')
+    +'</div>'
+    +'<div class="mg-sec">Partys</div><div class="st-raster">'
+      +k(p.kommend_oeffentlich,'Öffentlich','kommend')+k(p.kommend_privat,'Privat','kommend')
+      +k(p.kommend_events,'Events','von Veranstaltern')+k(ef.gesamt,'Eventfrog',z(ef.mit_bild)+' mit Bild')
+      +k(p.erstellt_heute,'Erstellt heute')+k(p.erstellt_30,'Erstellt 30 Tage')
+      +k(an.tage_7,'Anmeldungen 7 Tage')+k(an.gesamt,'Anmeldungen total')
+      +k(p.aufrufe_kommend,'Party-Aufrufe','kommende Partys')+k(p.gebuehr_offen,'Gebühr offen')
+    +'</div>'
+    +'<div class="mg-sec">Austausch</div><div class="st-raster">'
+      +k(so.nachrichten_heute,'Nachrichten heute')+k(so.nachrichten_7,'Nachrichten 7 Tage')
+      +k(so.folgen,'Folgen')+k(so.gruppen,'Gruppen')
+      +k(so.profilbesuche_7,'Profilbesuche','7 Tage')
+    +'</div>'
+    +'<div class="mg-sec">Moderation</div><div class="st-raster">'
+      +k(mo.meldungen_offen,'Meldungen offen','',mo.meldungen_offen?'warn':'')+k(mo.meldungen_30,'Meldungen 30 Tage')
+    +'</div>'
+    +'<button class="sub-btn st-mod" onclick="closeOverlay(\'statistikOverlay\');moderationOeffnen()">Zur Moderation</button>'
+    +'<p class="st-fuss">Aufrufe und Besucher zählen seit dem Tag, an dem die Zählung eingeschaltet wurde. Ein Besucher ist ein Konto oder – ohne Anmeldung – ein Gerät.</p>';
+}
+
+/* Ein Balkendiagramm, eine Reihe, eine Farbe. Antippen oder Zeigen nennt
+   den Wert des Tages in der Zeile darueber – keine Zahl auf jedem Balken. */
+function stBalken(reihe,feld,titel,einheit){
+  const r=Array.isArray(reihe)?reihe:[];
+  if(!r.length)return '';
+  const werte=r.map(x=>Number(x[feld]||0));
+  const max=Math.max(1,...werte), summe=werte.reduce((a,b)=>a+b,0);
+  const B=300,H=96,luecke=r.length>40?1:2, bw=(B-luecke*(r.length-1))/r.length;
+  const tag=t=>new Date(t+'T12:00:00').toLocaleDateString(locale(),{weekday:'short',day:'numeric',month:'short'});
+  const balken=r.map((x,i)=>{
+    const h=werte[i]?Math.max(3,Math.round(H*werte[i]/max)):0;
+    const xp=(i*(bw+luecke)).toFixed(2);
+    // Unsichtbare volle Hoehe als Tippflaeche, der Balken selbst unten verankert
+    return '<g data-i="'+i+'"><rect class="st-hit" x="'+xp+'" y="0" width="'+bw.toFixed(2)+'" height="'+H+'"/>'
+      +(h?'<path class="st-bar" d="M'+xp+','+H+'V'+(H-h+2)+'q0,-2 2,-2h'+(bw-4).toFixed(2)+'q2,0 2,2V'+H+'z"/>':'')+'</g>';
+  }).join('');
+  const id='st'+feld;
+  const info='<b>'+z0(summe)+'</b> '+esc(einheit)+' in '+r.length+' Tagen';
+  return '<div class="st-chart" id="'+id+'" data-feld="'+feld+'" data-einheit="'+escAttr(einheit)+'">'
+    +'<div class="st-c-titel">'+esc(titel)+'</div>'
+    +'<div class="st-c-wert" data-standard="'+escAttr(info)+'">'+info+'</div>'
+    +'<svg viewBox="0 0 '+B+' '+(H+1)+'" preserveAspectRatio="none" role="img" aria-label="'+escAttr(titel+': '+summe+' '+einheit+' in '+r.length+' Tagen, höchstens '+max+' an einem Tag')+'"'
+      +' onpointermove="stZeig(event,this)" onpointerdown="stZeig(event,this)" onpointerleave="stWeg(this)">'
+      +'<line class="st-achse" x1="0" x2="'+B+'" y1="'+H+'" y2="'+H+'"/>'+balken+'</svg>'
+    +'<div class="st-c-unten"><span>'+tag(r[0].tag)+'</span><span>max. '+z0(max)+'</span><span>'+tag(r[r.length-1].tag)+'</span></div>'
+    +'</div>';
+  function z0(n){ return Number(n||0).toLocaleString('de-CH'); }
+}
+function stZeig(ev,svg){
+  const g=ev.target.closest&&ev.target.closest('g[data-i]'); if(!g)return;
+  const i=Number(g.dataset.i), wrap=svg.closest('.st-chart'), x=(stDaten?.reihe||[])[i]; if(!x||!wrap)return;
+  svg.querySelectorAll('g.an').forEach(el=>el.classList.remove('an')); g.classList.add('an');
+  const t=new Date(x.tag+'T12:00:00').toLocaleDateString(locale(),{weekday:'short',day:'numeric',month:'short'});
+  wrap.querySelector('.st-c-wert').innerHTML='<b>'+Number(x[wrap.dataset.feld]||0).toLocaleString('de-CH')+'</b> '+esc(wrap.dataset.einheit)+' · '+esc(t);
+}
+function stWeg(svg){
+  const wrap=svg.closest('.st-chart'); if(!wrap)return;
+  svg.querySelectorAll('g.an').forEach(el=>el.classList.remove('an'));
+  const w=wrap.querySelector('.st-c-wert'); if(w)w.innerHTML=w.dataset.standard;
+}
+
 async function moderationOeffnen(){
   const ov=document.getElementById('moderationOverlay');
   const box=document.getElementById('moderationListe');
@@ -26221,6 +26408,20 @@ const BRING_QUICK=['Bier','Wein','Chips','Salat','Dessert','Glace','Musikbox','E
    Bei einer Party aus einem Vereinskonto steht der Verein dran, bei
    einer privaten Person deren Name. Der Nutzer soll nicht raten müssen,
    mit wem er es zu tun hat. */
+/* "von …" auf jeder Karte: der Veranstalter (Events), sonst der Name des
+   Kontos. Die eigene Party sagt "Deine Party". klein=true fuer die Kacheln. */
+function hostZeile(e,klein){
+  const pr=e.profiles||{};
+  const nm=String(e.host_name||'').trim()||pr.full_name||pr.username||'';
+  if(!nm&&e.created_by!==cUser?.id)return '';
+  const eigene=!!cUser&&e.created_by===cUser.id;
+  const av=pr.avatar_url?'<img alt="" decoding="async" src="'+escAttr(pr.avatar_url)+'"/>':anfang(nm||'?');
+  return '<div class="'+(klein?'card-host':'fy-host')+'">'
+    +(klein?'':'<span class="av-sm">'+av+'</span>')
+    +(pr.kontoart==='verein'?vereinMarke():'')
+    +'<span class="card-host-n">'+(eigene?'Deine Party':'von <b>'+esc(nm)+'</b>')+'</span></div>';
+}
+
 function renderGastgeber(e){
   const box=document.getElementById('hostSec');
   if(!box)return;
@@ -26230,7 +26431,8 @@ function renderGastgeber(e){
      an einer Stelle: gross der Veranstalter, klein wer eingetragen hat.
      Nebenbei: die Kachel setzte den Text ungeschuetzt ins Markup. */
   const veranst=String(e.host_name||'').trim();
-  if(e.type==='private'||(!pr&&!veranst)){box.innerHTML='';return;}
+  // Auch bei privaten Partys: wer einlaedt, soll klar dastehen
+  if(!pr&&!veranst){box.innerHTML='';return;}
 
   const verein=pr?.kontoart==='verein';
   const konto=pr?(pr.full_name||pr.username||''):'';
@@ -26244,9 +26446,11 @@ function renderGastgeber(e){
        steht nur noch der Ort. */
     : (verein
         ? (pr.verein_ort?'<span>'+esc(pr.verein_ort)+'</span>':'')
-        : '<span>Privatperson</span>');
+        : '<span>'+(e.type==='private'?'Gastgeber · private Party':'Gastgeber · Privatperson')+'</span>');
 
-  box.innerHTML='<div class="d-gastgeber">'
+  const zumProfil=(e.created_by&&e.created_by!==cUser?.id)
+    ?' role="button" tabindex="0" onclick="openUserProf(\''+e.created_by+'\')" aria-label="Profil von '+escAttr(nm)+'"':'';
+  box.innerHTML='<div class="d-gastgeber"'+zumProfil+'>'
     +'<div class="av-sm">'+av+'</div>'
     +'<div class="d-gast-txt"><b>'+esc(nm)+'</b>'+unter+'</div>'
     +(verein?vereinMarke():'')
