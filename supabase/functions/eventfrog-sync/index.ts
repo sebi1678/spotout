@@ -46,7 +46,7 @@ type Text = Record<string, string | null> | string | null | undefined;
 type Bild = { url?: string | null } | null | undefined;
 type EfEvent = {
   id: string; rubricId?: number; title?: Text; url?: string; presaleLink?: string;
-  emblemToShow?: Bild; begin?: string; end?: string; cancelled?: boolean;
+  emblemToShow?: Bild; emblemCredits?: string; begin?: string; end?: string; cancelled?: boolean;
   visible?: boolean; published?: boolean; locationIds?: string[]; locationAlias?: Text;
 };
 type EfOrt = {
@@ -96,11 +96,11 @@ async function rubrikenLaden(): Promise<Map<number, string>> {
   return new Map(liste.map((r) => [Number(r.id), text(r.title)]));
 }
 
-async function eventsLaden(voll: boolean) {
+async function eventsLaden(voll: boolean, rubIds: number[]) {
   const heute = new Date();
   const bis = new Date(Date.now() + TAGE_VORAUS * 864e5);
   const alle: EfEvent[] = [];
-  for (let seite = 1; seite <= 30; seite++) {
+  for (let seite = 1; seite <= 60; seite++) {
     const q = new URLSearchParams({
       country: "CH",
       from: heute.toISOString().slice(0, 10),
@@ -108,6 +108,8 @@ async function eventsLaden(voll: boolean) {
       perPage: "1000",
       page: String(seite),
     });
+    // Nur passende Rubriken abfragen: statt ~30'000 Events nur ~3'000
+    rubIds.forEach((id) => q.append("rubId", String(id)));
     if (!voll) q.set("modifiedSince", new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10));
     const d = await ef("events", q);
     const teil: EfEvent[] = d.events ?? [];
@@ -149,6 +151,26 @@ async function bildKopieren(eventfrogId: string, quelle: string): Promise<string
   }
 }
 
+// Fehlende Bilder nachholen – die nächsten Events zuerst
+async function bilderNachholen() {
+  const { data: ohneBild } = await admin.from("externe_events")
+    .select("eventfrog_id,bild_quelle")
+    .is("bild_url", null).not("bild_quelle", "is", null)
+    .order("beginn", { ascending: true }).limit(BILDER_JE_LAUF);
+  let bilder = 0;
+  for (const x of ohneBild ?? []) {
+    const url = await bildKopieren(x.eventfrog_id, x.bild_quelle);
+    if (!url) {
+      // Nicht ladbar: Quelle vergessen, sonst wird es bei jedem Lauf neu versucht
+      await admin.from("externe_events").update({ bild_quelle: null }).eq("eventfrog_id", x.eventfrog_id);
+      continue;
+    }
+    await admin.from("externe_events").update({ bild_url: url }).eq("eventfrog_id", x.eventfrog_id);
+    bilder++;
+  }
+  return bilder;
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ ok: false }, 405);
 
@@ -156,6 +178,13 @@ Deno.serve(async (req) => {
   const ist = req.headers.get("x-spotout-geheimnis") ?? "";
   if (gFehler || typeof soll !== "string" || !soll || !gleich(ist, soll)) {
     return json({ ok: false }, 401);
+  }
+  /* {"nurBilder":true}: nur Bilder nachholen, keine Anfrage an die
+     Eventfrog-API (eigener Auftrag alle 10 Minuten, siehe eventfrog-bilder). */
+  const auftrag = await req.json().catch(() => ({}));
+  if (auftrag?.nurBilder) {
+    try { return json({ ok: true, bilder: await bilderNachholen() }); }
+    catch (e) { return json({ ok: false, fehler: String(e instanceof Error ? e.message : e) }, 500); }
   }
   if (!EF_KEY) return json({ ok: false, fehler: "EVENTFROG_API_KEY fehlt" }, 500);
 
@@ -170,7 +199,11 @@ Deno.serve(async (req) => {
       return !!n && PASST.some((w) => n.includes(w));
     };
 
-    const events = await eventsLaden(voll);
+    /* Dasselbe Event kann auf zwei Seiten der Antwort stehen (die Liste
+       verschiebt sich waehrend des Blaetterns). Doppelte liessen das
+       Speichern scheitern: "cannot affect row a second time". */
+    const rubIds = [...rubriken.keys()].filter((id) => passt(id));
+    const events = [...new Map((await eventsLaden(voll, rubIds)).map((e) => [String(e.id), e])).values()];
     const weg: string[] = [];
     const gute: EfEvent[] = [];
     for (const e of events) {
@@ -206,6 +239,8 @@ Deno.serve(async (req) => {
         ticket_url: e.presaleLink || e.url || null,
         kategorie: rubriken.get(Number(e.rubricId)) || null,
         bild_quelle: quelle,
+        // Eventfrog moechte genannt werden – samt Bildnachweis, falls es einen gibt
+        bild_credit: (e.emblemCredits || "").trim().slice(0, 120) || null,
         // Gleiches Bild wie bisher: die eigene Kopie behalten
         bild_url: alt && alt.bild_quelle === quelle ? alt.bild_url : null,
         geaendert_am: new Date().toISOString(),
@@ -220,18 +255,7 @@ Deno.serve(async (req) => {
       await admin.from("externe_events").delete().in("eventfrog_id", weg.slice(i, i + 500));
     }
 
-    // Bilder nachholen – die nächsten Events zuerst
-    const { data: ohneBild } = await admin.from("externe_events")
-      .select("eventfrog_id,bild_quelle")
-      .is("bild_url", null).not("bild_quelle", "is", null)
-      .order("beginn", { ascending: true }).limit(BILDER_JE_LAUF);
-    let bilder = 0;
-    for (const x of ohneBild ?? []) {
-      const url = await bildKopieren(x.eventfrog_id, x.bild_quelle);
-      if (!url) continue;
-      await admin.from("externe_events").update({ bild_url: url }).eq("eventfrog_id", x.eventfrog_id);
-      bilder++;
-    }
+    const bilder = await bilderNachholen();
 
     // Vorbei: einen Tag nach Beginn weg (samt Bild)
     const { data: alt } = await admin.from("externe_events")

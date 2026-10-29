@@ -2310,6 +2310,17 @@
       padding:2px 6px;border-radius:980px;border:1px solid rgba(255,255,255,.5);white-space:nowrap;
       z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.5);
     }
+    /* Gruppen: mehrere Partys nah beieinander werden eine Blase mit Zahl.
+       Beim Reinzoomen gehen sie auseinander (markercluster). */
+    .mgrp{
+      display:flex;align-items:center;justify-content:center;border-radius:50%;
+      color:#fff;font-weight:800;font-family:var(--font);letter-spacing:-.01em;
+      border:2px solid rgba(255,255,255,.9);
+      box-shadow:0 0 0 6px rgba(255,255,255,.08),0 6px 16px rgba(0,0,0,.55);
+    }
+    .mgrp.live{box-shadow:0 0 0 3px #FF2D76,0 0 0 8px rgba(255,45,118,.25),0 6px 16px rgba(0,0,0,.55)}
+    .leaflet-cluster-anim .leaflet-marker-icon{transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s ease}
+    @media (prefers-reduced-motion:reduce){.leaflet-cluster-anim .leaflet-marker-icon{transition:none}}
     .mpin-me{
       width:20px;height:20px;border-radius:50%;background:#54A7FF;
       border:3px solid #fff;box-shadow:0 0 0 4px rgba(84,167,255,0.13),0 3px 10px rgba(0,0,0,.5);
@@ -7340,6 +7351,10 @@
     .card-extern{position:relative}
     .card-extern::after{content:'Tickets · Eventfrog';position:absolute;right:8px;top:8px;padding:3px 7px;border-radius:7px;
       background:rgba(9,13,36,.78);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.02em}
+    .ef-credit{font-size:.6rem;color:var(--text2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ef-quelle{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:6px;
+      padding:14px 8px 4px;font-size:.72rem;color:var(--text2);text-align:center}
+    .ef-quelle a{color:#fff;font-weight:700;text-decoration:none}
     /* Farbige Raender nur noch fuer Zustaende (Fokus, ausgewaehlt, neu).
        Dekorative Kaesten bekommen den neutralen Rand wie alles andere. */
     .pro-hero,.pro2-hero,.pro2-live,.pro-active-card,.inv-card,.bring-sec,.fee-box,.push-karte,.abz-karte,
@@ -10616,10 +10631,50 @@ function updNavAv(){
   if(!alle.length)return;
   const buchstabe=anfangRoh(cProfile?.full_name||cProfile?.username||'?');
   alle.forEach(av=>{
-    if(cProfile?.avatar_url)av.innerHTML=`<img alt="" loading="lazy" decoding="async" src="${escAttr(cProfile.avatar_url)}"/>`;
+    if(cProfile?.avatar_url){
+      // Gleiches Bild: stehen lassen. Neu gesetzt war es kurz weg (Blinken).
+      const da=av.querySelector('img');
+      if(da&&da.getAttribute('src')===cProfile.avatar_url)return;
+      av.innerHTML=`<img alt="" decoding="async" src="${escAttr(cProfile.avatar_url)}"/>`;
+    }
     else av.textContent=buchstabe;
   });
 }
+
+/* ── Kein Blinken bei Bildern ──────────────────────────────────────
+   Viele Listen werden per innerHTML neu gebaut (Feed, Profil, Chats).
+   Jedes <img> darin ist dann neu – mit loading="lazy" und
+   decoding="async" malt der Browser es erst ein, zwei Bilder spaeter,
+   obwohl es laengst im Speicher liegt: Profilbilder waren kurz weg.
+   Darum: Was schon einmal geladen war, wird beim Einfuegen sofort und
+   synchron gemalt (der MutationObserver laeuft vor dem naechsten
+   Zeichnen). Neue Bilder laden weiter faul wie bisher. */
+(function bilderOhneBlinken(){
+  const geladen=new Set();
+  document.addEventListener('load',e=>{
+    const img=e.target;
+    if(img&&img.tagName==='IMG'&&img.src&&!img.src.startsWith('data:')){
+      geladen.add(img.src);
+      if(geladen.size>800)geladen.delete(geladen.values().next().value);
+    }
+  },true);
+  const sofort=img=>{
+    if(!geladen.has(img.src))return;
+    img.loading='eager';
+    img.decoding='sync';
+  };
+  try{
+    new MutationObserver(liste=>{
+      for(const m of liste){
+        for(const n of m.addedNodes){
+          if(n.nodeType!==1)continue;
+          if(n.tagName==='IMG')sofort(n);
+          else if(n.firstElementChild)n.querySelectorAll('img').forEach(sofort);
+        }
+      }
+    }).observe(document.documentElement,{childList:true,subtree:true});
+  }catch(e){ console.warn('[bilder]',e); }
+})();
 
 /* ══════════ TOUR ══════════
    Weitergeblaettert wird per Knopf, nicht per Wisch. Die Beispiele
@@ -15106,7 +15161,7 @@ let externeEvents=[], externeAus=false;
 async function externeLaden(){
   if(externeAus)return;
   try{
-    const{data,error}=await sb.from('externe_events').select('id,titel,beginn,ort_name,adresse,lat,lng,bild_url,ticket_url,kategorie')
+    const{data,error}=await sb.from('externe_events').select('id,titel,beginn,ort_name,adresse,lat,lng,bild_url,bild_credit,ticket_url,kategorie')
       .gte('beginn',new Date(Date.now()-3*3600e3).toISOString()).order('beginn',{ascending:true}).limit(150);
     if(error){ if(/PGRST205|42P01|does not exist|schema cache/i.test(error.message+error.code))externeAus=true; else console.warn('[eventfrog]',error.message); return; }
     externeEvents=(data||[]).map(x=>{ const d=new Date(x.beginn);
@@ -15121,9 +15176,20 @@ function externNachNaehe(liste){
   const km=(a,b,c,d)=>{ const r=Math.PI/180, x=(c-a)*r, y=(d-b)*r*Math.cos((a+c)/2*r); return 6371*Math.sqrt(x*x+y*y); };
   return liste.filter(e=>e.lat==null||km(userLat,userLng,e.lat,e.lng)<=60);
 }
+/* Eventfrog moechte genannt werden: jede Karte traegt "Tickets ·
+   Eventfrog", dazu der Bildnachweis, falls es einen gibt, und unter der
+   Liste ein Quellenhinweis mit Link (externQuelle). */
 function externKarte(e){
+  const credit=e.extern?.bild_credit?'<div class="ef-credit">Foto: '+esc(e.extern.bild_credit)+'</div>':'';
   return cardHTML(e).replace("onclick=\"openDetail('"+e.id+"')\"","onclick=\"externOeffnen('"+e.extern.id+"')\"")
-    .replace('<div class="card"','<div class="card card-extern"');
+    .replace('<div class="card"','<div class="card card-extern" aria-label="'+escAttr((e.name||'Event')+' – Tickets bei Eventfrog')+'"')
+    .replace('<div class="card-loc">','<div class="card-loc" data-ef>')
+    .replace(/(<div class="card-loc" data-ef>[^<]*<\/div>)/,'$1'+credit)
+    // Kein "Dabei sein · Gratis": angemeldet wird bei Eventfrog, Preis steht dort
+    .replace(/<button class="card-cta"([^>]*)>[\s\S]*?<\/button>/,'<button class="card-cta"$1>Tickets</button>');
+}
+function externQuelle(){
+  return '<div class="ef-quelle">Weitere Events von <a href="https://eventfrog.ch" target="_blank" rel="noopener">Eventfrog</a></div>';
 }
 function externOeffnen(id){
   const x=externeEvents.find(e=>e.extern.id===id)?.extern; if(!x?.ticket_url)return;
@@ -15135,7 +15201,7 @@ function renderGrid(type,list){
   const g=document.getElementById('grid-'+type);
   // Eventfrog-Events haengen hinten an die eigenen Events an
   const extern=type==='events'?externNachNaehe(externeEvents):[];
-  if(!list.length&&extern.length){ setzeHTML(g,extern.slice(0,40).map(externKarte).join('')); return; }
+  if(!list.length&&extern.length){ setzeHTML(g,extern.slice(0,40).map(externKarte).join('')+externQuelle()); return; }
   if(!list.length){
     const w=worldVars(type);
     const icons={events:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',public:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',private:'<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/>'};
@@ -15163,7 +15229,7 @@ function renderGrid(type,list){
       : (list.length>GRID_SCHRITT
           ? '<div class="grid-ende">Das waren alle '+list.length+'.</div>'
           : ''))
-    +(rest<=0&&extern.length?extern.slice(0,40).map(externKarte).join(''):''));
+    +(rest<=0&&extern.length?extern.slice(0,40).map(externKarte).join('')+externQuelle():''));
 }
 
 /* ── Wer von deinen Leuten ist dabei? ──────────────────────────────
@@ -15339,7 +15405,7 @@ function cardHTML(e){
          als zweite, kleinere Zeile darunter – wie beim grossen Knopf
          auf der Partyseite auch. */
       : `<button class="card-cta" style="background:${w.btnBg};color:${w.btnColor};box-shadow:0 2px 12px rgba(0,0,0,.2)">${
-          e.created_by===cUser?.id
+          (e.created_by&&e.created_by===cUser?.id)
             ? 'Verwalten'
             : istVerein() ? 'Ansehen'
             : 'Dabei sein<span class="card-cta-preis">'+priceTag+'</span>'}</button>`}
@@ -26384,7 +26450,19 @@ function leafletLaden(){
     document.head.appendChild(css);
     const el=document.createElement('script');
     el.src='/vendor/leaflet-1.9.4.js'; el.async=true;
-    el.onload=()=>window.L?ja():nein(new Error('Leaflet fehlt'));
+    /* Das Gruppieren (markercluster) braucht Leaflet und wird gleich danach
+       geladen. Klappt es nicht, geht die Karte ohne Gruppen – nie ohne Karte. */
+    el.onload=()=>{
+      if(!window.L){ nein(new Error('Leaflet fehlt')); return; }
+      const ccss=document.createElement('link');
+      ccss.rel='stylesheet'; ccss.href='/vendor/leaflet.markercluster-1.5.3.css';
+      document.head.appendChild(ccss);
+      const c=document.createElement('script');
+      c.src='/vendor/leaflet.markercluster-1.5.3.js'; c.async=true;
+      c.onload=()=>ja();
+      c.onerror=()=>{ console.warn('[karte] Gruppieren nicht geladen'); ja(); };
+      document.head.appendChild(c);
+    };
     el.onerror=()=>nein(new Error('Leaflet nicht geladen'));
     document.head.appendChild(el);
   });
@@ -26454,7 +26532,8 @@ function initMap(){
   // ganze Schweiz.
   const mitte=(typeof umkreisOrt==='function')?umkreisOrt():null;
   const c=mitte?[mitte.lat,mitte.lng]:[46.8182,8.2275];
-  mapInst=L.map('map',{zoomControl:false,attributionControl:true})
+  // maxZoom braucht das Gruppieren (markercluster), sonst bricht es ab
+  mapInst=L.map('map',{zoomControl:false,attributionControl:true,maxZoom:19})
            .setView(c,mitte?12.5:7.6);
   // Am Rand unten links, damit sie nicht unter dem Kreuz sitzen –
   // und weil der Daumen dort ohnehin hinreicht.
@@ -26609,6 +26688,30 @@ function mapPasst(e, now){
    was sich nicht geaendert hat; neu gebaut wird nur, was neu ist, und
    das Popup entsteht erst beim Antippen. */
 const markerSpeicher=new Map();
+let mapGruppe=null;
+/* Wohin die Marker kommen: in die Gruppe, wenn das Gruppieren geladen ist,
+   sonst direkt auf die Karte (wie vorher). */
+function markerEbene(){
+  if(mapGruppe)return mapGruppe;
+  if(!window.L?.markerClusterGroup)return mapInst;
+  mapGruppe=L.markerClusterGroup({
+    showCoverageOnHover:false,
+    spiderfyOnMaxZoom:true,          // gleiche Adresse: faechert auf
+    maxClusterRadius:z=>z>=15?36:56, // nah dran feiner gruppieren
+    disableClusteringAtZoom:17,
+    chunkedLoading:true,
+    iconCreateFunction:gr=>{
+      const n=gr.getChildCount();
+      const live=gr.getAllChildMarkers().some(m=>m.options._live);
+      const gr2=n<10?40:n<50?48:56;
+      return L.divIcon({className:'',iconSize:[gr2,gr2],
+        html:'<div class="mgrp'+(live?' live':'')+'" style="width:'+gr2+'px;height:'+gr2+'px;'
+          +'background:'+worldVars(curCol||'public').grad+';font-size:'+(n<100?'.95rem':'.8rem')+'">'+n+'</div>'});
+    },
+  }).addTo(mapInst);
+  // Ohne Leaflet-Popup-Wechsel: ein Tipp auf die Blase zoomt hinein
+  return mapGruppe;
+}
 function updMarkers(){
   if(!mapInst)return;
   if(mapMe){mapMe.remove();mapMe=null;}
@@ -26627,8 +26730,9 @@ function updMarkers(){
   const sichtbar=new Set();
 
   // Dieselbe Auswahl wie in der Liste – mapPasst prueft Kategorie,
-  // Suche und Filter.
-  evts.forEach(e=>{
+  // Suche und Filter. Eventfrog nur im Reiter Events und im selben Umkreis.
+  const externAufKarte=curCol==='events'?externNachNaehe(externeEvents||[]):[];
+  [...evts,...externAufKarte].forEach(e=>{
     if(e.lat==null||e.lng==null)return;
     const st=evStart(e); if(!st)return;
     if((now-st)/36e5>6)return;              // vorbei
@@ -26638,10 +26742,11 @@ function updMarkers(){
     const sig=[e.lat,e.lng,e.type,live?1:0,soon?1:0,evIconKey(e)].join('|');
     sichtbar.add(e.id);
     const alt=markerSpeicher.get(e.id);
+    const ebene=markerEbene();
     if(alt&&alt.sig===sig){
-      if(!mapInst.hasLayer(alt.m))alt.m.addTo(mapInst);
+      if(!ebene.hasLayer(alt.m))ebene.addLayer(alt.m);
     }else{
-      if(alt)alt.m.remove();
+      if(alt)ebene.removeLayer(alt.m);
       const w=worldVars(e.type);
       const html=
         '<div class="mpin'+(live?' live':'')+'" style="color:'+w.accent+'">'+
@@ -26652,9 +26757,19 @@ function updMarkers(){
         '</div>';
       const m=L.marker([e.lat,e.lng],{
         icon:L.divIcon({className:'',html:html,iconSize:[38,38],iconAnchor:[19,38],popupAnchor:[0,-36]}),
-        zIndexOffset:live?900:(soon?500:0)
-      }).addTo(mapInst);
+        zIndexOffset:live?900:(soon?500:0),
+        _live:live
+      });
+      ebene.addLayer(m);
       const id=e.id;
+      if(e.extern){
+        // Eventfrog: Tickets dort, mit Nennung der Quelle
+        const x=e.extern;
+        m.bindPopup(()=>'<div class="popup-when" style="color:'+w.accent+'">'+esc(live?'Läuft gerade':fyWhen({...e,_start:st}))+'</div>'
+          +'<div class="popup-name">'+esc(e.name||'Event')+'</div>'
+          +'<div class="popup-meta">'+esc(x.ort_name||(e.address||'').split(',')[0]||'Schweiz')+'<br>Quelle: Eventfrog</div>'
+          +'<button class="popup-btn" onclick="externOeffnen(\''+x.id+'\')">Tickets bei Eventfrog</button>');
+      }else
       m.bindPopup(()=>{
         const ev=evts.find(x=>x.id===id)||e, s2=evStart(ev)||st, w2=worldVars(ev.type), lv=isLive(ev);
         const dist=(userLat!=null)?distKm(userLat,userLng,ev.lat,ev.lng):null;
@@ -26673,7 +26788,7 @@ function updMarkers(){
     mapPts.push([e.lat,e.lng]); shown++;
   });
   // Was nicht mehr passt, verschwindet
-  markerSpeicher.forEach((v,id)=>{ if(!sichtbar.has(id)){ v.m.remove(); markerSpeicher.delete(id); } });
+  markerSpeicher.forEach((v,id)=>{ if(!sichtbar.has(id)){ markerEbene().removeLayer(v.m); markerSpeicher.delete(id); } });
   markers=[...markerSpeicher.values()].map(v=>v.m);
 
   mapZahl=shown;
