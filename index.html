@@ -8,10 +8,9 @@
        erledigt; sonst greift die Absicherung im Skript. -->
   <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"/>
   <!-- Steht vor allem anderen: bis das grosse Stylesheet gelesen ist,
-       waere die Seite sonst weiss. Und ob der Fluchtknopf an ist, soll
-       feststehen, bevor die Leiste zum ersten Mal erscheint. -->
+       waere die Seite sonst weiss. -->
   <style>html,body{background:#090D24}</style>
-  <script>try{if(localStorage.getItem('spotout_raus'))document.documentElement.classList.add('raus-an')}catch(e){}try{if(window.SPOTOUT_NATIVE)document.documentElement.classList.add('in-app')}catch(e){}</script>
+  <script>try{if(window.SPOTOUT_NATIVE)document.documentElement.classList.add('in-app')}catch(e){}</script>
   <title>SPOTOUT – Partys in deiner Nähe</title>
   <meta name="description" content="Finde Partys, Feste und Openairs in der Schweiz – und sieh, wer von deinen Leuten hingeht."/>
 
@@ -312,8 +311,8 @@
        zusammen – das merkt niemand, ein abgeschnittener Rand schon. */
     @media (max-width:360px){
       .nav-right-group{gap:6px}
-      .nav-raus,.nav-create-btn,.nav-bell,.nav-av{width:32px;height:32px;flex-shrink:0}
-      .nav-raus svg,.nav-create-btn svg{width:16px;height:16px}
+      .nav-create-btn,.nav-bell,.nav-av{width:32px;height:32px;flex-shrink:0}
+      .nav-create-btn svg{width:16px;height:16px}
     }
     .nav-titel{font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-.01em}
 
@@ -488,6 +487,40 @@
     }
     .eins-ic svg{width:20px;height:20px;display:block}
     .eins-karte .msg-setting-opt.active .eins-ic{background:rgba(255,45,118,.2)}
+    /* Antippen muss man sehen: ein Satz ueber den Antworten, jede Antwort
+       eine Karte mit Auswahlkreis rechts, der sich beim Tippen fuellt.
+       Vorher sahen die Antworten aus wie Erklaerungen, und "Weiter"
+       blaetterte auch ohne Wahl – viele merkten gar nicht, dass sie
+       etwas haetten waehlen sollen. */
+    .eins-tipp{
+      display:flex;align-items:center;gap:7px;margin:0 0 -2px;
+      font-size:.74rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+      color:rgba(255,255,255,.5);
+    }
+    .eins-tipp svg{width:14px;height:14px;flex:none}
+    .eins-wahl{display:flex;flex-direction:column;gap:10px}
+    .eins-karte .msg-setting-opt>div{flex:1;min-width:0}
+    .eins-karte .msg-setting-radio{width:22px;height:22px}
+    .eins-karte .msg-setting-opt.active .msg-setting-radio{animation:einsKreis var(--takt) var(--kurve)}
+    @keyframes einsKreis{from{transform:scale(.7)}to{transform:scale(1)}}
+    /* "Weiter" ohne Wahl: sieht aus wie aus, bleibt aber antippbar –
+       ein Tipp zeigt dann, wo die Antworten sind, statt nichts zu tun. */
+    #einstieg .tour-btn.aus{
+      background:rgba(255,255,255,.09)!important;color:rgba(255,255,255,.42)!important;
+      box-shadow:none!important;
+    }
+    .eins-wahl.zeigen .msg-setting-opt{animation:einsZeigen .7s var(--kurve)}
+    .eins-wahl.zeigen .eins-tipp,.eins-tipp.zeigen{color:#FF7FA5}
+    @keyframes einsZeigen{
+      0%,100%{transform:none;border-color:rgba(255,255,255,.08)}
+      20%{transform:translateX(-5px);border-color:rgba(255,45,118,.7)}
+      45%{transform:translateX(4px);border-color:rgba(255,45,118,.7)}
+      70%{transform:translateX(-2px);border-color:rgba(255,45,118,.5)}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .eins-wahl.zeigen .msg-setting-opt{animation:none;border-color:rgba(255,45,118,.7)}
+      .eins-karte .msg-setting-opt.active .msg-setting-radio{animation:none}
+    }
 
     /* ── Beispiele in der Tour ──
        Nachgebaute Ausschnitte der echten App, nicht abstrakte Kaesten:
@@ -588,13 +621,6 @@
       font-size:.76rem;line-height:1.45;color:#FFE1AE;
     }
     .tb-hinweis svg{width:13px;height:13px;flex:none;margin-top:2px;color:#FFC24B}
-    /* Fluchtknopf in der Tour: die obere Leiste in klein, der Knopf
-       darin leuchtet. Darunter dieselben Chips wie in den Einstellungen. */
-    .tb-leiste{
-      display:flex;align-items:center;gap:7px;margin-bottom:14px;
-      padding:9px 10px 9px 13px;border-radius:14px;
-      background:#090d24;border:1px solid rgba(255,255,255,.08);
-    }
     /* Tour-Karte Party-Fotos – sieht aus wie die echte Galerie */
     .tour-bild .tb-fk svg{width:auto;height:auto;display:inline-block}
     .tb-fk{padding:14px 14px 12px}
@@ -626,17 +652,6 @@
       border:1.5px dashed rgba(255,127,165,.5)}
     .tb-uhr{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font-size:.7rem;color:var(--text2)}
     .tb-hinweis-klein{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.72rem;color:var(--text2)}
-    .tb-logo{margin-right:auto;font-size:.92rem;font-weight:900;letter-spacing:-.02em;color:#fff}
-    .tb-ic{
-      width:30px;height:30px;border-radius:10px;flex:none;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-      color:rgba(255,255,255,.6);
-    }
-    .tb-ic svg{width:15px;height:15px}
-    .tb-ic.raus{color:#fff;border-color:rgba(255,45,118,.6);box-shadow:0 0 0 4px rgba(255,45,118,.18)}
-    .tb-chips{margin:0}
-    .tb-chips .cset{cursor:default}
 
     /* Die Skizzen: gemeinsame Bausteine */
     .tz-linie{stroke:rgba(255,255,255,.13);stroke-width:2;fill:none;stroke-linecap:round}
@@ -1220,16 +1235,6 @@
       background:rgba(255,60,60,.07);color:#ff6b6b;
       border:1px solid rgba(255,80,80,.28);
     }
-    .nav-raus{
-      width:36px;height:36px;border-radius:12px;flex-shrink:0;
-      border:1px solid rgba(255,255,255,.13);
-      background:rgba(255,255,255,.06);color:rgba(255,255,255,.72);
-      display:flex;align-items:center;justify-content:center;cursor:pointer;
-      -webkit-tap-highlight-color:transparent;
-      transition:background var(--takt-kurz),transform var(--takt-kurz);
-    }
-    .nav-raus svg{width:18px;height:18px}
-    .nav-raus:active{background:rgba(255,255,255,.13);transform:scale(var(--druck-klein))}
     .set-hilfe{font-size:.78rem;color:var(--muted);line-height:1.5;margin:-4px 0 10px}
     .mg-guest-plus{margin-left:18px;opacity:.88}
     .att-suche{margin:0 0 10px}
@@ -4841,6 +4846,81 @@
     .auth-gast:active{background:rgba(255,255,255,.1)}
     .auth-gast svg{width:15px;height:15px;opacity:.6}
 
+/* ══════════ APPLE / GOOGLE (nur Browser) ══════════
+   Apple: weisser Knopf mit schwarzem Logo auf dunklem Grund (HIG
+   "Sign in with Apple", Stil white). Google: dunkle Variante der
+   Markenrichtlinie (#131314, Rand #8E918F, Text #E3E3E3), farbiges G.
+   Beide gleich gross, Logo links, Text mittig. */
+    .auth-sozial{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
+    .auth-sozial[hidden],.in-app .auth-sozial,.auth-wrap[data-pw] > .auth-sozial{display:none!important}
+    .sozial-knopf{
+      position:relative;display:flex;align-items:center;justify-content:center;
+      width:100%;min-height:50px;padding:0 48px;border-radius:14px;cursor:pointer;
+      font-family:var(--font);font-size:.98rem;font-weight:600;letter-spacing:-.005em;
+      -webkit-tap-highlight-color:transparent;
+      transition:transform var(--takt) var(--kurve),filter var(--takt-kurz),opacity var(--takt-kurz);
+    }
+    .sozial-knopf svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:19px;height:19px}
+    .sozial-apple{background:#fff;color:#000;border:1px solid #fff}
+    .sozial-apple svg{width:17px;height:19px;margin-top:-1px}
+    .sozial-google{background:#131314;color:#E3E3E3;border:1px solid #8E918F}
+    .sozial-knopf:active{transform:scale(var(--druck))}
+    @media(hover:hover) and (pointer:fine){.sozial-apple:hover{filter:brightness(.94)}.sozial-google:hover{filter:brightness(1.25)}}
+    .sozial-knopf:disabled{opacity:.6;cursor:default}
+    .sozial-knopf:focus-visible{outline:2px solid #FF2D76;outline-offset:2px}
+    .sozial-oder{margin:12px 0 8px}
+
+/* ══════════ PROFIL TEILEN (Karte mit QR) ══════════ */
+    .pk-karte{
+      position:relative;margin:4px auto 0;max-width:330px;border-radius:28px;
+      padding:104px 22px 20px;text-align:center;color:#fff;overflow:hidden;
+      background:linear-gradient(150deg,#FF2D76 0%,#FF5A45 100%);
+      box-shadow:0 18px 50px rgba(255,45,118,.28);
+    }
+    .pk-karte::before{
+      /* weiche Lichtflecken wie auf dem Startbild – nur Dekor */
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(circle at 15% 0%,rgba(255,255,255,.28),transparent 45%),
+                 radial-gradient(circle at 100% 100%,rgba(99,59,255,.35),transparent 55%);
+    }
+    .pk-av{
+      position:absolute;top:18px;left:50%;transform:translate(-50%,0);
+      width:76px;height:76px;border-radius:50%;
+      border:4px solid #fff;background:#090D24;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.6rem;font-weight:800;color:#fff;z-index:1;
+    }
+    .pk-av img{width:100%;height:100%;object-fit:cover}
+    .pk-karte .pk-name{position:relative;margin-top:0;font-size:1.25rem;font-weight:800;letter-spacing:-.02em;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pk-karte .pk-handle{position:relative;font-size:.92rem;font-weight:600;opacity:.88;margin-top:2px}
+    .pk-qr{
+      position:relative;margin:16px auto 0;width:min(100%,230px);aspect-ratio:1;
+      background:#fff;border-radius:20px;padding:12px;box-sizing:border-box;
+      box-shadow:0 8px 24px rgba(9,13,36,.25);
+    }
+    .pk-qr svg{display:block;width:100%;height:100%}
+    .pk-qr-laedt{display:flex;align-items:center;justify-content:center;height:100%;color:#090D24;font-size:.8rem;opacity:.6}
+    .pk-marke{position:relative;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:6px;
+      font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.92}
+    .pk-marke img{height:16px;width:auto}
+    .pk-hinweis{margin:14px auto 0;max-width:330px;font-size:.8rem;line-height:1.45;color:var(--text2);
+      display:flex;gap:8px;align-items:flex-start}
+    .pk-hinweis svg{width:15px;height:15px;flex:none;margin-top:2px;opacity:.7}
+    .pk-knoepfe{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:10px;max-width:330px;margin:18px auto 6px}
+    .pk-knopf{
+      display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 6px;
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;
+      color:#fff;font-family:var(--font);font-size:.78rem;font-weight:700;cursor:pointer;
+      -webkit-tap-highlight-color:transparent;transition:transform var(--takt) var(--kurve),background var(--takt-kurz);
+    }
+    .pk-knopf:active{transform:scale(var(--druck));background:rgba(255,255,255,.12)}
+    .pk-knopf .pk-ic{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#633BFF,#54A7FF)}
+    .pk-knopf.haupt .pk-ic{background:linear-gradient(135deg,#FF2D76,#FF5A45)}
+    .pk-knopf .pk-ic svg{width:18px;height:18px}
+    .up2-kopfaktion{gap:8px}
+
     .gastleiste{
       position:fixed;left:0;right:0;z-index:70;
       bottom:calc(var(--bnav-h) + var(--safe-bottom));
@@ -5120,6 +5200,18 @@
     .einw-ic svg{width:18px;height:18px}
     .einw-opt.on .einw-ic{background:rgba(124,92,252,.3);color:#cdbcff}
     .einw-t{font-size:.92rem;font-weight:700;color:#fff}
+    #c7-alter{margin-top:22px}
+    .einw-ic.alter-ic{font-size:.74rem;font-weight:800;letter-spacing:-.01em;color:#fff}
+    /* Die Altersgrenze muss auf jeder Karte auf einen Blick dastehen */
+    .alter-mark{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:2px 7px;border-radius:7px;font-size:.7rem;font-weight:800;
+      letter-spacing:.01em;color:#fff;line-height:1.35;
+      background:linear-gradient(135deg,#FF2D76,#FF5A45);
+      box-shadow:0 2px 8px rgba(255,45,118,.35);
+    }
+    .alter-mark.gross{font-size:.8rem;padding:4px 9px;border-radius:9px}
+    .alter-zeile{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--text2)}
     .einw-s{font-size:.78rem;line-height:1.5;color:var(--text2);margin-top:3px}
     .einw-hinweis{
       margin-top:12px;padding:12px 14px;border-radius:13px;
@@ -6206,7 +6298,7 @@
     .ein-zweite,.ein-wechsel,.ein-mini,.schenk-ja,.schenk-weg,.msg-btn,.sec-btn,
     .copy-btn,.nt-clear,.nt-sys button,.mg-warn button,.pend-btn,.mg-yes,.mg-no,
     .fa-ja,.fa-nein,.bring-add button,.ein-neu button,.offl-btns button,.btn,
-    .nav-raus,.nav-bell,.nav-create-btn,.popup-btn{
+    .nav-bell,.nav-create-btn,.popup-btn{
       border-radius:var(--knopf-r-klein);
     }
 
@@ -6499,10 +6591,9 @@
     /* ══════════ KOPFLEISTE: EINE FORM ══════════
        Vorher vier Knoepfe, drei Gestalten: die Suche im pinken Hauptknopf-
        Stil, obwohl sie keine Hauptaktion ist, das Zahnrad rund, der Rest
-       eckig. Und der Fluchtknopf trug einen Pfeil, der wie "Anmelden"
-       aussah. Jetzt dieselbe Glasflaeche fuer alle, das Pink bleibt dem
+       eckig. Jetzt dieselbe Glasflaeche fuer alle, das Pink bleibt dem
        Erstellen-Knopf unten. */
-    .nav-raus,.nav-bell,.nav-suche,.nav-icon-btn{
+    .nav-bell,.nav-suche,.nav-icon-btn{
       position:relative;width:36px;height:36px;flex:0 0 36px;padding:0;
       border-radius:12px;cursor:pointer;
       display:flex;align-items:center;justify-content:center;
@@ -6511,25 +6602,19 @@
       transition:transform var(--takt-kurz) var(--kurve),background-color var(--takt-kurz) var(--kurve);
       -webkit-tap-highlight-color:transparent;
     }
-    .nav-raus svg,.nav-bell svg,.nav-suche svg,.nav-icon-btn svg{width:18px;height:18px}
-    .nav-raus:active,.nav-bell:active,.nav-suche:active,.nav-icon-btn:active{
+    .nav-bell svg,.nav-suche svg,.nav-icon-btn svg{width:18px;height:18px}
+    .nav-bell:active,.nav-suche:active,.nav-icon-btn:active{
       transform:scale(var(--druck-klein));background:rgba(255,255,255,.14);
     }
     @media(hover:hover) and (pointer:fine){
-      .nav-raus:hover,.nav-bell:hover,.nav-suche:hover,.nav-icon-btn:hover{background:rgba(255,255,255,.12)}
+      .nav-bell:hover,.nav-suche:hover,.nav-icon-btn:hover{background:rgba(255,255,255,.12)}
     }
-    .nav-raus::after,.nav-suche::after{
+    .nav-suche::after{
       content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);
     }
-    /* Der Knopf stand auch dann da, wenn der Fluchtknopf aus war: display:flex
-       schlug das hidden-Attribut. Selbst Gaeste sahen ihn. */
-    .nav-raus[hidden]{display:none!important}
-    /* Zweite Sicherung: haengt an der Wahl selbst, nicht am Attribut.
-       Greift schon beim ersten Zeichnen, bevor ein Skript gelaufen ist. */
-    html:not(.raus-an) .nav-raus{display:none!important}
     @media (max-width:360px){
-      .nav-raus,.nav-bell,.nav-suche,.nav-icon-btn{width:32px;height:32px;flex-basis:32px}
-      .nav-raus svg,.nav-bell svg,.nav-suche svg,.nav-icon-btn svg{width:16px;height:16px}
+      .nav-bell,.nav-suche,.nav-icon-btn{width:32px;height:32px;flex-basis:32px}
+      .nav-bell svg,.nav-suche svg,.nav-icon-btn svg{width:16px;height:16px}
     }
 
 
@@ -6569,7 +6654,6 @@
       border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.09);color:rgba(255,255,255,.86)}
     .mpro-x svg,.ez-weg svg,.plus-konto-x svg,.os-weg svg{width:12px;height:12px;stroke-width:2.4}
     .mreq-no{display:inline-flex;align-items:center;justify-content:center}
-    .nav-raus{width:34px;height:34px;border-radius:50%}
 
     /* Kompakte Knoepfe: eine Rundung */
     .fl-knopf,#notifBody .nt-knopf,.push-karte .nt-knopf,.sh-alle,.ein-neu button,.mg-warn button{border-radius:var(--knopf-r-klein)}
@@ -7139,7 +7223,6 @@
     .tour-echt .te-plus .bnav-btn{position:static}
     .tour-echt.te-kopf>*{position:relative!important;top:auto!important;width:100%;border-radius:16px;
       background:rgba(255,255,255,.04)!important;padding:12px 14px!important}
-    .tour-echt.te-kopf .nav-raus{display:inline-flex!important;box-shadow:0 0 0 3px rgba(255,45,118,.5)}
     .tour-echt.te-kopf>img,.tour-echt.te-kopf img:first-child{height:22px!important;width:auto}
     .tour-echt.te-kopf .nav-right-group{gap:6px}
     .tour-echt.te-kopf .nav-right-group>*{transform:scale(.9)}
@@ -7241,8 +7324,6 @@
     @media (max-height:740px){.iphone{--w:170px;--s:.4}}
     @media (max-height:640px){.iphone{--w:150px;--s:.3487}}
     .iphone-app .top-nav{position:relative!important;padding-top:10px!important}
-    .iphone .iphone-app .nav-raus{display:inline-flex!important}
-    .iphone .iphone-raus .nav-raus{box-shadow:0 0 0 4px #FF2D76!important;border-radius:12px}
     .iphone-karte{padding:6px 16px}
     .iphone-karte>*{width:62%}
     .iphone-karte-gross>*{width:100%}
@@ -7458,20 +7539,6 @@
     /* Veroeffentlicht: der Knopf zeigt den Erfolg */
     .knopf-fertig{display:inline-flex;align-items:center;justify-content:center;gap:8px}
     .knopf-haken{width:20px;height:20px;flex:none}
-    /* Wetter-Gag in der Tour (eigener Stil, kein fremdes Logo) */
-    .iphone-zusatz{position:absolute;inset:0;z-index:3;pointer-events:none}
-    .iphone-schirm.wetter-an .iphone-oben{background:none}
-    .tour-wetter{position:absolute;inset:0;z-index:4;padding:110px 28px 0;text-align:center;color:#fff;
-      background:linear-gradient(180deg,#3B82C4 0%,#5FA2D9 45%,#8EC1E8 100%);font-family:-apple-system,"SF Pro Display",Inter,system-ui,sans-serif}
-    .tw-ort{font-size:34px;font-weight:500;letter-spacing:.3px}
-    .tw-grad{font-size:96px;font-weight:200;line-height:1;margin:2px 0 4px;letter-spacing:-2px}
-    .tw-lage{font-size:20px;font-weight:500;opacity:.92}
-    .tw-ht{font-size:20px;font-weight:500;opacity:.92;margin-top:2px}
-    .tw-karte{margin-top:34px;padding:12px 14px 14px;border-radius:16px;background:rgba(255,255,255,.16);text-align:left}
-    .tw-k-t{font-size:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.25);opacity:.95}
-    .tw-std{display:flex;justify-content:space-between;padding-top:12px;text-align:center}
-    .tw-std>div{display:flex;flex-direction:column;gap:8px;font-size:15px;font-weight:500}
-    .tw-ic{font-size:20px;font-weight:400;line-height:1}
     .mod-pruefen{border-color:rgba(255,90,95,.45)!important;background:rgba(255,90,95,.06)!important}
     /* ══════════ KNOEPFE: EIN SATZ REGELN FUER DIE GANZE APP ══════════
        Vorher rund 60 Stile: 41–54 px hoch, Radius 8 bis 18, Schrift 600
@@ -7622,6 +7689,21 @@
         <button class="auth-tog-btn" id="tog-register" role="tab" aria-selected="false" onclick="switchAuthTab('register',this)">Registrieren</button>
         <div class="auth-tog-slider" id="authSlider"></div>
       </div>
+      <!-- Apple und Google – nur im Browser. In der App liegt die native
+           Anmeldung darueber und kann das besser (Face ID, kein Umweg
+           ueber eine fremde Seite). Gestaltet nach den Vorgaben von Apple
+           und Google: sonst lehnt Apple die App ab bzw. Google den Client. -->
+      <div class="auth-sozial" id="authSozial" hidden>
+        <button type="button" class="sozial-knopf sozial-apple" onclick="oauthAnmelden('apple',this)">
+          <svg viewBox="0 0 22 24" aria-hidden="true"><path fill="currentColor" d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.150.572-2.270 1.206-2.980.804-.94 2.142-1.640 3.248-1.680.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.550 5.552-6.550 1.448 0 2.675.95 3.6.95.865 0 2.222-1.010 3.902-1.010.613 0 2.886.06 4.374 2.190-.13.09-2.383 1.370-2.383 4.190 0 3.260 2.854 4.420 2.955 4.450z"/></svg>
+          <span class="s-label">Mit Apple fortfahren</span>
+        </button>
+        <button type="button" class="sozial-knopf sozial-google" onclick="oauthAnmelden('google',this)">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.940c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <span class="s-label">Mit Google fortfahren</span>
+        </button>
+        <div class="auth-oder sozial-oder"><span></span>oder mit E-Mail<span></span></div>
+      </div>
       <!-- LOGIN -->
       <!-- Ein echtes Formular: "Los" auf der Tastatur meldet an, und der
            Schluesselbund merkt sich das Passwort zuverlaessiger. -->
@@ -7647,10 +7729,9 @@
 
         <!-- Ein Balken statt einer Zahl: man sieht auf einen Blick, wie
              viel noch kommt. Vier Schritte, nie mehr als zwei Fragen.
-             Frueher waren es fuenf: der Fluchtknopf wurde hier gewaehlt.
-             Er steht jetzt nach dem Tutorial – wer sich anmeldet, will
-             hinein und nicht Einstellungen treffen fuer eine App, die
-             er noch nie gesehen hat. -->
+             Einstellungen kommen erst nach dem Tutorial – wer sich
+             anmeldet, will hinein und nicht Einstellungen treffen fuer
+             eine App, die er noch nie gesehen hat. -->
         <div class="rprog"><div class="rprog-bar" id="rprogBar"></div></div>
         <div class="rprog-txt" id="rprogTxt">Schritt 1 von 4</div>
 
@@ -7821,9 +7902,6 @@
   <div class="top-nav">
     <img src="data:image/png;base64,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" style="height:28px;width:auto" alt="SPOTOUT"/>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
-      </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen">
         <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="nav-bell-dot js-notif-dot" id="notifDot" style="display:none"></span>
@@ -7990,9 +8068,6 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
-      </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="nav-icon-btn" onclick="showSettingsModal()" aria-label="Einstellungen">
@@ -8008,9 +8083,6 @@
   <div class="top-nav">
     <div class="nav-titel">Chats</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
-      </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="nav-av js-nav-av" role="button" tabindex="0" aria-label="Profil" onclick="showPage('profile')"></div>
@@ -8075,9 +8147,6 @@
   <div class="top-nav">
     <div class="nav-titel">Meine Partys</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
-      </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="nav-av js-nav-av" role="button" tabindex="0" aria-label="Profil" onclick="showPage('profile')"></div>
@@ -8113,9 +8182,6 @@
   <div class="top-nav">
     <div class="nav-titel">SPOTOUT Pro</div>
     <div class="nav-right-group">
-      <button class="nav-raus" onclick="schnellRaus()" hidden aria-label="Fluchtknopf">
-        <svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/><rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path transform="translate(19.8 4.6) scale(0.9)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
-      </button>
       <button class="nav-bell" onclick="openNotifs()" aria-label="Benachrichtigungen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="url(#pkSonne)"/><path d="M6.2 16.4 7.4 14a3.3 3.3 0 0 0 .4-1.6V10a4.2 4.2 0 0 1 8.4 0v2.4c0 .6.1 1.1.4 1.6l1.2 2.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 19.1a1.9 1.9 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.7 8.4c.3-1.4 1-2.6 2-3.5M20.3 8.4c-.3-1.4-1-2.6-2-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-bell-dot js-notif-dot" style="display:none"></span></button>
       <button class="nav-suche" onclick="showPage('search')" aria-label="Nutzer suchen"><svg class="pk" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="url(#pkEis)" opacity=".6"/><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m15.2 15.2 4.8 4.8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="nav-x" onclick="zurueck()" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
@@ -8167,13 +8233,12 @@
 <input type="file" id="grpBildDatei" accept="image/*" hidden onchange="grpBildWaehlen(event)"/>
 
 <!-- ════ DREI FRAGEN NACH DEM TUTORIAL ════
-     Frueher stand der Fluchtknopf mitten in der Anmeldung – man sollte
-     etwas einstellen fuer eine App, die man noch nie gesehen hatte.
-     Jetzt kommt alles zusammen und danach: erst hineinschauen, dann
-     entscheiden. -->
+     Nicht in der Anmeldung – man sollte dort etwas einstellen fuer eine
+     App, die man noch nie gesehen hatte. Jetzt kommt alles zusammen und
+     danach: erst hineinschauen, dann entscheiden. -->
 <div class="tour" id="einstieg">
   <div class="tour-kopf">
-    <div class="tour-schritt" id="einsSchritt">1 von 5</div>
+    <div class="tour-schritt" id="einsSchritt">1 von 3</div>
     <button class="tour-skip" onclick="einstiegFertig()">Später</button>
   </div>
   <div class="tour-buehne" id="einsBuehne"></div>
@@ -8528,6 +8593,29 @@
         <div class="fee-sub" id="feeSub"></div>
       </div>
 
+      <!-- Nicht bei privaten Partys: dort entscheidet die Einladung, wer kommt.
+           Die Datenbank blendet die Party fuer Juengere aus, nicht nur die Seite. -->
+      <div id="c7-alter">
+        <div class="csec">Ab welchem Alter?</div>
+        <div class="einw" id="alterWahl">
+          <button class="einw-opt on" type="button" data-alter="" onclick="setAlter(null,this)">
+            <div class="einw-ic alter-ic">16+</div>
+            <div><div class="einw-t">Alle</div>
+            <div class="einw-s">Alle mit SPOTOUT-Konto sehen die Party.</div></div>
+          </button>
+          <button class="einw-opt" type="button" data-alter="18" onclick="setAlter(18,this)">
+            <div class="einw-ic alter-ic">18+</div>
+            <div><div class="einw-t">Ab 18</div>
+            <div class="einw-s">Wer jünger ist, sieht die Party gar nicht.</div></div>
+          </button>
+          <button class="einw-opt" type="button" data-alter="21" onclick="setAlter(21,this)">
+            <div class="einw-ic alter-ic">21+</div>
+            <div><div class="einw-t">Ab 21</div>
+            <div class="einw-s">Wer jünger ist, sieht die Party gar nicht.</div></div>
+          </button>
+        </div>
+      </div>
+
       <!-- Nur private Partys: wie eingeladen wird -->
       <div id="c7-einladen" style="display:none">
         <div class="einw">
@@ -8809,7 +8897,7 @@
         <div id="setProfilBox">
         <button class="settings-btn" onclick="wahlProfil()">
           <i data-pk="profil" data-pk-g="20" data-pk-schlicht></i>
-          <span class="s-label">Dein Profil</span><span class="s-wert" id="setProfilWert"></span>
+          <span class="s-label">Profil-Sichtbarkeit</span><span class="s-wert" id="setProfilWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
         </div>
@@ -8830,6 +8918,11 @@
           <span class="s-label">Blockierte Personen</span><span class="s-wert" id="setBlockZahl"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
+        <button class="settings-btn" onclick="meineMeldungenOeffnen()">
+          <i data-pk="melden" data-pk-g="20" data-pk-schlicht></i>
+          <span class="s-label">Meine Meldungen</span>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
+        </button>
       </div>
 
       <div class="set-gruppe">
@@ -8844,13 +8937,6 @@
           <span class="s-label">Sprache</span><span class="s-wert" id="setSpracheWert"></span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
-        <div id="setRausBox">
-        <button class="settings-btn" onclick="wahlRaus()">
-          <i data-pk="doomscroll" data-pk-g="20" data-pk-schlicht></i>
-          <span class="s-label">Fluchtknopf</span><span class="s-wert" id="setRausWert"></span>
-          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
-        </button>
-        </div>
         <button class="settings-btn" onclick="wahlOrt()">
           <i data-pk="ort" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Standort</span><span class="s-wert" id="setOrtWert"></span>
@@ -9034,6 +9120,17 @@
       <button class="modal-x" onclick="closeOverlay('moderationOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
     </div>
     <div class="modal-body"><div id="moderationListe"></div></div>
+  </div>
+</div>
+
+<div class="overlay" id="meineMeldungenOverlay" onclick="closeIfOutside(event,'meineMeldungenOverlay')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Meine Meldungen</div>
+      <button class="modal-x" onclick="closeOverlay('meineMeldungenOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    </div>
+    <div class="modal-body"><div id="meineMeldungenListe"></div></div>
   </div>
 </div>
 
@@ -9335,6 +9432,23 @@
   </div>
 </div>
 
+<!-- ════ PROFIL TEILEN ════
+     Wie "Profil teilen" bei Instagram: eine Karte mit QR-Code, die man
+     am Handy des Gegenuebers scannen laesst, dazu Link und Teilen-Menue.
+     Gezeichnet in profilTeilen(). -->
+<div class="overlay" id="profilKarteOverlay" onclick="closeIfOutside(event,'profilKarteOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Profil teilen</div>
+      <button class="modal-x" aria-label="Schliessen" onclick="closeOverlay('profilKarteOverlay')">
+        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="profilKarteBody"></div>
+  </div>
+</div>
+
 <!-- ════ GRUPPEN ════ -->
 <div class="overlay" id="gruppeOverlay" onclick="closeIfOutside(event,'gruppeOverlay')">
   <div class="modal no-swipe">
@@ -9578,6 +9692,29 @@ const Bewegung=(()=>{
 const SB_URL='https://tuxyyrlxjkxabhvremqu.supabase.co';
 const SB_KEY='sb_publishable_dldlgp40jFNPHVV8o7lF4A_UmGSxEFZ';
 const{createClient}=supabase;
+/* Zurueck von Apple oder Google (Anmeldung im Browser). Vor dem Absprung
+   merkt sich oauthAnmelden den Anbieter in sessionStorage – nur so ist
+   ein ?error=… von dort von einem abgelaufenen Mail-Link zu
+   unterscheiden. Der Zugang selbst (#access_token=…) wird von supabase
+   in createClient gelesen; hier nur Anbieter und allfaelliger Fehler. */
+const OAUTH_RUECK=(()=>{
+  try{
+    const roh=sessionStorage.getItem('spotout_oauth');
+    if(!roh)return null;
+    sessionStorage.removeItem('spotout_oauth');
+    const g=JSON.parse(roh);
+    // Nach 15 Minuten gehoert ein Fehler in der Adresse nicht mehr dazu
+    if(!g||!g.anbieter||Date.now()-(g.zeit||0)>15*60*1000)return null;
+    const p=new URLSearchParams((location.search||'').replace(/^\?/,'')+'&'+(location.hash||'').replace(/^#/,''));
+    return {
+      anbieter:g.anbieter,
+      fehler:p.get('error')||'',
+      fehlerCode:p.get('error_code')||'',
+      beschreibung:p.get('error_description')||'',
+      zugang:!!p.get('access_token')
+    };
+  }catch(e){ return null; }
+})();
 /* Kommt jemand ueber den Link aus der Passwort-Mail, steht das in der
    Adresse. Gelesen wird es hier, vor createClient – danach hat supabase
    die Adresse schon aufgeraeumt. */
@@ -9587,7 +9724,8 @@ const PW_LINK=(()=>{
     const p=new URLSearchParams(roh);
     return {
       neu:p.get('type')==='recovery'||p.get('pw')==='neu',
-      abgelaufen:!!p.get('error_code')||p.get('error')==='access_denied',
+      // Fehler nach Apple/Google sind kein abgelaufener Mail-Link
+      abgelaufen:!OAUTH_RUECK&&(!!p.get('error_code')||p.get('error')==='access_denied'),
       tokenHash:p.get('type')==='recovery'?p.get('token_hash'):null
     };
   }catch(e){ return {neu:false,abgelaufen:false,tokenHash:null}; }
@@ -9667,9 +9805,6 @@ const PIKTO={
       +'<path d="M7.5 9.3a3.3 3.3 0 0 1 2.3-2.1" '+PK_W+'/>',
   zahnrad: PK_F('Violett',PK_ZAHNRAD,' opacity=".5"')+PK_P(PK_ZAHNRAD)
       +'<circle cx="12" cy="12" r="3.1" fill="url(#pkPink)"/><circle cx="12" cy="12" r="3.1" '+PK_L+'/>',
-  doomscroll: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.8" fill="url(#pkViolett)"/>'
-      +'<rect x="6.5" y="2.5" width="11" height="19" rx="2.8" '+PK_L+'/>'
-      +'<path d="m9.6 11.4 2.4-2.4 2.4 2.4M9.6 15.6l2.4-2.4 2.4 2.4" '+PK_W+'/>'+PK_FUNKEN(19.8,4.6,.9),
 
   /* ── Partyseite ── */
   melden: '<path d="M6 4.5h10.6l-2.2 4 2.2 4H6z" fill="url(#pkRot)" opacity=".55"/>'
@@ -10310,6 +10445,7 @@ async function clearSearchHistory(){
 }
 
 async function init(){
+  authSozialAktualisieren();   // Apple/Google nur im Browser
   /* Abgelaufener oder schon benutzter Link: verifyOtp wirft nicht, es
      liefert einen Fehler – frueher landete man still auf der Anmeldung. */
   if(PW_LINK.tokenHash){
@@ -10319,6 +10455,7 @@ async function init(){
   if(PW_LINK.neu||PW_LINK.abgelaufen){
     try{ history.replaceState(null,'',location.pathname); }catch(e){}
   }
+  if(OAUTH_RUECK)oauthRueckkehr(OAUTH_RUECK,session);
   if(PW_LINK.abgelaufen&&!session){
     if(PW_LINK.neu){
       pwAnsicht('vergessen');
@@ -10434,15 +10571,6 @@ async function loadProf(){
     if(cUser?.id!==uid)return false;
     updated=Array.isArray(eigen2)?eigen2[0]:eigen2;
   }
-  /* Hier stand ein Pfad, der die Wahl des Fluchtknopfs aus dem Konto
-     nachtrug: die Anmeldung legte sie in die Konto-Angaben, und beim
-     ersten Start auf einem zweiten Geraet wurde sie uebernommen.
-     Seit dem 17.09. wird der Fluchtknopf nicht mehr bei der Anmeldung
-     gewaehlt, sondern nach dem Tutorial – geschrieben wird dort also
-     nichts mehr, und der Pfad haette nie wieder ausgeloest. Weg damit:
-     toter Code, der eine Einstellung setzen koennte, ist schlimmer als
-     gar keiner. Der Preis ist ehrlich benannt – wer sich auf einem
-     zweiten Geraet anmeldet, waehlt den Knopf dort neu. */
   cProfile=updated;updNavAv();
   /* Wer mit Apple oder Google kommt, hat noch kein Geburtsdatum. Bis es
      da ist, sperrt die Datenbank alles Schreiben (ist_gesperrt); hier
@@ -10479,9 +10607,6 @@ function profilGemerkt(id){
 /* Das Bildchen oben rechts steht inzwischen in mehreren Kopfzeilen –
    frueher gab es genau eines mit fester Kennung. */
 function updNavAv(){
-  // Der Fluchtknopf haengt an keiner Anmeldung, aber die
-  // Leiste wird hier ohnehin frisch gezeichnet – also hier mit.
-  try{ rausKnopfZeigen(); }catch(e){}
   // Der Name in der Profil-Kopfzeile haengt am selben Profil wie das
   // Bildchen – also wird er hier mitgezogen und nicht anderswo.
   const kn=document.getElementById('profKontoName');
@@ -10517,7 +10642,7 @@ function tbPro(){ return proMarke(); }
 
 
 const TOUREN={
-  /* Sechs Karten statt dreizehn, jede sagt eine Sache. Suche, Karte,
+  /* Sieben Karten statt dreizehn, jede sagt eine Sache. Suche, Karte,
      Mitbringliste und Konto wechseln haben keine eigene Karte mehr –
      man findet sie dort, wo man sie braucht. Wer die Tour schon
      gesehen hat, bekommt sie deswegen nicht nochmals. */
@@ -10542,9 +10667,6 @@ const TOUREN={
       b:()=>'<div class="tb"></div>' },
     { t:'Folge deinen Leuten',
       s:'Auf ihrem Profil siehst du, welche Partys bei ihnen anstehen.',
-      b:()=>'<div class="tb"></div>' },
-    { t:'Angst vor Huzz?',
-      s:'Ein Tipp oben rechts, und du bist weg: TikTok, Reels oder Shorts. Oder du checkst ganz unauffällig das Wetter.',
       b:()=>'<div class="tb"></div>' },
   ],
   pro:[
@@ -10767,7 +10889,7 @@ function tourAnzahl(){ return (TOUREN[tourSatz]||[]).length; }
 
 /* Jede Karte zeigt beim Erscheinen kurz, wovon sie erzaehlt: die Teile
    der Zeichnung kommen nacheinander, Haekchen springen auf, der Knopf
-   wird "gedrueckt", der Fluchtknopf leuchtet zweimal auf. Einmalig und
+   wird "gedrueckt". Einmalig und
    selten (Emil: Delight gehoert in erste Male), unter einer Sekunde,
    nichts wartet darauf. Weniger Bewegung: nichts davon. */
 /* Kleine Filme im iPhone: ein Finger tippt, der Bildschirm antwortet.
@@ -10910,19 +11032,6 @@ function tourMotion(karte){
       const z=f.querySelectorAll('[data-tm="liste"] .bes-zeile');
       tl.fromTo(z,{autoAlpha:0,y:10},{autoAlpha:1,y:0,duration:.4,ease:'power3.out',stagger:.09}).to({}, {duration:2.4});
     }
-    if(art==='raus'){
-      const wetter=$('[data-tm="wetter"]');
-      gsap.set(wetter,{autoAlpha:0});
-      tl.set(wetter,{autoAlpha:0,scale:1.04});
-      tippe('.nav-raus');
-      /* Party weg, Wetter da – als haette man nie etwas anderes gemacht */
-      tl.call(()=>schirm&&schirm.classList.add('wetter-an'),null,'<.05');
-      tl.to(wetter,{autoAlpha:1,scale:1,duration:.32,ease:'power3.out'},'<');
-      tl.to({}, {duration:1.9});
-      tl.to(wetter,{autoAlpha:0,duration:.3});
-      tl.call(()=>schirm&&schirm.classList.remove('wetter-an'));
-      tl.to({}, {duration:.6});
-    }
     tourMotionStopp=()=>{ tl.kill(); fertig(); };
   });
 }
@@ -10960,8 +11069,6 @@ function tourKarteVorfuehren(karte){
     if(haken.length)tl.fromTo(haken,{scale:.6,autoAlpha:0},{scale:1,autoAlpha:1,duration:.4,ease:'back.out(2)',stagger:.08},.25);
     const knopf=karte.querySelector('.tb-knopf');
     if(knopf)tl.to(knopf,{scale:.95,duration:.12,ease:'power2.out'},.75).to(knopf,{scale:1,duration:.3,ease:'back.out(2.4)'});
-    const raus=karte.querySelector('.tb-ic.raus');
-    if(raus)tl.fromTo(raus,{boxShadow:'0 0 0 0 rgba(255,45,118,.55)'},{boxShadow:'0 0 0 10px rgba(255,45,118,0)',duration:.7,repeat:1,ease:'power2.out'},.4);
     tl.fromTo(karte.querySelectorAll('.tour-t,.tour-s'),{autoAlpha:0,y:8},{autoAlpha:1,y:0,duration:.35,stagger:.05},.12);
   });
 }
@@ -11094,13 +11201,13 @@ function tourLeiste(aktiv){
 }
 /* fenster: welcher Teil des Handys im Ausschnitt steht – 0 oben,
    1 unten, dazwischen z. B. 0.5 Mitte ('unten'/'oben' gehen auch). */
-function tourHandy(inner,unten,leiste,fenster,motion,ziel,ebene){
+function tourHandy(inner,unten,leiste,fenster,motion,ziel){
   const b=typeof fenster==='number'?fenster:fenster==='unten'?1:fenster==='oben'?0:(unten?1:0);
   const kl=b>=1?' von-unten':b>0?' mitte':'';
-  return '<div class="iphone-fenster'+kl+'" data-blick="'+b+'"'+(motion?' data-motion="'+motion+'"':'')+(ziel?' data-ziel="'+ziel+'"':'')+'><div class="iphone-kamera">'+tourHandyGeraet(inner,unten,leiste,ebene)+'</div></div>';
+  return '<div class="iphone-fenster'+kl+'" data-blick="'+b+'"'+(motion?' data-motion="'+motion+'"':'')+(ziel?' data-ziel="'+ziel+'"':'')+'><div class="iphone-kamera">'+tourHandyGeraet(inner,unten,leiste)+'</div></div>';
 }
 function tourBlickY(f,b){ const k=f.querySelector('.iphone-kamera'); return k?(f.clientHeight-k.offsetHeight)*b:0; }
-function tourHandyGeraet(inner,unten,leiste,ebene){
+function tourHandyGeraet(inner,unten,leiste){
   inner=tourNeutral(inner); if(typeof leiste==='string')leiste=tourNeutral(leiste);
   const balken=(h,x)=>'<rect x="'+x+'" y="'+(12-h)+'" width="3.2" height="'+h+'" rx="1" fill="#fff"/>';
   return '<div class="iphone" aria-hidden="true">'
@@ -11117,7 +11224,6 @@ function tourHandyGeraet(inner,unten,leiste,ebene){
       ?'<div class="iphone-ebene iphone-banner">'+leiste+'</div>'
       :(leiste?'<div class="iphone-ebene iphone-leiste">'+(leiste===true?tourLeiste('main'):/^(main|calendar|chat|profile)$/.test(leiste)?tourLeiste(leiste):leiste)+'</div>':''))
     +'<div class="iphone-ebene iphone-unten-balken"><span></span></div>'
-    +(ebene?'<div class="iphone-zusatz">'+ebene+'</div>':'')
     +'<i class="iphone-finger"></i>'
     +'</div></div></div>';
 }
@@ -11146,7 +11252,6 @@ const TOUR_ECHT={
       +'<div class="tour-zwei tour-detail"><div data-tm="vor">'+TOUR_SNAP.mitbringen+'</div><div data-tm="nach">'+TOUR_SNAP.mitbringenNach+'</div></div></div>',false,false,0.62,'mitbringen'):'',
   5:()=>tourBeispielChats(true),
   6:()=>tourFremdesProfil(),
-  7:()=>TOUR_SNAP.start?tourHandy('<div class="iphone-raus">'+TOUR_SNAP.start+'</div>',false,true,0,'raus',null,tourWetter()):'',
 };
 
 /* Pro-Tour mit echten Stuecken: dein Profil mit Pro-Marke, deine echten
@@ -11185,14 +11290,6 @@ function tourFremdesProfil(schreiben){
       +(schreiben?'<button class="up-msg-btn">'+pikto('chat',20)+'Schreiben</button>':'')+'</div>'
     +'<div class="up2-abschnitt">Kommende Partys</div></div></div>';
   return tourHandy('<div class="tour-up">'+kopf+body+'</div>',false,true,0,schreiben?'schreiben':'folgen');
-}
-/* Der Gag zum Fluchtknopf: ganz unschuldig das Wetter checken */
-function tourWetter(){
-  const std=[['Jetzt','14°','☀︎'],['15','15°','☀︎'],['16','16°','⛅︎'],['17','15°','⛅︎'],['18','13°','☁︎']];
-  return '<div class="tour-wetter" data-tm="wetter"><div class="tw-ort">Zürich</div><div class="tw-grad">14°</div>'
-    +'<div class="tw-lage">Meist sonnig</div><div class="tw-ht">H: 17°  T: 9°</div>'
-    +'<div class="tw-karte"><div class="tw-k-t">Am Abend klar, ideal für draussen.</div><div class="tw-std">'
-    +std.map(([z,g,i])=>'<div><span>'+z+'</span><b class="tw-ic">'+i+'</b><span>'+g+'</span></div>').join('')+'</div></div></div>';
 }
 function tourBeispielChats(neu){
   const kopf=tourKlon('#page-chat .top-nav')||'';
@@ -11553,19 +11650,20 @@ function proWerbungZeigen(weiter){
 }
 
 /* ══════════ DIE DREI FRAGEN NACH DEM TUTORIAL ══════════
-   Vorher stand der Fluchtknopf auf Schritt 4 der Anmeldung. Wer sich
-   registriert, hat die App aber noch nie gesehen – die Frage "wohin
-   scrollst du weiter" ergibt dort keinen Sinn, und "wer darf dir
-   schreiben" stand ueberhaupt nur in den Einstellungen, wo sie nie
-   jemand aufsuchte.
+   Wer sich registriert, hat die App noch nie gesehen – Einstellungen
+   ergeben dort keinen Sinn.
 
    Jetzt kommt alles an einer Stelle und zum richtigen Zeitpunkt:
    angemeldet, Einfuehrung gesehen, und nun drei Fragen, von denen
    keine falsch zu beantworten ist. Alle drei stehen danach weiter in
    den Einstellungen.
 
-   Ein Verein bekommt sie nicht: er hat keinen Fluchtknopf, keine
-   Gespraeche, und privat ist er nie. */
+   Ein Verein bekommt sie nicht: er hat keine Gespraeche, und privat
+   ist er nie.
+
+   Seit dem 23.10. (Wunsch Sebastian) ohne den Fluchtknopf, das Profil
+   zuerst, und "Weiter" geht erst, wenn auf der Karte etwas gewaehlt
+   ist. "Später" oben bleibt und schaltet weiterhin nichts um. */
 
 const EINSTIEG_SCHLUESSEL='spotout_einstieg_v1';
 
@@ -11583,7 +11681,7 @@ function einstiegNoetig(){
 /* Was gerade gilt. Wird beim Oeffnen aus dem Profil gefuellt, damit
    niemand eine Einstellung ueberschreibt, die er frueher schon
    bewusst gesetzt hat. */
-let einsWahl={raus:'',schreiben:'everyone',privat:false};
+let einsWahl={schreiben:'everyone',privat:null,ort:null,push:null};
 let einsIndex=0;
 
 /* Alle Symbole des Einstiegs auf demselben Raster: 24er-Feld,
@@ -11592,10 +11690,6 @@ let einsIndex=0;
    bis an die Kante, mal mit Fuellung - und nebeneinander sah das
    unruhig aus. */
 const EINS_IC={
-  tiktok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 17.4V6.2l7.2-1.8v8.4"/><circle cx="6.6" cy="17.4" r="2.6"/><circle cx="13.8" cy="15" r="2.6"/></svg>',
-  instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="16.9" cy="7.1" r="1" fill="currentColor" stroke="none"/></svg>',
-  youtube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.6" width="17.6" height="12.8" rx="4"/><path d="M10.6 9.9 15.2 12l-4.6 2.1z" fill="currentColor" stroke="none"/></svg>',
-  wetter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3.4"/><path d="M9 2.6v1.3M3.9 4.6l.9.9M2.6 9h1.3M14.1 4.6l-.9.9"/><path d="M8.5 20h9a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.4A2.8 2.8 0 0 0 8.5 20z"/></svg>',
   keiner:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m6.1 6.1 11.8 11.8"/></svg>',
   ort:pikto('ort',20,'pk-bunt'),
   glocke_an:pikto('glocke',20,'pk-bunt'),
@@ -11609,16 +11703,19 @@ const EINS_IC={
 
 function einstiegKarten(){
   return [
+    /* Zuerst das Profil: als einzige der drei Fragen betrifft sie, was
+       andere von dir sehen. Darum steht bei beiden Antworten
+       ausdruecklich, wer was sieht – "Öffentlich" und "Privat" allein
+       liessen das offen. Was hier steht, muss zu openUserProf passen:
+       privat heisst Anfrage statt Folgen, und bis zur Zusage bleiben
+       Bio, Kanäle, Zahlen und Partys zu. Gefunden wird man so oder so. */
     {
-      feld:'raus',
-      frage:'Angst vor Huzz?',
-      hilfe:'Dann steht oben rechts ein Knopf. Ein Tipp, und du bist weg: TikTok, Reels oder Shorts. Oder du checkst ganz unauffällig das Wetter.',
+      feld:'privat',
+      frage:'Soll dein Profil privat sein?',
+      hilfe:'In der Suche findet dich jeder. Hier legst du fest, wer dir folgen und deine Partys sehen kann. Ändern kannst du es jederzeit in den Einstellungen.',
       wahl:[
-        {wert:'tiktok',    ic:'tiktok',    t:'TikTok',          s:''},
-        {wert:'instagram', ic:'instagram', t:'Instagram Reels', s:''},
-        {wert:'youtube',   ic:'youtube',   t:'YouTube Shorts',  s:''},
-        {wert:'wetter',    ic:'wetter',    t:'Wetter-App',      s:'Ganz unschuldig das Wetter checken'},
-        {wert:'',          ic:'keiner',    t:'Brauch ich nicht', s:'Kein Knopf in der Leiste'},
+        {wert:false, ic:'offen',   t:'Nein, öffentlich', s:'Jeder kann dir direkt folgen, sieht deine Bio, Kanäle und Partys und kann dich zu Partys einladen.'},
+        {wert:true,  ic:'schloss', t:'Ja, privat',       s:'Wer dir folgen will, schickt eine Anfrage. Erst wenn du sie annimmst, sieht die Person deine Bio, Kanäle und Partys, und ihr könnt euch einladen.'},
       ],
     },
     /* "Wer darf dir schreiben?" ist raus (Onboarding-Regel: nur fragen,
@@ -11626,11 +11723,11 @@ function einstiegKarten(){
        "Jeder" bleibt, umstellen geht in den Einstellungen. */
     {
       feld:'ort',
-      frage:'Partys in deiner Nähe?',
-      hilfe:'Mit Standort sortiert SPOTOUT nach Entfernung und zeigt, wie weit es hin ist. Für den Ortsnamen geht nur ein auf rund einen Kilometer gerundeter Wert an OpenStreetMap. Ohne Standort sortiert die App nach Zeit.',
+      frage:'Partys in deiner Nähe zeigen?',
+      hilfe:'Mit Standort sortiert SPOTOUT nach Entfernung und zeigt, wie weit es bis zur Party ist. Für den Ortsnamen geht nur ein auf rund einen Kilometer gerundeter Wert an OpenStreetMap.',
       wahl:[
-        {wert:true,  ic:'ort',      t:'Standort nutzen', s:'Sortiert nach Nähe. Gespeichert wird er nicht.'},
-        {wert:false, ic:'keiner',   t:'Lieber nicht',    s:'Sortiert nach Zeit'},
+        {wert:true,  ic:'ort',    t:'Ja, Standort nutzen', s:'Dein Gerät fragt gleich um Erlaubnis. Gespeichert wird der Standort nicht.'},
+        {wert:false, ic:'keiner', t:'Nein, lieber nicht',  s:'Partys werden nach Zeit sortiert. Niemand erfährt, wo du bist.'},
       ],
     },
     {
@@ -11638,39 +11735,32 @@ function einstiegKarten(){
       frage:'Sollen wir dich benachrichtigen?',
       hilfe:'Nur wenn wirklich etwas passiert: eine Einladung, eine Nachricht, eine Änderung an deiner Party. Kein Werbe-Gepiepse.',
       wahl:[
-        {wert:true,  ic:'glocke_an',t:'Ja, benachrichtigen', s:'Auch auf dem gesperrten Bildschirm'},
-        {wert:false, ic:'keiner',   t:'Später',              s:'Du findest es in den Einstellungen'},
-      ],
-    },
-    {
-      feld:'privat',
-      frage:'Dein Profil',
-      hilfe:'Offen findet man dich leichter, privat entscheidest du bei jedem einzeln.',
-      wahl:[
-        {wert:false, ic:'offen',   t:'Öffentlich', s:'Jeder kann dir folgen und dich zu Partys einladen'},
-        {wert:true,  ic:'schloss', t:'Privat',     s:'Wer folgen will, fragt an'},
+        {wert:true,  ic:'glocke_an', t:'Ja, benachrichtigen', s:'Dein Gerät fragt gleich um Erlaubnis. Mitteilungen kommen auch auf den gesperrten Bildschirm.'},
+        {wert:false, ic:'keiner',    t:'Nein, jetzt nicht',   s:'Keine Mitteilungen. Einschalten kannst du sie jederzeit in den Einstellungen.'},
       ],
     },
   ];
 }
 
 function einstiegStarten(){
-  tourWischenEinrichten('einsBuehne',()=>einstiegWeiter(),()=>einstiegZurueck(),()=>einsIndex,()=>einstiegKarten().length);
+  /* Gewischt wird nur so weit, wie gewaehlt ist: ohne Antwort ist die
+     aktuelle Karte fuer das Wischen die letzte – sie federt zurueck,
+     statt ohne Wahl weiterzublaettern. */
+  tourWischenEinrichten('einsBuehne',()=>einstiegWeiter(),()=>einstiegZurueck(),()=>einsIndex,
+    ()=>einsGewaehlt()?einstiegKarten().length:einsIndex+1);
   const el=document.getElementById('einstieg');
   if(!el)return;
   einsIndex=0;
+  einsRichtung=1;
   einsWahl={
-    /* null heisst "noch nicht getippt" und wird nirgends markiert.
-       '' waere eine Wahl – naemlich "Brauch ich nicht" – und stuende
-       sofort angehakt da, obwohl niemand sie getroffen hat. Wer nur
-       durchtippt, soll nichts einschalten und nichts ausschalten. */
-    raus: (()=>{ try{ return schnellRausWahl()||null; }catch(e){ return null; } })(),
     schreiben: cProfile?.allow_messages||'everyone',
-    /* Wie beim Fluchtknopf: null heisst "noch nicht getippt". Wer
-       durchtippt, soll nichts ein- und nichts ausschalten. */
+    /* null heisst "noch nicht getippt" und wird nirgends markiert –
+       auch beim Profil. Vorher stand "Öffentlich" schon angehakt da,
+       und wer nur durchtippte, hatte nie wirklich gewaehlt. Wer
+       "Später" tippt, soll nichts ein- und nichts ausschalten. */
+    privat: null,
     ort: null,
     push: null,
-    privat: !!cProfile?.privat,
   };
   el.classList.add('open');
   einstiegZeichnen();
@@ -11684,19 +11774,23 @@ function einstiegZeichnen(){
   if(!buehne||!k)return;
 
   const jetzt=einsWahl[k.feld];
+  const fid='einsFrage'+einsIndex;
   buehne.innerHTML='<div class="eins-karte">'
-    +'<div class="eins-frage">'+esc(k.frage)+'</div>'
+    +'<div class="eins-frage" id="'+fid+'">'+esc(k.frage)+'</div>'
     +'<div class="eins-hilfe">'+esc(k.hilfe)+'</div>'
+    +'<div class="eins-wahl" role="radiogroup" aria-labelledby="'+fid+'">'
+    +'<div class="eins-tipp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11.5V5.2a1.7 1.7 0 0 1 3.4 0v5.3"/><path d="M12.4 10.2V8.8a1.7 1.7 0 0 1 3.4 0v2"/><path d="M15.8 10.4a1.7 1.7 0 0 1 3.4 0V15a6 6 0 0 1-6 6h-1.4a6 6 0 0 1-4.6-2.2L4.6 15.3a1.7 1.7 0 0 1 2.6-2.2L9 15"/></svg>Tippe eine Antwort an</div>'
     +k.wahl.map((w,i)=>{
         const an=String(w.wert)===String(jetzt);
-        return '<label class="msg-setting-opt'+(an?' active':'')+'" '
+        return '<div class="msg-setting-opt'+(an?' active':'')+'" role="radio" tabindex="0" aria-checked="'+an+'" '
           +'onclick="einstiegWaehlen(\''+k.feld+'\','+JSON.stringify(w.wert).replace(/"/g,'&quot;')+')">'
           +'<span class="eins-ic">'+(EINS_IC[w.ic]||'')+'</span>'
           +'<div><div class="set-opt-t">'+esc(w.t)+'</div>'
           +(w.s?'<div class="set-opt-s">'+esc(w.s)+'</div>':'')+'</div>'
-          +'</label>';
+          +'<span class="msg-setting-radio" aria-hidden="true"></span>'
+          +'</div>';
       }).join('')
-    +'</div>';
+    +'</div></div>';
 
   /* Punkte bleiben stehen und wechseln nur die Klasse – so kann der
      aktive Punkt gleiten statt zu springen. */
@@ -11709,6 +11803,7 @@ function einstiegZeichnen(){
   if(schritt)schritt.textContent=(einsIndex+1)+' von '+karten.length;
   const btn=document.getElementById('einsBtn');
   if(btn)btn.textContent=einsIndex>=karten.length-1?'Fertig':'Weiter';
+  einsKnopfStand();
   document.getElementById('einsZurueck')?.classList.toggle('tour-zurueck-weg',einsIndex<=0);
   // Die Karte kommt aus der Richtung, in die man blaettert.
   const karte=buehne.querySelector('.eins-karte');
@@ -11723,13 +11818,46 @@ function einstiegWaehlen(feld,wert){
   const k=einstiegKarten()[einsIndex];
   const zeilen=[...document.querySelectorAll('#einsBuehne .msg-setting-opt')];
   if(k&&zeilen.length===k.wahl.length){
-    k.wahl.forEach((w,i)=>zeilen[i].classList.toggle('active',String(w.wert)===String(wert)));
+    k.wahl.forEach((w,i)=>{
+      const an=String(w.wert)===String(wert);
+      zeilen[i].classList.toggle('active',an);
+      zeilen[i].setAttribute('aria-checked',String(an));
+    });
+    document.querySelector('#einsBuehne .eins-wahl')?.classList.remove('zeigen');
+    einsKnopfStand();
     return;
   }
   einstiegZeichnen();
 }
 
+/* Ist auf der aktuellen Karte etwas gewaehlt? null/undefined heisst nein –
+   false ist eine Antwort ("Nein, lieber nicht"). */
+function einsGewaehlt(){
+  const k=einstiegKarten()[einsIndex];
+  return !!k&&einsWahl[k.feld]!==null&&einsWahl[k.feld]!==undefined;
+}
+function einsKnopfStand(){
+  const btn=document.getElementById('einsBtn');
+  if(!btn)return;
+  const ok=einsGewaehlt();
+  btn.classList.toggle('aus',!ok);
+  btn.setAttribute('aria-disabled',String(!ok));
+}
+/* Tipp auf "Weiter" ohne Wahl: die Antworten wackeln kurz und leuchten
+   auf. Nichts tun waere schlimmer – dann haelt man den Knopf fuer kaputt. */
+function einsAntwortenZeigen(){
+  const w=document.querySelector('#einsBuehne .eins-wahl');
+  nativeHaptik('warnung');
+  if(!w)return;
+  w.classList.remove('zeigen');
+  void w.offsetWidth;   // Animation auch beim zweiten Tipp neu starten
+  w.classList.add('zeigen');
+  clearTimeout(w._uhr);
+  w._uhr=setTimeout(()=>w.classList.remove('zeigen'),1400);
+}
+
 function einstiegWeiter(){
+  if(!einsGewaehlt()){ einsAntwortenZeigen(); return; }
   if(einsIndex>=einstiegKarten().length-1){ einstiegFertig(); return; }
   einsIndex++;
   einsRichtung=1;
@@ -11757,11 +11885,8 @@ async function einstiegFertig(){
   kontoMerkmalSetzen('einstieg');
 
   /* Nur speichern, wenn wirklich getippt wurde. Sonst bleibt es beim
-     bisherigen Stand – "Später" darf nichts abschalten. */
-  if(einsWahl.raus!==null){
-    try{ schnellRausSpeichern(einsWahl.raus); rausKnopfZeigen(); }catch(e){}
-  }
-  /* Standort und Benachrichtigungen sind keine Felder in der Tabelle,
+     bisherigen Stand – "Später" darf nichts abschalten.
+     Standort und Benachrichtigungen sind keine Felder in der Tabelle,
      sondern Erlaubnisse des Geraets. Sie werden hier ausgeloest - und
      nur, wenn wirklich getippt wurde. */
   if(einsWahl.ort!==null){
@@ -11776,7 +11901,7 @@ async function einstiegFertig(){
      Rundwege fuer dieselbe Sache. */
   const patch={};
   if((cProfile?.allow_messages||'everyone')!==einsWahl.schreiben)patch.allow_messages=einsWahl.schreiben;
-  if(!!cProfile?.privat!==!!einsWahl.privat)patch.privat=!!einsWahl.privat;
+  if(einsWahl.privat!==null&&!!cProfile?.privat!==!!einsWahl.privat)patch.privat=!!einsWahl.privat;
   if(!Object.keys(patch).length)return;
 
   const{error}=await sb.from('profiles').update(patch).eq('id',cUser.id);
@@ -11889,28 +12014,200 @@ async function kontoMerken(){
   }catch(e){ console.warn('[konten]',e); }
 }
 
-/* Das eigene Profil weitergeben – ueber das Teilen-Menue des Geraets,
-   in der App ueber iOS, im Browser ueber die Zwischenablage. */
-async function profilTeilen(){
-  if(!cProfile){ kontoNoetig(); return; }
-  const adresse=location.origin+location.pathname
-    +'?u='+encodeURIComponent(cProfile.username||cUser.id);
-  const text=(cProfile.full_name||cProfile.username)+' auf SPOTOUT';
+/* ══════════ PROFIL TEILEN ══════════
+   Eine Karte wie bei Instagram/TikTok: Bild, Name, @name und ein QR-Code
+   zum Scannen, dazu Link kopieren, Teilen-Menue und (im Browser) als Bild
+   sichern. Geht fuer das eigene Profil und fuer fremde (Knopf im fremden
+   Profil). Der Link ist immer die echte Adresse – auch aus der App und
+   aus einer Vorschau-Umgebung –, sonst fuehrt ein gescannter Code ins
+   Leere. Die Vorschaukarte in WhatsApp & Co. macht middleware.js. */
+const PROFIL_BASIS='https://spotoutapp.ch/';
+let pkStand=null;
+
+function profilAdresse(p){
+  return PROFIL_BASIS+'?u='+encodeURIComponent(p.username||p.id);
+}
+
+// Der QR-Erzeuger liegt in einer eigenen Datei und laedt erst hier.
+let qrLaeuft=null;
+function qrLaden(){
+  if(window.spotoutQR)return Promise.resolve(window.spotoutQR);
+  if(qrLaeuft)return qrLaeuft;
+  qrLaeuft=new Promise((ok,nein)=>{
+    const s=document.createElement('script');
+    s.src='/vendor/qr-1.js';
+    s.onload=()=>window.spotoutQR?ok(window.spotoutQR):nein(new Error('qr fehlt'));
+    s.onerror=()=>{ qrLaeuft=null; nein(new Error('qr nicht geladen')); };
+    document.head.appendChild(s);
+  });
+  return qrLaeuft;
+}
+
+// Drei Module Rand im Bild, dazu der weisse Rahmen: genug Ruhezone zum Scannen.
+function qrSvg(qr,farbe){
+  const n=qr.groesse, r=3;
+  let d='';
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(qr.dunkel(x,y))d+='M'+(x+r)+' '+(y+r)+'h1v1h-1z';
+  return '<svg viewBox="0 0 '+(n+2*r)+' '+(n+2*r)+'" shape-rendering="crispEdges" role="img" aria-label="QR-Code zum Profil">'
+    +'<path d="'+d+'" fill="'+(farbe||'#090D24')+'"/></svg>';
+}
+
+async function profilTeilen(fremd){
+  if(!fremd&&!cProfile){ kontoNoetig(); return; }
+  const eigen=!fremd||fremd.id===cUser?.id;
+  const p=eigen?Object.assign({id:cUser?.id},cProfile):fremd;
+  if(!p||(!p.username&&!p.id))return;
+  const name=p.full_name||p.username||'SPOTOUT';
+  pkStand={
+    adresse:profilAdresse(p),
+    text:name+' auf SPOTOUT',
+    name, handle:p.username||'', avatar:p.avatar_url||'',
+    privat:!!p.privat, eigen
+  };
+  const av=pkStand.avatar
+    ? '<img alt="" decoding="async" src="'+escAttr(pkStand.avatar)+'"/>'
+    : '<span>'+anfang(name)+'</span>';
+  const hinweis=!pkStand.privat?''
+    : '<div class="pk-hinweis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>'
+      +(eigen?'Dein Profil ist privat. Wer den Code scannt, sieht deinen Namen und kann dir eine Anfrage schicken.'
+             :'Dieses Profil ist privat. Wer den Link öffnet, kann eine Anfrage schicken – mehr sieht man erst danach.')
+      +'</span></div>';
+  const IC_LINK='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13.5a4 4 0 0 0 6 .4l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10.5a4 4 0 0 0-6-.4l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg>';
+  const IC_TEILEN='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5v5A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-5"/></svg>';
+  const IC_BILD='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5V15M7.5 10.5 12 15l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>';
+  const body=document.getElementById('profilKarteBody');
+  if(!body)return;
+  body.innerHTML=
+    '<div class="pk-karte">'
+      +'<div class="pk-av">'+av+'</div>'
+      +'<div class="pk-name">'+esc(name)+'</div>'
+      +(pkStand.handle?'<div class="pk-handle">@'+esc(pkStand.handle)+'</div>':'')
+      +'<div class="pk-qr" id="pkQr"><div class="pk-qr-laedt">QR-Code …</div></div>'
+      +'<div class="pk-marke">SPOTOUT</div>'
+    +'</div>'
+    +hinweis
+    +'<div class="pk-knoepfe">'
+      +'<button type="button" class="pk-knopf" onclick="pkKopieren()"><span class="pk-ic">'+IC_LINK+'</span><span class="s-label">Link kopieren</span></button>'
+      +'<button type="button" class="pk-knopf haupt" onclick="pkTeilen()"><span class="pk-ic">'+IC_TEILEN+'</span><span class="s-label">Teilen</span></button>'
+      // In der App kann bild_sichern nur Bilder aus dem Speicher sichern, kein selbst gezeichnetes
+      +(istApp()?'':'<button type="button" class="pk-knopf" onclick="pkBildSichern()"><span class="pk-ic">'+IC_BILD+'</span><span class="s-label">Als Bild sichern</span></button>')
+    +'</div>';
+  document.getElementById('profilKarteOverlay')?.classList.add('open');
+  const stand=pkStand;
+  try{
+    const qr=(await qrLaden())(stand.adresse,'M');
+    if(pkStand!==stand)return;
+    stand.qr=qr;
+    const feld=document.getElementById('pkQr'); if(feld)feld.innerHTML=qrSvg(qr);
+  }catch(err){
+    console.warn('[profil] QR',err);
+    const feld=document.getElementById('pkQr');
+    if(feld)feld.innerHTML='<div class="pk-qr-laedt">QR-Code nicht verfügbar</div>';
+  }
+}
+
+async function pkKopieren(){
+  if(!pkStand)return;
+  try{ await navigator.clipboard.writeText(pkStand.adresse); amKnopfMelden('Link kopiert'); }
+  catch(err){ console.warn('[profil] kopieren',err); toast('Link: '+pkStand.adresse,'warn'); }
+}
+
+async function pkTeilen(){
+  if(!pkStand)return;
+  const{adresse,text}=pkStand;
   if(istApp()){
     // Wie einladungTeilen: das Blatt darf lange offen sein
     const a=await nativeCall('teilen',{text:text,url:adresse},600000);
-    if(a&&a.fehler&&a.fehler!=='abgebrochen'&&a.fehler!=='zeitueberschreitung')toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
+    if(a&&a.fehler&&a.fehler!=='abgebrochen'&&a.fehler!=='zeitueberschreitung'){
+      console.warn('[profil] teilen',a.fehler);
+      toast('Teilen hat nicht geklappt. Kopier den Link stattdessen.','warn');
+    }
     return;
   }
   if(navigator.share){
     try{ await navigator.share({title:'SPOTOUT',text:text,url:adresse}); return; }
-    catch(err){ if(err&&err.name==='AbortError')return; }
+    catch(err){ if(err&&err.name==='AbortError')return; console.warn('[profil] teilen',err); }
   }
+  pkKopieren();
+}
+
+/* Die Karte als Bild (1080×1350, Hochformat wie eine Story-Kachel).
+   Das Profilbild nur, wenn der Speicher es fuer Canvas freigibt –
+   sonst die Initialen, damit das Bild trotzdem entsteht. */
+async function pkBildSichern(){
+  const st=pkStand; if(!st)return;
   try{
-    await navigator.clipboard.writeText(adresse);
-    amKnopfMelden('Link kopiert');
+    const qr=st.qr||(await qrLaden())(st.adresse,'M');
+    const W=1080,H=1350,c=document.createElement('canvas');
+    c.width=W;c.height=H;
+    const g=c.getContext('2d');
+    const verlauf=g.createLinearGradient(0,0,W,H);
+    verlauf.addColorStop(0,'#FF2D76'); verlauf.addColorStop(1,'#FF5A45');
+    g.fillStyle=verlauf; g.fillRect(0,0,W,H);
+    const licht=g.createRadialGradient(W,H,0,W,H,W*.8);
+    licht.addColorStop(0,'rgba(99,59,255,.4)'); licht.addColorStop(1,'rgba(99,59,255,0)');
+    g.fillStyle=licht; g.fillRect(0,0,W,H);
+    try{ await document.fonts?.load?.('800 64px Inter'); }catch(e){}
+    // Profilbild
+    const cx=W/2,cy=200,r=110;
+    g.save(); g.beginPath(); g.arc(cx,cy,r+10,0,Math.PI*2); g.fillStyle='#fff'; g.fill();
+    g.beginPath(); g.arc(cx,cy,r,0,Math.PI*2); g.clip();
+    g.fillStyle='#090D24'; g.fillRect(cx-r,cy-r,2*r,2*r);
+    let bildDa=false;
+    if(st.avatar){
+      bildDa=await new Promise(ok=>{
+        const im=new Image(); im.crossOrigin='anonymous';
+        im.onload=()=>{ try{
+          const s=Math.min(im.width,im.height);
+          g.drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,cx-r,cy-r,2*r,2*r); ok(true);
+        }catch(e){ ok(false); } };
+        im.onerror=()=>ok(false);
+        im.src=st.avatar;
+        setTimeout(()=>ok(false),5000);
+      });
+    }
+    if(!bildDa){
+      g.fillStyle='#fff'; g.font='800 84px Inter, system-ui, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+      g.fillText(anfangRoh(st.name),cx,cy+4);
+    }
+    g.restore();
+    // Name und @name
+    g.fillStyle='#fff'; g.textAlign='center'; g.textBaseline='alphabetic';
+    g.font='800 64px Inter, system-ui, sans-serif';
+    let nm=st.name; while(g.measureText(nm).width>W-140&&nm.length>3)nm=nm.slice(0,-2).trim()+'…';
+    g.fillText(nm,cx,420);
+    if(st.handle){ g.globalAlpha=.88; g.font='600 40px Inter, system-ui, sans-serif'; g.fillText('@'+st.handle,cx,478); g.globalAlpha=1; }
+    // QR in weissem Feld
+    const fx=(W-600)/2, fy=540, fs=600;
+    g.fillStyle='#fff'; g.beginPath();
+    if(g.roundRect)g.roundRect(fx,fy,fs,fs,48); else g.rect(fx,fy,fs,fs);
+    g.fill();
+    const n=qr.groesse, rand=4, m=Math.floor((fs-48)/(n+2*rand)), x0=fx+(fs-m*n)/2, y0=fy+(fs-m*n)/2;
+    g.fillStyle='#090D24';
+    for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(qr.dunkel(x,y))g.fillRect(x0+x*m,y0+y*m,m,m);
+    // Marke
+    g.fillStyle='#fff'; g.font='800 46px Inter, system-ui, sans-serif';
+    if('letterSpacing' in g)g.letterSpacing='10px';
+    g.fillText('SPOTOUT',cx,1240);
+    if('letterSpacing' in g)g.letterSpacing='0px';
+    g.globalAlpha=.85; g.font='600 30px Inter, system-ui, sans-serif'; g.fillText('spotoutapp.ch',cx,1290); g.globalAlpha=1;
+
+    const blob=await new Promise(ok=>c.toBlob(ok,'image/png'));
+    if(!blob)throw new Error('kein Bild');
+    const name='spotout-'+(st.handle||'profil')+'.png';
+    const datei=new File([blob],name,{type:'image/png'});
+    if(/iPhone|iPad|Android/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[datei]})){
+      try{ await navigator.share({files:[datei]}); return; }
+      catch(err){ if(err&&err.name==='AbortError')return; }
+    }
+    const u=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=u; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),4000);
+    amKnopfMelden('Gesichert');
   }catch(err){
-    toast('Link: '+adresse,'warn');
+    console.warn('[profil] Bild sichern',err);
+    toast('Das Bild liess sich nicht erstellen. Versuch es nochmals.','warn');
   }
 }
 
@@ -12259,6 +12556,107 @@ function enterApp(){
   setTimeout(()=>sanktionPruefen(true),1200);
 }
 
+/* ══════════ APPLE / GOOGLE IM BROWSER ══════════
+   Supabase leitet zu Apple bzw. Google und zurueck auf diese Seite
+   (#access_token=…, implicit flow wie der Rest). Neue Konten tragen
+   danach Name, Benutzername und Geburtsdatum nach (alterNachtragen in
+   loadProf) – genau wie in der App. In der App selbst bleiben die
+   Knoepfe weg: dort liegt die native Anmeldung ueber der Website. */
+const OAUTH_TEXT={
+  apple:{
+    aus:'Anmelden mit Apple ist noch nicht eingerichtet. Nimm vorerst deine E-Mail-Adresse.',
+    abbruch:'Anmeldung mit Apple abgebrochen.',
+    fehler:'Anmelden mit Apple hat nicht geklappt. Versuch es nochmals oder nimm deine E-Mail-Adresse.'
+  },
+  google:{
+    aus:'Anmelden mit Google ist noch nicht eingerichtet. Nimm vorerst deine E-Mail-Adresse.',
+    abbruch:'Anmeldung mit Google abgebrochen.',
+    fehler:'Anmelden mit Google hat nicht geklappt. Versuch es nochmals oder nimm deine E-Mail-Adresse.'
+  }
+};
+let oauthLaeuft=false;
+
+/* Sichtbar beim Anmelden und im ersten Schritt der Registrierung (nur
+   "Für mich" – ein Verein braucht die E-Mail seiner Website). Mitten in
+   den Schritten wuerde es nur verwirren. */
+function authSozialAktualisieren(){
+  const box=document.getElementById('authSozial');
+  if(!box)return;
+  if(window.SPOTOUT_NATIVE){ box.hidden=true; return; }
+  let zeigen=true;
+  try{ if(imRegistrieren())zeigen=rSchritt<=1&&regArt!=='verein'; }catch(e){}
+  box.hidden=!zeigen;
+}
+function imRegistrieren(){
+  const reg=document.getElementById('auth-register');
+  return !!reg&&reg.style.display!=='none'&&reg.style.display!=='';
+}
+
+// Meldung dort, wo man gerade hinschaut – plus Hinweis unten.
+function oauthMelden(text,art){
+  if(imRegistrieren())regFehler(text); else loginFehler(text,art||'error');
+  toast(text,art==='warn'?'warn':'error');
+}
+
+async function oauthAnmelden(anbieter,knopf){
+  if(window.SPOTOUT_NATIVE||oauthLaeuft)return;
+  const t=OAUTH_TEXT[anbieter]; if(!t)return;
+  oauthLaeuft=true;
+  loginFehler(''); try{ regFehler(''); }catch(e){}
+  const label=knopf&&knopf.querySelector('.s-label');
+  const alt=label?label.textContent:'';
+  if(knopf)knopf.disabled=true;
+  if(label)label.textContent='Einen Moment…';
+  const zurueck=()=>{ oauthLaeuft=false; if(knopf)knopf.disabled=false; if(label)label.textContent=alt; };
+  /* Ist der Anbieter in Supabase aus, kommt man nicht zurueck, sondern
+     landet auf einer nackten Fehlerseite von supabase.co. Darum vorher
+     kurz nachschauen. Klappt das Nachschauen nicht, trotzdem versuchen. */
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/settings',{headers:{apikey:SB_KEY}});
+    if(r.ok){
+      const j=await r.json();
+      if(j&&j.external&&j.external[anbieter]===false){
+        console.warn('[oauth] Anbieter in Supabase nicht aktiv:',anbieter);
+        zurueck(); oauthMelden(t.aus,'warn'); return;
+      }
+    }
+  }catch(e){ console.warn('[oauth] Einstellungen nicht lesbar',e); }
+  try{ sessionStorage.setItem('spotout_oauth',JSON.stringify({anbieter,zeit:Date.now()})); }catch(e){}
+  try{
+    const{error}=await sb.auth.signInWithOAuth({
+      provider:anbieter,
+      options:{redirectTo:location.origin+location.pathname}
+    });
+    if(error)throw error;
+    // Kein Fehler: supabase leitet jetzt weiter. Knopf bleibt auf "Einen Moment…".
+    setTimeout(zurueck,8000);   // falls der Browser die Weiterleitung blockiert
+  }catch(err){
+    console.warn('[oauth] Start',anbieter,err);
+    try{ sessionStorage.removeItem('spotout_oauth'); }catch(e){}
+    zurueck(); oauthMelden(t.fehler,'error');
+  }
+}
+
+/* Nach der Rueckkehr: Adresse aufraeumen und Fehler verstaendlich sagen.
+   Ein Erfolg braucht hier nichts – die Sitzung ist schon da, init geht
+   den normalen Weg (loadProf, allenfalls alterNachtragen). */
+function oauthRueckkehr(r,session){
+  // supabase leert den Hash, laesst aber ein "#" bzw. ?error=… stehen
+  if(r.fehler||r.beschreibung||r.zugang||location.hash||/[?&]error/.test(location.search)){
+    try{ history.replaceState(null,'',location.pathname); }catch(e){}
+  }
+  if(session)return;
+  const t=OAUTH_TEXT[r.anbieter]; if(!t)return;
+  if(!r.fehler&&!r.beschreibung)return;   // zurueck ohne Antwort: nichts passiert
+  console.warn('[oauth] Rueckkehr mit Fehler',r.anbieter,r.fehler,r.fehlerCode,r.beschreibung);
+  const roh=(r.fehler+' '+r.fehlerCode+' '+r.beschreibung).toLowerCase();
+  let text=t.fehler,art='error';
+  if(/not enabled|unsupported provider|provider.*disabled|missing oauth secret|oauth client/.test(roh)){ text=t.aus; art='warn'; }
+  else if(/cancel|access_denied|user denied/.test(roh)){ text=t.abbruch; art='warn'; }
+  // Erst zeichnen lassen, sonst ueberdeckt der Start die Meldung
+  setTimeout(()=>oauthMelden(text,art),300);
+}
+
 function switchAuthTab(tab,btn){
   pwAnsichtWeg();
   document.querySelectorAll('.auth-tog-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});
@@ -12277,6 +12675,7 @@ function switchAuthTab(tab,btn){
      zurueckkommt, findet seine Angaben wieder – frueher fing es von
      vorne an. */
   if(tab==='register'){ if(rSchritt<=1){ rSchritt=1; setKontoart(regArt||'privat'); } else regZeigen('vor'); }
+  authSozialAktualisieren();
 }
 
 /* Passwort zeigen/verbergen – fuer jedes Feld dasselbe Auge. */
@@ -12517,6 +12916,7 @@ let regArt = 'privat';
 
 function setKontoart(art){
   regArt = art;
+  authSozialAktualisieren();
   document.getElementById('art-privat')?.classList.toggle('on', art==='privat');
   document.getElementById('art-verein')?.classList.toggle('on', art==='verein');
 
@@ -12582,6 +12982,7 @@ function regZeigen(richtung){
   const wei=document.getElementById('rWeiter');
   if(wei&&!wei.disabled)wei.textContent = rSchritt===rMax() ? 'Konto erstellen' : 'Weiter';
   regFehler('');
+  authSozialAktualisieren();
 }
 
 /* Gibt leer zurueck, wenn der Schritt vollstaendig ist – sonst den
@@ -13366,6 +13767,9 @@ function zurueckGesteStarten(){
      Knoepfe. Die Seiten schieben weiterhin - nur zieht sie niemand
      mehr mit dem Daumen. */
   const wohin=()=>{
+    /* Im Browser nie: dort liegt die Zurueck-Geste von Safari/Chrome auf
+       derselben Kante und warf einen aus der Seite (siehe chatVerlaufHalten). */
+    if(!istApp())return null;
     const jetzt=document.querySelector('.page.active')?.id?.replace('page-','');
     if(jetzt!=='conv')return null;
     return {fn:convZurueck,name:(seitenVorher[seitenVorher.length-1]||'chat')};
@@ -13444,6 +13848,30 @@ function zurueckGesteStarten(){
   document.addEventListener('touchend',los,{passive:true});
   document.addEventListener('touchcancel',los,{passive:true});
 }
+
+/* ── Im Browser nicht aus dem Chat wischen ─────────────────────────
+   Die Seite legt sonst keinen Verlaufseintrag an. Wischte man im Chat
+   vom Rand (Safari) oder drueckte Zurueck (Android), ging der Browser
+   eine Seite zurueck – also weg von SPOTOUT, und man war draussen.
+   Jetzt bekommt jedes geoeffnete Gespraech einen eigenen Eintrag. Die
+   Zurueck-Geste verbraucht nur diesen, und solange der Chat offen ist,
+   wird er gleich wieder gesetzt: man bleibt im Chat. Raus geht es ueber
+   den Pfeil oben links. In der App ist das nicht noetig (dort ist die
+   Geste des WebViews aus und die eigene Kanten-Geste bleibt). */
+function chatVerlaufHalten(){
+  if(istApp())return;
+  try{ if(!history.state?.spotoutChat)history.pushState({spotoutChat:1},'',location.href); }
+  catch(e){ console.warn('[chat] Verlauf',e); }
+}
+window.addEventListener('popstate',()=>{
+  if(istApp())return;
+  if(document.getElementById('page-conv')?.classList.contains('active')){
+    chatVerlaufHalten();
+    return;
+  }
+  // Ein Fenster offen: Zurueck schliesst es, statt die Seite zu verlassen
+  if(document.querySelector('.overlay.open'))alleFensterZu();
+});
 
 /* ── Ein Schritt zurück statt immer nach Hause ─────────────────────
    Das Kreuz auf der Pro-Seite und in der Suche warf einen bisher auf die
@@ -13615,7 +14043,7 @@ async function loadEvts(opt){
     return;
   }
   evts=(data||[])
-    .filter(e=>!istBlockiert(e.created_by))
+    .filter(e=>!istBlockiert(e.created_by)&&alterErlaubt(e))
     /* gaeste_zahl zaehlt Begleitpersonen mit, die Zeilenzahl nicht.
        Der Rueckfall auf die Zeilenzahl ist nur fuer Partys da, die vor
        der Umstellung angelegt und seither nicht angefasst wurden. */
@@ -14411,6 +14839,7 @@ function renderFeed(){
         <div class="fy-scrim"></div>
         <div class="fy-top">
           <span class="fy-chip" style="color:${w.accent};border-color:${w.border};background:rgba(0,0,0,.68)">${typeLabel}</span>
+          ${alterMark(e,true)}
           ${/* "Ausgebucht" steht unten auf dem Knopf – oben nicht nochmals */''}
           ${(!istVoll(e)&&att>0)?`<span class="fy-chip fy-chip-dark">${users}${att} dabei</span>`:''}
           ${feedNeuIds.has(e.id)?'<span class="fy-chip fy-neu">Neu</span>':''}
@@ -14889,7 +15318,7 @@ function cardHTML(e){
       ${istVorbei(e)?'<span></span>':'<span class="pill pill-dark card-tag'+(isToday?' card-heute':'')+'">'+dayLabel+(e.time?' · '+e.time.slice(0,5):'')+'</span>'}
       ${e.status==='pending_payment'
         ? '<span class="card-gebuehr">Gebühr offen</span>'
-        : ''}
+        : alterMark(e)}
     </div>
     ${distP?'<div style="position:absolute;bottom:12px;left:12px;z-index:3"><span class="pill pill-dark" style="font-size:.62rem">'+D_SYM.ort+' '+distP+'</span></div>':''}
   </div>
@@ -15411,6 +15840,7 @@ async function openDetail(id){
         ${hasDrink&&!isPrivEv?('<div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.glas+' Getränke</div><div class="d-info-cell-val">'+chf(e.drink_price)+'</div></div><div class="d-info-cell"><div class="d-info-cell-lbl">'+D_SYM.summe+' Total</div><div class="d-info-cell-val" style="color:'+w.accent+'">'+chf(tot)+'</div></div>'):''}
       </div>
       ${e.description?('<div class="d-desc">'+esc(e.description)+'</div>'):''}
+      ${alterZeile(e)}
       ${dressZeile(e.dresscode)}
       ${statusBanner}
       ${invH}
@@ -16067,7 +16497,6 @@ function wahlTippen(i){
 }
 
 const WERT_MSG={everyone:'Jeder',requests:'Nur Anfragen',nobody:'Niemand'};
-const WERT_RAUS={'':'Aus',tiktok:'TikTok',instagram:'Instagram Reels',youtube:'YouTube Shorts',wetter:'Wetter-App'};
 const WERT_KARTE={'':'Jedes Mal fragen',apple:'Apple Karten',google:'Google Maps'};
 const WERT_SPRACHE={de:'Deutsch',en:'English',fr:'Français',it:'Italiano'};
 
@@ -16077,16 +16506,19 @@ function setEinstellungWerte(){
   setz('setProfilWert', cProfile?.privat?'Privat':'Öffentlich');
   setz('setMsgWert', WERT_MSG[cProfile?.allow_messages||'everyone']||'Jeder');
   setz('setSpracheWert', WERT_SPRACHE[typeof LANG!=='undefined'?LANG:'de']||'Deutsch');
-  try{ setz('setRausWert', WERT_RAUS[schnellRausWahl()||'']||'Aus'); }catch(e){}
   try{ setz('setOrtWert', ortNutzungAus()?'Aus':(userLat!=null?'An':'Noch nicht freigegeben')); }catch(e){}
   try{ setz('setKartenWert', WERT_KARTE[kartenAppGespeichert()||'']||'Jedes Mal fragen'); }catch(e){}
 }
 
 function wahlProfil(){
-  wahlSheet({titel:'Dein Profil', aktuell:!!cProfile?.privat,
+  /* "Dein Profil" als Zeile sagte nicht, worum es geht. Jetzt steht da,
+     was eingestellt wird, und bei jeder Wahl, wer was sieht – dieselben
+     Saetze wie in den Fragen nach dem Tutorial. */
+  wahlSheet({titel:'Profil-Sichtbarkeit', aktuell:!!cProfile?.privat,
+    hilfe:'In der Suche findet dich jeder. Hier legst du fest, wer dir folgen und deine Partys sehen kann.',
     optionen:[
-      {wert:false,titel:'Öffentlich',text:'Jeder kann dir folgen und dich zu Partys einladen'},
-      {wert:true, titel:'Privat',    text:'Wer folgen will, fragt an. Nur Verbundene sehen deine Angaben.'},
+      {wert:false,titel:'Öffentlich',text:'Jeder kann dir direkt folgen, sieht deine Bio, Kanäle und Partys und kann dich zu Partys einladen.'},
+      {wert:true, titel:'Privat',    text:'Wer dir folgen will, schickt eine Anfrage. Erst wenn du sie annimmst, sieht die Person deine Bio, Kanäle und Partys, und ihr könnt euch einladen.'},
     ], waehlen:(w)=>setProfilPrivat(w)});
 }
 function wahlNachrichten(){
@@ -16103,18 +16535,6 @@ function wahlSprache(){
       {wert:'de',titel:'Deutsch'},{wert:'en',titel:'English'},
       {wert:'fr',titel:'Français'},{wert:'it',titel:'Italiano'},
     ], waehlen:(w)=>setLang(w)});
-}
-function wahlRaus(){
-  wahlSheet({titel:'Fluchtknopf',
-    hilfe:'Die Party ist zäh, aber du willst nicht als Erster gehen? Ein Tipp oben rechts – und du bist mitten im Scrollen.',
-    aktuell:(()=>{ try{ return schnellRausWahl()||''; }catch(e){ return ''; } })(),
-    optionen:[
-      {wert:'',         titel:'Aus',             text:'Kein Knopf in der Leiste'},
-      {wert:'tiktok',   titel:'TikTok',          text:'Öffnet direkt «Für dich»'},
-      {wert:'instagram',titel:'Instagram Reels', text:'Öffnet direkt die Reels'},
-      {wert:'youtube',  titel:'YouTube Shorts',  text:'Öffnet direkt die Shorts'},
-      {wert:'wetter',   titel:'Wetter-App',      text:'Ganz unschuldig das Wetter checken'},
-    ], waehlen:(w)=>setSchnellRaus(w)});
 }
 function wahlOrt(){
   wahlSheet({titel:'Standort',
@@ -16162,8 +16582,6 @@ function setOrtNutzung(an){
 }
 
 function ortWahlAnzeigen(){ try{ setEinstellungWerte(); }catch(e){} }
-
-function rausWahlAnzeigen(){ try{ setEinstellungWerte(); }catch(e){} }
 
 function routeZiel(e){
   return e?.lat!=null ? (e.lat+','+e.lng) : encodeURIComponent(e?.address||'');
@@ -17919,6 +18337,7 @@ async function openConv(cid,other){
   if(elNm)elNm.textContent=convGruppe?(other?.name||'Gruppe'):(other?.full_name||other?.username||'Unbekannt');
   if(elSub)elSub.textContent=convGruppe?'Gruppenchat':('@'+(other?.username||''));
   showOnly('conv');
+  chatVerlaufHalten();
   grpNaechsteZeigen();          // leert sofort, fuellt gleich nach
   // Geloeschte Chats kennen, auch wenn man direkt aus einer Mitteilung kommt
   if(chatGeloeschtFuer!==cUser?.id)await chatGeloeschtLaden();
@@ -18131,7 +18550,7 @@ async function loadMsgs(){
        einem Datenfeld, darum klebten Nachrichten verschiedener Personen
        mit 2 px aneinander. */
     html+='<div class="bub '+(mine?'bub-mine':'bub-theirs')+(pos?' '+pos:'')+(neu?' neu':'')+(grouped?'':' bub-grp')+'"'
-      +' data-mid="'+m.id+'"'+(mine?' data-mine="1"':'')
+      +' data-mid="'+m.id+'"'+(mine?' data-mine="1"':' data-von="'+escAttr(m.sender_id||'')+'"')
       +' data-zeit="'+new Date(m.created_at).getTime()+'"'+werAttr+'>'
       +bild+text+karte
       +(showMeta?'<div class="bub-meta">'+(m.bearbeitet_am?'<span class="bub-bearb">bearbeitet</span>':'')
@@ -18605,7 +19024,7 @@ function openCreate(type){
   document.getElementById('vstep3').className='vstep';
   bringDraft=[];
   // Auch das, was frueher von der letzten Party haengen blieb
-  endeWahl=''; dressWahl='';
+  endeWahl=''; dressWahl=''; alterSetzen(null);
   document.querySelectorAll('#endPresets .cset').forEach((b,i)=>b.classList.toggle('on',i===0));
   document.querySelectorAll('#dressPresets .cset').forEach((b,i)=>b.classList.toggle('on',i===0));
   ['fgEnde','fgDress'].forEach(id=>{const el=document.getElementById(id); if(el)el.style.display='none';});
@@ -18672,6 +19091,7 @@ function entwurfSammeln(){
     felder,
     lat:selLat, lng:selLng,
     dress:dressWahl,
+    alter:alterWahl,
     ende:endeWahl,
     getraenke:drinkOn,
     frist:deadlineOn,
@@ -18733,6 +19153,7 @@ function entwurfFortsetzen(){
     });
     selLat=e.lat; selLng=e.lng;
     dressWahl=e.dress||'';
+    alterSetzen(e.alter||null);
     endeWahl=e.ende||'';
     drinkOn=!!e.getraenke;
     deadlineOn=!!e.frist;
@@ -19180,6 +19601,7 @@ function applyTypeToCreate(type){
   set('c7-cap',      priv?'none':'block');
   set('c7-einladen', priv?'block':'none');
   set('c8-playlist', priv?'block':'none');
+  set('c7-alter',    priv?'none':'block');
   set('drinkBox',    priv?'none':'block');
 
   const q6=document.getElementById('c6q');
@@ -19324,6 +19746,39 @@ function fehlerText(error){
   return 'Das hat nicht geklappt. Versuch es nochmals.';
 }
 
+/* ── Altersgrenze (16+, 18+, 21+) ──────────────────────────────────
+   null heisst "alle" (SPOTOUT ist ab 16). Ob jemand die Party sieht,
+   entscheidet die Datenbank anhand des Geburtsdatums (RLS auf events);
+   die Seite filtert nur zusaetzlich, damit nichts aufblitzt. */
+let alterWahl=null;
+function alterSetzen(v){
+  alterWahl=(v===18||v===21)?v:null;
+  document.querySelectorAll('#alterWahl .einw-opt').forEach(b=>
+    b.classList.toggle('on',String(b.dataset.alter||'')===String(alterWahl||'')));
+}
+function setAlter(v,el){
+  alterSetzen(v);
+  nativeHaptik('leicht');
+  cPrevUpdate();
+}
+/* Das Abzeichen fuer Karten, Details und Karte. Leer, wenn alle duerfen. */
+function alterMark(e,gross){
+  const a=Number(e?.mindestalter||0);
+  if(a!==18&&a!==21)return '';
+  return '<span class="alter-mark'+(gross?' gross':'')+'" title="Erst ab '+a+' Jahren" aria-label="Erst ab '+a+' Jahren">'+a+'+</span>';
+}
+/* Darf die angemeldete Person diese Party sehen? Ohne Geburtsdatum
+   (Gast, Konto noch nicht fertig) nur Partys ohne Grenze. */
+function alterErlaubt(e){
+  const a=Number(e?.mindestalter||0);
+  if(!a)return true;
+  if(cUser&&e?.created_by===cUser.id)return true;
+  // Profil noch nicht geladen: hier entscheidet allein die Datenbank
+  if(cUser&&!cProfile)return true;
+  const meins=calcAge(cProfile?.birthdate);
+  return meins!=null&&meins>=a;
+}
+
 /* ── Dresscode ─────────────────────────────────────────────────────
    Leer heisst "egal" und wird gar nicht angezeigt. Alles andere steht
    auf der Partyseite, damit niemand falsch angezogen auftaucht. */
@@ -19354,6 +19809,15 @@ function dressJetzt(){
 }
 
 const IC_DRESS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M8 3h8l-2 3 4 4-2 11H8L6 10l4-4z"/></svg>';
+
+/* Gleich gebaut wie der Dresscode – aber mit dem Abzeichen vorne,
+   damit es niemand ueberliest. */
+function alterZeile(e){
+  const m=alterMark(e,true);
+  if(!m)return '';
+  return '<div class="dc-row">'+m
+    +'<div><b>Erst ab '+Number(e.mindestalter)+'</b><span>Am Eingang kann ein Ausweis verlangt werden.</span></div></div>';
+}
 
 function dressZeile(v){
   if(!v)return '';
@@ -19791,9 +20255,20 @@ async function submitEventInner(){
     host_name:currentType==='events'?bizName:null,
     registration_deadline:registrationDeadline,
     dresscode:dressJetzt(),
-    spotify_url:priv?spotifyLink(document.getElementById('fSpotify')?.value):null
+    spotify_url:priv?spotifyLink(document.getElementById('fSpotify')?.value):null,
+    /* Nur mitschicken, wenn eine Grenze gewaehlt ist: so laeuft das
+       Erstellen auch, solange die Spalte in der Datenbank noch fehlt. */
+    ...(!priv&&alterWahl?{mindestalter:alterWahl}:{})
   }).select().single();
-  if(error){toast(fehlerText(error),'error');return;}
+  if(error){
+    // Lieber nicht veroeffentlichen als eine 18+-Party ohne Grenze
+    if(/mindestalter/i.test(String(error.message||''))){
+      console.warn('[create] mindestalter',error);
+      toast('Die Altersgrenze ist noch nicht verfügbar. Wähle „Alle“ oder versuch es später.','error');
+      return;
+    }
+    toast(fehlerText(error),'error');return;
+  }
 
   // Mitbringliste der privaten Party gleich mit anlegen
   if(priv&&bringDraft.length){
@@ -19803,7 +20278,7 @@ async function submitEventInner(){
   }
 
   ['fName','fPrice','fCap','fDesc','fDrink','fDrinkDesc','fAddr','fDeadlineDate','fSpotify'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  drinkOn=false;deadlineOn=false;upImg=null;bringDraft=[];dressWahl='';endeWahl='';
+  drinkOn=false;deadlineOn=false;upImg=null;bringDraft=[];dressWahl='';endeWahl='';alterSetzen(null);
   linkModus='pers';
   entwurfWeg(true);            // veroeffentlicht ist nicht mehr Entwurf
   document.getElementById('fgDress')&&(document.getElementById('fgDress').style.display='none');
@@ -20180,7 +20655,12 @@ async function openUserProf(userId,zurueck){
     : '';
 
   const kopf=document.getElementById('upMehr');
-  if(kopf)kopf.innerHTML=moreBtn('user',p.id,p.full_name||p.username);
+  /* Teilen auch bei fremden Profilen – wer jemanden empfehlen will, soll
+     nicht erst den Benutzernamen abschreiben. Private Profile mit Hinweis
+     im Teilen-Fenster (dort sieht man erst nach einer Anfrage mehr). */
+  if(kopf)kopf.innerHTML='<button class="more-btn" onclick="event.stopPropagation();profilTeilen(upUser)" aria-label="Profil teilen">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5v5A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-5"/></svg></button>'
+    +moreBtn('user',p.id,p.full_name||p.username);
 
   const kacheln=(evs||[]).length
     ? '<div class="insta-grid">'+evs.map(e=>{
@@ -22356,7 +22836,10 @@ async function checkEventLink(){
    Ohne das waere der Teilen-Knopf ein Link ins Leere. */
 async function checkProfilLink(){
   const params=new URLSearchParams(location.search);
-  const wer=params.get('u');
+  /* ?profil= ist dieselbe Adresse nach der Vorschaukarte: middleware.js
+     beantwortet /?u= fuer WhatsApp & Co. und schickt Menschen hierher
+     weiter (sonst liefe ?u= im Kreis). */
+  const wer=params.get('u')||params.get('profil');
   if(!wer)return;
   history.replaceState({},'',location.pathname);
   await new Promise(r=>setTimeout(r,400));
@@ -23843,6 +24326,48 @@ async function moderationAktion(btn,aktion,id){
   moderationOeffnen();
 }
 
+/* Wer meldet, will wissen, ob etwas passiert ist. Die eigenen Meldungen
+   darf man lesen (RLS "Eigene Meldungen sehen"); wer gemeldet wurde,
+   steht hier nicht – nur die Art und der Stand. */
+async function meineMeldungenOeffnen(){
+  if(!cUser){ kontoNoetig(); return; }
+  const box=document.getElementById('meineMeldungenListe');
+  if(!box)return;
+  document.getElementById('meineMeldungenOverlay')?.classList.add('open');
+  box.innerHTML=skelettZeilen(3);
+  const{data,error}=await sb.from('reports')
+    .select('id,target_art,grund,gruende,status,created_at,bearbeitet_am')
+    .eq('reporter_id',cUser.id).order('created_at',{ascending:false}).limit(50);
+  if(error){
+    console.warn('[melden] eigene',error);
+    box.innerHTML=ladeFehlerHtml('meineMeldungenOeffnen()');
+    return;
+  }
+  if(!(data||[]).length){
+    box.innerHTML='<div class="up-empty">Du hast noch nichts gemeldet. Siehst du etwas, das nicht in Ordnung ist? Tippe bei einer Party, einem Profil, einer Gruppe, einem Foto oder einer Nachricht auf die Flagge.</div>';
+    return;
+  }
+  const artText={event:'Party',photo:'Foto',message:'Nachricht',user:'Profil',group:'Gruppe'};
+  const stand={
+    offen:['Wird geprüft','Wir schauen es uns innerhalb von 24 Stunden an.'],
+    geprueft:['Geprüft','Die Meldung wurde gezählt. Bei mehreren Meldungen gibt es eine Verwarnung oder Sperre.'],
+    entfernt:['Entfernt','Der Inhalt wurde entfernt. Danke!'],
+    abgelehnt:['Kein Verstoss','Wir haben keinen Verstoss gegen die Community-Regeln gefunden.'],
+  };
+  const zeit=t=>new Date(t).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});
+  box.innerHTML=data.map(r=>{
+    const st=stand[r.status]||[r.status,''];
+    const g=(REP_GRUENDE[r.target_art]||[]).find(x=>x[1]===(r.gruende||[])[(r.gruende||[]).length-1]||x[0]===r.grund);
+    return '<div class="mod-karte">'
+      +'<div class="mod-kopf"><b>'+esc(artText[r.target_art]||'Meldung')+(g?' · '+esc(g[2]):'')+'</b>'
+      +'<span class="mod-pill">'+esc(st[0])+'</span></div>'
+      +'<div class="mod-zeit">Gemeldet am '+zeit(r.created_at)+'</div>'
+      +(st[1]?'<div class="sk-klein">'+esc(st[1])+'</div>':'')
+      +'</div>';
+  }).join('')
+  +'<div class="sk-anonym">'+pikto('datenschutz',16)+'<span>Die gemeldete Person erfährt nie, wer gemeldet hat.</span></div>';
+}
+
 function repFertig(schonGemeldet){
   const body=document.getElementById('reportBody');
   if(!body||!repZiel)return;
@@ -24952,6 +25477,11 @@ async function openManage(eventId){
     +pickRow('mg-date','date',ev.date||'','Datum')
     +pickRow('mg-time','time',String(ev.time||'').slice(0,5),'Uhrzeit')
     +'<div class="fg"><label>Dresscode</label><input type="text" id="mg-dress" maxlength="40" placeholder="Leer lassen, wenn egal" value="'+escAttr(ev.dresscode||'')+'"/></div>'
+    +(priv?'':'<div class="fg"><label>Ab welchem Alter?</label><div class="chipset" id="mg-alter">'
+      +[[0,'Alle (16+)'],[18,'18+'],[21,'21+']].map(([a,t])=>
+        '<button type="button" class="cset'+(Number(ev.mindestalter||0)===a?' on':'')+'" data-alter="'+a+'" '
+        +'onclick="this.parentNode.querySelectorAll(\'.cset\').forEach(b=>b.classList.toggle(\'on\',b===this))">'+t+'</button>').join('')
+      +'</div><div class="ep-help">Wer jünger ist, sieht die Party nicht mehr – auch wer schon angemeldet ist.</div></div>')
     +(priv?'<div class="fg"><label>Playlist (Spotify)</label>'
       +'<input type="text" id="mg-spotify" inputmode="url" autocapitalize="off" spellcheck="false" '
       +'placeholder="https://open.spotify.com/playlist/…" value="'+escAttr(ev.spotify_url||'')+'"/>'
@@ -25046,6 +25576,12 @@ async function saveManage(){
       dresscode:(document.getElementById('mg-dress')?.value||'').trim()||null,
       description:document.getElementById('mg-desc').value.trim()||null};
     if(plEl)patch.spotify_url=pl;
+    // Nur bei einer Aenderung mitschicken (siehe submitEventInner)
+    const alterKnopf=document.querySelector('#mg-alter .cset.on');
+    if(alterKnopf){
+      const a=Number(alterKnopf.dataset.alter)||null;
+      if(a!==(Number(mgEvent.mindestalter)||null))patch.mindestalter=a;
+    }
     const capEl=document.getElementById('mg-cap');
     // Wird die Party verschoben, wandert die Anmeldefrist mit
     if(zeitNeu&&mgEvent.registration_deadline){
@@ -26491,7 +27027,8 @@ function convMelden(){
   /* Eine Gruppe ist keine Person – "melden" haette hier die Gruppe als
      Nutzer gemeldet. Im Gruppenchat fuehrt der Knopf darum dorthin, wo
      man wirklich etwas tun kann: zu den Leuten und zum Verlassen.
-     Einzelne Nachrichten meldet man weiterhin per Langdruck. */
+     Einzelne Nachrichten und Personen meldet man per Tipp auf die
+     Nachricht (siehe nachrichtMeldenGesten). */
   if(convGruppe){ gruppeOeffnen(convUser.id); return; }
   openReport('user',convUser.id,convUser.full_name||convUser.username||'');
 }
@@ -26590,7 +27127,41 @@ function bearbeitenAbbrechen(){
       e.preventDefault(); melden(bub);
     });
   }
+  /* Auf dem Handy fehlte seit dem 22.09. jeder Weg, eine einzelne
+     Nachricht zu melden – und im Gruppenchat auch der Weg, eine Person
+     zu melden oder zu blockieren (der Knopf im Kopf fuehrt dort zur
+     Gruppe). Apple verlangt beides (Richtlinie 1.2). Jetzt: ein Tipp auf
+     eine fremde Blase oeffnet eine kleine Auswahl. Links, Bilder und
+     Party-Karten behalten ihren eigenen Tipp, markierter Text auch. */
+  box.addEventListener('click',e=>{
+    if(window.getSelection&&String(window.getSelection()).length>0)return;
+    if(e.target.closest('a,img,video,button,.bub-party'))return;
+    const bub=e.target.closest('.bub[data-mid]:not([data-mine])'); if(!bub)return;
+    const von=bub.dataset.von||'';
+    const name=bub.dataset.wer||(!convGruppe?(convUser?.full_name||convUser?.username||''):'');
+    const optionen=[{wert:'nachricht',titel:'Nachricht melden',text:'Nur diese Nachricht'}];
+    if(von&&von!==cUser?.id){
+      optionen.push({wert:'person',titel:(name||'Person')+' melden',text:'Das ganze Konto'});
+      if(!istBlockiert(von))optionen.push({wert:'block',titel:(name||'Person')+' blockieren',text:'Ihr seht einander nicht mehr und könnt euch nicht schreiben'});
+    }
+    nativeHaptik('leicht');
+    wahlSheet({titel:'Nachricht',optionen,waehlen:w=>{
+      if(w==='nachricht')melden(bub);
+      else if(w==='person')openReport('user',von,name);
+      else if(w==='block')blockSicher(von,name);
+    }});
+  });
 })();
+
+/* Blockieren aus dem Chat: ein zweiter Schritt, weil es sofort und in
+   beide Richtungen wirkt (wie blockKnopf, nur ohne Knopf im Fenster). */
+function blockSicher(id,name){
+  if(!id)return;
+  setTimeout(()=>wahlSheet({titel:(name||'Person')+' blockieren?',
+    hilfe:'Ihr seht einander nicht mehr und könnt euch nicht mehr schreiben. Du kannst es in den Einstellungen rückgängig machen.',
+    optionen:[{wert:'ja',titel:'Ja, blockieren'},{wert:'',titel:'Abbrechen'}],
+    waehlen:w=>{ if(w==='ja')blockUser(id); }}),320);
+}
 
 /* ── Pro verschenken ───────────────────────────────────────────────
    Sichtbar nur, wenn das eigene Profil als Betreiber markiert ist –
@@ -26800,136 +27371,6 @@ function proMarke(nurZeichen){
     : '<span class="pro-marke">'+PRO_STERN+'Pro</span>';
 }
 
-/* ── Der Fluchtknopf ───────────────────────────────────────────────
-   Die Party ist zaeh, gehen will man noch nicht. Ein Tipp, und man
-   scrollt in der eigenen App weiter. Ein Gag mit Ernst dahinter: es
-   geht sofort, ohne Rueckfrage, und beim Zurueckkommen steht SPOTOUT
-   aufgeraeumt auf der Startseite.
-
-   Er hiess bis zum 17.09. "Doomscroll-Knopf". Das Wort kennt, wer es
-   ohnehin schon kennt – die Funktionsnamen (schnellRaus…) bleiben,
-   nur die sichtbaren Texte sagen es jetzt auf Deutsch. */
-
-const RAUS_ZIELE = {
-  /* Direkt ins Scrollen, nicht auf eine Startseite. */
-  tiktok:    {app:'snssdk1233://',                     netz:'https://www.tiktok.com/foryou'},
-  instagram: {app:'instagram://reels',                 netz:'https://www.instagram.com/reels/'},
-  youtube:   {app:'youtube://www.youtube.com/shorts',  netz:'https://www.youtube.com/shorts'},
-  /* Der Gag: ganz unschuldig das Wetter checken. Apple dokumentiert kein
-     Schema fuer die Wetter-App; weather:// oeffnet sie, wo iOS es kennt –
-     sonst geht MeteoSchweiz im Browser auf, genauso unauffaellig. */
-  wetter:    {app:'weather://',                        netz:'https://www.meteoschweiz.admin.ch/'},
-};
-
-function schnellRausWahl(){
-  try{
-    const k=localStorage.getItem('spotout_raus')||'';
-    // Die alte Tarnseite (Taschenrechner) gibt es nicht mehr; Wetter oeffnet jetzt die echte Wetter-App
-    if(k==='tarnung'){ localStorage.setItem('spotout_raus','tiktok'); return 'tiktok'; }
-    return k;
-  }catch(e){ return ''; }
-}
-
-/* Nur speichern, ohne Rueckmeldung – die drei Fragen nach dem Tutorial
-   rufen das auf, waehrend die Leiste noch gar nicht zu sehen ist.
-
-   Hier stand ein zweiter Schluessel (spotout_raus_gewaehlt), der sich
-   merkte, dass auf diesem Geraet schon gewaehlt wurde. Gelesen hat ihn
-   nur der Pfad in loadProf, der die Wahl aus den Konto-Angaben
-   nachtrug – und den gibt es seit dem 17.09. nicht mehr. Geschrieben
-   und nie gelesen ist schlimmer als gar nicht da: beim naechsten Lesen
-   haelt man ihn fuer eine Bedingung, die irgendwo greift. */
-function schnellRausSpeichern(k){
-  try{
-    if(k)localStorage.setItem('spotout_raus',k);
-    else localStorage.removeItem('spotout_raus');
-  }catch(e){}
-}
-
-function setSchnellRaus(k){
-  schnellRausSpeichern(k);
-  rausKnopfZeigen();
-  try{ setEinstellungWerte(); }catch(e){}
-}
-
-function rausKnopfZeigen(){
-  const zeigen=!!schnellRausWahl();
-  document.documentElement.classList.toggle('raus-an',zeigen);
-  document.querySelectorAll('.nav-raus').forEach(b=>{ b.hidden=!zeigen; });
-}
-/* Kommt die Seite aus dem Hintergrund zurueck (z. B. nach TikTok),
-   gilt wieder, was gespeichert ist. */
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'){ try{ rausKnopfZeigen(); }catch(e){} }
-});
-window.addEventListener('pageshow',()=>{ try{ rausKnopfZeigen(); }catch(e){} });
-
-function schnellRaus(){
-  const wahl=schnellRausWahl();
-  if(!wahl)return;
-
-  const ziel=RAUS_ZIELE[wahl];
-  if(!ziel)return;
-  // Erst aufraeumen, dann wechseln – in dieser Reihenfolge.
-  try{ alleFensterZu(); showOnly('main'); }catch(e){}
-  try{ vergissOrt(); }catch(e){}
-
-  /* Zuerst die App selbst versuchen. Kennt das Geraet das Schema nicht,
-     passiert nichts – deshalb kurz danach der Weg ueber das Netz.
-
-     Der Haken daran, und genau das ging in der Huelle schief: hat die
-     App geoeffnet, kam der Netzweg trotzdem noch und Safari ging
-     zusaetzlich auf. Man stand mit zwei offenen Apps da – das
-     Gegenteil von unauffaellig.
-
-     Deshalb wird jetzt gemessen, ob diese Seite in der Zwischenzeit in
-     den Hintergrund gerutscht ist. Ist sie das, hat die App geoeffnet
-     und der Netzweg entfaellt. */
-  let weg=false;
-  const merken=()=>{ if(document.visibilityState==='hidden')weg=true; };
-  /* In der SPOTOUT-App: Die Huelle oeffnet die Ziel-App selbst und weiss
-     sicher, ob das geklappt hat – nur wenn nicht, nimmt sie die Website.
-     Der Zeitmesser unten taugt dort nicht: die Huelle oeffnet das Schema
-     asynchron, die Seite rutscht oft erst nach den 500 ms in den
-     Hintergrund, und dann ging zusaetzlich tiktok.com auf.
-     Aeltere Fassungen der App kennen "raus" noch nicht – dort nur das
-     Schema, ohne Netzweg hinterher. */
-  if(istApp()){
-    nativeCall('raus',{app:ziel.app,netz:ziel.netz},4000).then(r=>{
-      /* Nur "unbekannt": das antwortet eine aeltere Huelle sofort. Keine
-         Zeitueberschreitung – die kaeme, waehrend TikTok offen ist, und
-         wuerde es beim Zurueckkommen ein zweites Mal oeffnen. */
-      if(r&&/^unbekannt/.test(String(r.fehler||''))){
-        try{ location.href=ziel.app; }catch(e){}
-      }
-      /* Aeltere App kennt das Ziel noch nicht (z. B. Wetter): dann die
-         Website des Ziels, die oeffnet die App im Browser */
-      else if(r&&r.fehler==='fremdes_ziel'&&ziel.netz){
-        try{ location.href=ziel.netz; }catch(e){}
-      }
-    });
-    return;
-  }
-
-  /* Erst hier anhaengen: im App-Zweig oben wurde nie abgemeldet, und
-     jeder Tipp liess einen Horcher mehr zurueck. */
-  /* Nur diese zwei Signale. "blur" waere verlockend, taugt aber
-     nicht: in einer WebView loest schon das Wegklappen der Tastatur
-     ein blur aus – dann bliebe der Netzweg aus, obwohl gar nichts
-     geoeffnet hat. Lieber einmal zu viel Safari als ein Knopf, der
-     manchmal nichts tut. */
-  document.addEventListener('visibilitychange',merken);
-  window.addEventListener('pagehide',merken,{once:true});
-  try{ location.href=ziel.app; }catch(e){}
-  setTimeout(()=>{
-    document.removeEventListener('visibilitychange',merken);
-    if(weg||document.visibilityState==='hidden')return;
-    const a=document.createElement('a');
-    a.href=ziel.netz; a.target='_blank'; a.rel='noopener';
-    document.body.appendChild(a); a.click(); a.remove();
-  },500);
-}
-
 /* Filtert die Gästeliste nach einem Namen. Rein im Browser – die
    Liste steht ja schon da, ein Serverweg waere langsamer als das
    Tippen. Begleitpersonen zaehlen mit: sie stehen als eigene Zeile
@@ -26974,8 +27415,8 @@ function alleFensterZu(){
     setTimeout(()=>el.classList.remove('open'),320);
   });
   /* Die Karte ist ebenfalls kein .overlay – sie liegt fest ueber der
-     Startseite. Beim Fluchtknopf blieb sie sonst offen stehen:
-     wer zurueckkommt, soll aufgeraeumt auf der Startseite landen. */
+     Startseite. Ohne das blieb sie offen stehen, obwohl alles zugehen
+     sollte. */
   try{ if(mapVis)toggleMap(); }catch(_){}
 
   const offen=document.querySelectorAll('.overlay.open');
@@ -27121,7 +27562,6 @@ function showSettingsModal(){
   setKartenApp(kartenAppGespeichert());
   pushWertZeigen();
   besucheSchalterZeigen();
-  rausWahlAnzeigen();
   ortWahlAnzeigen();
   setEinstellungWerte();
   schenkenAnzeigen();
@@ -27146,7 +27586,7 @@ function showSettingsModal(){
   }
   // Ein Verein hat keine Chats und geht nicht selbst auf Partys
   const verein=istVerein();
-  ['setNachrichtenBox','setRausBox'].forEach(id=>{
+  ['setNachrichtenBox'].forEach(id=>{
     const el=document.getElementById(id); if(el)el.hidden=verein;
   });
   const bz=document.getElementById('setBlockZahl');
