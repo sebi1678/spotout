@@ -5519,6 +5519,7 @@
     .st-chart g.an .st-hit{fill:rgba(255,255,255,.06)}
     .st-achse{stroke:rgba(255,255,255,.15);stroke-width:1}
     .st-c-unten{display:flex;justify-content:space-between;font-size:.66rem;color:var(--text2);margin-top:6px}
+    .pro2-store,.pw .pro2-store{font-size:.72rem;color:var(--text2);text-align:center;margin:4px 0 2px}
     .st-mod{margin-top:12px;background:rgba(255,255,255,.07)!important;color:#fff!important}
     .st-fuss{font-size:.7rem;line-height:1.5;color:var(--text2);margin:14px 0 4px}
     /* Anfrage an eine private Party (Freunde) */
@@ -11777,7 +11778,7 @@ function proWerbungZeigen(weiter){
   kontoMerkmalSetzen('pro_werbung');
   if(istApp())appleAngebotLaden();
   const frei=probeFrei();
-  const preis=(applePreis&&applePreis!=='CHF 3.00')?applePreis:'CHF 3.00';
+  const preis='CHF 3.00';
   const v=(ic,t,d)=>'<div class="pw-v"><span class="pw-v-ic">'+pikto(ic,22,'pk-bunt')+'</span><span><b>'+t+'</b><small>'+d+'</small></span></div>';
   const el=document.createElement('div');
   el.id='proWerbung'; el.className='pw'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','SPOTOUT Pro');
@@ -11798,6 +11799,7 @@ function proWerbungZeigen(weiter){
       +(frei?'<div class="pw-probe">7 Tage gratis</div>':'')
       +'<button class="pw-cta" type="button">'+(frei?'Gratis testen':'Pro holen')+'</button>'
       +'<div class="pw-preis">'+(frei?'Danach '+preis+' pro Monat. ':preis+' pro Monat. ')+'Jederzeit kündbar.</div>'
+      +preisImStore()
       +'<div class="pw-recht">'+(frei
           ?'7 Tage gratis, danach Laufzeit 1 Monat für '+preis+'. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst. In der Testwoche jederzeit kostenlos kündbar.'
           :'Laufzeit 1 Monat für '+preis+'. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst.')
@@ -18247,13 +18249,17 @@ function probeFrei(){
   if(istApp())return appleProbe===true&&!cProfile?.probe_verbraucht;
   return !cProfile?.probe_verbraucht;
 }
-/* Preis und Testwoche kommen in der App von Apple, nicht aus unserem
-   Text. Die Texte nennen CHF 3.00; nennt Apple etwas anderes (anderes
-   Land, Preisänderung), ersetzt preisEinsetzen das überall beim Zeichnen –
-   auch in den Übersetzungen. Ohne Antwort bleibt CHF 3.00 stehen. */
+/* Werbung und Ueberschriften nennen immer CHF 3.00 (Sebastian, 30.10.:
+   "in Franken angeben"). Nennt Apple einen anderen Betrag – z. B. $2.99
+   bei einer Apple-ID aus den USA –, steht dieser zusaetzlich klein beim
+   Kaufknopf und im Abo-Kleingedruckten (preisAbo, preisImStore): dort
+   muss stehen, was Apple wirklich abbucht, sonst lehnt Apple ab (3.1.2). */
 let applePreis=null, appleProbe=null, appleAngebotLaeuft=null, appleAngebotFehlt=false;
-function preisEinsetzen(s){
-  return (applePreis&&applePreis!=='CHF 3.00'&&s.indexOf('CHF 3.00')>=0)?s.split('CHF 3.00').join(applePreis):s;
+function preisEinsetzen(s){ return s; }
+function preisAbweichend(){ return !!(applePreis&&applePreis!=='CHF 3.00'); }
+function preisAbo(){ return preisAbweichend()?applePreis:'CHF 3.00'; }
+function preisImStore(){
+  return preisAbweichend()?'<div class="pro2-store">Im App Store deines Landes: '+esc(applePreis)+' pro Monat</div>':'';
 }
 function appleAngebotLaden(){
   if(!istApp()||applePreis||appleAngebotLaeuft)return appleAngebotLaeuft||Promise.resolve();
@@ -18371,15 +18377,16 @@ function renderProPage(){
                      :'<div class="pro2-testwoche pro2-testwoche-weg">Testwoche schon genutzt</div>'}
         <div class="pro2-titel">SPOTOUT Pro · Monatsabo</div>
         <div class="pro2-price">
-          ${probeFrei()?'<span class="p-per" style="margin-right:6px">danach</span>':''}${applePreis&&applePreis!=='CHF 3.00'?'<span class="p-num">'+esc(applePreis)+'</span>':'<span class="p-cur">CHF</span><span class="p-num">3.00</span>'}<span class="p-per">/ Monat</span>
+          ${probeFrei()?'<span class="p-per" style="margin-right:6px">danach</span>':''}<span class="p-cur">CHF</span><span class="p-num">3.00</span><span class="p-per">/ Monat</span>
         </div>
+        ${preisImStore()}
         ${istApp()&&appleAngebotFehlt&&!applePreis
           ? '<div class="pro2-fehlt">Das Angebot von Apple lädt gerade nicht. Prüf deine Verbindung.</div><button class="pro2-cta" onclick="appleAngebotFehlt=false;renderProPage()">Nochmals laden</button>'
           : '<button class="pro2-cta" onclick="startProUpgrade()">'+(probeFrei()?'Gratis testen':'Pro holen')+'</button>'}
         ${istApp()?'<button class="pro2-restore" onclick="proWiederherstellen()">Kauf wiederherstellen</button>':''}
         <div class="pro2-note">${probeFrei()
-          ?'7 Tage gratis testen, danach Laufzeit 1 Monat für CHF 3.00 · verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst · in der Testwoche jederzeit kostenlos kündbar'
-          :'Die Testwoche gibt es einmal pro Konto, und die hattest du schon. Laufzeit 1 Monat für CHF 3.00 · verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst'}</div>
+          ?'7 Tage gratis testen, danach Laufzeit 1 Monat für '+esc(preisAbo())+' · verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst · in der Testwoche jederzeit kostenlos kündbar'
+          :'Die Testwoche gibt es einmal pro Konto, und die hattest du schon. Laufzeit 1 Monat für '+esc(preisAbo())+' · verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst'}</div>
         <div class="pro2-pay">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="10" width="18" height="11" rx="2"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>
           ${istApp()?'Sicher über deine Apple-ID · Verwaltung und Kündigung in den iPhone-Einstellungen'
