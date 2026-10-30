@@ -1187,48 +1187,6 @@
     /* Gold, aber ruhig: es soll nach Auszeichnung aussehen, nicht nach
        Werbung. Dieselbe Sprache wie die Host-Marke. */
     .addr-item-eigen{border-left:3px solid var(--pink)}
-    .crop-hilfe{font-size:.8rem;color:var(--muted);line-height:1.5;margin:0 0 14px}
-    .crop-buehne{
-      position:relative;width:100%;max-width:320px;margin:0 auto 16px;
-      aspect-ratio:1/1;border-radius:18px;overflow:hidden;
-      background:#0b0f26;touch-action:none;cursor:grab;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);
-    }
-    .crop-buehne:active{cursor:grabbing}
-    .crop-buehne canvas{display:block;width:100%;height:100%}
-    /* Der Kreis zeigt, was nachher zu sehen ist. Er liegt darüber und
-       nimmt keine Berührung an, sonst käme das Schieben nie an. */
-    .crop-maske{
-      position:absolute;inset:0;pointer-events:none;border-radius:18px;
-      box-shadow:0 0 0 9999px rgba(6,9,26,.55) inset;
-      -webkit-mask:radial-gradient(circle at 50% 50%, transparent 49.5%, #000 50%);
-      mask:radial-gradient(circle at 50% 50%, transparent 49.5%, #000 50%);
-    }
-    .crop-zoom{display:flex;align-items:center;gap:11px;margin:0 auto 18px;max-width:320px}
-    .crop-zoom svg{width:17px;height:17px;color:var(--muted);flex-shrink:0}
-    .crop-zoom input[type=range]{
-      flex:1;min-width:0;-webkit-appearance:none;appearance:none;height:4px;
-      border-radius:2px;background:rgba(255,255,255,.16);outline:none;
-    }
-    .crop-zoom input[type=range]::-webkit-slider-thumb{
-      -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
-      background:var(--grad-cta);cursor:pointer;border:2px solid #fff;
-    }
-    .crop-zoom input[type=range]::-moz-range-thumb{
-      width:22px;height:22px;border-radius:50%;background:#FF2D76;
-      cursor:pointer;border:2px solid #fff;
-    }
-    .crop-btns{display:flex;gap:9px;max-width:320px;margin:0 auto}
-    .crop-neu,.crop-ja{
-      border-radius:14px;padding:13px;min-height:48px;cursor:pointer;
-      font-family:var(--font);font-size:.88rem;font-weight:800;border:0;
-    }
-    .crop-neu{
-      flex:0 0 auto;padding:13px 18px;background:rgba(255,255,255,.06);
-      color:var(--text2);border:1px solid rgba(255,255,255,.13);
-    }
-    .crop-ja{flex:1;background:var(--grad-cta);color:#fff}
-    .crop-ja:disabled{opacity:.6}
     .schenk-reihe{display:flex;gap:8px;margin-bottom:9px}
     .schenk-reihe input{
       flex:1;min-width:0;border:1px solid rgba(255,255,255,.13);
@@ -7248,11 +7206,6 @@
 
     .up2-abschnitt{margin:8px 16px 12px;font-size:.7rem;font-weight:800;letter-spacing:.08em;
       text-transform:uppercase;color:var(--muted)}
-    .ep-av-knoepfe{display:flex;gap:8px;margin-top:12px}
-    .ep-av-k{padding:7px 14px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.12);color:#fff;font-family:var(--font);font-size:.8rem;font-weight:700}
-    .ep-av-weg{color:#ff8a8c}
-    .ep-av-k:active{transform:scale(var(--druck))}
     /* Fremde Profile wie bei Instagram: die Leiste der App bleibt stehen
        (die App laesst sie bei .mit-leiste sichtbar). Unten Platz, damit
        nichts darunter verschwindet. */
@@ -7715,6 +7668,165 @@
     .gsap-an.gsap-an{transition:none!important}
     .iphone-fenster[data-motion] *{transition-property:opacity,color,background-color,border-color!important}
 
+  </style>
+  <style>
+    /* ══════════ BILD AUSRICHTEN (30.10.) ══════════
+       Ganzer Bildschirm, dunkel, oben Abbrechen und Fertig – wie beim
+       Zuschneiden in Instagram und in den Fotos auf dem iPhone. */
+    .be{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;
+      background:#04061A;color:#fff;
+      padding:var(--safe-top) 0 calc(var(--safe-bottom) + 12px);
+      opacity:0;transition:opacity .2s ease;
+      -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+    .be[hidden]{display:none!important}
+    .be.offen{opacity:1}
+    .be-kopf{flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;height:56px;padding:0 12px}
+    .be-titel{font-size:1rem;font-weight:700;letter-spacing:-.01em;text-align:center;white-space:nowrap}
+    .be-k{justify-self:start;min-height:44px;padding:0 8px;border:0;background:none;cursor:pointer;
+      color:rgba(255,255,255,.88);font-family:var(--font);font-size:.95rem;font-weight:500}
+    .be-k:active{opacity:.55}
+    .be-k.be-fertig{justify-self:end;min-height:36px;padding:0 18px;border-radius:999px;color:#fff;font-weight:700;
+      background:linear-gradient(135deg,#FF2D76,#FF5A45)}
+    .be-buehne{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;cursor:grab}
+    .be-buehne:active{cursor:grabbing}
+    .be.ganz .be-buehne{cursor:default}
+    .be-buehne canvas{position:absolute;left:0;top:0;display:block}
+    /* Der Rahmen: aussen abgedunkelt, innen klar. Der Schatten folgt der
+       Rundung – beim Profilbild ist das Loch darum rund. */
+    .be-rahmen{position:absolute;pointer-events:none;border-radius:12px;overflow:hidden;
+      box-shadow:0 0 0 1px rgba(255,255,255,.6),0 0 0 200vmax rgba(4,6,26,.7)}
+    .be:not(.breit) .be-rahmen{border-radius:50%}
+    .be-rahmen i{position:absolute;background:rgba(255,255,255,.42);opacity:0;transition:opacity .25s ease}
+    .be-rahmen i:nth-child(1){left:33.333%;top:0;bottom:0;width:1px}
+    .be-rahmen i:nth-child(2){left:66.666%;top:0;bottom:0;width:1px}
+    .be-rahmen i:nth-child(3){top:33.333%;left:0;right:0;height:1px}
+    .be-rahmen i:nth-child(4){top:66.666%;left:0;right:0;height:1px}
+    .be.aktiv .be-rahmen i{opacity:1}
+    .be-fuss{flex:none;display:flex;flex-direction:column;align-items:center;gap:16px;padding:14px 24px 4px}
+    .be-modus{display:flex;width:100%;max-width:340px;padding:3px;border-radius:12px;background:rgba(255,255,255,.08)}
+    .be-modus[hidden]{display:none}
+    .be-modus button{flex:1;min-height:36px;border:0;border-radius:9px;background:none;cursor:pointer;
+      color:rgba(255,255,255,.62);font-family:var(--font);font-size:.85rem;font-weight:600;
+      transition:background-color .2s ease,color .2s ease}
+    .be-modus button[aria-checked="true"]{background:rgba(255,255,255,.17);color:#fff}
+    .be-zoom{display:flex;align-items:center;gap:12px;width:100%;max-width:340px;transition:opacity .2s ease}
+    .be-zoom.aus{opacity:.28;pointer-events:none}
+    .be-zoom svg{width:18px;height:18px;flex:none;color:rgba(255,255,255,.6)}
+    .be-zoom input[type=range]{flex:1;min-width:0;height:4px;margin:0;padding:0;border:0;border-radius:2px;outline:none;
+      -webkit-appearance:none;appearance:none;
+      background:linear-gradient(to right,#fff var(--p,0%),rgba(255,255,255,.18) var(--p,0%))}
+    .be-zoom input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+      background:#fff;border:0;box-shadow:0 2px 8px rgba(0,0,0,.45);cursor:pointer}
+    .be-zoom input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:0;
+      box-shadow:0 2px 8px rgba(0,0,0,.45);cursor:pointer}
+    .be-hilfe{min-height:2.8em;max-width:320px;font-size:.78rem;line-height:1.4;color:rgba(255,255,255,.5);text-align:center}
+    @media (prefers-reduced-motion: reduce){.be{transition:none}}
+
+    /* ══════════ PROFILBILD GROSS (lange druecken) ══════════ */
+    .av-gross{position:fixed;inset:0;z-index:330;display:flex;align-items:center;justify-content:center;pointer-events:none;
+      background:rgba(4,6,22,.45);
+      -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
+      opacity:0;transition:opacity .2s ease}
+    .av-gross[hidden]{display:none}
+    .av-gross.an{opacity:1}
+    .av-gross img{display:block;width:min(74vw,320px);height:min(74vw,320px);border-radius:50%;object-fit:cover;
+      box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.1);will-change:transform}
+
+    /* Neues Profilbild unterwegs: es steht schon da, ein Kreisel darauf */
+    .insta-av{position:relative}
+    .insta-av.laedt::after{content:'';position:absolute;inset:0;z-index:1;border-radius:50%;background:rgba(9,13,36,.42)}
+    .insta-av.laedt::before{content:'';position:absolute;z-index:2;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;
+      box-sizing:border-box;border-radius:50%;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;
+      animation:spin .8s linear infinite}
+
+    /* ══════════ PROFIL BEARBEITEN (30.10.) ══════════
+       Wie bei Instagram: grosses Bild oben, darunter ein Satz zum
+       Antippen. Die Felder sind Kaesten mit dem Namen darin statt
+       darueber, gesperrte tragen ein Schloss. Speichern bleibt unten
+       stehen, auch wenn man weiter oben tippt. */
+    #editProfOverlay .ep-kopf{display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 0 6px}
+    #editProfOverlay .ep-av-knopf{position:relative;display:block;padding:0;border:0;background:none;border-radius:50%;cursor:pointer}
+    #editProfOverlay #epAvPreview{width:96px!important;height:96px!important;font-size:2.1rem}
+    #editProfOverlay .ep-av-kamera{position:absolute;right:-1px;bottom:1px;z-index:3;width:30px;height:30px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;color:#fff;
+      background:linear-gradient(135deg,#FF2D76,#FF5A45);border:3px solid rgb(14,19,48)}
+    #editProfOverlay .ep-av-kamera svg{width:14px;height:14px}
+    #editProfOverlay .ep-av-link{border:0;background:none;padding:6px 10px;cursor:pointer;
+      font-family:var(--font);font-size:.9rem;font-weight:700;color:#FF5C8D}
+    #editProfOverlay .ep-av-link:active{opacity:.55}
+    #editProfOverlay .ep-sec{margin:22px 2px 10px}
+    #editProfOverlay .fg{margin-bottom:12px}
+    #editProfOverlay .ep-box{position:relative;display:block;margin:0;padding:9px 14px 10px;border-radius:14px;cursor:text;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+      text-transform:none;letter-spacing:0;font-size:inherit;font-weight:inherit;color:inherit;
+      transition:border-color .15s ease,background-color .15s ease}
+    #editProfOverlay .ep-box:focus-within{border-color:rgba(255,45,118,.6);background:rgba(255,255,255,.07)}
+    #editProfOverlay .ep-lbl{display:block;margin-bottom:2px;font-size:.72rem;font-weight:600;letter-spacing:.01em;color:rgba(255,255,255,.5)}
+    #editProfOverlay .ep-box input,#editProfOverlay .ep-box textarea{
+      display:block;width:100%;min-height:24px;margin:0;padding:0!important;border:0!important;border-radius:0;
+      background:none!important;box-shadow:none!important;outline:none;
+      font-family:var(--font);font-size:1rem;font-weight:500;line-height:1.45;color:#fff}
+    #editProfOverlay .ep-box input::placeholder,#editProfOverlay .ep-box textarea::placeholder{color:rgba(255,255,255,.3)}
+    #editProfOverlay .ep-box textarea{resize:none;min-height:68px}
+    #editProfOverlay .ep-box.zu{cursor:default;background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.08)}
+    #editProfOverlay .ep-box.zu input,#editProfOverlay .ep-box.zu .ep-wert,#editProfOverlay .ep-box.zu .ep-at>span{color:rgba(255,255,255,.5)}
+    #editProfOverlay .ep-box.zu input{padding-right:26px!important}
+    #editProfOverlay .ep-schloss{display:none;position:absolute;right:14px;top:50%;width:15px;height:15px;margin-top:-7px;color:rgba(255,255,255,.35)}
+    #editProfOverlay .ep-box.zu .ep-schloss{display:block}
+    #editProfOverlay .ep-wert{min-height:24px;font-size:1rem;font-weight:500;line-height:1.45;color:#fff}
+    #editProfOverlay .ep-at{display:flex;align-items:center;gap:1px;padding:0;border:0;border-radius:0;background:none}
+    #editProfOverlay .ep-at.gesperrt{opacity:1}
+    #editProfOverlay .ep-at>span{font-size:1rem;font-weight:500;color:rgba(255,255,255,.45)}
+    #editProfOverlay .ep-at .ep-social-ic{position:static;transform:none;flex:none;display:flex;align-items:center;width:18px;height:18px;margin-right:9px}
+    #editProfOverlay .ep-at .ep-social-ic svg{width:18px;height:18px}
+    #editProfOverlay .ep-at>.ep-social-ic{color:rgba(255,255,255,.62)}
+    #editProfOverlay .ep-at input{flex:1;min-width:0}
+    #editProfOverlay .ep-zahl{display:block;margin-top:4px;text-align:right;font-size:.7rem;color:rgba(255,255,255,.4)}
+    #editProfOverlay .ep-box-wahl{cursor:default}
+    #editProfOverlay .ep-gender{display:flex;gap:0!important;margin-top:7px;padding:3px;border-radius:11px;background:rgba(255,255,255,.07)}
+    #editProfOverlay .ep-gender .gender-opt{flex:1;min-height:34px;padding:0 4px;border:0;border-radius:8px;background:none;box-shadow:none;
+      color:rgba(255,255,255,.62);font-size:.84rem;font-weight:600}
+    #editProfOverlay .ep-gender .gender-opt.selected{background:rgba(255,255,255,.17);border:0;color:#fff}
+    #editProfOverlay .ep-help{margin:6px 4px 0;font-size:.74rem}
+    #editProfOverlay .ep-help:empty{display:none}
+    #editProfOverlay .ep-help-pro{display:inline-flex;align-items:center;gap:6px;margin:7px 4px 0;padding:0;
+      border:0;border-radius:0;background:none;color:#FF7FA5!important;font-weight:600}
+    #editProfOverlay .ep-help-pro svg{width:12px;height:12px}
+    #editProfOverlay .ep-fuss{position:sticky;bottom:0;z-index:5;margin:18px -20px -40px;
+      padding:14px 20px calc(14px + var(--safe-bottom));
+      background:linear-gradient(to bottom,rgba(9,13,36,0),rgb(9,13,36) 28%)}
+    #editProfOverlay .ep-fuss .sub-btn{width:100%;margin:0}
+
+    /* Auswahlblatt: eine rote Zeile fuer "entfernen" */
+    .wz-gefahr b{color:#FF6B6E}
+    .wz-gefahr .cm-ic{color:#FF6B6E;background:rgba(255,77,79,.12)}
+    .wz-zeile .cm-ic svg{width:19px;height:19px}
+    /* Mit Symbol ist der Text der zweite Teil – er nimmt den Platz, nicht das Symbol */
+    .wz-zeile>.cm-ic:first-child{flex:none}
+    .wz-zeile>.cm-ic+span{flex:1;min-width:0}
+
+    /* ══════════ TITELBILD (Erstellen, Schritt 9) ══════════
+       Die Vorschau zeigt das Bild so, wie es auf der Karte steht (16:9 –
+       vorher war sie flacher als die Karte, "so sieht sie aus" stimmte
+       nicht). Darunter ein Knopf oder, mit Bild, eine Leiste. */
+    #cpanel-9 .cprev-media{max-height:none;cursor:pointer}
+    .tb-neu{display:flex;align-items:center;gap:13px;width:100%;margin-top:14px;padding:13px 15px;border-radius:16px;cursor:pointer;
+      text-align:left;background:rgba(255,255,255,.04);border:1.5px dashed rgba(255,255,255,.22);color:#fff;font-family:var(--font)}
+    .tb-neu[hidden]{display:none}
+    .tb-neu-ic{flex:none;width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,45,118,.14);color:#FF5C8D}
+    .tb-neu-ic svg{width:21px;height:21px}
+    .tb-neu-t b{display:block;font-size:.93rem;font-weight:700}
+    .tb-neu-t small{display:block;margin-top:2px;font-size:.77rem;color:var(--muted)}
+    .tb-leiste{display:flex;gap:8px;margin-top:12px}
+    .tb-leiste[hidden]{display:none}
+    .tb-k{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:46px;padding:0 12px;border-radius:14px;
+      cursor:pointer;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:#fff;
+      font-family:var(--font);font-size:.87rem;font-weight:700}
+    .tb-k svg{width:17px;height:17px;flex:none}
+    .tb-k.tb-weg{flex:0 0 48px;padding:0;color:#FF8A8C}
+    .tb-k,.tb-neu{transition:transform var(--takt-kurz,.12s) var(--kurve,ease)}
+    .tb-k:active,.tb-neu:active{transform:scale(var(--druck,.97))}
   </style>
 </head>
 <body>
@@ -8395,34 +8507,40 @@
       </button>
     </div>
     <div class="modal-body">
-      <!-- Avatar upload -->
-      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px">
-        <div style="position:relative;cursor:pointer" onclick="document.getElementById('avFile').click()">
-          <div id="epAvPreview" class="insta-av" style="width:72px;height:72px;font-size:1.4rem"></div>
-          <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--grad-cta);border-radius:50%;border:2px solid #090D24;display:flex;align-items:center;justify-content:center">
-            <svg class="pk" width="12" height="12" style="color:#fff" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="url(#pkSonne)" opacity=".6"/><path d="M15 4.4a2.2 2.2 0 0 1 3.1 0l1.5 1.5a2.2 2.2 0 0 1 0 3.1L9.4 19.2l-4.9 1.1 1.1-4.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.3 6.1l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <input type="file" id="avFile" accept="image/*" style="display:none" onchange="upAv(event)"/>
-        </div>
-        <div class="ep-av-knoepfe">
-          <button type="button" class="ep-av-k" onclick="document.getElementById('avFile').click()">Bild ändern</button>
-          <button type="button" class="ep-av-k ep-av-weg" id="epAvWeg" onclick="avEntfernenTipp(this)" hidden>Entfernen</button>
-        </div>
+      <!-- Profilbild: ein Tipp aufs Bild oder auf den Text darunter -->
+      <div class="ep-kopf">
+        <button type="button" class="ep-av-knopf" onclick="profilbildMenue()" aria-label="Profilbild bearbeiten">
+          <div id="epAvPreview" class="insta-av"></div>
+          <span class="ep-av-kamera" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h3l1.5-2h7l1.5 2h3a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+        </button>
+        <button type="button" class="ep-av-link" onclick="profilbildMenue()">Profilbild bearbeiten</button>
+        <input type="file" id="avFile" accept="image/*" style="display:none" onchange="upAv(event)"/>
       </div>
+
       <div class="ep-sec">Über dich</div>
-      <div class="fg"><label>Dein Name</label>
-        <input type="text" id="ep-name" placeholder="Max Muster" maxlength="60"/>
+      <div class="fg">
+        <label class="ep-box" for="ep-name"><span class="ep-lbl">Name</span>
+          <input type="text" id="ep-name" placeholder="Max Muster" maxlength="60"/>
+          <svg class="ep-schloss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>
+        </label>
         <div class="ep-help" id="ep-name-help"></div>
       </div>
-      <div class="fg"><label>Benutzername</label>
-        <div class="ep-at"><span>@</span><input type="text" id="ep-username" placeholder="maxmuster" maxlength="24" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
+      <div class="fg">
+        <label class="ep-box" for="ep-username"><span class="ep-lbl">Benutzername</span>
+          <span class="ep-at"><span>@</span><input type="text" id="ep-username" placeholder="maxmuster" maxlength="24" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+          <svg class="ep-schloss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>
+        </label>
         <div class="ep-help" id="ep-username-help">So finden dich andere in der Suche.</div>
       </div>
-      <div class="fg" id="ep-bd-feld"><label>Geburtsdatum</label><input type="date" id="ep-bd"/>
+      <div class="fg" id="ep-bd-feld">
+        <label class="ep-box" for="ep-bd"><span class="ep-lbl">Geburtsdatum</span><input type="date" id="ep-bd"/></label>
         <div class="ep-help">Wird nur für die Altersangabe gebraucht.</div>
       </div>
-      <div class="fg" id="ep-bd-fest" style="display:none"><label>Geburtsdatum</label>
-        <div class="ep-fest"><b id="ep-bd-text">–</b><span>Steht fest</span></div>
+      <div class="fg" id="ep-bd-fest" style="display:none">
+        <div class="ep-box zu"><span class="ep-lbl">Geburtsdatum</span><div class="ep-wert" id="ep-bd-text">–</div>
+          <svg class="ep-schloss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>
+        </div>
+        <div class="ep-help">Steht fest</div>
       </div>
 
       <div id="ep-pro-section" style="display:none">
@@ -8432,28 +8550,40 @@
           <div><div class="ep-pro-t">Pro-Profil</div>
           <div class="ep-pro-s">Diese Angaben sieht jeder – auch Gratis-Nutzer</div></div>
         </div>
-        <div class="fg"><label>Bio</label>
-          <textarea id="ep-bio" rows="3" maxlength="160" placeholder="Erzähl in zwei Sätzen, wer du bist." oninput="epCount()"></textarea>
-          <div class="ep-help" id="ep-bio-count">0 / 160</div>
+        <div class="fg">
+          <label class="ep-box" for="ep-bio"><span class="ep-lbl">Bio</span>
+            <textarea id="ep-bio" rows="3" maxlength="160" placeholder="Erzähl in zwei Sätzen, wer du bist." oninput="epCount()"></textarea>
+            <span class="ep-zahl" id="ep-bio-count">0 / 160</span>
+          </label>
         </div>
-        <div class="fg"><label>Geschlecht</label>
-          <div class="ep-gender">
-            <button type="button" class="gender-opt" data-g="male" onclick="selEpGender('male',this)">Mann</button>
-            <button type="button" class="gender-opt" data-g="female" onclick="selEpGender('female',this)">Frau</button>
-            <button type="button" class="gender-opt" data-g="other" onclick="selEpGender('other',this)">Andere</button>
+        <div class="fg">
+          <div class="ep-box ep-box-wahl"><span class="ep-lbl">Geschlecht</span>
+            <div class="ep-gender" role="radiogroup" aria-label="Geschlecht">
+              <button type="button" class="gender-opt" data-g="male" onclick="selEpGender('male',this)">Mann</button>
+              <button type="button" class="gender-opt" data-g="female" onclick="selEpGender('female',this)">Frau</button>
+              <button type="button" class="gender-opt" data-g="other" onclick="selEpGender('other',this)">Andere</button>
+            </div>
           </div>
         </div>
-        <div class="fg"><label>Instagram</label>
-          <div class="ep-at ep-ig"><span class="ep-social-ic"></span><input type="text" id="ep-instagram" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
+        <div class="fg">
+          <label class="ep-box" for="ep-instagram"><span class="ep-lbl">Instagram</span>
+            <span class="ep-at ep-ig"><span class="ep-social-ic"></span><input type="text" id="ep-instagram" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+          </label>
         </div>
-        <div class="fg" id="ep-tiktok-fg" hidden><label>TikTok</label>
-          <div class="ep-at ep-tt"><span class="ep-social-ic"></span><input type="text" id="ep-tiktok" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
+        <div class="fg" id="ep-tiktok-fg" hidden>
+          <label class="ep-box" for="ep-tiktok"><span class="ep-lbl">TikTok</span>
+            <span class="ep-at ep-tt"><span class="ep-social-ic"></span><input type="text" id="ep-tiktok" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+          </label>
         </div>
-        <div class="fg"><label>Snapchat</label>
-          <div class="ep-at ep-sc"><span class="ep-social-ic"></span><input type="text" id="ep-snapchat" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
+        <div class="fg">
+          <label class="ep-box" for="ep-snapchat"><span class="ep-lbl">Snapchat</span>
+            <span class="ep-at ep-sc"><span class="ep-social-ic"></span><input type="text" id="ep-snapchat" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+          </label>
         </div>
-        <div class="fg"><label>Facebook</label>
-          <div class="ep-at ep-fb"><span class="ep-social-ic"></span><input type="text" id="ep-facebook" placeholder="deinname" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></div>
+        <div class="fg">
+          <label class="ep-box" for="ep-facebook"><span class="ep-lbl">Facebook</span>
+            <span class="ep-at ep-fb"><span class="ep-social-ic"></span><input type="text" id="ep-facebook" placeholder="deinname" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+          </label>
         </div>
         <div class="ep-help">Du kannst auch den ganzen Link einfügen – wir schneiden ihn zurecht.</div>
       </div>
@@ -8465,7 +8595,8 @@
         <svg class="ep-locked-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 6 15 12 9 18"/></svg>
       </div>
 
-      <button class="sub-btn sub-accent" onclick="saveProfileEdit()">Speichern</button>
+      <!-- Bleibt unten stehen, auch wenn man weiter oben tippt -->
+      <div class="ep-fuss"><button class="sub-btn sub-accent" onclick="saveProfileEdit()">Speichern</button></div>
     </div>
   </div>
 </div>
@@ -8815,17 +8946,26 @@
 
       <div class="cprev" id="cPrev"></div>
 
-      <div class="img-upload-pro" id="imgBox" role="button" tabindex="0" onclick="document.getElementById('imgFile').click()">
-        <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="prevImg(event)"/>
-        <img alt="" loading="lazy" decoding="async" class="u-preview" id="imgPrev" style="display:none"/>
-        <div class="u-overlay"><span>Bild ändern</span></div>
-        <button class="img-clear" onclick="event.stopPropagation();clearImg()" aria-label="Bild entfernen">
-          <svg stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
+      <!-- Titelbild: ohne Bild ein Knopf, mit Bild eine Leiste.
+           Gezeigt wird es nur einmal – oben in der Vorschau, so wie es
+           nachher auf der Karte steht. -->
+      <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="prevImg(event)"/>
+      <button type="button" class="tb-neu" id="imgBox" onclick="titelbildWaehlen()">
+        <span class="tb-neu-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h3l1.5-2h7l1.5 2h3a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+        <span class="tb-neu-t"><b>Titelbild hinzufügen</b><small>Danach kannst du es zurechtrücken.</small></span>
+      </button>
+      <div class="tb-leiste" id="imgLeiste" hidden>
+        <button type="button" class="tb-k" onclick="titelbildAusrichten()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.5v14a1 1 0 0 0 1 1h14"/><path d="M2.5 6.5h14a1 1 0 0 1 1 1v14"/></svg>
+          Ausrichten
         </button>
-        <div id="imgPh" class="img-ph-pro">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8.5h3l1.5-2h7l1.5 2h3a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
-          <span>Titelbild hinzufügen</span>
-        </div>
+        <button type="button" class="tb-k" onclick="titelbildWaehlen()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-4.8-4.8L6 19.5"/></svg>
+          Ersetzen
+        </button>
+        <button type="button" class="tb-k tb-weg" onclick="clearImg()" aria-label="Titelbild entfernen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.9 12.2a1.5 1.5 0 0 0 1.5 1.3h6.2a1.5 1.5 0 0 0 1.5-1.3L17.5 7"/></svg>
+        </button>
       </div>
     </div>
 
@@ -9752,35 +9892,33 @@
   </div>
 </div>
 
-<!-- ════ PROFILBILD AUSRICHTEN ════ -->
-<div class="overlay" id="avCropOverlay">
-  <div class="modal no-swipe">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr">
-      <div class="modal-title">Bild ausrichten</div>
-      <button class="modal-x" onclick="avCropAbbrechen()" aria-label="Abbrechen">
-        <svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 7l10 10M17 7 7 17"/></svg>
-      </button>
+<!-- ════ BILD AUSRICHTEN (Profilbild, Gruppenbild, Titelbild) ════ -->
+<div class="be" id="bildEditor" role="dialog" aria-modal="true" aria-labelledby="beTitel" hidden>
+  <div class="be-kopf">
+    <button type="button" class="be-k" onclick="bildEditorZu()">Abbrechen</button>
+    <div class="be-titel" id="beTitel">Profilbild</div>
+    <button type="button" class="be-k be-fertig" id="beFertig" onclick="bildEditorFertig()">Fertig</button>
+  </div>
+  <div class="be-buehne" id="beBuehne">
+    <canvas id="beFlaeche"></canvas>
+    <div class="be-rahmen" id="beRahmen" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="be-fuss">
+    <div class="be-modus" id="beModus" role="radiogroup" aria-label="Bild einpassen" hidden>
+      <button type="button" role="radio" data-m="fuellen" aria-checked="true" onclick="bildEditorModus('fuellen')">Ausfüllen</button>
+      <button type="button" role="radio" data-m="ganz" aria-checked="false" onclick="bildEditorModus('ganz')">Ganzes Bild</button>
     </div>
-    <div class="modal-body">
-      <div class="crop-hilfe">Schieb das Bild mit einem Finger, zoom mit zwei Fingern.</div>
-      <div class="crop-buehne" id="cropBuehne">
-        <canvas id="cropFlaeche"></canvas>
-        <div class="crop-maske"></div>
-      </div>
-      <div class="crop-zoom">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/><path d="M8.5 11h5"/></svg>
-        <input type="range" id="cropZoom" min="100" max="400" value="100" step="1"
-          oninput="avCropZoom(this.value)" aria-label="Zoomen"/>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/><path d="M8.5 11h5M11 8.5v5"/></svg>
-      </div>
-      <div class="crop-btns">
-        <button class="crop-neu" onclick="avCropAbbrechen()">Abbrechen</button>
-        <button class="crop-ja" id="cropJa" onclick="avCropFertig()">Als Profilbild nehmen</button>
-      </div>
+    <div class="be-zoom" id="beZoomZeile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/><path d="M8.5 11h5"/></svg>
+      <input type="range" id="beZoom" min="100" max="400" value="100" step="1" oninput="bildEditorZoom(this.value)" aria-label="Zoomen"/>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4-4"/><path d="M8.5 11h5M11 8.5v5"/></svg>
     </div>
+    <div class="be-hilfe" id="beHilfe"></div>
   </div>
 </div>
+
+<!-- ════ PROFILBILD GROSS (lange drücken) ════ -->
+<div class="av-gross" id="avGross" hidden aria-hidden="true"><img id="avGrossBild" alt=""/></div>
 
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -17205,7 +17343,8 @@ function wahlSheet(cfg){
   window.__wahlTun=cfg.waehlen;
   kasten.innerHTML=(cfg.hilfe?'<div class="wz-hilfe">'+esc(cfg.hilfe)+'</div>':'')
     +cfg.optionen.map((o,i)=>
-      '<button class="cm-zeile wz-zeile'+(o.wert===cfg.aktuell?' wz-aktiv':'')+'" onclick="wahlTippen('+i+')">'
+      '<button class="cm-zeile wz-zeile'+(o.wert===cfg.aktuell?' wz-aktiv':'')+(o.gefahr?' wz-gefahr':'')+'" onclick="wahlTippen('+i+')">'
+      +(o.ic?'<span class="cm-ic">'+o.ic+'</span>':'')
       +'<span><b>'+esc(o.titel)+'</b>'+(o.text?'<small>'+esc(o.text)+'</small>':'')+'</span>'
       +(o.wert===cfg.aktuell?haken:'')+'</button>').join('');
   window.__wahlOptionen=cfg.optionen;
@@ -17714,7 +17853,7 @@ async function renderProf(){
       <!-- HEADER: Pro gets gradient banner, regular gets plain -->
       ${cProfile.is_pro?'<div class="prof-pro-header">':''}
       <div class="prof-header">
-        <div class="insta-av-wrap" onclick="chgAv()" style="position:relative">
+        <div class="insta-av-wrap" role="button" tabindex="0" aria-label="Profilbild bearbeiten" onclick="profilbildMenue()" style="position:relative">
           <div class="insta-av ${cProfile.is_pro?'pro-glow':''}">
             ${cProfile.avatar_url?'<img alt="" loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'"/>':'<span>'+init+'</span>'}
           </div>
@@ -17888,169 +18027,356 @@ function chgAv(){
   const f=document.getElementById('avFileProfil')||document.getElementById('avFile');
   f&&f.click();
 }
-/* ── Profilbild ausrichten ─────────────────────────────────────────
-   Vorher wurde das gewählte Bild einfach genommen, wie es war: ein
-   Hochformat wurde im runden Rahmen mittig beschnitten, und wer nicht
-   zufällig in der Mitte stand, war halb abgeschnitten. Der Zuschnitt
-   passierte in CSS (object-fit), also überall ein bisschen anders.
+/* ══════════ BILD AUSRICHTEN ══════════════════════════════════════
+   Ein Werkzeug fuer jedes Bild, das zugeschnitten wird: Profilbild und
+   Gruppenbild (rund) und das Titelbild einer Party (breit).
 
-   Jetzt schneidet die App selbst: ein Quadrat, das man schieben und
-   zoomen kann, und was hochgeladen wird, ist genau das, was man sieht.
+   Vorher gab es nur das runde, als kleines Quadrat in einem Fenster.
+   Das Titelbild ging ungeschnitten hoch: wer kein Querformat hatte,
+   bekam auf der Karte einen zufaelligen Streifen aus der Mitte – beim
+   Flyer im Hochformat oft genau ohne Namen und Datum.
 
-   Der Rahmen ist quadratisch, nicht rund – gespeichert wird ein
-   Quadrat, rund macht es erst die Anzeige. Wer das Bild bis an den
-   Rand zieht, bekommt es zurückgeschoben: eine Ecke ohne Bild wäre ein
-   Loch im Profilbild. */
-const CROP_KANTE = 800;         // so gross wird die Datei am Ende
+   Jetzt wie bei Instagram und in den Fotos auf dem iPhone:
+   - Der Rahmen zeigt genau, was nachher zu sehen ist. Breit heisst
+     16:9 – so breit wie die Karte im Feed und das Bild oben in der
+     Party. Rundherum bleibt das Bild abgedunkelt sichtbar.
+   - Ein Finger schiebt, zwei Finger zoomen um die Stelle zwischen den
+     Fingern (nicht um die Mitte), am Rechner das Mausrad.
+   - Ueber den Rand hinaus wird es zaeh und federt zurueck, statt hart
+     anzuschlagen. Eine Ecke ohne Bild gibt es so nie.
+   - Beim Titelbild zusaetzlich "Ganzes Bild": nichts wird
+     abgeschnitten, der Rand kommt weich aus dem Bild selbst. Fuer
+     Flyer im Hochformat.
+   Hochgeladen wird genau, was im Rahmen liegt – gerechnet auf dem
+   Original, damit es scharf bleibt. */
+const BE_KREIS_KANTE = 800;                 // Profil- und Gruppenbild, Pixel
+const BE_BREIT_MAX = 1600, BE_BREIT_MIN = 960;  // Titelbild, Breite in Pixeln
+const BE_KOPIE_MAX = 2400;                  // zum Bewegen reicht eine kleinere Kopie
 
-let cropBild=null, cropZ=1, cropX=0, cropY=0, cropMin=1, cropFertigCB=null;
-let cropZieht=false, cropZeigerA=null, cropZeigerB=null, cropStartAbstand=0, cropStartZ=1;
+const be={offen:false,url:null,bild:null,kopie:null,weich:null,form:'kreis',modus:'fuellen',
+  z:1,zMin:1,zGanz:1,x:0,y:0,r:{x:0,y:0,b:1,h:1},cb:null,abbruch:null,
+  zeiger:new Map(),geste:null,lauf:null,plan:0,ruhe:0};
 
-function avCropOeffnen(datei, fertig){
-  const url=URL.createObjectURL(datei);
+const beGanz=()=>be.form==='breit'&&be.modus==='ganz';
+
+/* o = {datei, form:'kreis'|'breit', titel, zustand, fertig(blob, zustand), abbrechen} */
+function bildEditorOeffnen(o){
+  if(!o||!o.datei)return;
+  const url=URL.createObjectURL(o.datei);
   const bild=new Image();
   bild.onload=()=>{
-    cropBild=bild; cropFertigCB=fertig;
-    const b=document.getElementById('cropBuehne');
-    const seite=Math.min(b.clientWidth||300, 320);
-    const fl=document.getElementById('cropFlaeche');
-    const dpr=Math.min(window.devicePixelRatio||1, 2);
-    fl.style.width=seite+'px'; fl.style.height=seite+'px';
-    fl.width=Math.round(seite*dpr); fl.height=Math.round(seite*dpr);
-    // Kleinster Zoom: das Bild füllt das Quadrat gerade aus.
-    cropMin=Math.max(seite/bild.naturalWidth, seite/bild.naturalHeight);
-    cropZ=cropMin; cropX=0; cropY=0;
-    const regler=document.getElementById('cropZoom');
-    if(regler){ regler.min=100; regler.max=400; regler.value=100; }
-    avCropZeichnen();
-    document.getElementById('avCropOverlay').classList.add('open');
-    URL.revokeObjectURL(url);
+    if(!bild.naturalWidth||!bild.naturalHeight){ URL.revokeObjectURL(url); toast('Das Bild liess sich nicht öffnen. Wähle ein anderes.','error'); return; }
+    beAn();
+    if(be.offen)bildEditorZu(false);
+    // Die Adresse bleibt offen, bis der Editor zu ist: Safari wirft
+    // grosse Bilder bei wenig Speicher weg und laedt sie dann neu.
+    be.url=url; be.bild=bild; be.kopie=beKopie(bild); be.weich=null;
+    be.form=o.form==='breit'?'breit':'kreis';
+    be.modus=(be.form==='breit'&&o.zustand&&o.zustand.modus==='ganz')?'ganz':'fuellen';
+    be.cb=o.fertig||null; be.abbruch=o.abbrechen||null;
+    be.r={x:0,y:0,b:1,h:1};
+    const ed=document.getElementById('bildEditor');
+    document.getElementById('beTitel').textContent=o.titel||'Bild ausrichten';
+    ed.classList.toggle('breit',be.form==='breit');
+    document.getElementById('beModus').hidden=be.form!=='breit';
+    const knopf=document.getElementById('beFertig'); if(knopf)knopf.disabled=false;
+    ed.hidden=false; be.offen=true;
+    beLayout(o.zustand||null);
+    beModusZeigen();
+    requestAnimationFrame(()=>ed.classList.add('offen'));
+    // Die Leiste der App sofort weg, nicht erst bei der naechsten Messung
+    try{ window.__huelleLage&&window.__huelleLage(); }catch(e){}
   };
   bild.onerror=()=>{ URL.revokeObjectURL(url); toast('Das Bild liess sich nicht öffnen. Wähle ein anderes.','error'); };
   bild.src=url;
 }
 
-function cropSeite(){
-  const fl=document.getElementById('cropFlaeche');
-  return fl ? (parseFloat(fl.style.width)||300) : 300;
+/* Ein Handyfoto hat 12 Millionen Pixel. Fuers Schieben reicht eine
+   Kopie mit hoechstens 2400 Pixeln Kante – das Original braucht es erst
+   beim Speichern. */
+function beKopie(bild){
+  const g=Math.max(bild.naturalWidth,bild.naturalHeight);
+  if(g<=BE_KOPIE_MAX)return bild;
+  const f=BE_KOPIE_MAX/g, c=document.createElement('canvas');
+  c.width=Math.round(bild.naturalWidth*f); c.height=Math.round(bild.naturalHeight*f);
+  const st=c.getContext('2d'); if(!st)return bild;
+  st.imageSmoothingQuality='high'; st.drawImage(bild,0,0,c.width,c.height);
+  return c;
 }
 
-/* Hält das Bild im Rahmen. Ohne das schiebt man es weg und schaut in
-   ein leeres Quadrat. */
-function cropGrenzen(){
-  const seite=cropSeite();
-  const bw=cropBild.naturalWidth*cropZ, bh=cropBild.naturalHeight*cropZ;
-  const maxX=Math.max(0,(bw-seite)/2), maxY=Math.max(0,(bh-seite)/2);
-  cropX=Math.min(maxX, Math.max(-maxX, cropX));
-  cropY=Math.min(maxY, Math.max(-maxY, cropY));
+/* Rahmen und Flaeche ausmessen. Mit zustand (oder nach Drehen des
+   Telefons) bleibt der Ausschnitt derselbe. */
+function beLayout(zustand){
+  const bu=document.getElementById('beBuehne'), fl=document.getElementById('beFlaeche');
+  if(!bu||!fl||!be.bild)return;
+  const alt=zustand||(be.r.b>1?beZustand():null);
+  const W=bu.clientWidth||360, H=bu.clientHeight||480;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  fl.width=Math.round(W*dpr); fl.height=Math.round(H*dpr);
+  fl.style.width=W+'px'; fl.style.height=H+'px';
+  let b,h;
+  if(be.form==='breit'){ b=Math.max(120,Math.min(W-32,640,(H-40)*16/9)); h=b*9/16; }
+  else { b=h=Math.max(120,Math.min(W-48,H-40,380)); }
+  be.r={x:(W-b)/2,y:(H-h)/2,b,h};
+  const ra=document.getElementById('beRahmen');
+  if(ra){ ra.style.left=be.r.x+'px'; ra.style.top=be.r.y+'px'; ra.style.width=b+'px'; ra.style.height=h+'px'; }
+  const IW=be.bild.naturalWidth, IH=be.bild.naturalHeight;
+  be.zMin=Math.max(b/IW,h/IH);      // fuellt den Rahmen gerade aus
+  be.zGanz=Math.min(b/IW,h/IH);     // passt ganz hinein
+  if(alt){
+    be.z=be.zMin*Math.min(4,Math.max(1,Number(alt.zr)||1));
+    be.x=(Number(alt.fx)||0)*b; be.y=(Number(alt.fy)||0)*h;
+  }else{ be.z=be.zMin; be.x=0; be.y=0; }
+  beKlemmen(); beReglerSetzen(); beZeichnen();
 }
 
-function avCropZeichnen(){
-  const fl=document.getElementById('cropFlaeche');
-  if(!fl||!cropBild)return;
-  cropGrenzen();
-  const stift=fl.getContext('2d');
-  const seite=cropSeite();
-  const dpr=fl.width/seite;
-  stift.save();
-  stift.scale(dpr,dpr);
-  stift.clearRect(0,0,seite,seite);
-  stift.fillStyle='#0b0f26';
-  stift.fillRect(0,0,seite,seite);
-  const bw=cropBild.naturalWidth*cropZ, bh=cropBild.naturalHeight*cropZ;
-  stift.imageSmoothingQuality='high';
-  stift.drawImage(cropBild, seite/2-bw/2+cropX, seite/2-bh/2+cropY, bw, bh);
-  stift.restore();
+/* Der Ausschnitt, unabhaengig von der Bildschirmgroesse – damit
+   "Ausrichten" spaeter wieder genau dort anfaengt. */
+function beZustand(){
+  return {modus:be.modus, zr:be.z/be.zMin, fx:be.x/be.r.b, fy:be.y/be.r.h};
 }
 
-function avCropZoom(wert){
-  if(!cropBild)return;
-  cropZ=cropMin*(Number(wert)/100);
-  avCropZeichnen();
+function beGrenzen(z){
+  z=z||be.z;
+  return {mx:Math.max(0,(be.bild.naturalWidth*z-be.r.b)/2), my:Math.max(0,(be.bild.naturalHeight*z-be.r.h)/2)};
+}
+function beKlemmen(){
+  const g=beGrenzen();
+  be.x=Math.max(-g.mx,Math.min(g.mx,be.x));
+  be.y=Math.max(-g.my,Math.min(g.my,be.y));
+}
+// Ueber den Rand hinaus: je weiter, desto zaeher
+function beZaeh(roh,max,groesse){
+  if(Math.abs(roh)<=max)return roh;
+  return Math.sign(roh)*(max+Bewegung.gummiband(Math.abs(roh)-max,groesse));
+}
+// Bildschirmpunkt -> Abstand zur Mitte des Rahmens
+function bePunkt(cx,cy){
+  const r=document.getElementById('beBuehne').getBoundingClientRect();
+  return {x:cx-r.left-(be.r.x+be.r.b/2), y:cy-r.top-(be.r.y+be.r.h/2)};
 }
 
-function cropAbstand(a,b){
-  return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
+/* Fuers Ganze Bild: der Rand links und rechts. Ein winziges Abbild,
+   weich hochgezogen – so sieht es in jedem Browser gleich aus (einen
+   Weichzeichner im Canvas kennt Safari nicht ueberall). */
+function beWeich(){
+  if(be.weich)return be.weich;
+  const IW=be.bild.naturalWidth, IH=be.bild.naturalHeight;
+  const a=document.createElement('canvas'); a.width=32; a.height=18;
+  const sa=a.getContext('2d');
+  const f=Math.max(32/IW,18/IH);
+  if(sa){ sa.imageSmoothingQuality='high'; sa.drawImage(be.kopie,(32-IW*f)/2,(18-IH*f)/2,IW*f,IH*f); }
+  const b=document.createElement('canvas'); b.width=192; b.height=108;
+  const sw=b.getContext('2d');
+  if(sw){ sw.imageSmoothingQuality='high'; sw.drawImage(a,0,0,192,108); }
+  be.weich=b; return b;
 }
 
-function avCropAn(){
-  const b=document.getElementById('cropBuehne');
-  if(!b||b.dataset.bereit)return;
-  b.dataset.bereit='1';
+/* Malt das Bild so, wie es im Rahmen r liegt. k rechnet von Punkten auf
+   dem Bildschirm in die Zielgroesse um (1 = Bildschirm). Dieselbe
+   Funktion fuer Anzeige und Datei: was man sieht, ist was hochgeht. */
+function beMalen(st,quelle,r,k){
+  const IW=be.bild.naturalWidth, IH=be.bild.naturalHeight, ganz=beGanz();
+  const z=ganz?be.zGanz:be.z, x=ganz?0:be.x, y=ganz?0:be.y;
+  st.imageSmoothingEnabled=true; st.imageSmoothingQuality='high';
+  if(ganz){
+    st.save(); st.beginPath(); st.rect(r.x,r.y,r.b,r.h); st.clip();
+    st.drawImage(beWeich(),r.x,r.y,r.b,r.h);
+    st.fillStyle='rgba(9,13,36,.3)'; st.fillRect(r.x,r.y,r.b,r.h);
+    st.restore();
+  }
+  const bw=IW*z*k, bh=IH*z*k;
+  st.drawImage(quelle, r.x+r.b/2+x*k-bw/2, r.y+r.h/2+y*k-bh/2, bw, bh);
+}
 
-  b.addEventListener('pointerdown',e=>{
-    b.setPointerCapture?.(e.pointerId);
-    if(!cropZeigerA){ cropZeigerA={id:e.pointerId,x:e.clientX,y:e.clientY}; cropZieht=true; }
-    else if(!cropZeigerB){
-      cropZeigerB={id:e.pointerId,x:e.clientX,y:e.clientY};
-      cropStartAbstand=cropAbstand(cropZeigerA,cropZeigerB);
-      cropStartZ=cropZ;
-    }
+function beZeichnen(){
+  const fl=document.getElementById('beFlaeche');
+  if(!fl||!be.bild)return;
+  const st=fl.getContext('2d'); if(!st)return;
+  const W=parseFloat(fl.style.width)||fl.width, dpr=fl.width/W;
+  st.setTransform(dpr,0,0,dpr,0,0);
+  st.clearRect(0,0,W,fl.height/dpr);
+  beMalen(st,be.kopie,be.r,1);
+}
+function beZeichnenPlanen(){
+  if(be.plan)return;
+  be.plan=requestAnimationFrame(()=>{ be.plan=0; beZeichnen(); });
+}
+
+function beReglerSetzen(){
+  const r=document.getElementById('beZoom'); if(!r)return;
+  const v=Math.round(Math.min(400,Math.max(100,be.z/be.zMin*100)));
+  r.value=v; r.style.setProperty('--p',((v-100)/3).toFixed(1)+'%');
+}
+
+// Waehrend man schiebt oder zoomt, zeigt der Rahmen ein Drittel-Raster
+function beAktiv(an){
+  const ed=document.getElementById('bildEditor'); if(!ed)return;
+  clearTimeout(be.ruhe);
+  if(an)ed.classList.add('aktiv');
+  else be.ruhe=setTimeout(()=>ed.classList.remove('aktiv'),450);
+}
+
+function beGesteNeu(){
+  const p=[...be.zeiger.values()];
+  if(p.length>=2){
+    const a=p[0], b=p[1];
+    be.geste={art:'zoom',d0:Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)),
+      m0:bePunkt((a.x+b.x)/2,(a.y+b.y)/2),z0:be.z,x0:be.x,y0:be.y};
+  }else if(p.length===1){
+    be.geste={art:'zug',px:p[0].x,py:p[0].y,x0:be.x,y0:be.y};
+  }else be.geste=null;
+}
+
+/* Losgelassen ausserhalb des Randes: weich zurueck, mit der Feder, die
+   auch die Fenster benutzen. */
+function beZurueckfedern(){
+  const x0=be.x, y0=be.y;
+  beKlemmen();
+  const x1=be.x, y1=be.y;
+  if(Math.abs(x1-x0)<.5&&Math.abs(y1-y0)<.5){ beZeichnenPlanen(); return; }
+  be.x=x0; be.y=y0;
+  be.lauf=Bewegung.feder({von:0,nach:1,antwort:.32,
+    schritt:t=>{ be.x=x0+(x1-x0)*t; be.y=y0+(y1-y0)*t; beZeichnen(); },
+    fertig:()=>{ be.lauf=null; }});
+}
+
+function beAn(){
+  const bu=document.getElementById('beBuehne');
+  if(!bu||bu.dataset.bereit)return;
+  bu.dataset.bereit='1';
+
+  bu.addEventListener('pointerdown',e=>{
+    if(!be.offen||beGanz())return;
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    try{ bu.setPointerCapture(e.pointerId); }catch(_){}
+    if(be.lauf){ be.lauf.stop(); be.lauf=null; }
+    be.zeiger.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    beGesteNeu(); beAktiv(true);
   });
 
-  b.addEventListener('pointermove',e=>{
-    if(!cropBild)return;
-    if(cropZeigerB){
-      // Zwei Finger: zoomen
-      if(e.pointerId===cropZeigerA.id){ cropZeigerA.x=e.clientX; cropZeigerA.y=e.clientY; }
-      else if(e.pointerId===cropZeigerB.id){ cropZeigerB.x=e.clientX; cropZeigerB.y=e.clientY; }
-      const jetzt=cropAbstand(cropZeigerA,cropZeigerB);
-      if(cropStartAbstand>0){
-        cropZ=Math.min(cropMin*4, Math.max(cropMin, cropStartZ*(jetzt/cropStartAbstand)));
-        const regler=document.getElementById('cropZoom');
-        if(regler)regler.value=Math.round(cropZ/cropMin*100);
-        avCropZeichnen();
-      }
-      return;
+  bu.addEventListener('pointermove',e=>{
+    if(!be.zeiger.has(e.pointerId)||!be.geste)return;
+    be.zeiger.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    const g=be.geste, p=[...be.zeiger.values()];
+    if(g.art==='zug'){
+      const gr=beGrenzen();
+      be.x=beZaeh(g.x0+p[0].x-g.px,gr.mx,be.r.b);
+      be.y=beZaeh(g.y0+p[0].y-g.py,gr.my,be.r.h);
+    }else if(p.length>=2){
+      const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+      const m=bePunkt((p[0].x+p[1].x)/2,(p[0].y+p[1].y)/2);
+      const z=Math.min(be.zMin*4,Math.max(be.zMin,g.z0*d/g.d0));
+      const gr=beGrenzen(z);
+      // Der Punkt zwischen den Fingern bleibt unter den Fingern
+      be.z=z;
+      be.x=beZaeh(m.x-(g.m0.x-g.x0)*(z/g.z0),gr.mx,be.r.b);
+      be.y=beZaeh(m.y-(g.m0.y-g.y0)*(z/g.z0),gr.my,be.r.h);
+      beReglerSetzen();
     }
-    if(!cropZieht||e.pointerId!==cropZeigerA?.id)return;
-    cropX+=e.clientX-cropZeigerA.x;
-    cropY+=e.clientY-cropZeigerA.y;
-    cropZeigerA.x=e.clientX; cropZeigerA.y=e.clientY;
-    avCropZeichnen();
+    beZeichnenPlanen();
   });
 
-  const los=(e)=>{
-    if(cropZeigerB&&e.pointerId===cropZeigerB.id){ cropZeigerB=null; return; }
-    if(cropZeigerA&&e.pointerId===cropZeigerA.id){
-      cropZeigerA=cropZeigerB; cropZeigerB=null;
-      if(!cropZeigerA)cropZieht=false;
-    }
+  const los=e=>{
+    if(!be.zeiger.has(e.pointerId))return;
+    be.zeiger.delete(e.pointerId);
+    if(be.zeiger.size){ beGesteNeu(); return; }
+    be.geste=null;
+    beZurueckfedern(); beAktiv(false);
   };
-  b.addEventListener('pointerup',los);
-  b.addEventListener('pointercancel',los);
-  b.addEventListener('pointerleave',los);
+  bu.addEventListener('pointerup',los);
+  bu.addEventListener('pointercancel',los);
+
+  // Am Rechner: Mausrad (und Zwei-Finger-Geste auf dem Trackpad)
+  bu.addEventListener('wheel',e=>{
+    if(!be.offen||beGanz())return;
+    e.preventDefault();
+    const m=bePunkt(e.clientX,e.clientY), z0=be.z;
+    const z=Math.min(be.zMin*4,Math.max(be.zMin,z0*Math.exp(-e.deltaY*0.0015)));
+    be.x=m.x-(m.x-be.x)*(z/z0); be.y=m.y-(m.y-be.y)*(z/z0); be.z=z;
+    beKlemmen(); beReglerSetzen(); beZeichnenPlanen();
+    beAktiv(true); beAktiv(false);
+  },{passive:false});
+
+  window.addEventListener('resize',()=>{ if(be.offen)requestAnimationFrame(()=>beLayout()); });
+  document.addEventListener('keydown',e=>{ if(be.offen&&e.key==='Escape')bildEditorZu(); });
 }
 
-function avCropAbbrechen(){
-  document.getElementById('avCropOverlay')?.classList.remove('open');
-  cropBild=null; cropFertigCB=null;
-  cropZeigerA=null; cropZeigerB=null; cropZieht=false;
+function bildEditorZoom(wert){
+  if(!be.offen||beGanz())return;
+  const z0=be.z, z=be.zMin*Math.min(400,Math.max(100,Number(wert)||100))/100;
+  be.x*=z/z0; be.y*=z/z0; be.z=z;
+  beKlemmen(); beReglerSetzen(); beZeichnenPlanen();
+  beAktiv(true); beAktiv(false);
 }
 
-/* Was man sieht, wird hochgeladen – nichts anderes. Gerechnet wird auf
-   der Originalauflösung, damit der Zuschnitt scharf bleibt. */
-function avCropFertig(){
-  if(!cropBild||!cropFertigCB)return;
-  const btn=document.getElementById('cropJa');
-  if(btn){btn.disabled=true;btn.textContent='Moment…';}
-  const seite=cropSeite();
-  const fl=document.createElement('canvas');
-  fl.width=CROP_KANTE; fl.height=CROP_KANTE;
-  const stift=fl.getContext('2d');
-  stift.imageSmoothingQuality='high';
-  const faktor=CROP_KANTE/seite;
-  const bw=cropBild.naturalWidth*cropZ*faktor, bh=cropBild.naturalHeight*cropZ*faktor;
-  stift.fillStyle='#0b0f26'; stift.fillRect(0,0,CROP_KANTE,CROP_KANTE);
-  stift.drawImage(cropBild,
-    CROP_KANTE/2-bw/2+cropX*faktor, CROP_KANTE/2-bh/2+cropY*faktor, bw, bh);
-  const cb=cropFertigCB;
-  fl.toBlob((blob)=>{
-    if(btn){btn.disabled=false;btn.textContent='Als Profilbild nehmen';}
-    avCropAbbrechen();
-    if(blob)cb(blob);
-    else toast('Zuschneiden hat nicht geklappt. Versuch es mit einem anderen Bild.','error');
-  },'image/jpeg',0.9);
+function bildEditorModus(m){
+  if(be.form!=='breit'||!be.offen)return;
+  const neu=m==='ganz'?'ganz':'fuellen';
+  if(neu===be.modus)return;
+  be.modus=neu;
+  beModusZeigen(); beZeichnen();
+  nativeHaptik('leicht');
+}
+
+function beModusZeigen(){
+  const ganz=beGanz();
+  document.querySelectorAll('#beModus [data-m]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.m===be.modus)));
+  const zeile=document.getElementById('beZoomZeile'); if(zeile)zeile.classList.toggle('aus',ganz);
+  const regler=document.getElementById('beZoom'); if(regler)regler.disabled=ganz;
+  document.getElementById('bildEditor')?.classList.toggle('ganz',ganz);
+  const maus=window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  const hilfe=document.getElementById('beHilfe');
+  if(hilfe)hilfe.textContent=ganz
+    ? 'Nichts wird abgeschnitten. Der Rand kommt weich aus dem Bild.'
+    : (maus ? 'Ziehen zum Verschieben. Mit dem Mausrad zoomen.' : 'Ziehen zum Verschieben. Mit zwei Fingern zoomen.');
+}
+
+/* abgebrochen=false: nach "Fertig" – dann gibt es nichts abzubrechen. */
+function bildEditorZu(abgebrochen){
+  const ed=document.getElementById('bildEditor');
+  if(!ed||!be.offen)return;
+  const ab=abgebrochen===false?null:be.abbruch;
+  be.offen=false;
+  if(be.lauf){ be.lauf.stop(); be.lauf=null; }
+  if(be.plan){ cancelAnimationFrame(be.plan); be.plan=0; }
+  be.zeiger.clear(); be.geste=null; be.cb=null; be.abbruch=null;
+  if(be.url){ URL.revokeObjectURL(be.url); be.url=null; }
+  be.bild=null; be.kopie=null; be.weich=null;
+  ed.classList.remove('offen','aktiv');
+  setTimeout(()=>{ if(!be.offen)ed.hidden=true; },220);
+  try{ if(ab)ab(); }catch(e){ console.warn('[bild] abbrechen',e); }
+}
+
+/* Was im Rahmen liegt, wird zur Datei. */
+function bildEditorFertig(){
+  if(!be.offen||!be.bild||!be.cb)return;
+  const knopf=document.getElementById('beFertig');
+  if(knopf&&knopf.disabled)return;
+  if(knopf)knopf.disabled=true;
+  if(be.lauf){ be.lauf.stop(); be.lauf=null; }
+  beKlemmen();
+  let ob, oh;
+  if(be.form==='breit'){
+    // So viele Pixel, wie das Original im Rahmen hergibt – hoechstens 1600
+    const z=beGanz()?be.zGanz:be.z;
+    ob=Math.round(Math.min(BE_BREIT_MAX,Math.max(BE_BREIT_MIN,be.r.b/z)));
+    oh=Math.round(ob*9/16);
+  }else{ ob=oh=BE_KREIS_KANTE; }
+  const fehler=()=>{ if(knopf)knopf.disabled=false; toast('Das Bild liess sich nicht speichern. Versuch es mit einem anderen.','error'); };
+  try{
+    const c=document.createElement('canvas'); c.width=ob; c.height=oh;
+    const st=c.getContext('2d'); if(!st){ fehler(); return; }
+    st.fillStyle='#0b0f26'; st.fillRect(0,0,ob,oh);
+    beMalen(st,be.bild,{x:0,y:0,b:ob,h:oh},ob/be.r.b);
+    const cb=be.cb, zustand=beZustand();
+    c.toBlob(blob=>{
+      if(knopf)knopf.disabled=false;
+      if(!blob){ fehler(); return; }
+      bildEditorZu(false);
+      try{ cb(blob,zustand); }catch(e){ console.warn('[bild] fertig',e); }
+    },'image/jpeg',0.9);
+  }catch(e){ console.warn('[bild] zuschneiden',e); fehler(); }
 }
 
 let avLaeuft=false;
@@ -18060,13 +18386,38 @@ async function upAv(e){
   if(!f||avLaeuft)return;
   if(!/^image\//.test(f.type||'')){ toast('Bitte wähle ein Bild aus.','warn'); return; }
   // Erst ausrichten, dann hochladen.
-  avCropAn();
-  avCropOeffnen(f, (zugeschnitten)=>{ avHochladen(zugeschnitten); });
+  bildEditorOeffnen({datei:f, form:'kreis', titel:'Profilbild', fertig:(z)=>avHochladen(z)});
+}
+
+/* Wie bei Instagram: das neue Bild steht sofort da, mit einem Kreisel
+   darauf, bis es oben ist. Vorher passierte nach "Fertig" ein paar
+   Sekunden lang nichts, und man tippte nochmals. Klappt es nicht,
+   kommt das alte Bild zurück. */
+function avLaedtZeigen(url){
+  const ziele=[document.getElementById('epAvPreview'),
+    ...document.querySelectorAll('#profContent .prof-header .insta-av')];
+  ziele.forEach(el=>{
+    if(!el)return;
+    el.innerHTML='<img alt="" decoding="async" src="'+escAttr(url)+'"/>';
+    el.classList.add('laedt');
+  });
+}
+
+// Erst zeigen, wenn das Bild geladen ist – sonst blitzt kurz die Initiale auf
+function bildVorladen(url,ms){
+  return new Promise(fertig=>{
+    const b=new Image(), uhr=setTimeout(fertig,ms||4000);
+    b.onload=b.onerror=()=>{ clearTimeout(uhr); fertig(); };
+    b.src=url;
+  });
 }
 
 async function avHochladen(f){
   if(!f||avLaeuft)return;
   avLaeuft=true;
+  const lokal=URL.createObjectURL(f);
+  avLaedtZeigen(lokal);
+  let ok=false;
   try{
     const klein=await bildVerkleinern(f,'avatar');
     /* Immer dieselbe Endung: sonst bleiben bei jedem Formatwechsel alte
@@ -18081,8 +18432,36 @@ async function avHochladen(f){
     const url=u.publicUrl+'?v='+Date.now();
     const{error:pErr}=await sb.from('profiles').update({avatar_url:url}).eq('id',cUser.id);
     if(pErr){toast('Profilbild nicht gespeichert. Versuch es nochmals.','error');return;}
-    cProfile.avatar_url=url;updNavAv();renderProf();epAvZeichnen();
-  }finally{ avLaeuft=false; }
+    await bildVorladen(url);
+    cProfile.avatar_url=url; ok=true;
+    updNavAv();renderProf();epAvZeichnen();profilMerken();
+    nativeHaptik('erfolg');
+  }catch(err){
+    console.warn('[bild] profilbild',err);
+    toast('Das Bild wurde nicht hochgeladen. Versuch es nochmals.','error');
+  }finally{
+    avLaeuft=false;
+    if(!ok){ try{ renderProf(); }catch(_){} epAvZeichnen(); }
+    setTimeout(()=>URL.revokeObjectURL(lokal),2000);
+  }
+}
+
+/* Ein Tipp aufs eigene Profilbild – im Profil wie beim Bearbeiten.
+   Wie bei Instagram fragt die App, was man will: ein neues Bild oder
+   das jetzige weg. Ohne Bild gibt es nichts zu fragen, dann geht es
+   gleich zur Auswahl. (Gross ansehen: lange draufdrücken.) */
+function profilbildMenue(){
+  if(avLaeuft)return;
+  if(!cProfile?.avatar_url){ chgAv(); return; }
+  const icBild='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-4.8-4.8L6 19.5"/></svg>';
+  const icWeg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.9 12.2a1.5 1.5 0 0 0 1.5 1.3h6.2a1.5 1.5 0 0 0 1.5-1.3L17.5 7"/></svg>';
+  wahlSheet({titel:'Profilbild', optionen:[
+    {wert:'neu', titel:'Neues Profilbild wählen', ic:icBild},
+    {wert:'weg', titel:'Profilbild entfernen', ic:icWeg, gefahr:true},
+  ], waehlen:w=>{
+    if(w==='neu')chgAv();
+    else if(w==='weg')avEntfernen().catch(e=>{ console.warn('[bild] entfernen',e); toast(fehlerText(e),'error'); });
+  }});
 }
 
 // ── FULL PROFILE EDIT ──
@@ -18105,32 +18484,19 @@ function nameDatum(d){
 function epAvZeichnen(){
   const el=document.getElementById('epAvPreview');
   if(!el)return;
+  el.classList.remove('laedt');
   el.innerHTML=cProfile?.avatar_url
-    ? '<img loading="lazy" decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>'
+    ? '<img decoding="async" src="'+escAttr(cProfile.avatar_url)+'" alt=""/>'
     : anfang(cProfile?.full_name||cProfile?.username||'?');
   el.classList.toggle('pro-glow',!!cProfile?.is_pro);
-  const weg=document.getElementById('epAvWeg'); if(weg)weg.hidden=!cProfile?.avatar_url;
+  const link=document.querySelector('#editProfOverlay .ep-av-link');
+  if(link)link.textContent=cProfile?.avatar_url?'Profilbild bearbeiten':'Profilbild hinzufügen';
 }
 /* Profilbild wieder entfernen – das fehlte: wer einmal ein Bild hatte,
    konnte es nur ersetzen. Die Datei wird geloescht, das Profil zeigt
-   wieder die Initiale. */
-/* Das Bild wird geloescht – darum ein zweiter Tipp (wie Blockieren). */
-function avEntfernenTipp(btn){
-  if(!btn)return avEntfernen();
-  if(btn.disabled)return;
-  if(!btn.classList.contains('armed')){
-    btn.dataset.text=btn.textContent;
-    btn.classList.add('armed');
-    btn.textContent='Wirklich entfernen? Nochmals tippen';
-    btn._uhr=setTimeout(()=>{ if(btn.isConnected){ btn.classList.remove('armed'); btn.textContent=btn.dataset.text; } },4000);
-    return;
-  }
-  clearTimeout(btn._uhr);
-  btn.disabled=true;
-  Promise.resolve(avEntfernen())
-    .catch(e=>{ console.warn('[bild] entfernen',e); toast(fehlerText(e),'error'); })
-    .finally(()=>{ if(btn.isConnected){ btn.disabled=false; btn.classList.remove('armed'); btn.textContent=btn.dataset.text||'Entfernen'; } });
-}
+   wieder die Initiale. Gefragt wird im Auswahlblatt (profilbildMenue):
+   "Profilbild entfernen" steht dort rot und einzeln – das ist der
+   zweite Schritt, ein weiteres Nachfragen braucht es nicht. */
 async function avEntfernen(){
   if(!cUser||!cProfile?.avatar_url||avLaeuft)return;
   avLaeuft=true;
@@ -18210,7 +18576,17 @@ function openEditProfile(){
     epCount();
   }
   fillEpSocialIcons();
+  epSperrenZeigen();
   document.getElementById('editProfOverlay').classList.add('open');
+}
+
+/* Gesperrte Felder tragen das Schloss im Feld selbst – man sieht es,
+   bevor man hineintippt, nicht erst am Text darunter. */
+function epSperrenZeigen(){
+  document.querySelectorAll('#editProfOverlay label.ep-box').forEach(b=>{
+    const f=b.querySelector('input,textarea');
+    b.classList.toggle('zu',!!f&&f.disabled);
+  });
 }
 
 function closeEditProfile(){document.getElementById('editProfOverlay').classList.remove('open');}
@@ -18326,7 +18702,8 @@ async function saveProfileEdit(){
     if(error){toast(fehlerText(error),'error');return;}
     if(updates.username)cProfile.username_changed_at=new Date().toISOString();
     cProfile={...cProfile,...updates};
-    updNavAv();renderProf();
+    updNavAv();renderProf();profilMerken();
+    nativeHaptik('erfolg');
     closeEditProfile();
     }finally{
     epBusy=false;
@@ -19890,7 +20267,7 @@ function entwurfFortsetzen(){
     drinkOn=!!e.getraenke;
     deadlineOn=!!e.frist;
     bringDraft=Array.isArray(e.mitbringen)?e.mitbringen:[];
-    upImg=null;
+    clearImg();
     try{ entwurfKnoepfe(e); }catch(err){}
     // Die Anzeigen nachziehen, die sonst aus den Feldern gerechnet werden
     try{ updateWhenBox(); }catch(err){}
@@ -20237,7 +20614,7 @@ function cPrevUpdate(){
       +'<div class="cprev-ic" style="color:'+w.accent+'">'+iconSvg(key,52)+'</div></div>';
 
   box.innerHTML=
-    '<div class="cprev-media">'+media+'<div class="cprev-scrim"></div>'
+    '<div class="cprev-media" role="button" tabindex="0" aria-label="'+(upImg?'Titelbild ausrichten':'Titelbild hinzufügen')+'" onclick="titelbildTipp()">'+media+'<div class="cprev-scrim"></div>'
     +'<span class="cprev-chip" style="color:'+w.accent+';border-color:'+w.border+'">'+typeLabel+'</span></div>'
     +'<div class="cprev-body">'
     +'<div class="cprev-cat" style="color:'+w.accent+'">'+esc(cat||typeLabel)+'</div>'
@@ -20280,13 +20657,10 @@ function setCap(v,el){
   updateFeeBox();
 }
 function clearImg(){
-  upImg=null;
-  const p=document.getElementById('imgPrev');
-  if(p){p.style.display='none';p.removeAttribute('src');}
-  document.getElementById('imgPh').style.display='flex';
-  document.getElementById('imgBox')?.classList.remove('has-img');
+  if(upImg&&String(upImg).startsWith('blob:'))URL.revokeObjectURL(upImg);
+  upImg=null; upImgBlob=null; upImgDatei=null; upImgZustand=null;
   const f=document.getElementById('imgFile'); if(f)f.value='';
-  cPrevUpdate();
+  titelbildZeigen();
 }
 
 function selTypePro(type,el){
@@ -20971,18 +21345,45 @@ function updateDeadlineBox(){
   if(party&&d>party)el.textContent+=' – liegt nach der Party';
 }
 
+/* ── Titelbild ─────────────────────────────────────────────────────
+   Wählen öffnet gleich das Ausrichten, im Format der Karte (16:9).
+   Das Original bleibt in der Hand: "Ausrichten" fängt später wieder
+   beim ganzen Bild an, nicht bei einem schon beschnittenen, und genau
+   dort, wo man aufgehört hat. Hochgeladen wird erst beim Erstellen. */
+let upImgDatei=null, upImgBlob=null, upImgZustand=null;
+
+function titelbildWaehlen(){
+  const f=document.getElementById('imgFile');
+  if(f)f.click();
+}
 function prevImg(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    upImg=ev.target.result;
-    const p=document.getElementById('imgPrev');
-    p.src=upImg;p.style.display='block';
-    document.getElementById('imgPh').style.display='none';
-    document.getElementById('imgBox')?.classList.add('has-img');
-    cPrevUpdate();
-  };
-  r.readAsDataURL(f);
+  const f=e.target.files&&e.target.files[0];
+  e.target.value='';                 // dieselbe Datei nochmals wählen können
+  if(!f)return;
+  if(!/^image\//.test(f.type||'')){ toast('Bitte wähle ein Bild aus.','warn'); return; }
+  titelbildBearbeiten(f,null);
+}
+function titelbildAusrichten(){
+  if(upImgDatei)titelbildBearbeiten(upImgDatei,upImgZustand);
+  else titelbildWaehlen();
+}
+// Tipp aufs Bild in der Vorschau: mit Bild ausrichten, ohne Bild wählen
+function titelbildTipp(){ if(upImg)titelbildAusrichten(); else titelbildWaehlen(); }
+function titelbildBearbeiten(datei,zustand){
+  bildEditorOeffnen({datei, form:'breit', titel:'Titelbild', zustand, fertig:(blob,z)=>{
+    if(upImg&&String(upImg).startsWith('blob:'))URL.revokeObjectURL(upImg);
+    upImgDatei=datei; upImgZustand=z; upImgBlob=blob;
+    upImg=URL.createObjectURL(blob);
+    titelbildZeigen();
+    nativeHaptik('leicht');
+  }});
+}
+function titelbildZeigen(){
+  const hat=!!upImg;
+  const neu=document.getElementById('imgBox'), leiste=document.getElementById('imgLeiste');
+  if(neu)neu.hidden=hat;
+  if(leiste)leiste.hidden=!hat;
+  cPrevUpdate();
 }
 
 // Ohne diese Sperre legt jeder weitere Tipp eine weitere Party an. Genau so
@@ -21036,7 +21437,7 @@ async function submitEventInner(){
   let imgUrl=null;
   if(upImg){
     try{
-      const roh=await fetch(upImg).then(r=>r.blob());
+      const roh=upImgBlob||await fetch(upImg).then(r=>r.blob());
       const blob=await bildVerkleinern(roh,'party');
       const path=`events/${cUser.id}_${Date.now()}.jpg`;
       const{error:upErr}=await sb.storage.from('event-images').upload(path,blob,{contentType:blob.type||'image/jpeg',upsert:true});
@@ -21122,7 +21523,8 @@ async function submitEventInner(){
   }
 
   ['fName','fPrice','fCap','fDesc','fDrink','fDrinkDesc','fAddr','fDeadlineDate','fSpotify'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  drinkOn=false;deadlineOn=false;upImg=null;bringDraft=[];dressWahl='';endeWahl='';alterSetzen(null);
+  drinkOn=false;deadlineOn=false;bringDraft=[];dressWahl='';endeWahl='';alterSetzen(null);
+  clearImg();               // auch das Original und den Ausschnitt vergessen
   linkModus='pers';offenSetzen(false);
   entwurfWeg(true);            // veroeffentlicht ist nicht mehr Entwurf
   document.getElementById('fgDress')&&(document.getElementById('fgDress').style.display='none');
@@ -22503,8 +22905,7 @@ function grpBildWaehlen(ev){
   ev.target.value='';                    // dieselbe Datei nochmals waehlen koennen
   if(!f||grpBildLaeuft)return;
   if(!/^image\//.test(f.type||'')){ toast('Bitte wähle ein Bild aus.','warn'); return; }
-  avCropAn();
-  avCropOeffnen(f,(zugeschnitten)=>grpBildHochladen(zugeschnitten));
+  bildEditorOeffnen({datei:f, form:'kreis', titel:'Gruppenbild', fertig:(z)=>grpBildHochladen(z)});
 }
 
 async function grpBildHochladen(datei){
@@ -29015,10 +29416,141 @@ function avFaerben(wurzel){
   });
 }
 { let avPlan=0;
-  const avBeob=new MutationObserver(()=>{ if(avPlan)return; avPlan=requestAnimationFrame(()=>{ avPlan=0; avFaerben(); }); });
-  const los=()=>{ avFaerben(); avBeob.observe(document.body,{childList:true,subtree:true}); };
+  const avBeob=new MutationObserver(()=>{ if(avPlan)return; avPlan=requestAnimationFrame(()=>{ avPlan=0; avFaerben(); avGrossAnbinden(); }); });
+  const los=()=>{ avFaerben(); avGrossAnbinden(); avBeob.observe(document.body,{childList:true,subtree:true}); };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',los); else los();
 }
+
+/* ══════════ PROFILBILD GROSS ANSEHEN ══════════
+   Wie bei Instagram: lange auf ein Profilbild druecken, und es kommt
+   gross in die Mitte, der Rest wird unscharf. Loslassen, und es fliegt
+   zurueck an seinen Platz. Gilt fuer jedes Profilbild mit Foto – im
+   Profil, in Listen, Chats und in der Suche. Ein kurzer Tipp tut
+   weiter, was er immer tat.
+
+   Speichern laesst es sich auch gross nicht (kein Kontextmenue, keine
+   Auswahl) – wie ueberall sonst in der App.
+
+   Damit beim Festhalten nichts darunter mitscrollt oder ein Fenster
+   mitzieht, haengt an jedem Profilbild ein Zuhoerer, der das Bewegen
+   schluckt – aber nur, solange das grosse Bild offen ist. Er muss
+   schon beim Aufsetzen des Fingers da sein: spaeter angemeldet,
+   uebergehen ihn iPhone und Android fuer diese Beruehrung. */
+const AV_GROSS_WARTEN=320;      // ms Festhalten, bis das Bild aufgeht
+const avGross={uhr:0,start:null,quelle:null,offen:false,sperreBis:0,sperreEl:null,anim:null};
+
+function avGrossAnbinden(){
+  document.querySelectorAll(AV_KLASSEN).forEach(el=>{
+    if(el.dataset.avg)return;
+    el.dataset.avg='1';
+    el.addEventListener('touchmove',e=>{
+      if(!avGross.offen)return;
+      if(e.cancelable)e.preventDefault();
+      e.stopPropagation();
+    },{passive:false});
+  });
+}
+
+function avGrossKandidat(ziel){
+  const el=ziel&&ziel.closest&&ziel.closest(AV_KLASSEN);
+  if(!el||el.closest('#bildEditor,#avGross'))return null;
+  const img=el.querySelector('img');
+  if(!img||!img.complete||!img.naturalWidth)return null;
+  return {el,img};
+}
+
+const avGrossRuhig=()=>{ try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } };
+
+// Von wo nach wo: Mitte und Groesse des kleinen Bildes gegenueber dem grossen
+function avGrossFlug(el,bild){
+  const a=el.getBoundingClientRect(), b=bild.getBoundingClientRect();
+  if(!a.width||!b.width)return null;
+  return {dx:(a.left+a.width/2)-(b.left+b.width/2), dy:(a.top+a.height/2)-(b.top+b.height/2), s:Math.max(.04,a.width/b.width)};
+}
+
+function avGrossZeigen(){
+  const q=avGross.quelle;
+  if(!q||!q.el.isConnected)return;
+  const lage=document.getElementById('avGross'), bild=document.getElementById('avGrossBild');
+  if(!lage||!bild)return;
+  avGross.offen=true;
+  bild.src=q.img.currentSrc||q.img.src;
+  if(avGross.anim){ try{avGross.anim.cancel();}catch(e){} avGross.anim=null; }
+  lage.hidden=false;
+  const f=avGrossFlug(q.el,bild);
+  requestAnimationFrame(()=>lage.classList.add('an'));
+  if(f&&bild.animate&&!avGrossRuhig()){
+    // Federt leicht ueber das Ziel hinaus, wie bei Instagram
+    avGross.anim=bild.animate(
+      [{transform:'translate('+f.dx+'px,'+f.dy+'px) scale('+f.s+')'},{transform:'none'}],
+      {duration:380,easing:'cubic-bezier(.2,1.18,.36,1)'});
+  }
+  if(istApp())nativeHaptik('leicht');
+  else{ try{ navigator.vibrate&&navigator.vibrate(8); }catch(e){} }
+}
+
+function avGrossSchliessen(){
+  if(!avGross.offen)return;
+  avGross.offen=false;
+  // Der Klick, der nach dem Loslassen noch kommt, gehoert nicht dem Bild darunter
+  avGross.sperreBis=Date.now()+700; avGross.sperreEl=avGross.quelle?.el||null;
+  const lage=document.getElementById('avGross'), bild=document.getElementById('avGrossBild');
+  if(!lage||!bild)return;
+  lage.classList.remove('an');
+  const weg=()=>{
+    if(avGross.offen)return;
+    lage.hidden=true; bild.removeAttribute('src');
+    if(avGross.anim){ try{avGross.anim.cancel();}catch(e){} avGross.anim=null; }
+  };
+  if(avGross.anim){ try{avGross.anim.cancel();}catch(e){} avGross.anim=null; }
+  const q=avGross.quelle;
+  const f=q&&q.el.isConnected?avGrossFlug(q.el,bild):null;
+  if(f&&bild.animate&&!avGrossRuhig()){
+    const a=bild.animate(
+      [{transform:'none'},{transform:'translate('+f.dx+'px,'+f.dy+'px) scale('+f.s+')'}],
+      {duration:230,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+    avGross.anim=a; a.onfinish=weg;
+  }else setTimeout(weg,200);
+}
+
+function avGrossAbbrechen(){
+  clearTimeout(avGross.uhr); avGross.start=null;
+  if(avGross.offen)avGrossSchliessen();
+}
+
+document.addEventListener('pointerdown',e=>{
+  if(avGross.offen)return;
+  if(e.pointerType==='mouse'&&e.button!==0)return;
+  if(e.isPrimary===false){ avGrossAbbrechen(); return; }   // zweiter Finger: das ist ein Zoom, kein Festhalten
+  const k=avGrossKandidat(e.target);
+  clearTimeout(avGross.uhr); avGross.start=null;
+  if(!k)return;
+  avGross.start={x:e.clientX,y:e.clientY,id:e.pointerId}; avGross.quelle=k;
+  avGross.uhr=setTimeout(avGrossZeigen,AV_GROSS_WARTEN);
+},{passive:true});
+document.addEventListener('pointermove',e=>{
+  const st=avGross.start;
+  if(!st||avGross.offen||e.pointerId!==st.id)return;
+  // Wer wischt, will scrollen
+  if(Math.hypot(e.clientX-st.x,e.clientY-st.y)>10){ clearTimeout(avGross.uhr); avGross.start=null; }
+},{passive:true});
+const avGrossEnde=e=>{
+  const st=avGross.start;
+  if(!st||e.pointerId!==st.id)return;
+  avGrossAbbrechen();
+};
+document.addEventListener('pointerup',avGrossEnde,true);
+document.addEventListener('pointercancel',avGrossEnde,true);
+window.addEventListener('blur',avGrossAbbrechen);
+document.addEventListener('visibilitychange',()=>{ if(document.hidden)avGrossAbbrechen(); });
+document.addEventListener('click',e=>{
+  if(Date.now()>avGross.sperreBis)return;
+  const q=avGross.sperreEl, z=e.target;
+  if(q&&z&&(q.contains(z)||z.contains(q))){
+    e.preventDefault(); e.stopPropagation();
+    avGross.sperreBis=0;
+  }
+},true);
 
 /* Klickbare div mit role="button"/"radio" (Profilbild oben, Partytyp,
    Titelbild …): Enter und Leertaste loesen wie bei einem Knopf aus. */

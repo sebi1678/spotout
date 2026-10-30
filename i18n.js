@@ -4,6 +4,26 @@
    den Schlüssel hier mit. */
 window.SPOTOUT_I18N={
 en:{
+  /* Bild ausrichten, Profilbild gross, Profil bearbeiten (30.10.) */
+  "Profilbild":"Profile photo",
+  "Gruppenbild":"Group photo",
+  "Titelbild":"Cover photo",
+  "Ausfüllen":"Fill",
+  "Ganzes Bild":"Whole photo",
+  "Bild einpassen":"Fit the photo",
+  "Ziehen zum Verschieben. Mit zwei Fingern zoomen.":"Drag to move. Pinch with two fingers to zoom.",
+  "Ziehen zum Verschieben. Mit dem Mausrad zoomen.":"Drag to move. Use the scroll wheel to zoom.",
+  "Nichts wird abgeschnitten. Der Rand kommt weich aus dem Bild.":"Nothing gets cut off. The edges are filled softly from the photo.",
+  "Das Bild liess sich nicht speichern. Versuch es mit einem anderen.":"The photo couldn’t be saved. Try another one.",
+  "Danach kannst du es zurechtrücken.":"You can adjust it afterwards.",
+  "Ausrichten":"Adjust",
+  "Ersetzen":"Replace",
+  "Titelbild entfernen":"Remove cover photo",
+  "Titelbild ausrichten":"Adjust cover photo",
+  "Profilbild bearbeiten":"Edit profile photo",
+  "Profilbild hinzufügen":"Add profile photo",
+  "Neues Profilbild wählen":"Choose a new profile photo",
+  "Profilbild entfernen":"Remove profile photo",
   /* Eventfrog-Filter (30.10.) */
   "Art":"Type",
   "Partys & Clubs":"Parties & clubs",
@@ -2160,6 +2180,26 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  /* Bild ausrichten, Profilbild gross, Profil bearbeiten (30.10.) */
+  "Profilbild":"Photo de profil",
+  "Gruppenbild":"Photo du groupe",
+  "Titelbild":"Photo de couverture",
+  "Ausfüllen":"Remplir",
+  "Ganzes Bild":"Photo entière",
+  "Bild einpassen":"Ajuster la photo",
+  "Ziehen zum Verschieben. Mit zwei Fingern zoomen.":"Fais glisser pour déplacer. Pince à deux doigts pour zoomer.",
+  "Ziehen zum Verschieben. Mit dem Mausrad zoomen.":"Fais glisser pour déplacer. Zoome avec la molette.",
+  "Nichts wird abgeschnitten. Der Rand kommt weich aus dem Bild.":"Rien n’est coupé. Les bords sont remplis en douceur à partir de la photo.",
+  "Das Bild liess sich nicht speichern. Versuch es mit einem anderen.":"Impossible d’enregistrer la photo. Essaie avec une autre.",
+  "Danach kannst du es zurechtrücken.":"Tu pourras la recadrer ensuite.",
+  "Ausrichten":"Recadrer",
+  "Ersetzen":"Remplacer",
+  "Titelbild entfernen":"Retirer la photo de couverture",
+  "Titelbild ausrichten":"Recadrer la photo de couverture",
+  "Profilbild bearbeiten":"Modifier la photo de profil",
+  "Profilbild hinzufügen":"Ajouter une photo de profil",
+  "Neues Profilbild wählen":"Choisir une nouvelle photo de profil",
+  "Profilbild entfernen":"Supprimer la photo de profil",
   /* Eventfrog-Filter (30.10.) */
   "Art":"Type",
   "Partys & Clubs":"Soirées & clubs",
@@ -4317,6 +4357,26 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  /* Bild ausrichten, Profilbild gross, Profil bearbeiten (30.10.) */
+  "Profilbild":"Foto profilo",
+  "Gruppenbild":"Foto del gruppo",
+  "Titelbild":"Foto di copertina",
+  "Ausfüllen":"Riempi",
+  "Ganzes Bild":"Foto intera",
+  "Bild einpassen":"Adatta la foto",
+  "Ziehen zum Verschieben. Mit zwei Fingern zoomen.":"Trascina per spostare. Pizzica con due dita per lo zoom.",
+  "Ziehen zum Verschieben. Mit dem Mausrad zoomen.":"Trascina per spostare. Usa la rotellina per lo zoom.",
+  "Nichts wird abgeschnitten. Der Rand kommt weich aus dem Bild.":"Non viene tagliato nulla. I bordi vengono riempiti con la foto stessa.",
+  "Das Bild liess sich nicht speichern. Versuch es mit einem anderen.":"Impossibile salvare la foto. Prova con un’altra.",
+  "Danach kannst du es zurechtrücken.":"Potrai sistemarla dopo.",
+  "Ausrichten":"Sistema",
+  "Ersetzen":"Sostituisci",
+  "Titelbild entfernen":"Rimuovi la foto di copertina",
+  "Titelbild ausrichten":"Sistema la foto di copertina",
+  "Profilbild bearbeiten":"Modifica foto profilo",
+  "Profilbild hinzufügen":"Aggiungi foto profilo",
+  "Neues Profilbild wählen":"Scegli una nuova foto profilo",
+  "Profilbild entfernen":"Rimuovi foto profilo",
   /* Eventfrog-Filter (30.10.) */
   "Art":"Tipo",
   "Partys & Clubs":"Feste & club",
