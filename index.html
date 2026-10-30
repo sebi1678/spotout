@@ -3293,11 +3293,19 @@
     .attend-note-warn{
       background:rgba(255,176,32,.09);border-color:rgba(255,176,32,.26);color:#FFB020;
     }
+    /* Der Kreis ist ein <span> – ohne inline-block nimmt er Breite und
+       Hoehe nicht an. In Knoepfen ohne Flex wurde er so zu einem
+       schmalen, verzerrten Strich vor dem Text ("Wird gelöscht…").
+       Jetzt immer ein runder Kreis mit Abstand zum Text; in Flex-Knoepfen
+       sorgt deren gap fuer den Abstand. */
     .btn-spin{
+      display:inline-block;box-sizing:border-box;vertical-align:middle;
       width:15px;height:15px;border-radius:50%;flex-shrink:0;
+      margin:-3px 8px 0 0;
       border:2px solid rgba(255,255,255,.25);border-top-color:currentColor;
       animation:spin var(--dreh) linear infinite;
     }
+    .attend-btn .btn-spin{margin:0}
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* Teilnehmerliste */
@@ -8832,6 +8840,13 @@
     </div>
     <div class="modal-body">
     <div class="oe-filter" id="oeFilter">
+      <div class="oe-gruppe" id="oeArtTitel">Art</div>
+      <div class="oe-zeile" id="oeArt">
+        <button data-art="" class="on" onclick="setOeFilter('art','',this)">Alle</button>
+        <button data-art="party" onclick="setOeFilter('art','party',this)">Partys &amp; Clubs</button>
+        <button data-art="konzert" onclick="setOeFilter('art','konzert',this)">Konzerte</button>
+        <button data-art="fest" onclick="setOeFilter('art','fest',this)">Festivals &amp; Feste</button>
+      </div>
       <div class="oe-gruppe">Umkreis</div>
       <div class="oe-zeile" id="oeUmkreis">
         <button data-km="5"  onclick="setOeFilter('km',5,this)">5 km</button>
@@ -13518,7 +13533,7 @@ window.__huelleZurueck=async()=>{
 let sucheUhr=0;
 function sucheTippen(){
   clearTimeout(sucheUhr);
-  sucheUhr=setTimeout(()=>{ filterAll(); ortVorschlagPruefen(); },140);
+  sucheUhr=setTimeout(()=>{ filterAll(); ortVorschlagPruefen(); efSucheAnstossen(); },140);
 }
 
 let selGenderVal='';
@@ -14475,6 +14490,7 @@ function suchOrtSetzen(name,lat,lng){
   if(vorschlag)vorschlag.hidden=true;
   ortSchildZeichnen();
   filterAll();
+  externeLaden();
   if(mapInst){
     // Sanft hinueberziehen, wenn die Karte offen ist – sonst still
     // setzen, damit sie beim naechsten Oeffnen schon richtig steht.
@@ -14494,6 +14510,7 @@ function suchOrtLoeschen(){
   oeFilter.km=0;
   ortSchildZeichnen();
   filterAll();
+  externeLaden();
   if(typeof mapVis!=='undefined'&&mapVis){ mapKopfSetzen(); updMarkers(); mapFitAll(); }
 }
 
@@ -14522,6 +14539,7 @@ function ortSchildZeichnen(){
 function sucheLeeren(){
   const f=document.getElementById('searchInput');
   if(f){f.value='';f.focus();}
+  efSucheTreffer=[]; efSucheFuer='';
   filterAll();
 }
 
@@ -14534,17 +14552,22 @@ function filterAll(zuruecksetzen){
   const x=document.getElementById('sLoeschen');
   if(x)x.hidden=!q;
   const treffer={};
+  if(!q&&(efSucheTreffer.length||efSucheFuer)){ efSucheTreffer=[]; efSucheFuer=''; }
+  externAktuell=externSichtbar(q);
   ['events','public','private'].forEach(t=>{
     // Vergangenes gehört in den Kalender und ins Profil unter "Besucht",
     // nicht mehr in die Übersicht zum Anmelden.
     let list=evts.filter(e=>e.type===t&&!istVorbei(e));
-    if(t==='public')list=list.filter(oePasst);
+    // Die Filter gelten fuer Events und Öffentliche – Einladungen nicht
+    if(t!=='private')list=list.filter(e=>oePasst(e)&&artPasst(e));
     if(q)list=list.filter(e=>passtZurSuche(e,q));
     // Ein Umkreis fuer Events, Öffentliche und Private gleichermassen
     list=list.filter(e=>e.type==='private'||imUmkreis(e));   // Einladungen gelten ueberall
     const mitte=umkreisOrt();
     if(mitte)list=list.map(e=>({...e,_d:e.lat?distKm(mitte.lat,mitte.lng,e.lat,e.lng):9999})).sort((a,b)=>a._d-b._d);
-    treffer[t]=list.length;
+    // Unter Events zaehlen die Eventfrog-Events mit – sonst stand "0"
+    // am Reiter, waehrend darunter eine volle Liste lag.
+    treffer[t]=list.length+(t==='events'?externAktuell.length:0);
     renderGrid(t,list);
   });
   sucheAnzeigen(q,treffer);
@@ -14928,11 +14951,17 @@ function heroSetzen(){
   let von=jetzt, bis;
   if(wochenende){ bis=new Date(jetzt); bis.setDate(bis.getDate()+(7-tag)%7); bis.setHours(23,59,0,0); }
   else{ bis=new Date(jetzt); bis.setDate(bis.getDate()+1); bis.setHours(6,0,0,0); }
-  const n=(evts||[]).filter(e=>{ const st=evStart(e); return st&&st<=bis&&!istVorbei(e)&&(st>=von||isLive(e))&&(e.type!=='private'||e.created_by!==cUser?.id); }).length;
+  const imFenster=e=>{ const st=evStart(e); return st&&st<=bis&&!istVorbei(e)&&(st>=von||isLive(e)); };
+  const n=(evts||[]).filter(e=>imFenster(e)&&(e.type!=='private'||e.created_by!==cUser?.id)).length;
+  // Konzerte, Clubs und Festivals von Eventfrog in der Gegend zaehlen mit
+  const nEf=externNachNaehe(externeEvents).filter(imFenster).length;
   let z=document.getElementById('heroZahl');
-  if(!n){ if(z)z.remove(); return; }
+  if(!n&&!nEf){ if(z)z.remove(); return; }
   if(!z){ z=document.createElement('p'); z.id='heroZahl'; z.className='hero-zahl'; h.after(z); }
-  z.textContent=n+(n===1?' Party':' Partys')+(userLat!=null?' in deiner Nähe':'');
+  const nah=userLat!=null?' in deiner Nähe':'';
+  z.textContent=!nEf?(n+(n===1?' Party':' Partys')+nah)
+    :!n?(nEf+(nEf===1?' Event':' Events')+nah)
+    :((n+nEf)+' Partys und Events'+nah);
 }
 function renderFeed(){
   feedNeuBerechnen();
@@ -14971,18 +15000,18 @@ function renderFeed(){
   const ttl=document.querySelector('#fySection .fy-title');
   if(ttl&&ttl.childNodes[1])ttl.childNodes[1].textContent = fyModusJetzt()==='beliebt'?'Beliebt':'Für dich';
 
-  // Die Filterleiste gehört zu den öffentlichen Partys – sonst nirgends
+  // Die Filterleiste gehört zu Events und öffentlichen Partys
   const fbox=document.getElementById('oeLeiste');
   const ftreffer=document.getElementById('oeTreffer');
-  const oeffentlich=col==='public';
-  if(fbox)fbox.hidden=!oeffentlich;
+  const mitFilter=col!=='private';
+  if(fbox)fbox.hidden=!mitFilter;
+  oeFilterStand();
   if(ftreffer){
-    const zeig=oeffentlich&&oeFilterAktiv();
+    const zeig=mitFilter&&oeFilterZahl()>0;
     ftreffer.hidden=!zeig;
     if(zeig){
-      const alle=evts.filter(e=>e.type==='public'&&!istVorbei(e));
-      const uebrig=alle.filter(oePasst).length;
-      ftreffer.textContent=uebrig+' von '+alle.length+' Partys passen';
+      const {alle,uebrig,wort}=oeFilterZaehlen();
+      ftreffer.textContent=uebrig+' von '+alle+' '+wort[1]+' passen';
     }
   }
 
@@ -15027,7 +15056,7 @@ function feedAuswahl(col){
   /* Unter Events gehoeren die Eventfrog-Events dazu (nur in der Naehe,
      wie im Raster) – sonst stand oben "nichts los" ueber einer vollen
      Liste. */
-  const quelle=col==='events'?evts.concat(externNachNaehe(externeEvents)):evts;
+  const quelle=col==='events'?evts.concat(externSichtbar('')):evts;
   const pool=quelle.filter(e=>e.type===col&&!istVorbei(e)
               // Die eigene Party muss man sich nicht empfehlen lassen –
               // unter "Meine Partys" und im Kalender steht sie weiterhin.
@@ -15035,7 +15064,7 @@ function feedAuswahl(col){
               // undefined===undefined sonst als "eigene".)
               && (!e.created_by||e.created_by!==cUser?.id)
               // Dieselben Filter wie die Liste darunter (Gratis, Umkreis …)
-              && (col!=='public'||typeof oePasst!=='function'||oePasst(e))
+              && (col==='private'||(oePasst(e)&&artPasst(e)))
               && (col==='private'||typeof imUmkreis!=='function'||imUmkreis(e)))
     .map(e=>feedAufbereiten(e,now)).filter(e=>e._start);
   if(!pool.length)return [];
@@ -15239,10 +15268,12 @@ function istVoll(e){
   return belegtZahl(e) >= e.capacity;
 }
 
-/* ── Filter für öffentliche Partys ─────────────────────────────────
-   Sie erscheinen nur in der Spalte "Öffentlich". Alles auf 0 oder aus
-   heisst: nichts wird weggelassen. */
-const oeFilter = {km:0, h:0, frei:false, gratis:false};
+/* ── Filter für Events und öffentliche Partys ──────────────────────
+   Bis zum 30.10. nur unter "Öffentlich". Unter Events lagen aber die
+   meisten Anlaesse (Eventfrog), ohne jede Moeglichkeit einzugrenzen.
+   Jetzt gilt derselbe Filter fuer beide Reiter; "Art" gibt es nur unter
+   Events. Alles auf 0 oder aus heisst: nichts wird weggelassen. */
+const oeFilter = {km:0, h:0, frei:false, gratis:false, art:''};
 
 function setOeFilter(art, wert, el){
   if(art==='km'){
@@ -15264,6 +15295,9 @@ function setOeFilter(art, wert, el){
     oeFilter.h=wert;
     document.querySelectorAll('#oeZeit button').forEach(b=>b.classList.remove('on'));
     el?.classList.add('on');
+  }else if(art==='art'){
+    oeFilter.art=wert||'';
+    document.querySelectorAll('#oeArt button').forEach(b=>b.classList.toggle('on',b.dataset.art===oeFilter.art));
   }else{
     oeFilter[art]=!oeFilter[art];                 // an und wieder aus
     el?.classList.toggle('on', oeFilter[art]);
@@ -15274,12 +15308,17 @@ function setOeFilter(art, wert, el){
 }
 
 function oeFilterOeffnen(){
+  // "Art" gibt es nur unter Events – öffentliche Partys sind alle Partys
+  const ev=curCol==='events';
+  const t=document.getElementById('oeArtTitel'), z=document.getElementById('oeArt');
+  if(t)t.hidden=!ev; if(z)z.hidden=!ev;
   document.getElementById('oeFilterOverlay').classList.add('open');
   oeFilterStand();
 }
 
 function oeFilterZuruecksetzen(){
-  oeFilter.km=0; oeFilter.h=0; oeFilter.frei=false; oeFilter.gratis=false;
+  oeFilter.km=0; oeFilter.h=0; oeFilter.frei=false; oeFilter.gratis=false; oeFilter.art='';
+  document.querySelectorAll('#oeArt button').forEach(b=>b.classList.toggle('on', b.dataset.art===''));
   document.querySelectorAll('#oeUmkreis button').forEach(b=>b.classList.toggle('on', b.dataset.km==='0'));
   document.querySelectorAll('#oeZeit button').forEach(b=>b.classList.toggle('on', b.dataset.h==='0'));
   document.querySelectorAll('#oeRest button').forEach(b=>b.classList.remove('on'));
@@ -15289,7 +15328,25 @@ function oeFilterZuruecksetzen(){
 
 // Wie viele Filter sind gesetzt? Die Zahl steht am Knopf.
 function oeFilterZahl(){
-  return (oeFilter.km>0?1:0)+(oeFilter.h>0?1:0)+(oeFilter.frei?1:0)+(oeFilter.gratis?1:0);
+  return (oeFilter.km>0?1:0)+(oeFilter.h>0?1:0)+(oeFilter.frei?1:0)+(oeFilter.gratis?1:0)
+    +(oeFilter.art&&curCol==='events'?1:0);
+}
+
+/* Wie viele Anlaesse hat der offene Reiter – ohne und mit Filter?
+   Unter Events samt Eventfrog. Fuer den Knopf im Filterfenster und die
+   Zeile "12 von 80 passen". */
+function oeFilterZaehlen(){
+  const col=curCol==='events'?'events':'public';
+  const q=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+  const zaehle=()=>evts.filter(e=>e.type===col&&!istVorbei(e)&&imUmkreis(e)
+      &&(!q||passtZurSuche(e,q))&&oePasst(e)&&artPasst(e)).length
+    +(col==='events'?externSichtbar(q).length:0);
+  const uebrig=zaehle();
+  const vorher={...oeFilter};
+  Object.assign(oeFilter,{km:0,h:0,frei:false,gratis:false,art:''});
+  const alle=zaehle();
+  Object.assign(oeFilter,vorher);
+  return {alle,uebrig,wort:col==='events'?['Event','Events']:['Party','Partys']};
 }
 
 function oeFilterStand(){
@@ -15303,16 +15360,15 @@ function oeFilterStand(){
 
   const fertig=document.getElementById('oeFertig');
   if(fertig){
-    const alle=evts.filter(e=>e.type==='public'&&!istVorbei(e));
-    const uebrig=alle.filter(oePasst).length;
-    fertig.textContent=uebrig===alle.length
-      ? 'Alle '+alle.length+' Partys anzeigen'
-      : (uebrig===0?'Keine Party passt':uebrig+' '+(uebrig===1?'Party':'Partys')+' anzeigen');
+    const {alle,uebrig,wort}=oeFilterZaehlen();
+    fertig.textContent=uebrig===alle
+      ? 'Alle '+alle+' '+wort[1]+' anzeigen'
+      : (uebrig===0?(curCol==='events'?'Kein Event passt':'Keine Party passt'):uebrig+' '+(uebrig===1?wort[0]:wort[1])+' anzeigen');
   }
 }
 
 function oeFilterAktiv(){
-  return oeFilter.km>0 || oeFilter.h>0 || oeFilter.frei || oeFilter.gratis;
+  return oeFilter.km>0 || oeFilter.h>0 || oeFilter.frei || oeFilter.gratis || !!oeFilter.art;
 }
 
 /* Liegt die Party im eingestellten Umkreis? Mittelpunkt ist der
@@ -15333,7 +15389,8 @@ function oePasst(e){
     if((st-Date.now())/36e5 > oeFilter.h)return false;
   }
   if(oeFilter.frei && istVoll(e))return false;
-  if(oeFilter.gratis && ((e.price||0)+(e.drink_price||0))>0)return false;
+  // Bei Eventfrog steht price:0 nur, weil der Preis unbekannt ist
+  if(oeFilter.gratis && (e.extern || ((e.price||0)+(e.drink_price||0))>0))return false;
   return true;
 }
 
@@ -15344,14 +15401,16 @@ function oePasst(e){
    anzukommen. Wer mehr will, tippt einmal und bekommt die nächsten
    zwölf. Die Zahl im Knopf sagt vorher, wie viele noch kommen. */
 const GRID_SCHRITT=12;
-let gridZeigt={events:GRID_SCHRITT,public:GRID_SCHRITT,private:GRID_SCHRITT};
+let gridZeigt={events:GRID_SCHRITT,public:GRID_SCHRITT,private:GRID_SCHRITT,ef:24};
 let gridListe={events:[],public:[],private:[]};
 
 function gridZuruecksetzen(){
-  gridZeigt={events:GRID_SCHRITT,public:GRID_SCHRITT,private:GRID_SCHRITT};
+  gridZeigt={events:GRID_SCHRITT,public:GRID_SCHRITT,private:GRID_SCHRITT,ef:24};
 }
 
 function gridMehr(type){
+  // 'ef' sind die Eventfrog-Events unter Events: 24 auf einmal
+  if(type==='ef'){ gridZeigt.ef=(gridZeigt.ef||24)+24; renderGrid('events',gridListe.events||[]); return; }
   gridZeigt[type]=(gridZeigt[type]||GRID_SCHRITT)+GRID_SCHRITT;
   renderGrid(type,gridListe[type]||[]);
 }
@@ -15364,41 +15423,135 @@ function gridMehr(type){
    hier alles still. Felder: id, titel, beginn (timestamptz), ort_name,
    adresse, lat, lng, bild_url, ticket_url, kategorie. */
 let externeEvents=[], externeAus=false, externeMitOrt=false;
+const EF_FELDER='id,titel,beginn,ende,ort_name,adresse,lat,lng,bild_url,bild_credit,ticket_url,kategorie';
+
+/* Der Abgleich nimmt Rubriken nach Stichworten ("fest", "ball", "party").
+   Dabei rutschten Filmfestivals, Volleyball-Spiele, Kinderpartys und
+   Diashows mit hinein – in einer Party-App fuer 16- bis 25-Jaehrige
+   Laerm. Hier fliegen sie raus, egal was in der Tabelle steht. */
+const EF_RAUS_KAT=/^(filmfestival|live-fotoreportage|volleyball|fu(ss|ß)ball|handball|basketball|ballsport|ballett|kinderfest|kinderparty|literaturfestival)/i;
+const EF_RAUS_GRUPPE=/\/p\/(kinderveranstaltungen|events-for-children|evenements-pour-les-enfants|kino|cinema|sport-fitness|fuehrungen-vortraege)\//i;
+function efPasst(x){
+  return !!x&&!EF_RAUS_KAT.test(String(x.kategorie||'').trim())&&!EF_RAUS_GRUPPE.test(String(x.ticket_url||''));
+}
+// Zeile aus externe_events -> Event, wie die App es kennt
+function efAufbereiten(x){
+  const d=new Date(x.beginn);
+  // Bildnachweise wie "-" oder "." sind keine: weglassen statt "Foto: -"
+  if(x.bild_credit&&!/[0-9A-Za-zÀ-ÿ]{2}/.test(x.bild_credit))x.bild_credit=null;
+  // Datum in Ortszeit: slice(0,10) war UTC – nach Mitternacht einen Tag daneben
+  const tag=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return {id:'ef-'+x.id, extern:x, type:'events', name:x.titel, date:tag,
+    time:d.toTimeString().slice(0,5), address:[x.ort_name,x.adresse].filter(Boolean).join(', '),
+    image_url:x.bild_url, category:x.kategorie||'Event', price:0, drink_price:0, attending:0, status:'live', lat:x.lat, lng:x.lng};
+}
+
+/* Was fuer ein Anlass? Fuer den Filter "Art" unter Events. Bei Eventfrog
+   sagt der Pfad der Ticketseite die Hauptrubrik (/p/partys/…,
+   /p/konzerte/…); fehlt er, entscheidet der Name der Rubrik. Eigene
+   Events tragen ihre Kategorie als Wort ("Clubnacht", "Dorffest"). */
+function eventArt(e){
+  const g=(String(e.extern?.ticket_url||'').match(/\/p\/([^/]+)\//)||[])[1]||'';
+  if(/^(partys|parties|soirees-fetes|dating|fasnacht|carnaval|carnival)/.test(g))return 'party';
+  if(/^(konzerte|concerts|klassik)/.test(g))return 'konzert';
+  if(/^(festivals|volksfeste|fetes|religion|essen-trinken|eating-drinking|tanz|dance)/.test(g))return 'fest';
+  const k=String(e.category||'').toLowerCase();
+  if(/party|partys|disco|house|techno|edm|electronic|club|ball \/ gala|motto|studierend|single|salsa|bachata|bar|lounge|geburtstag|fasnacht/.test(k))return 'party';
+  if(/konzert|rock|metal|punk|hip-hop|rap|reggae|schlager|electro|latin|jazz|klassik/.test(k))return 'konzert';
+  if(/festival|fest|feste|openair|1\. august/.test(k))return 'fest';
+  return 'andere';
+}
+function artPasst(e){
+  return !oeFilter.art||e.type!=='events'||eventArt(e)===oeFilter.art;
+}
+
 async function externeLaden(){
   if(externeAus)return;
   try{
     // ende fuer "bis …" im Event-Fenster und den Kalender
     /* Vorher die ersten 150 der ganzen Schweiz – das reichte gerade bis
-       morgen. Mit Standort: alles im Umkreis von ~60 km fuer drei Wochen
-       (Rechteck, externNachNaehe schneidet danach genau zu). Ohne: die
-       naechste Woche der ganzen Schweiz. */
+       morgen. Mit Mittelpunkt (eigener Standort oder gesuchter Ort):
+       alles im Umkreis von ~60 km fuer drei Wochen (Rechteck,
+       externNachNaehe schneidet danach genau zu). Ohne: die naechste
+       Woche der ganzen Schweiz. */
+    const mitte=umkreisOrt();
     const ab=new Date(Date.now()-3*3600e3).toISOString();
-    let q=sb.from('externe_events').select('id,titel,beginn,ende,ort_name,adresse,lat,lng,bild_url,bild_credit,ticket_url,kategorie')
-      .gte('beginn',ab);
-    if(typeof userLat==='number'&&typeof userLng==='number'){
+    let q=sb.from('externe_events').select(EF_FELDER).gte('beginn',ab);
+    if(mitte){
       q=q.lte('beginn',new Date(Date.now()+21*864e5).toISOString())
-        .gte('lat',userLat-0.55).lte('lat',userLat+0.55).gte('lng',userLng-0.8).lte('lng',userLng+0.8);
+        .gte('lat',mitte.lat-0.55).lte('lat',mitte.lat+0.55).gte('lng',mitte.lng-0.8).lte('lng',mitte.lng+0.8);
     }else{
       q=q.lte('beginn',new Date(Date.now()+7*864e5).toISOString());
     }
-    externeMitOrt=typeof userLat==='number';
+    externeMitOrt=!!mitte;
     const{data,error}=await q.order('beginn',{ascending:true}).limit(1000);
     if(error){ if(/PGRST205|42P01|does not exist|schema cache/i.test(error.message+error.code))externeAus=true; else console.warn('[eventfrog]',error.message); return; }
-    externeEvents=(data||[]).map(x=>{ const d=new Date(x.beginn);
-      // Bildnachweise wie "-" oder "." sind keine: weglassen statt "Foto: -"
-      if(x.bild_credit&&!/[0-9A-Za-zÀ-ÿ]{2}/.test(x.bild_credit))x.bild_credit=null;
-      // Datum in Ortszeit: slice(0,10) war UTC – nach Mitternacht einen Tag daneben
-      const tag=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-      return {id:'ef-'+x.id, extern:x, type:'events', name:x.titel, date:tag,
-        time:d.toTimeString().slice(0,5), address:[x.ort_name,x.adresse].filter(Boolean).join(', '),
-        image_url:x.bild_url, category:x.kategorie||'Event', price:0, drink_price:0, attending:0, status:'live', lat:x.lat, lng:x.lng}; });
-    if(document.getElementById('page-main')?.classList.contains('active'))filterAll();
+    externeEvents=(data||[]).filter(efPasst).map(efAufbereiten);
+    if(document.getElementById('page-main')?.classList.contains('active'))filterAll(false);
   }catch(e){ console.warn('[eventfrog]',e); }
 }
-function externNachNaehe(liste){
-  if(typeof userLat!=='number'||typeof userLng!=='number')return liste;
-  const km=(a,b,c,d)=>{ const r=Math.PI/180, x=(c-a)*r, y=(d-b)*r*Math.cos((a+c)/2*r); return 6371*Math.sqrt(x*x+y*y); };
-  return liste.filter(e=>e.lat==null||km(userLat,userLng,e.lat,e.lng)<=60);
+// Nur was um den Mittelpunkt liegt (Standort oder gesuchter Ort)
+function externNachNaehe(liste,km){
+  const mitte=umkreisOrt();
+  if(!mitte)return liste;
+  const r=km||60;
+  return liste.filter(e=>e.lat==null||distKm(mitte.lat,mitte.lng,e.lat,e.lng)<=r);
+}
+
+/* ── Suche in allen Eventfrog-Events ───────────────────────────────
+   Geladen ist nur die Gegend (oder eine Woche). Wer "techno" oder
+   "Zürich" sucht, bekam darum "0" – obwohl Eventfrog Hunderte hat.
+   Jetzt fragt die Suche zusaetzlich die ganze Tabelle (nächste
+   Wochen, ganze Schweiz) und mischt die Treffer dazu. */
+let efSucheTreffer=[], efSucheFuer='', efSucheUhr=null;
+function efSucheAnstossen(){
+  clearTimeout(efSucheUhr);
+  const roh=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+  if(externeAus)return;
+  if(roh.length<2){
+    if(efSucheTreffer.length||efSucheFuer){ efSucheTreffer=[]; efSucheFuer=''; }
+    return;
+  }
+  if(roh===efSucheFuer)return;
+  efSucheUhr=setTimeout(async()=>{
+    // Zeichen, die die Abfrage zerlegen wuerden, fallen weg
+    const wort=roh.replace(/["\\*%(),]/g,' ').replace(/\s+/g,' ').trim();
+    if(wort.length<2)return;
+    const muster='"*'+wort+'*"';
+    try{
+      const{data,error}=await sb.from('externe_events').select(EF_FELDER)
+        .gte('beginn',new Date(Date.now()-3*3600e3).toISOString())
+        .or(['titel','ort_name','adresse','kategorie'].map(f=>f+'.ilike.'+muster).join(','))
+        .order('beginn',{ascending:true}).limit(400);
+      // Schon weitergetippt: diese Antwort gilt nicht mehr
+      if((document.getElementById('searchInput')?.value||'').trim().toLowerCase()!==roh)return;
+      if(error){ console.warn('[eventfrog] suche',error.message); return; }
+      efSucheTreffer=(data||[]).filter(efPasst).map(efAufbereiten);
+      efSucheFuer=roh;
+      filterAll(false);
+    }catch(e){ console.warn('[eventfrog] suche',e); }
+  },300);
+}
+
+/* Welche Eventfrog-Events gerade zu sehen sind. Liste, Feed, Karte und
+   alle Zahlen fragen diese eine Funktion – sonst zeigt die Liste 40
+   Events, waehrend am Reiter "0" steht. */
+let externAktuell=[];
+function externSichtbar(q){
+  if(q==null)q=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+  let l=externeEvents;
+  if(q&&efSucheTreffer.length){
+    const m=new Map(externeEvents.map(e=>[e.id,e]));
+    efSucheTreffer.forEach(e=>m.set(e.id,e));
+    l=[...m.values()].sort((a,b)=>String(a.extern.beginn).localeCompare(String(b.extern.beginn)));
+  }
+  l=l.filter(e=>!istVorbei(e)&&oePasst(e)&&artPasst(e));
+  if(q)l=l.filter(e=>passtZurSuche(e,q));
+  // Ein gesetzter Umkreis gilt immer. Ohne: bei einer Suche die ganze
+  // Schweiz (wer "Zürich" sucht, will Zürich), sonst die Gegend.
+  if(oeFilter.km>0)l=l.filter(imUmkreis);
+  else if(!q)l=externNachNaehe(l);
+  return l;
 }
 /* Eventfrog moechte genannt werden: jede Karte traegt "Tickets ·
    Eventfrog", dazu der Bildnachweis, falls es einen gibt, und unter der
@@ -15423,7 +15576,8 @@ function externQuelle(){
    gemerkten Momentaufnahme. */
 let efOffen=null;
 function efFinden(id){
-  const x=externeEvents.find(e=>e.extern.id===id)?.extern;
+  // Auch Treffer aus der Suche (ganze Schweiz) lassen sich oeffnen
+  const x=(externeEvents.find(e=>e.extern.id===id)||efSucheTreffer.find(e=>e.extern.id===id))?.extern;
   if(x)return x;
   return efKalenderLesen().find(k=>k.id===id)||null;
 }
@@ -15484,7 +15638,7 @@ function efZeichnen(){
     +'<div class="ef-zeile">'+ic.zeit+'<div><small>Wann</small><b>'+esc(efWann(x))+'</b></div></div>'
     +wo
     +'<div class="ef-knoepfe">'
-      +(x.ticket_url?'<button class="ef-haupt" onclick="efTickets()" aria-label="Tickets bei Eventfrog (öffnet Eventfrog)">Tickets bei Eventfrog</button>':'')
+      +(x.ticket_url?'<button class="ef-haupt" onclick="efTickets()" aria-label="'+escAttr(efTicketText(x)+' (öffnet eine andere Seite)')+'">'+esc(efTicketText(x))+'</button>':'')
       +'<div class="ef-zweit-reihe">'
         +'<button class="ef-zweit'+(im?' an':'')+'" id="efKalKnopf" onclick="efKalenderTipp()" aria-pressed="'+im+'" aria-label="'
           +(im?'Aus meinem Kalender entfernen':'In meinen Kalender')+'">'+ic.kal+'<span>'+(im?'Im Kalender ✓ – entfernen':'In meinen Kalender')+'</span></button>'
@@ -15497,6 +15651,19 @@ function efZeichnen(){
     +'</div>'
     +'</div>';
   // Uebersetzt wird von selbst (MutationObserver, planeUebersetzung)
+}
+/* Rund ein Fuenftel der Events verkauft nicht ueber Eventfrog, sondern
+   ueber Ticketcorner, Kulturticket & Co. Dort stand trotzdem "Tickets
+   bei Eventfrog" – und man landete woanders. Jetzt steht, wohin es geht. */
+function efTicketText(x){
+  let host='';
+  try{ host=new URL(x?.ticket_url||'').hostname.replace(/^www\./,''); }catch(_){}
+  if(!host||/eventfrog\./.test(host))return 'Tickets bei Eventfrog';
+  const namen={'ticketcorner.ch':'Ticketcorner','kulturticket.ch':'Kulturticket','starticket.ch':'Starticket',
+    'petzi.ch':'Petzi','ticketino.com':'Ticketino','seetickets.com':'See Tickets','eventbrite.ch':'Eventbrite',
+    'eventbrite.com':'Eventbrite','advance-ticket.ch':'Advance Ticket','tixly.ch':'Tixly','ticketmaster.ch':'Ticketmaster'};
+  const n=namen[host]||Object.entries(namen).find(([h])=>host.endsWith('.'+h))?.[1];
+  return n?'Tickets bei '+n:'Zu den Tickets';
 }
 function efTickets(){
   const u=efOffen?.ticket_url; if(!u)return;
@@ -15597,25 +15764,35 @@ function renderGrid(type,list){
   const oben=feedObenIds(type);
   const alle=list;
   list=list.filter(e=>!oben.has(e.id));
-  // Eventfrog-Events haengen hinten an die eigenen Events an
-  const externAlle=type==='events'?externNachNaehe(externeEvents):[];
+  // Eventfrog-Events haengen hinten an die eigenen Events an – dieselbe
+  // Auswahl wie am Reiter gezaehlt (Suche, Filter, Umkreis)
+  const externAlle=type==='events'?externAktuell:[];
   const extern=externAlle.filter(e=>!oben.has(e.id));
+  const pfeilEf='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+  /* Vorher brach die Liste nach 40 Eventfrog-Events kommentarlos ab.
+     Jetzt wie bei den eigenen: ein Knopf fuer die naechsten. */
+  const efTeil=()=>{
+    const zeigt=Math.min(gridZeigt.ef||24,extern.length), rest=extern.length-zeigt;
+    return extern.slice(0,zeigt).map(externKarte).join('')
+      +(rest>0?'<button class="grid-mehr" onclick="gridMehr(\'ef\')">Noch '+rest+(rest===1?' Event':' Events')+' anzeigen'+pfeilEf+'</button>':'')
+      +externQuelle();
+  };
   /* Alles steht schon oben: kein "nichts los" und keine leere
      Ueberschrift. Die Nennung von Eventfrog bleibt. */
   const allesOben=!list.length&&!extern.length&&(alle.length>0||externAlle.length>0);
   if(type!=='private')g.closest('.col-panel')?.classList.toggle('alles-oben',allesOben&&!externAlle.length);
   if(allesOben){ setzeHTML(g,externAlle.length?externQuelle():''); return; }
   const karte=gross?(e=>grossKarteHTML(feedAufbereiten(e,new Date()))):cardHTML;
-  if(!list.length&&extern.length){ setzeHTML(g,extern.slice(0,40).map(externKarte).join('')+externQuelle()); return; }
+  if(!list.length&&extern.length){ setzeHTML(g,efTeil()); return; }
   if(!list.length){
     const w=worldVars(type);
     const icons={events:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',public:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',private:'<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/>'};
     /* Gibt es Partys, aber Suche, Filter oder Umkreis blenden alle aus,
        ist "hier ist nichts los" falsch – dann sagen, woran es liegt. */
     const q=(document.getElementById('searchInput')?.value||'').trim();
-    const versteckt=evts.some(e=>e.type===type&&!istVorbei(e));
+    const versteckt=evts.some(e=>e.type===type&&!istVorbei(e))||(type==='events'&&externeEvents.length>0);
     if(versteckt&&(q||oeFilterAktiv())){
-      g.innerHTML=`<div class="empty"><div class="empty-icon" style="color:${w.accent}">${pikto({events:'events',public:'gaeste',private:'privat'}[type]||'events',26)}</div><p>Keine Party passt zu ${q?'deiner Suche':'deinen Filtern'}.</p>`
+      g.innerHTML=`<div class="empty"><div class="empty-icon" style="color:${w.accent}">${pikto({events:'events',public:'gaeste',private:'privat'}[type]||'events',26)}</div><p>${type==='events'?'Kein Event':'Keine Party'} passt zu ${q?'deiner Suche':'deinen Filtern'}.</p>`
         +(q?'<button class="cset" style="margin-top:14px" onclick="sucheLeeren()">Suche löschen</button>'
            :oeFilterAktiv()?'<button class="cset" style="margin-top:14px" onclick="oeFilterZuruecksetzen()">Filter zurücksetzen</button>':'')
         +'</div>';
@@ -15635,7 +15812,7 @@ function renderGrid(type,list){
       : (list.length>GRID_SCHRITT
           ? '<div class="grid-ende">Das waren alle '+alle.length+'.</div>'
           : ''))
-    +(rest<=0&&extern.length?extern.slice(0,40).map(externKarte).join('')+externQuelle():''));
+    +(rest<=0&&extern.length?efTeil():''));
 }
 
 /* ── Wer von deinen Leuten ist dabei? ──────────────────────────────
@@ -23703,6 +23880,17 @@ const I18N_PAT=[
   [/^(?!\d)(.+) ist dabei$/,{en:"$1 is going", fr:"$1 y va", it:"$1 ci va"}],
   [/^1 Party anzeigen$/,{en:"Show 1 party", fr:"Afficher 1 soirée", it:"Mostra 1 festa"}],
   [/^(\d+) Partys anzeigen$/,{en:"Show $1 parties", fr:"Afficher $1 soirées", it:"Mostra $1 feste"}],
+  // Eventfrog, Suche und Filter unter Events (30.10.)
+  [/^Alle (\d+) Events anzeigen$/,{en:"Show all $1 events", fr:"Afficher les $1 événements", it:"Mostra tutti i $1 eventi"}],
+  [/^1 Event anzeigen$/,{en:"Show 1 event", fr:"Afficher 1 événement", it:"Mostra 1 evento"}],
+  [/^(\d+) Events anzeigen$/,{en:"Show $1 events", fr:"Afficher $1 événements", it:"Mostra $1 eventi"}],
+  [/^Noch (\d+) Events? anzeigen$/,{en:"Show $1 more", fr:"Afficher $1 de plus", it:"Mostra altri $1"}],
+  [/^(\d+) von (\d+) Events passen$/,{en:"$1 of $2 events match", fr:"$1 événements sur $2 correspondent", it:"$1 eventi su $2 corrispondono"}],
+  [/^(\d+) Events? in deiner Nähe$/,{en:"$1 events near you", fr:"$1 événements près de chez toi", it:"$1 eventi vicino a te"}],
+  [/^(\d+) Events?$/,{en:"$1 events", fr:"$1 événements", it:"$1 eventi"}],
+  [/^(\d+) Partys und Events in deiner Nähe$/,{en:"$1 parties and events near you", fr:"$1 soirées et événements près de chez toi", it:"$1 feste ed eventi vicino a te"}],
+  [/^(\d+) Partys und Events$/,{en:"$1 parties and events", fr:"$1 soirées et événements", it:"$1 feste ed eventi"}],
+  [/^Tickets bei (.+)$/,{en:"Tickets at $1", fr:"Billets chez $1", it:"Biglietti su $1"}],
   [/^(\d+) kommen$/,{en:"$1 are coming", fr:"$1 viennent", it:"$1 vengono"}],
   [/^bis (\d+) Gäste$/,{en:"up to $1 guests", fr:"jusqu’à $1 invités", it:"fino a $1 ospiti"}],
   [/^über (\d+) Gäste$/,{en:"over $1 guests", fr:"plus de $1 invités", it:"oltre $1 ospiti"}],
@@ -27109,7 +27297,7 @@ function mapKopfSetzen(){
   const q=(document.getElementById('searchInput')?.value||'').trim();
   if(q)teile.push('Suche: '+q);
   const zahl=Number(document.getElementById('oeZahl')?.textContent||0);
-  if(curCol==='public'&&zahl>0)teile.push(zahl===1?'1 Filter':zahl+' Filter');
+  if(curCol!=='private'&&zahl>0)teile.push(zahl===1?'1 Filter':zahl+' Filter');
   u.textContent=teile.join(' · ');
   // Im kleinen Kasten ist nur Platz fuer die Kurzform
   const pille=document.getElementById('mapPille');
@@ -27404,8 +27592,8 @@ function mapPasst(e, now){
   const q=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
   if(q&&!passtZurSuche(e,q))return false;
 
-  // oePasst traegt die Filter der oeffentlichen Partys
-  if(e.type==='public'&&typeof oePasst==='function'&&!oePasst(e))return false;
+  // Filter gelten fuer Events und Öffentliche (Art nur bei Events)
+  if(e.type!=='private'&&!(oePasst(e)&&artPasst(e)))return false;
 
   // Und derselbe Umkreis wie in der Liste – sonst zeigen Karte und
   // Liste Verschiedenes.
@@ -27463,7 +27651,7 @@ function updMarkers(){
 
   // Dieselbe Auswahl wie in der Liste – mapPasst prueft Kategorie,
   // Suche und Filter. Eventfrog nur im Reiter Events und im selben Umkreis.
-  const externAufKarte=curCol==='events'?externNachNaehe(externeEvents||[]):[];
+  const externAufKarte=curCol==='events'?externAktuell:[];
   [...evts,...externAufKarte].forEach(e=>{
     if(e.lat==null||e.lng==null)return;
     const st=evStart(e); if(!st)return;
@@ -27500,7 +27688,7 @@ function updMarkers(){
         m.bindPopup(()=>'<div class="popup-when" style="color:'+w.accent+'">'+esc(live?'Läuft gerade':fyWhen({...e,_start:st}))+'</div>'
           +'<div class="popup-name">'+esc(e.name||'Event')+'</div>'
           +'<div class="popup-meta">'+esc(x.ort_name||(e.address||'').split(',')[0]||'Schweiz')+'<br>Quelle: Eventfrog</div>'
-          +'<button class="popup-btn" onclick="externOeffnen(\''+x.id+'\')">Tickets bei Eventfrog</button>');
+          +'<button class="popup-btn" onclick="externOeffnen(\''+x.id+'\')">Details ansehen</button>');
       }else
       m.bindPopup(()=>{
         const ev=evts.find(x=>x.id===id)||e, s2=evStart(ev)||st, w2=worldVars(ev.type), lv=isLive(ev);

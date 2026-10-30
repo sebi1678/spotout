@@ -40,6 +40,16 @@ const PASST = [
   "schlager", "latin", "reggae", "metal", "punk",
 ];
 
+/* Stichworte treffen auch Fremdes: "fest" steckt in "Filmfestival",
+   "ball" in "Volleyball", "party" in "Kinderparty", "live" in
+   "Live-Fotoreportage". Diese Rubriken gehoeren nicht in eine Party-App. */
+const NICHT = [
+  "film", "kino", "kinder", "volleyball", "fussball", "fußball", "handball", "basketball",
+  "ballsport", "ballett", "fotoreportage", "diashow", "vortrag", "literatur",
+];
+// Kinderanlaesse unter einer neutralen Rubrik ("Konzert") erkennt man am Pfad
+const NICHT_PFAD = /\/p\/(kinderveranstaltungen|events-for-children|evenements-pour-les-enfants|kino|cinema|sport-fitness|fuehrungen-vortraege)\//i;
+
 const admin = createClient(SB_URL, SB_SERVICE_KEY, { auth: { persistSession: false } });
 
 type Text = Record<string, string | null> | string | null | undefined;
@@ -196,7 +206,7 @@ Deno.serve(async (req) => {
     const rubriken = await rubrikenLaden();
     const passt = (id?: number) => {
       const n = (rubriken.get(Number(id)) ?? "").toLowerCase();
-      return !!n && PASST.some((w) => n.includes(w));
+      return !!n && PASST.some((w) => n.includes(w)) && !NICHT.some((w) => n.includes(w));
     };
 
     /* Dasselbe Event kann auf zwei Seiten der Antwort stehen (die Liste
@@ -208,7 +218,7 @@ Deno.serve(async (req) => {
     const gute: EfEvent[] = [];
     for (const e of events) {
       const sichtbar = e.visible !== false && e.published !== false && !e.cancelled;
-      if (sichtbar && e.begin && passt(e.rubricId) && text(e.title)) gute.push(e);
+      if (sichtbar && e.begin && passt(e.rubricId) && text(e.title) && !NICHT_PFAD.test(e.url ?? "")) gute.push(e);
       else weg.push(String(e.id));      // abgesagt, versteckt oder nicht (mehr) passend
     }
 
@@ -252,7 +262,12 @@ Deno.serve(async (req) => {
       if (error) throw new Error("Speichern: " + error.message);
     }
     for (let i = 0; i < weg.length; i += 500) {
-      await admin.from("externe_events").delete().in("eventfrog_id", weg.slice(i, i + 500));
+      const teil = weg.slice(i, i + 500);
+      // Bilder mit weg – sonst bleiben sie im Speicher liegen, ohne Event
+      const { data: mitBild } = await admin.from("externe_events").select("bild_url").in("eventfrog_id", teil).not("bild_url", "is", null);
+      const pfade = (mitBild ?? []).map((x) => String(x.bild_url).split(`/${BUCKET}/`)[1]).filter(Boolean);
+      if (pfade.length) await admin.storage.from(BUCKET).remove(pfade);
+      await admin.from("externe_events").delete().in("eventfrog_id", teil);
     }
 
     const bilder = await bilderNachholen();

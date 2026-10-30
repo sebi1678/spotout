@@ -4,6 +4,15 @@
    den Schlüssel hier mit. */
 window.SPOTOUT_I18N={
 en:{
+  /* Eventfrog-Filter (30.10.) */
+  "Art":"Type",
+  "Partys & Clubs":"Parties & clubs",
+  "Konzerte":"Concerts",
+  "Festivals & Feste":"Festivals & fairs",
+  "Zu den Tickets":"Get tickets",
+  "Kein Event passt":"No event matches",
+  "Kein Event passt zu deiner Suche.":"No event matches your search.",
+  "Kein Event passt zu deinen Filtern.":"No event matches your filters.",
   /* Apple/Google im Browser, Profil teilen (23.10.) */
   "Mit Apple fortfahren":"Continue with Apple",
   "Mit Google fortfahren":"Continue with Google",
@@ -2151,6 +2160,15 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  /* Eventfrog-Filter (30.10.) */
+  "Art":"Type",
+  "Partys & Clubs":"Soirées & clubs",
+  "Konzerte":"Concerts",
+  "Festivals & Feste":"Festivals & fêtes",
+  "Zu den Tickets":"Vers les billets",
+  "Kein Event passt":"Aucun événement ne correspond",
+  "Kein Event passt zu deiner Suche.":"Aucun événement ne correspond à ta recherche.",
+  "Kein Event passt zu deinen Filtern.":"Aucun événement ne correspond à tes filtres.",
   /* Apple/Google im Browser, Profil teilen (23.10.) */
   "Mit Apple fortfahren":"Continuer avec Apple",
   "Mit Google fortfahren":"Continuer avec Google",
@@ -4299,6 +4317,15 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  /* Eventfrog-Filter (30.10.) */
+  "Art":"Tipo",
+  "Partys & Clubs":"Feste & club",
+  "Konzerte":"Concerti",
+  "Festivals & Feste":"Festival & sagre",
+  "Zu den Tickets":"Vai ai biglietti",
+  "Kein Event passt":"Nessun evento corrisponde",
+  "Kein Event passt zu deiner Suche.":"Nessun evento corrisponde alla tua ricerca.",
+  "Kein Event passt zu deinen Filtern.":"Nessun evento corrisponde ai tuoi filtri.",
   /* Apple/Google im Browser, Profil teilen (23.10.) */
   "Mit Apple fortfahren":"Continua con Apple",
   "Mit Google fortfahren":"Continua con Google",
