@@ -5715,7 +5715,13 @@
     }
     .oe-zeile button.on{background:var(--pink);border-color:var(--pink);color:#fff}
     .oe-filter[hidden]{display:none!important}
-    .oe-treffer{font-size:.74rem;color:var(--muted);margin:-4px 0 10px}
+    /* Trefferzahl und "zuruecksetzen" teilen sich eine Zeile mit festem
+       Rand. Vorher stand die Zahl als loses Inline-Element ohne Rand:
+       links abgeschnitten und halb ueber "Sortiert nach …". */
+    .oe-status{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:-2px 16px 14px;font-size:.76rem;line-height:1.35}
+    .oe-status[hidden]{display:none!important}
+    .oe-treffer{display:block;min-width:0;flex:1 1 auto;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .oe-status .oe-zurueck{margin:0;flex:0 0 auto;white-space:nowrap}
 
     /* Die Filter stecken hinter einem Knopf. Drei Reihen Chips über der
        ganzen Seite waren mehr Bedienoberfläche als Inhalt. */
@@ -8118,8 +8124,11 @@
         <svg class="pk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M20.2 3.8v4.6h-4.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.7" fill="url(#pkPink)"/><path transform="translate(18.6 17.6) scale(0.8)" d="M0-2.2.55-.55 2.2 0 .55.55 0 2.2-.55.55-2.2 0-.55-.55z" fill="#FFE08A"/></svg>
       </button>
     </div>
-    <div class="oe-zurueck" id="oeReset" hidden role="button" tabindex="0" onclick="oeFilterZuruecksetzen()">Filter zurücksetzen</div>
-    <span class="oe-treffer" id="oeTreffer" hidden></span>
+    <!-- Eine Zeile: links wie viele passen, rechts zuruecksetzen -->
+    <div class="oe-status" id="oeStatus" hidden>
+      <span class="oe-treffer" id="oeTreffer" hidden></span>
+      <div class="oe-zurueck" id="oeReset" hidden role="button" tabindex="0" onclick="oeFilterZuruecksetzen()">Filter zurücksetzen</div>
+    </div>
 
     <div class="fy-sub" id="fySub">Sortiert nach Nähe, Zeitpunkt und Andrang</div>
     <div id="feedWrap">
@@ -9912,6 +9921,28 @@ const PW_LINK=(()=>{
       tokenHash:p.get('type')==='recovery'?p.get('token_hash'):null
     };
   }catch(e){ return {neu:false,abgelaufen:false,tokenHash:null}; }
+})();
+/* "Weiteres Konto hinzufügen" (30.10.): In der App legt die Hülle vor
+   jedem Laden die zuletzt gemeldete Sitzung zurück in den Speicher
+   (vorlauf.ts – Schutz, falls iOS den Speicher räumt). Wer auf
+   "Weiteres Konto" tippte, war nach dem Neuladen darum wieder im
+   alten Konto, und es sah aus, als täte der Knopf nichts. Hier, BEVOR
+   supabase den Speicher liest, fliegt genau diese alte Sitzung noch
+   einmal raus – nur beim ersten Laden danach, damit man sich mit
+   demselben Konto auch wieder anmelden kann. */
+(function(){
+  try{
+    const roh=sessionStorage.getItem('spotout_konto_neu');
+    if(!roh)return;
+    sessionStorage.removeItem('spotout_konto_neu');
+    const m=JSON.parse(roh);
+    if(!m||!m.weg||Date.now()-(m.zeit||0)>5*60*1000)return;
+    Object.keys(localStorage).filter(k=>/^sb-.*-auth-token$/.test(k)).forEach(k=>{
+      let id='';
+      try{ const s=JSON.parse(localStorage.getItem(k)||'null'); id=((s&&s.currentSession)?s.currentSession:s)?.user?.id||''; }catch(e){}
+      if(!id||id===m.weg)localStorage.removeItem(k);
+    });
+  }catch(e){}
 })();
 const sb=createClient(SB_URL,SB_KEY);
 
@@ -12641,21 +12672,35 @@ async function kontoWechseln(id){
 }
 
 async function kontoHinzufuegen(){
+  if(kontoNeuLaeuft)return;
   closeOverlay('kontenOverlay');
-  // Die anderen Konten bleiben gespeichert – nur die laufende Sitzung
-  // endet. Sonst kaeme man mit dem neuen Konto in einer halb alten
-  // Ansicht heraus. scope 'local': nur dieses Geraet, nicht alle.
   /* Nicht abmelden: das wuerde die gespeicherte Sitzung dieses Kontos auf dem
      Server ungueltig machen, und der Wechsel zurueck ginge nicht mehr. Nur die
      Sitzung aus diesem Browser nehmen – gespeichert bleibt sie in der Kontoliste. */
   kontoNeuLaeuft=true;
-  try{ kontoMerken(); }catch(e){}
+  const weg=cUser?.id||'';
+  // Erst sichern (vorher ohne await: lief das Neuladen schneller, fehlte
+  // das Konto danach in der Liste)
+  try{ await kontoMerken(); }catch(e){}
   await pushTokenLoesen();
   try{ sb.auth.stopAutoRefresh(); }catch(e){}
   try{
     Object.keys(localStorage).filter(k=>/^sb-.*-auth-token$/.test(k)).forEach(k=>localStorage.removeItem(k));
     sessionStorage.setItem('spotout_neu_registrieren','1');
+    if(weg)sessionStorage.setItem('spotout_konto_neu',JSON.stringify({weg,zeit:Date.now()}));
   }catch(e){}
+  /* In der App: der Hülle sofort den leeren Speicher melden (gleiche
+     Nachricht wie ihr eigener Wächter), damit sie die alte Sitzung nicht
+     beim Neuladen zurücklegt und gleich ihre Anmeldung zeigt. */
+  if(istApp()){
+    try{
+      const werte={};
+      Object.keys(localStorage).filter(k=>k.indexOf('sb-')===0||k.indexOf('supabase')===0)
+        .forEach(k=>{ werte[k]=localStorage.getItem(k); });
+      window.ReactNativeWebView?.postMessage(JSON.stringify({__huelle:'sitzung',werte}));
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,400));
+  }
   location.reload();
 }
 
@@ -15011,7 +15056,8 @@ function renderFeed(){
     ftreffer.hidden=!zeig;
     if(zeig){
       const {alle,uebrig,wort}=oeFilterZaehlen();
-      ftreffer.textContent=uebrig+' von '+alle+' '+wort[1]+' passen';
+      // Kurz, damit es neben "Filter zurücksetzen" auch auf kleinen Handys Platz hat
+      ftreffer.textContent=zahlText(uebrig)+' von '+zahlText(alle)+' passen';
     }
   }
 
@@ -15357,6 +15403,8 @@ function oeFilterStand(){
   if(knopf)knopf.classList.toggle('an',n>0);
   if(zahl){zahl.hidden=n===0;zahl.textContent=n;}
   if(reset)reset.hidden=n===0;
+  const status=document.getElementById('oeStatus');
+  if(status)status.hidden=n===0||curCol==='private';
 
   const fertig=document.getElementById('oeFertig');
   if(fertig){
@@ -23885,6 +23933,7 @@ const I18N_PAT=[
   [/^1 Event anzeigen$/,{en:"Show 1 event", fr:"Afficher 1 événement", it:"Mostra 1 evento"}],
   [/^(\d+) Events anzeigen$/,{en:"Show $1 events", fr:"Afficher $1 événements", it:"Mostra $1 eventi"}],
   [/^Noch (\d+) Events? anzeigen$/,{en:"Show $1 more", fr:"Afficher $1 de plus", it:"Mostra altri $1"}],
+  [/^([\d'’.,  ]+) von ([\d'’.,  ]+) passen$/,{en:"$1 of $2 match", fr:"$1 sur $2 correspondent", it:"$1 su $2 corrispondono"}],
   [/^(\d+) von (\d+) Events passen$/,{en:"$1 of $2 events match", fr:"$1 événements sur $2 correspondent", it:"$1 eventi su $2 corrispondono"}],
   [/^(\d+) Events? in deiner Nähe$/,{en:"$1 events near you", fr:"$1 événements près de chez toi", it:"$1 eventi vicino a te"}],
   [/^(\d+) Events?$/,{en:"$1 events", fr:"$1 événements", it:"$1 eventi"}],
@@ -24231,7 +24280,7 @@ async function wartelisteVerlassen(eventId,btn){
     }
     if(sessionStorage.getItem('spotout_neu_registrieren')){
       sessionStorage.removeItem('spotout_neu_registrieren');
-      setTimeout(()=>{ try{ if(!cUser){ zurAnmeldung('register'); toast('Melde dich mit dem anderen Konto an oder erstelle eines','info'); } }catch(e){} },1200);
+      setTimeout(()=>{ try{ if(!cUser){ zurAnmeldung('login'); toast('Melde dich mit dem anderen Konto an oder erstelle eines','info'); } }catch(e){} },1200);
     }
   }catch(e){}
 })();
