@@ -4,6 +4,21 @@
    den Schlüssel hier mit. */
 window.SPOTOUT_I18N={
 en:{
+  "Ohne Pro fortfahren":"Continue without Pro",
+  /* Social Media für alle (30.10.) */
+  "Social Media":"Social media",
+  "Steht auf deinem Profil – für alle, bei einem privaten Profil nur für deine Follower. Du kannst auch den ganzen Link einfügen.":"Shown on your profile – to everyone, or only to your followers if your profile is private. You can also paste the whole link.",
+  "Bio und Geschlecht – sichtbar auf deinem Profil. 7 Tage gratis testen.":"Bio and gender — visible on your profile. 7 days free.",
+  "Instagram und Snapchat hinzufügen":"Add Instagram and Snapchat",
+  ". Ohne Pro siehst du nur, dass es jemand ist. Dazu eine Meldung, sobald jemand, dem du folgst, bei einer Party dabei ist. Ein Tipp auf den Namen zeigt das Profil – mit Instagram und Snapchat, wenn die Person sie eingetragen hat.":". Without Pro you only see that someone is. Plus a notification as soon as someone you follow is going to a party. Tap a name to see their profile – with Instagram and Snapchat, if they’ve added them.",
+  "Eine Bio auf deinem Profil":"A bio on your profile",
+  "Erzähl in zwei Sätzen, wer du bist – auch":"Say who you are in two sentences – even",
+  "Instagram, Snapchat & Co. im Profil":"Instagram, Snapchat & co. on your profile",
+  "Bio im Profil":"Bio on your profile",
+  "Du siehst, wer auf die Partys geht, deine Bio steht auf deinem Profil, und du kannst jeden anschreiben.":"You see who’s going to parties, your bio is on your profile, and you can message anyone.",
+  "Ja. Deine Bio, Instagram und Snapchat sind für alle sichtbar, bei einem privaten Profil für deine Follower.":"Yes. Your bio, Instagram and Snapchat are visible to everyone – with a private profile, to your followers.",
+  "Deine Bio für alle":"Your bio for everyone",
+  "Erzähl in zwei Sätzen, wer du bist. Sie steht jetzt auf deinem Profil.":"Say who you are in two sentences. It’s now on your profile.",
   /* Bild ausrichten, Profilbild gross, Profil bearbeiten (30.10.) */
   "Profilbild":"Profile photo",
   "Gruppenbild":"Group photo",
@@ -1156,7 +1171,7 @@ en:{
   "Ende":"End",
   "Aufgenommen":"Accepted",
   "Bio, Instagram und Snapchat stehen auf deinem Profil – auch":"Bio, Instagram and Snapchat are on your profile – ",
-  "sehen sie. Bei einem privaten Profil nur deine Follower.":" see them too. With a private profile, only your followers do.",
+  "sehen sie. Bei einem privaten Profil nur deine Follower.":" see it too. With a private profile, only your followers do.",
   "Gespräche selbst beginnen":"Start conversations yourself",
   "CHF 3.00 / Monat":"CHF 3.00 / month",
   "Zahlung erhalten. Pro wird freigeschaltet.":"Payment received. Unlocking Pro.",
@@ -2180,6 +2195,21 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Ohne Pro fortfahren":"Continuer sans Pro",
+  /* Social Media für alle (30.10.) */
+  "Social Media":"Réseaux sociaux",
+  "Steht auf deinem Profil – für alle, bei einem privaten Profil nur für deine Follower. Du kannst auch den ganzen Link einfügen.":"Visible sur ton profil – par tous, ou seulement par tes abonnés si ton profil est privé. Tu peux aussi coller le lien entier.",
+  "Bio und Geschlecht – sichtbar auf deinem Profil. 7 Tage gratis testen.":"Bio et genre — visibles sur ton profil. 7 jours gratuits.",
+  "Instagram und Snapchat hinzufügen":"Ajouter Instagram et Snapchat",
+  ". Ohne Pro siehst du nur, dass es jemand ist. Dazu eine Meldung, sobald jemand, dem du folgst, bei einer Party dabei ist. Ein Tipp auf den Namen zeigt das Profil – mit Instagram und Snapchat, wenn die Person sie eingetragen hat.":". Sans Pro tu vois seulement que quelqu’un y va. Et une notification dès qu’une personne que tu suis va à une soirée. Touche un nom pour voir son profil – avec Instagram et Snapchat, si la personne les a ajoutés.",
+  "Eine Bio auf deinem Profil":"Une bio sur ton profil",
+  "Erzähl in zwei Sätzen, wer du bist – auch":"Dis en deux phrases qui tu es – même les",
+  "Instagram, Snapchat & Co. im Profil":"Instagram, Snapchat & co. sur ton profil",
+  "Bio im Profil":"Bio sur ton profil",
+  "Du siehst, wer auf die Partys geht, deine Bio steht auf deinem Profil, und du kannst jeden anschreiben.":"Tu vois qui va aux soirées, ta bio est sur ton profil et tu peux écrire à tout le monde.",
+  "Ja. Deine Bio, Instagram und Snapchat sind für alle sichtbar, bei einem privaten Profil für deine Follower.":"Oui. Ta bio, Instagram et Snapchat sont visibles par tous – avec un profil privé, par tes abonnés.",
+  "Deine Bio für alle":"Ta bio pour tous",
+  "Erzähl in zwei Sätzen, wer du bist. Sie steht jetzt auf deinem Profil.":"Dis en deux phrases qui tu es. Elle est maintenant sur ton profil.",
   /* Bild ausrichten, Profilbild gross, Profil bearbeiten (30.10.) */
   "Profilbild":"Photo de profil",
   "Gruppenbild":"Photo du groupe",
@@ -3333,7 +3363,7 @@ fr:{
   "Ende":"Fin",
   "Aufgenommen":"Accepté",
   "Bio, Instagram und Snapchat stehen auf deinem Profil – auch":"Bio, Instagram et Snapchat sont sur ton profil – même les ",
-  "sehen sie. Bei einem privaten Profil nur deine Follower.":" les voient. Avec un profil privé, seulement tes abonnés.",
+  "sehen sie. Bei einem privaten Profil nur deine Follower.":" la voient. Avec un profil privé, seulement tes abonnés.",
   "Gespräche selbst beginnen":"Lancer des conversations toi-même",
   "CHF 3.00 / Monat":"CHF 3.00 / mois",
   "Zahlung erhalten. Pro wird freigeschaltet.":"Paiement reçu. Pro est en cours d’activation.",
@@ -4357,6 +4387,21 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Ohne Pro fortfahren":"Continua senza Pro",
+  /* Social Media für alle (30.10.) */
+  "Social Media":"Social media",
+  "Steht auf deinem Profil – für alle, bei einem privaten Profil nur für deine Follower. Du kannst auch den ganzen Link einfügen.":"Appare sul tuo profilo – per tutti, o solo per i tuoi follower se il profilo è privato. Puoi anche incollare il link completo.",
+  "Bio und Geschlecht – sichtbar auf deinem Profil. 7 Tage gratis testen.":"Bio e genere — visibili sul tuo profilo. 7 giorni gratis.",
+  "Instagram und Snapchat hinzufügen":"Aggiungi Instagram e Snapchat",
+  ". Ohne Pro siehst du nur, dass es jemand ist. Dazu eine Meldung, sobald jemand, dem du folgst, bei einer Party dabei ist. Ein Tipp auf den Namen zeigt das Profil – mit Instagram und Snapchat, wenn die Person sie eingetragen hat.":". Senza Pro vedi solo che c’è qualcuno. In più una notifica appena qualcuno che segui partecipa a una festa. Tocca un nome per vedere il profilo – con Instagram e Snapchat, se la persona li ha aggiunti.",
+  "Eine Bio auf deinem Profil":"Una bio sul tuo profilo",
+  "Erzähl in zwei Sätzen, wer du bist – auch":"Racconta in due frasi chi sei – anche gli",
+  "Instagram, Snapchat & Co. im Profil":"Instagram, Snapchat & co. sul profilo",
+  "Bio im Profil":"Bio sul profilo",
+  "Du siehst, wer auf die Partys geht, deine Bio steht auf deinem Profil, und du kannst jeden anschreiben.":"Vedi chi va alle feste, la tua bio è sul tuo profilo e puoi scrivere a chiunque.",
+  "Ja. Deine Bio, Instagram und Snapchat sind für alle sichtbar, bei einem privaten Profil für deine Follower.":"Sì. La tua bio, Instagram e Snapchat sono visibili a tutti – con un profilo privato, ai tuoi follower.",
+  "Deine Bio für alle":"La tua bio per tutti",
+  "Erzähl in zwei Sätzen, wer du bist. Sie steht jetzt auf deinem Profil.":"Racconta in due frasi chi sei. Ora è sul tuo profilo.",
   /* Bild ausrichten, Profilbild gross, Profil bearbeiten (30.10.) */
   "Profilbild":"Foto profilo",
   "Gruppenbild":"Foto del gruppo",
@@ -5508,7 +5553,7 @@ it:{
   "Ende":"Fine",
   "Aufgenommen":"Accettato",
   "Bio, Instagram und Snapchat stehen auf deinem Profil – auch":"Bio, Instagram e Snapchat sono sul tuo profilo – anche gli ",
-  "sehen sie. Bei einem privaten Profil nur deine Follower.":" li vedono. Con un profilo privato solo i tuoi follower.",
+  "sehen sie. Bei einem privaten Profil nur deine Follower.":" la vedono. Con un profilo privato solo i tuoi follower.",
   "Gespräche selbst beginnen":"Iniziare conversazioni",
   "CHF 3.00 / Monat":"CHF 3.00 / mese",
   "Zahlung erhalten. Pro wird freigeschaltet.":"Pagamento ricevuto. Stiamo attivando Pro.",

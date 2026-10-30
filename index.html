@@ -1521,9 +1521,10 @@
     .pro-ang-t{font-size:1.25rem;font-weight:800;color:#fff;margin-bottom:8px}
     .pro-ang-s{font-size:.88rem;line-height:1.55;color:rgba(255,255,255,.62);margin-bottom:14px}
     .pro-ang-preis{font-size:.8rem;font-weight:700;color:#fff;margin-bottom:18px}
-    .pro-ang-nein{display:block;width:100%;margin-top:12px;padding:12px;background:none;border:none;
-      color:rgba(255,255,255,.55);font-family:var(--font);font-size:.86rem;font-weight:600;cursor:pointer}
-    .pro-ang-nein:active{color:#fff}
+    .pro-ang-nein{display:block;width:100%;min-height:52px;margin-top:10px;padding:0 14px;border-radius:14px;cursor:pointer;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+      color:#fff;font-family:var(--font);font-size:1rem;font-weight:700}
+    .pro-ang-nein:active{background:rgba(255,255,255,.12)}
 
     /* Eine Zeile, die statt eines Pfeils einen Schalter traegt. Sonst
        stand sie ohne Kasten zwischen den anderen und brach die Reihe. */
@@ -3789,6 +3790,12 @@
       color:#FFD700;background:rgba(255,215,0,.09);border:1px solid rgba(255,215,0,.22);
     }
     .social-lock svg{width:13px;height:13px}
+    /* Hinweis im eigenen Profil: Kanaele eintragen (gratis) */
+    .social-neu{display:inline-flex;align-items:center;gap:7px;margin-top:10px;cursor:pointer;
+      padding:7px 13px;border-radius:980px;font-family:var(--font);font-size:.75rem;font-weight:700;
+      color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}
+    .social-neu svg{width:12px;height:12px}
+    .social-neu:active{opacity:.6}
 
     /* ══════════ CHAT-BUBBLES ══════════ */
     .conv-msgs{gap:2px;padding:16px 14px 20px}
@@ -7458,6 +7465,7 @@
     .iphone-namen-t{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:4px 0 8px}
     .iphone-app{text-align:left}
     .iphone-kanaele .up2-link{box-shadow:0 0 0 3px #FF2D76}
+    .iphone-bio .insta-bio{border-radius:8px;box-shadow:0 0 0 3px #FF2D76}
     /* Einstellungen: schlichte, einfarbige Symbole wie in iOS */
     .settings-btn .pk:not(.pk-bunt){color:rgba(255,255,255,.78)}
     .settings-btn.danger .pk{color:#ff6b6b}
@@ -7542,6 +7550,10 @@
     .pw-link{background:none;border:none;padding:0;color:var(--muted);font:inherit;text-decoration:underline;cursor:pointer}
     .pw-spaeter{display:block;margin:6px auto 0;background:none;border:none;color:rgba(255,255,255,.6);font:600 .86rem var(--font);padding:8px 16px;cursor:pointer;transition:opacity 140ms var(--kurve)}
     .pw-spaeter:active{opacity:.6}
+    .pw-ohne{display:block;width:100%;height:52px;margin-top:12px;border-radius:16px;cursor:pointer;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;font:700 1rem var(--font);
+      transition:transform 140ms cubic-bezier(.23,1,.32,1)}
+    .pw-ohne:active{transform:scale(.97);background:rgba(255,255,255,.12)}
     .pw-zwei{position:relative}
     .pw-zwei>[data-tm="nach"]{opacity:0}
     @media (max-height:700px){.pw-v small{display:none}.pw-t{font-size:1.7rem}}
@@ -7723,13 +7735,14 @@
     @media (prefers-reduced-motion: reduce){.be{transition:none}}
 
     /* ══════════ PROFILBILD GROSS (lange druecken) ══════════ */
-    .av-gross{position:fixed;inset:0;z-index:330;display:flex;align-items:center;justify-content:center;pointer-events:none;
+    .av-gross{position:fixed;inset:0;z-index:330;display:flex;align-items:center;justify-content:center;
+      pointer-events:auto;touch-action:none;cursor:pointer;
       background:rgba(4,6,22,.45);
       -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
       opacity:0;transition:opacity .2s ease}
     .av-gross[hidden]{display:none}
     .av-gross.an{opacity:1}
-    .av-gross img{display:block;width:min(74vw,320px);height:min(74vw,320px);border-radius:50%;object-fit:cover;
+    .av-gross img{pointer-events:none;display:block;width:min(74vw,320px);height:min(74vw,320px);border-radius:50%;object-fit:cover;
       box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.1);will-change:transform}
 
     /* Neues Profilbild unterwegs: es steht schon da, ein Kreisel darauf */
@@ -8543,6 +8556,30 @@
         <div class="ep-help">Steht fest</div>
       </div>
 
+      <!-- Kanäle: für alle, nicht nur Pro (30.10.) -->
+      <div class="ep-sec" id="ep-kanaele">Social Media</div>
+      <div class="fg">
+        <label class="ep-box" for="ep-instagram"><span class="ep-lbl">Instagram</span>
+          <span class="ep-at ep-ig"><span class="ep-social-ic"></span><input type="text" id="ep-instagram" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+        </label>
+      </div>
+      <div class="fg" id="ep-tiktok-fg" hidden>
+        <label class="ep-box" for="ep-tiktok"><span class="ep-lbl">TikTok</span>
+          <span class="ep-at ep-tt"><span class="ep-social-ic"></span><input type="text" id="ep-tiktok" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+        </label>
+      </div>
+      <div class="fg">
+        <label class="ep-box" for="ep-snapchat"><span class="ep-lbl">Snapchat</span>
+          <span class="ep-at ep-sc"><span class="ep-social-ic"></span><input type="text" id="ep-snapchat" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+        </label>
+      </div>
+      <div class="fg">
+        <label class="ep-box" for="ep-facebook"><span class="ep-lbl">Facebook</span>
+          <span class="ep-at ep-fb"><span class="ep-social-ic"></span><input type="text" id="ep-facebook" placeholder="deinname" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+        </label>
+      </div>
+      <div class="ep-help">Steht auf deinem Profil – für alle, bei einem privaten Profil nur für deine Follower. Du kannst auch den ganzen Link einfügen.</div>
+
       <div id="ep-pro-section" style="display:none">
         <div class="ep-sec">Öffentliches Profil</div>
         <div class="ep-pro-hdr">
@@ -8565,33 +8602,12 @@
             </div>
           </div>
         </div>
-        <div class="fg">
-          <label class="ep-box" for="ep-instagram"><span class="ep-lbl">Instagram</span>
-            <span class="ep-at ep-ig"><span class="ep-social-ic"></span><input type="text" id="ep-instagram" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
-          </label>
-        </div>
-        <div class="fg" id="ep-tiktok-fg" hidden>
-          <label class="ep-box" for="ep-tiktok"><span class="ep-lbl">TikTok</span>
-            <span class="ep-at ep-tt"><span class="ep-social-ic"></span><input type="text" id="ep-tiktok" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
-          </label>
-        </div>
-        <div class="fg">
-          <label class="ep-box" for="ep-snapchat"><span class="ep-lbl">Snapchat</span>
-            <span class="ep-at ep-sc"><span class="ep-social-ic"></span><input type="text" id="ep-snapchat" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
-          </label>
-        </div>
-        <div class="fg">
-          <label class="ep-box" for="ep-facebook"><span class="ep-lbl">Facebook</span>
-            <span class="ep-at ep-fb"><span class="ep-social-ic"></span><input type="text" id="ep-facebook" placeholder="deinname" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
-          </label>
-        </div>
-        <div class="ep-help">Du kannst auch den ganzen Link einfügen – wir schneiden ihn zurecht.</div>
       </div>
 
       <div id="ep-free-hint" class="ep-locked" style="display:none" onclick="closeEditProfile();showPage('pro')">
         <div class="ep-locked-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.4l-5.25 2.75 1-5.85L3.5 9.15l5.9-.85z"/></svg></div>
         <div><div class="ep-locked-t">Mehr einstellen mit Pro</div>
-        <div class="ep-locked-s">Bio, Instagram, Snapchat und Geschlecht – sichtbar auf deinem Profil. 7 Tage gratis testen.</div></div>
+        <div class="ep-locked-s">Bio und Geschlecht – sichtbar auf deinem Profil. 7 Tage gratis testen.</div></div>
         <svg class="ep-locked-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 6 15 12 9 18"/></svg>
       </div>
 
@@ -9632,7 +9648,7 @@
       <div class="pro-ang-s">Mit Pro siehst du auf jeder Party, wer aus deinen Kontakten dabei ist – mit Namen. Und du kannst alle zuerst anschreiben.</div>
       <div class="pro-ang-preis" id="proAngebotPreis"></div>
       <button class="sub-btn sub-public" id="proAngebotBtn" onclick="proAngebotJa()">7 Tage gratis testen</button>
-      <button class="pro-ang-nein" onclick="proAngebotNein()">Nicht jetzt</button>
+      <button class="pro-ang-nein" onclick="proAngebotNein()">Ohne Pro fortfahren</button>
     </div>
   </div>
 </div>
@@ -11074,8 +11090,8 @@ const TOUREN={
     { t:'Sieh, wer bei dir war',
       s:'Tipp auf das Auge in deinem Profil: alle Besuche der letzten 30 Tage.',
       b:()=>'<div class="tb"></div>' },
-    { t:'Bio und Kanäle für alle',
-      s:'Instagram und Snapchat stehen jetzt sichtbar auf deinem Profil.',
+    { t:'Deine Bio für alle',
+      s:'Erzähl in zwei Sätzen, wer du bist. Sie steht jetzt auf deinem Profil.',
       b:()=>'<div class="tb"></div>' },
   ],
 };
@@ -11701,7 +11717,7 @@ const TOUR_ECHT_PRO={
       +'<div class="tour-detail">'+TOUR_SNAP.gaesteliste+'</div></div>',false,false,1,'gaeste','.att-row'):'',
   2:()=>tourFremdesProfil(true),
   3:()=>(TOUR_SNAP.besucher&&TOUR_SNAP.start)?tourHandy('<div class="tour-voll">'+TOUR_SNAP.start+'<div class="tour-detail" data-tm="liste">'+TOUR_SNAP.besucher+'</div></div>',false,false,1,'besucher'):'',
-  4:()=>tourBeispielProfil('iphone-kanaele iphone-gescrollt'),
+  4:()=>tourBeispielProfil('iphone-bio iphone-gescrollt'),
 };
 
 function tourAufbauen(){
@@ -11983,6 +11999,10 @@ function proWerbungZeigen(weiter){
       +(frei?'<div class="pw-probe">7 Tage gratis</div>':'')
       +'<button class="pw-cta" type="button">'+(frei?'Gratis testen':'Pro holen')+'</button>'
       +'<div class="pw-preis">'+(frei?'Danach '+preis+' pro Monat. ':preis+' pro Monat. ')+'Jederzeit kündbar.</div>'
+      /* Der Ausweg ist ein richtiger Knopf, gleich unter dem Angebot –
+         vorher ein kleines graues "Später" ganz unten, unter dem
+         Kleingedruckten. Wer kein Pro will, soll das nicht suchen müssen. */
+      +'<button class="pw-ohne" type="button">Ohne Pro fortfahren</button>'
       +preisImStore()
       +'<div class="pw-recht">'+(frei
           ?'7 Tage gratis, danach Laufzeit 1 Monat für '+preis+'. Verlängert sich automatisch um je 1 Monat, solange du nicht mindestens 24 Stunden vor Ablauf kündigst. In der Testwoche jederzeit kostenlos kündbar.'
@@ -11991,7 +12011,6 @@ function proWerbungZeigen(weiter){
       +'<div class="pw-links">'+(istApp()?'<button type="button" class="pw-link pw-wieder">Kauf wiederherstellen</button><span>·</span>':'')
         +'<a class="pw-link" href="/nutzungsbedingungen" target="_blank" rel="noopener">Bedingungen</a><span>·</span>'
         +'<a class="pw-link" href="/datenschutz" target="_blank" rel="noopener">Datenschutz</a></div>'
-      +'<button class="pw-spaeter" type="button">Später</button>'
     +'</div>';
   document.body.appendChild(el);
   if(typeof applyLang==='function'&&LANG!=='de')applyLang();
@@ -12000,7 +12019,7 @@ function proWerbungZeigen(weiter){
     if(el._stopp)el._stopp();
     el.classList.remove('da'); setTimeout(()=>{ el.remove(); (dann||weiter)&&(dann||weiter)(); },280); };
   el.querySelector('.pw-zu').onclick=()=>schliessen();
-  el.querySelector('.pw-spaeter').onclick=()=>schliessen();
+  el.querySelector('.pw-ohne').onclick=()=>schliessen();
   /* In der App bleibt die Werbung offen und der Knopf zeigt den Ladezustand,
      bis das Kauf-Fenster von Apple da ist – vorher schloss sie sich, und
      bis Apple kam, passierte sichtbar nichts. */
@@ -16297,7 +16316,7 @@ function profilFortschritt(fs,atts){
 }
 
 function buildSocialLinks(p,opts){
-  if(!p?.is_pro)return'';
+  if(!p)return'';
   const items=[
     p.instagram_handle&&{k:'instagram',url:'https://instagram.com/'+p.instagram_handle,txt:p.instagram_handle,cls:'sl-ig'},
     p.tiktok_handle   &&{k:'tiktok',   url:'https://www.tiktok.com/@'+p.tiktok_handle,txt:p.tiktok_handle,cls:'sl-tt'},
@@ -16321,11 +16340,19 @@ function buildSocialLinks(p,opts){
 // sperren. Der Hinweis erscheint nur noch auf dem EIGENEN Gratis-Profil.
 function socialLockHint(){return'';}
 
+/* Wer noch keinen Kanal eingetragen hat, bekommt hier einen Hinweis –
+   fuer alle, denn Instagram und Snapchat sind nicht mehr Pro. */
 function proSelfTeaser(){
-  if(cProfile?.is_pro)return'';
-  return'<div class="social-lock" onclick="showPage(\'pro\')">'
-    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.4l-5.25 2.75 1-5.85L3.5 9.15l5.9-.85z"/></svg>'
-    +'<span>Mit Pro zeigst du Bio, Instagram und Snapchat auf deinem Profil – für alle sichtbar</span></div>';
+  const p=cProfile;
+  if(!p||istVerein())return'';
+  if(p.instagram_handle||p.snapchat_handle||p.facebook_handle||p.tiktok_handle)return'';
+  return'<button type="button" class="social-neu" onclick="kanaeleEintragen()">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+    +'<span>Instagram und Snapchat hinzufügen</span></button>';
+}
+function kanaeleEintragen(){
+  openEditProfile();
+  setTimeout(()=>{ document.getElementById('ep-kanaele')?.scrollIntoView({block:'start',behavior:'smooth'}); },320);
 }
 
 
@@ -16990,8 +17017,8 @@ function searchRow(u,ausVerlauf){
     ? '<img alt="" loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'
     : anfang(name);
   const chips=[];
-  if(u.is_pro&&u.instagram_handle)chips.push('<span class="sr-chip sr-ig">'+SOCIAL_SVG.instagram+'@'+esc(u.instagram_handle)+'</span>');
-  if(u.is_pro&&u.snapchat_handle) chips.push('<span class="sr-chip sr-sc">'+SOCIAL_SVG.snapchat +'@'+esc(u.snapchat_handle)+'</span>');
+  if(u.instagram_handle)chips.push('<span class="sr-chip sr-ig">'+SOCIAL_SVG.instagram+'@'+esc(u.instagram_handle)+'</span>');
+  if(u.snapchat_handle) chips.push('<span class="sr-chip sr-sc">'+SOCIAL_SVG.snapchat +'@'+esc(u.snapchat_handle)+'</span>');
   return '<button class="sr-row" onclick="ausSucheOeffnen(\''+u.id+'\')">'
     +'<div class="sr-av'+(u.is_pro?' pro':'')+'">'+av+'</div>'
     +'<div class="sr-mid">'
@@ -18562,17 +18589,20 @@ function openEditProfile(){
   const freeHint=document.getElementById('ep-free-hint');
   if(proSection)proSection.style.display=pro?'block':'none';
   if(freeHint)  freeHint.style.display  =pro?'none':'flex';
+  /* Instagram, Snapchat & Co. darf seit dem 30.10. jeder eintragen –
+     Pro bleibt fuer die Bio. Davon haben gerade die Pro-Nutzer etwas:
+     sie sehen, wer auf der Party war, und finden die Leute dann auch. */
+  document.getElementById('ep-instagram').value=cProfile.instagram_handle||'';
+  document.getElementById('ep-snapchat').value=cProfile.snapchat_handle||'';
+  document.getElementById('ep-facebook').value=cProfile.facebook_handle||'';
+  /* TikTok erscheint, sobald die Datenbank die Spalte tiktok_handle hat
+     (mein_profil liefert dann das Feld mit). Bis dahin bleibt es weg,
+     statt einen Wert anzunehmen, der nirgends gespeichert wird. */
+  const ttFg=document.getElementById('ep-tiktok-fg');
+  if(ttFg)ttFg.hidden=!('tiktok_handle' in cProfile);
+  const tt=document.getElementById('ep-tiktok'); if(tt)tt.value=cProfile.tiktok_handle||'';
   if(pro){
     document.getElementById('ep-bio').value=cProfile.bio||'';
-    document.getElementById('ep-instagram').value=cProfile.instagram_handle||'';
-    document.getElementById('ep-snapchat').value=cProfile.snapchat_handle||'';
-    document.getElementById('ep-facebook').value=cProfile.facebook_handle||'';
-    /* TikTok erscheint, sobald die Datenbank die Spalte tiktok_handle hat
-       (mein_profil liefert dann das Feld mit). Bis dahin bleibt es weg,
-       statt einen Wert anzunehmen, der nirgends gespeichert wird. */
-    const ttFg=document.getElementById('ep-tiktok-fg');
-    if(ttFg)ttFg.hidden=!('tiktok_handle' in cProfile);
-    const tt=document.getElementById('ep-tiktok'); if(tt)tt.value=cProfile.tiktok_handle||'';
     epCount();
   }
   fillEpSocialIcons();
@@ -18594,7 +18624,7 @@ function closeEditProfile(){document.getElementById('editProfOverlay').classList
 function fillEpSocialIcons(){
   const map={'ep-ig':'instagram','ep-tt':'tiktok','ep-sc':'snapchat','ep-fb':'facebook'};
   Object.entries(map).forEach(([cls,key])=>{
-    const el=document.querySelector('#ep-pro-section .'+cls+' .ep-social-ic');
+    const el=document.querySelector('#editProfOverlay .'+cls+' .ep-social-ic');
     if(el&&SOCIAL_SVG[key])el.innerHTML=SOCIAL_SVG[key];
   });
 }
@@ -18690,13 +18720,18 @@ async function saveProfileEdit(){
     // Nur schicken, was sich auch ändern darf – sonst löst schon das
     // unveränderte Feld die Wochensperre aus.
     if(darfNamenAendern()&&!nameFreiAb()&&username!==cProfile.username)updates.username=username;
+    // Kanaele fuer alle; nur geschickt, was sich geaendert hat
+    const kanal=(feld,id)=>{
+      const v=cleanHandle(document.getElementById(id)?.value)||null;
+      if(v!==(cProfile[feld]||null))updates[feld]=v;
+    };
+    kanal('instagram_handle','ep-instagram');
+    kanal('snapchat_handle','ep-snapchat');
+    kanal('facebook_handle','ep-facebook');
+    if('tiktok_handle' in cProfile)kanal('tiktok_handle','ep-tiktok');
     if(cProfile.is_pro){
       updates.gender=epGenderVal||null;
       updates.bio=document.getElementById('ep-bio')?.value.trim()||null;
-      updates.instagram_handle=cleanHandle(document.getElementById('ep-instagram')?.value)||null;
-      updates.snapchat_handle =cleanHandle(document.getElementById('ep-snapchat')?.value)||null;
-      updates.facebook_handle =cleanHandle(document.getElementById('ep-facebook')?.value)||null;
-      if('tiktok_handle' in cProfile)updates.tiktok_handle=cleanHandle(document.getElementById('ep-tiktok')?.value)||null;
     }
     const{error}=await sb.from('profiles').update(updates).eq('id',cUser.id);
     if(error){toast(fehlerText(error),'error');return;}
@@ -18795,11 +18830,12 @@ function proIcon(k,w){
 const PRO_VORTEILE=[
   {k:'liste',t:'Sieh, wer von deinen Leuten hingeht',
    d:'Auf jeder Party steht, wer aus deinen Kontakten dabei ist – <b>mit Namen</b>. '
-     +'Ohne Pro siehst du nur, dass es jemand ist. Dazu eine Meldung, sobald jemand, dem du folgst, bei einer Party dabei ist.'},
+     +'Ohne Pro siehst du nur, dass es jemand ist. Dazu eine Meldung, sobald jemand, dem du folgst, bei einer Party dabei ist. '
+     +'Ein Tipp auf den Namen zeigt das Profil – mit Instagram und Snapchat, wenn die Person sie eingetragen hat.'},
   {k:'chat',t:'Schreib, wen du willst',
    d:'Schreib alle zuerst an, die du auf SPOTOUT triffst. Ohne Pro kannst du nur antworten.'},
-  {k:'profil',t:'Dein Profil sehen alle',
-   d:'Bio, Instagram und Snapchat stehen auf deinem Profil – auch <b>Gratis-Nutzer</b> sehen sie. Bei einem privaten Profil nur deine Follower.'},
+  {k:'profil',t:'Eine Bio auf deinem Profil',
+   d:'Erzähl in zwei Sätzen, wer du bist – auch <b>Gratis-Nutzer</b> sehen sie. Bei einem privaten Profil nur deine Follower.'},
   {k:'auge',t:'Sehen, wer bei dir war',
    d:'Du siehst, wer dein Profil in den letzten 30 Tagen angesehen hat. Ausschalten geht jederzeit – dann siehst du es aber auch nicht mehr.'},
   {k:'geld',t:'Günstiger veröffentlichen',
@@ -18814,7 +18850,8 @@ const PRO_VERGLEICH=[
   ['Sehen, wie viele Kontakte dabei sind',1,1],
   ['Sehen, <b>wer</b> von ihnen dabei ist',0,1],
   ['Meldung, wenn jemand mitgeht',0,1],
-  ['Bio und Kanäle im Profil',0,1],
+  ['Instagram, Snapchat & Co. im Profil',1,1],
+  ['Bio im Profil',0,1],
   ['Gespräche selbst beginnen',0,1],
   ['Gästeliste sehen',0,1],
   ['Sehen, wer dein Profil besucht hat',0,1],
@@ -18927,7 +18964,7 @@ function renderProPage(){
         <div class="pro2-live">
           <div class="pro2-krone">${PRO_STERN}</div>
           <h2>Du bist Pro</h2>
-          <p>Bio und Kanäle stehen auf deinem Profil (bei privatem Profil für deine Follower), und du kannst jeden anschreiben.</p>
+          <p>Du siehst, wer auf die Partys geht, deine Bio steht auf deinem Profil, und du kannst jeden anschreiben.</p>
           ${probe?`<div class="pro2-probe">
             <b>${probeText()}</b>
             <span>${gekuendigt
@@ -19023,7 +19060,7 @@ function renderProPage(){
         <div class="pro2-q"><b>Kann ich jederzeit kündigen?</b>
           <span>Ja. Keine Mindestlaufzeit. Pro läuft bis zum Ende der bezahlten Periode weiter.</span></div>
         <div class="pro2-q"><b>Sehen auch Gratis-Nutzer mein Profil?</b>
-          <span>Ja. Bio, Instagram und Snapchat sind für alle sichtbar, bei einem privaten Profil für deine Follower.</span></div>
+          <span>Ja. Deine Bio, Instagram und Snapchat sind für alle sichtbar, bei einem privaten Profil für deine Follower.</span></div>
         <div class="pro2-q"><b>Was passiert mit meinen Partys, wenn ich kündige?</b>
           <span>Nichts. Partys, Gästelisten und Fotos bleiben. Nur die Pro-Funktionen ruhen.</span></div>
       </div>
@@ -29422,11 +29459,13 @@ function avFaerben(wurzel){
 }
 
 /* ══════════ PROFILBILD GROSS ANSEHEN ══════════
-   Wie bei Instagram: lange auf ein Profilbild druecken, und es kommt
-   gross in die Mitte, der Rest wird unscharf. Loslassen, und es fliegt
-   zurueck an seinen Platz. Gilt fuer jedes Profilbild mit Foto – im
-   Profil, in Listen, Chats und in der Suche. Ein kurzer Tipp tut
-   weiter, was er immer tat.
+   Wie bei Instagram: lange auf ein Profilbild druecken – das Telefon
+   klopft kurz, und das Bild kommt gross in die Mitte, der Rest wird
+   unscharf. Es bleibt, auch wenn man loslaesst, bis man irgendwo
+   hintippt; dann fliegt es zurueck an seinen Platz. Dieser Tipp zum
+   Schliessen landet auf dem grossen Bild, nie auf dem, was darunter
+   liegt. Gilt fuer jedes Profilbild mit Foto – im Profil, in Listen,
+   Chats und in der Suche. Ein kurzer Tipp tut weiter, was er immer tat.
 
    Speichern laesst es sich auch gross nicht (kein Kontextmenue, keine
    Auswahl) – wie ueberall sonst in der App.
@@ -29437,7 +29476,7 @@ function avFaerben(wurzel){
    schon beim Aufsetzen des Fingers da sein: spaeter angemeldet,
    uebergehen ihn iPhone und Android fuer diese Beruehrung. */
 const AV_GROSS_WARTEN=320;      // ms Festhalten, bis das Bild aufgeht
-const avGross={uhr:0,start:null,quelle:null,offen:false,sperreBis:0,sperreEl:null,anim:null};
+const avGross={uhr:0,start:null,quelle:null,offen:false,sperreBis:0,sperreEl:null,anim:null,druck:null};
 
 function avGrossAnbinden(){
   document.querySelectorAll(AV_KLASSEN).forEach(el=>{
@@ -29491,9 +29530,7 @@ function avGrossZeigen(){
 
 function avGrossSchliessen(){
   if(!avGross.offen)return;
-  avGross.offen=false;
-  // Der Klick, der nach dem Loslassen noch kommt, gehoert nicht dem Bild darunter
-  avGross.sperreBis=Date.now()+700; avGross.sperreEl=avGross.quelle?.el||null;
+  avGross.offen=false; avGross.druck=null;
   const lage=document.getElementById('avGross'), bild=document.getElementById('avGrossBild');
   if(!lage||!bild)return;
   lage.classList.remove('an');
@@ -29514,7 +29551,7 @@ function avGrossSchliessen(){
 }
 
 function avGrossAbbrechen(){
-  clearTimeout(avGross.uhr); avGross.start=null;
+  clearTimeout(avGross.uhr); avGross.start=null; avGross.druck=null;
   if(avGross.offen)avGrossSchliessen();
 }
 
@@ -29534,13 +29571,34 @@ document.addEventListener('pointermove',e=>{
   // Wer wischt, will scrollen
   if(Math.hypot(e.clientX-st.x,e.clientY-st.y)>10){ clearTimeout(avGross.uhr); avGross.start=null; }
 },{passive:true});
+/* Der Finger, der das Bild geoeffnet hat, geht hoch: es bleibt offen.
+   Ein Klick, der davon noch kommt, gehoert nicht dem Bild darunter. */
 const avGrossEnde=e=>{
   const st=avGross.start;
   if(!st||e.pointerId!==st.id)return;
-  avGrossAbbrechen();
+  clearTimeout(avGross.uhr); avGross.start=null;
+  if(avGross.offen){ avGross.sperreBis=Date.now()+700; avGross.sperreEl=avGross.quelle?.el||null; }
 };
 document.addEventListener('pointerup',avGrossEnde,true);
 document.addEventListener('pointercancel',avGrossEnde,true);
+/* Geschlossen wird mit einem neuen Tipp irgendwohin. Die Ebene liegt
+   ueber allem und faengt ihn ab. Gezaehlt wird nur ein Finger, der auf
+   der Ebene AUFGESETZT hat – nicht der vom langen Druck, der dort
+   vielleicht hochgeht. */
+(()=>{
+  const lage=document.getElementById('avGross');
+  if(!lage)return;
+  lage.addEventListener('pointerdown',e=>{ if(avGross.offen&&!avGross.start)avGross.druck=e.pointerId; });
+  lage.addEventListener('pointerup',e=>{
+    if(avGross.druck===null||e.pointerId!==avGross.druck)return;
+    avGross.druck=null;
+    avGrossSchliessen();
+  });
+  lage.addEventListener('pointercancel',()=>{ avGross.druck=null; });
+  lage.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); });
+  lage.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&avGross.offen)avGrossAbbrechen(); });
 window.addEventListener('blur',avGrossAbbrechen);
 document.addEventListener('visibilitychange',()=>{ if(document.hidden)avGrossAbbrechen(); });
 document.addEventListener('click',e=>{
