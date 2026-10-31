@@ -6525,6 +6525,31 @@
     .set-konto[hidden]{display:none}
     .set-konto .kz-text{min-width:0}
 
+    /* ══════════ VEREINSKONTEN (BETREIBER) ══════════ */
+    .vv-zahlen{display:flex;gap:8px;margin-bottom:12px}
+    .vv-zahlen div{flex:1;padding:10px 6px;border-radius:13px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+    .vv-zahlen b{display:block;font-size:1.05rem;font-weight:800;color:#fff}
+    .vv-zahlen span{display:block;margin-top:1px;font-size:.68rem;color:var(--muted)}
+    .vv-form{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+    .vv-form[hidden]{display:none}
+    .vv-form input{width:100%;padding:12px 13px;border-radius:13px;outline:none;box-sizing:border-box;
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:var(--font);font-size:16px}
+    .vv-hinweis{font-size:.74rem;line-height:1.45;color:var(--muted)}
+    #vvNeuKnopf{margin-bottom:14px}
+    #vvNeuKnopf[hidden]{display:none}
+    .vv-marken{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+    .vv-marke{padding:3px 9px;border-radius:999px;font-size:.7rem;font-weight:800;background:rgba(255,255,255,.08);color:var(--text2)}
+    .vv-marke.gut{background:rgba(74,222,128,.14);color:#4ade80}
+    .vv-marke.fehlt{background:rgba(255,176,32,.14);color:#FFB020}
+    .vv-gratis{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;font-size:.8rem;color:var(--text2)}
+    .vv-weg{display:block;width:100%;margin-top:9px;padding:8px;border:none;background:none;cursor:pointer;
+      font-family:var(--font);font-size:.76rem;font-weight:700;color:var(--muted)}
+    .vv-weg.scharf{color:#FF5A45}
+    .vv-text{width:100%;box-sizing:border-box;min-height:190px;margin-top:10px;padding:12px;border-radius:13px;resize:none;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:var(--font);font-size:.82rem;line-height:1.5}
+    .vh-zurueck{display:block;width:100%;margin:0 0 12px;padding:11px;border-radius:13px;cursor:pointer;
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;font-family:var(--font);font-size:.84rem;font-weight:700}
+
     /* ══════════ VEREINE PRÜFEN (BETREIBER) ══════════ */
     .vp-karte{
       padding:14px;border-radius:16px;margin-bottom:10px;
@@ -9374,6 +9399,11 @@
       <!-- Nur der Betreiber sieht das – ganz unten, getrennt vom Rest -->
       <div class="set-gruppe" id="setSchenkenBox" hidden>
         <div class="set-lbl">Betreiber</div>
+        <button class="settings-btn" onclick="vereineVerwaltenOeffnen()">
+          <i data-pk="verein" data-pk-g="20" data-pk-schlicht></i>
+          <span class="s-label">Vereinskonten</span>
+          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
+        </button>
         <button class="settings-btn" onclick="vereinePruefenOeffnen()">
           <i data-pk="verein" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
@@ -9557,6 +9587,33 @@
 </div>
 
 <!-- ════ VEREINE PRÜFEN (nur Betreiber) ════ -->
+<div class="overlay" id="vereineVerwaltenOverlay" onclick="closeIfOutside(event,'vereineVerwaltenOverlay')">
+  <div class="modal no-swipe">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Vereinskonten</div>
+      <button class="modal-x" onclick="closeOverlay('vereineVerwaltenOverlay')" aria-label="Schliessen"><svg stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="vv-zahlen" id="vvZahlen"></div>
+      <button class="sub-btn sub-public" id="vvNeuKnopf" onclick="vvFormular(true)">Verein anlegen</button>
+      <form class="vv-form" id="vvForm" hidden onsubmit="event.preventDefault();vvAnlegen()">
+        <input id="vvName" placeholder="Name des Vereins" maxlength="60" autocomplete="off"/>
+        <input id="vvOrt" placeholder="Ort" maxlength="60" autocomplete="off"/>
+        <input id="vvWebsite" placeholder="Website, z. B. tvlenzburg.ch" autocapitalize="none" autocorrect="off" autocomplete="off"/>
+        <input id="vvEmail" type="email" placeholder="E-Mail des Vereins" autocapitalize="none" autocorrect="off" autocomplete="off"/>
+        <div class="vv-hinweis">Die E-Mail wird zum Login. Es geht keine Mail hinaus. Lege das Konto erst an, wenn der Verein zugesagt hat.</div>
+        <div class="vp-knoepfe">
+          <button type="submit" class="sec-btn" id="vvAnlegenKnopf">Anlegen</button>
+          <button type="button" class="sec-btn" onclick="vvFormular(false)">Abbrechen</button>
+        </div>
+      </form>
+      <div id="vvUebergabe"></div>
+      <div id="vvListe"></div>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="vereinePruefenOverlay" onclick="closeIfOutside(event,'vereinePruefenOverlay')">
   <div class="modal no-swipe">
     <div class="modal-handle"></div>
@@ -12428,7 +12485,7 @@ function kontenLesen(){
   catch(e){ return []; }
 }
 function kontenSchreiben(liste){
-  try{ localStorage.setItem(KONTEN_SCHLUESSEL,JSON.stringify(liste.slice(0,5))); }catch(e){}
+  try{ localStorage.setItem(KONTEN_SCHLUESSEL,JSON.stringify(liste.slice(0,8))); }catch(e){}
 }
 
 /* Nach jeder Anmeldung: die Sitzung neben die anderen legen. Sie steht
@@ -12441,9 +12498,11 @@ async function kontoMerken(){
     const sitz=data&&data.session;
     if(!sitz)return;
     if(sitz.user?.id!==cUser.id)return;   // nie fremde Schluessel unter diesem Konto
-    const liste=kontenLesen().filter(k=>k.id!==cUser.id);
+    const alle=kontenLesen();
+    const liste=alle.filter(k=>k.id!==cUser.id);
     liste.unshift({
       id:cUser.id,
+      betreut:!!alle.find(k=>k.id===cUser.id)?.betreut,
       email:cUser.email||'',
       name:cProfile?.full_name||cProfile?.username||cUser.email||'Konto',
       username:cProfile?.username||'',
@@ -15071,6 +15130,7 @@ function vereinMarke(status){
 async function renderVereinHome(){
   const box=document.getElementById('vereinHome');
   if(!box||!cProfile)return;
+  const betreut=kontenLesen().find(k=>k.id===cUser?.id)?.betreut;
 
   /* Die Startseite holt nur noch, was noch kommt – ein Verein will aber
      auch sein Archiv sehen. Also hier eigens laden, mit allen Daten. */
@@ -15123,7 +15183,8 @@ async function renderVereinHome(){
   const liste=(l)=>l.map(e=>cardHTML(e)).join('');
 
   box.innerHTML=
-    '<div class="vh-kopf">'
+    (betreut?'<button class="vh-zurueck" onclick="vvZurueck()">Zurück zu meinem Konto</button>':'')
+    +'<div class="vh-kopf">'
       +'<div class="vh-av">'+av+'</div>'
       +'<div class="vh-name"><b>'+esc(cProfile.full_name||cProfile.username||'Verein')+'</b>'
       +'<span>'+esc(cProfile.verein_ort||'')+(cProfile.verein_ort?' · ':'')+'Vereinskonto</span></div>'
@@ -17986,6 +18047,7 @@ async function renderProf(){
         </button>
         ${!cProfile.is_pro&&!istVerein()?'<button class="prof-action-btn pro-action" onclick="showPage(\'pro\')">'+PRO_STERN+'Pro werden</button>':''}
       </div>
+      ${cProfile.ist_admin?'<button class="st-einstieg" onclick="vereineVerwaltenOeffnen()"><span class="st-ein-ic">'+pikto('verein',20)+'</span><span><b>Vereinskonten</b><small>Anlegen, posten, übergeben</small></span></button>':''}
       ${cProfile.ist_admin?'<button class="st-einstieg" onclick="statistikOeffnen()"><span class="st-ein-ic">'+ST_IC+'</span><span><b>Statistik</b><small>Nutzer, Aufrufe, Partys – nur für dich als Betreiber</small></span><svg class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg></button>':''}
 
       <!-- TABS -->
@@ -28972,6 +29034,174 @@ async function vereinZahlLaden(){
   const{count}=await sb.from('profiles').select('id',{count:'exact',head:true})
     .eq('kontoart','verein').eq('verein_status','handpruefung');
   el.textContent=count?String(count):'';
+}
+
+/* ══════════ VEREINSKONTEN ══════════
+   Der Betreiber legt Konten fuer Vereine an, wechselt hinein, postet und
+   uebergibt sie danach mit einem neuen Passwort. Rechte und alles, was den
+   Service-Schluessel braucht, liegen in der Funktion vereine-verwalten. */
+let vvListe=[];
+async function vvRufen(aktion,daten){
+  const{data,error}=await sb.functions.invoke('vereine-verwalten',{body:{aktion,...(daten||{})}});
+  if(error){
+    let text='Das hat nicht geklappt. Versuch es nochmals.';
+    try{ const j=await error.context.json(); text=j.fehler||text; }catch(e){}
+    throw new Error(text);
+  }
+  return data;
+}
+async function vereineVerwaltenOeffnen(){
+  if(!cProfile?.ist_admin)return;
+  document.getElementById('vereineVerwaltenOverlay')?.classList.add('open');
+  document.getElementById('vvUebergabe').innerHTML='';
+  vvFormular(false);
+  await vvLaden();
+}
+function vvFormular(auf){
+  const f=document.getElementById('vvForm'), k=document.getElementById('vvNeuKnopf');
+  if(f)f.hidden=!auf; if(k)k.hidden=!!auf;
+  if(auf)document.getElementById('vvName')?.focus();
+}
+async function vvLaden(){
+  const box=document.getElementById('vvListe');
+  box.innerHTML='<div class="loading"><div class="spinner"></div> Moment…</div>';
+  try{ vvListe=(await vvRufen('liste')).vereine||[]; }
+  catch(e){ box.innerHTML='<div class="up-empty">'+esc(e.message)+'</div>'; return; }
+  vvZeichnen();
+}
+function vvZeichnen(){
+  const box=document.getElementById('vvListe');
+  const offen=vvListe.filter(v=>!v.uebergeben_am);
+  const zahl=(n,t)=>'<div><b>'+n+'</b><span>'+t+'</span></div>';
+  document.getElementById('vvZahlen').innerHTML=zahl(offen.length,'bei dir')
+    +zahl(vvListe.length-offen.length,'übergeben')
+    +zahl(vvListe.reduce((n,v)=>n+v.kommend,0),'Anlässe kommend');
+  if(!vvListe.length){ box.innerHTML='<div class="up-empty">Noch kein Vereinskonto. Leg das erste an.</div>'; return; }
+  box.innerHTML=vvListe.map(v=>{
+    const uebergeben=!!v.uebergeben_am;
+    const wann=uebergeben?new Date(v.uebergeben_am).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'}):'';
+    return '<div class="vp-karte" data-id="'+v.id+'">'
+      +'<div class="vp-name"><b>'+esc(v.name)+'</b><span>@'+esc(v.username)+(v.ort?' · '+esc(v.ort):'')+'</span><span>'+esc(v.email)+'</span></div>'
+      +'<div class="vv-marken">'
+        +(uebergeben?'<span class="vv-marke gut">Übergeben am '+esc(wann)+'</span>'
+          :(v.logo?'<span class="vv-marke gut">Bereit zum Posten</span>':'<span class="vv-marke fehlt">Logo fehlt</span>'))
+        +'<span class="vv-marke">'+v.kommend+' kommend · '+v.partys+' total</span>'
+      +'</div>'
+      +'<div class="vv-gratis"><span>Gratis posten</span>'+schalter(v.gratis,'vvGratis(this,\''+v.id+'\')',false,'Gratis posten')+'</div>'
+      +'<div class="vp-knoepfe">'
+      +(uebergeben
+        ? '<button class="sec-btn" onclick="vvUebergeben(this,\''+v.id+'\')">Neues Passwort</button>'
+        : '<button class="sec-btn" onclick="vvOeffnen(this,\''+v.id+'\')">Öffnen und posten</button>'
+          +'<button class="sec-btn" onclick="vvUebergeben(this,\''+v.id+'\')">Übergeben</button>')
+      +'</div>'
+      +(uebergeben
+        ? '<button class="vv-weg" onclick="vvWeg(this,\''+v.id+'\',\'entfernen\')">Aus meiner Liste entfernen</button>'
+        : '<button class="vv-weg" onclick="vvWeg(this,\''+v.id+'\',\'loeschen\')">Konto löschen</button>')
+      +'</div>';
+  }).join('');
+}
+async function vvAnlegen(){
+  const wert=id=>(document.getElementById(id)?.value||'').trim();
+  const btn=document.getElementById('vvAnlegenKnopf');
+  if(btn.disabled)return;
+  btn.disabled=true; btn.textContent='Moment…';
+  try{
+    await vvRufen('anlegen',{name:wert('vvName'),ort:wert('vvOrt'),website:wert('vvWebsite'),email:wert('vvEmail')});
+    ['vvName','vvOrt','vvWebsite','vvEmail'].forEach(id=>{document.getElementById(id).value='';});
+    vvFormular(false);
+    toast('Vereinskonto angelegt','success');
+    await vvLaden();
+  }catch(e){ toast(e.message,'warn'); }
+  finally{ btn.disabled=false; btn.textContent='Anlegen'; }
+}
+/* Oeffnet das Vereinskonto ueber den normalen Kontowechsel. Von betreuten
+   Konten steht immer nur eines in der Liste, sonst schoebe es nach ein paar
+   Vereinen das eigene Konto hinaus. */
+async function vvOeffnen(btn,id){
+  btn.disabled=true;
+  try{
+    const d=await vvRufen('oeffnen',{id});
+    const liste=kontenLesen().filter(k=>!k.betreut&&k.id!==id);
+    liste.unshift({id,betreut:true,email:d.email,name:d.name,username:d.username,avatar:d.avatar,verein:true,
+      zugang:d.zugang,erneuerung:d.erneuerung,zeit:Date.now()});
+    kontenSchreiben(liste);
+    closeOverlay('vereineVerwaltenOverlay');
+    await kontoWechseln(id);
+  }catch(e){ toast(e.message,'error'); btn.disabled=false; }
+}
+function vvZurueck(){
+  const k=kontenLesen().find(x=>!x.betreut&&x.id!==cUser?.id);
+  if(k)kontoWechseln(k.id); else kontenOeffnen();
+}
+async function vvGratis(btn,id){
+  const v=vvListe.find(x=>x.id===id);
+  if(!v||btn.disabled)return;
+  const an=!v.gratis;
+  btn.disabled=true;
+  try{
+    await vvRufen('gratis',{id,an});
+    v.gratis=an;
+    btn.classList.toggle('an',an); btn.setAttribute('aria-checked',an?'true':'false');
+  }catch(e){ toast(e.message,'error'); }
+  btn.disabled=false;
+}
+/* Uebergeben: neues Passwort, alle Sitzungen beendet, Konto raus aus dem
+   Kontowechsel. Das Passwort steht nur hier und danach nirgends mehr. */
+async function vvUebergeben(btn,id){
+  const v=vvListe.find(x=>x.id===id);
+  if(!v)return;
+  if(!btn.dataset.arm){
+    btn.dataset.arm='1'; btn.dataset.text=btn.textContent;
+    btn.textContent=v.uebergeben_am?'Altes ersetzen?':'Wirklich übergeben?';
+    setTimeout(()=>{ if(btn.isConnected){delete btn.dataset.arm;btn.textContent=btn.dataset.text;} },4000);
+    return;
+  }
+  delete btn.dataset.arm; btn.disabled=true;
+  try{
+    const d=await vvRufen('uebergeben',{id});
+    kontenSchreiben(kontenLesen().filter(k=>k.id!==id));
+    v.uebergeben_am=d.uebergeben_am;
+    vvZeichnen();
+    vvUebergabeZeigen(v,d.email,d.passwort);
+  }catch(e){ toast(e.message,'error'); btn.disabled=false; btn.textContent=btn.dataset.text; }
+}
+function vvUebergabeZeigen(v,email,passwort){
+  const text='Hallo zusammen\n\nEuer Vereinskonto «'+v.name+'» auf SPOTOUT ist bereit.\n\n'
+    +'Anmelden: spotoutapp.ch oder in der SPOTOUT-App\nE-Mail: '+email+'\nPasswort: '+passwort+'\n\n'
+    +'Bitte ändert das Passwort gleich nach der ersten Anmeldung: Profil › Einstellungen › Passwort ändern. '
+    +'Der Link dazu kommt an diese E-Mail-Adresse. Ich habe danach keinen Zugang mehr zu eurem Konto.\n\n'
+    +'Anlässe veröffentlicht ihr unter dem Plus. Das ist für euch gratis.\n\n'
+    +'Freundliche Grüsse\nSebastian Rechsteiner\nSPOTOUT';
+  window.__vvText=text;
+  const mail='mailto:'+encodeURIComponent(email)+'?subject='+encodeURIComponent('Euer Vereinskonto auf SPOTOUT')
+    +'&body='+encodeURIComponent(text);
+  document.getElementById('vvUebergabe').innerHTML='<div class="vp-karte">'
+    +'<div class="vp-name"><b>Übergabe an '+esc(v.name)+'</b><span>Das Passwort erscheint nur jetzt. Schick es gleich weiter.</span></div>'
+    +'<textarea class="vv-text" readonly>'+esc(text)+'</textarea>'
+    +'<div class="vp-knoepfe"><button class="sec-btn" onclick="vvTextKopieren()">Kopieren</button>'
+    +(istApp()?'<button class="sec-btn" onclick="nativeCall(\'teilen\',{text:window.__vvText},600000)">Teilen</button>'
+      :'<a class="sec-btn" style="text-align:center;text-decoration:none" href="'+escAttr(mail)+'">Als E-Mail</a>')
+    +'</div></div>';
+  document.querySelector('#vereineVerwaltenOverlay .modal-body').scrollTop=0;
+}
+async function vvTextKopieren(){
+  try{ await navigator.clipboard.writeText(window.__vvText||''); toast('Kopiert','success'); }
+  catch(e){ toast('Markiere den Text und kopier ihn von Hand.','warn'); }
+}
+async function vvWeg(btn,id,aktion){
+  if(!btn.classList.contains('scharf')){
+    btn.classList.add('scharf'); btn.dataset.text=btn.textContent;
+    btn.textContent=aktion==='loeschen'?'Wirklich löschen? Nochmals tippen':'Wirklich entfernen? Nochmals tippen';
+    setTimeout(()=>{ if(btn.isConnected){btn.classList.remove('scharf');btn.textContent=btn.dataset.text;} },4000);
+    return;
+  }
+  btn.disabled=true;
+  try{
+    await vvRufen(aktion,{id});
+    kontenSchreiben(kontenLesen().filter(k=>k.id!==id));
+    vvListe=vvListe.filter(v=>v.id!==id);
+    vvZeichnen();
+  }catch(e){ toast(e.message,'error'); btn.disabled=false; }
 }
 
 async function vereinePruefenOeffnen(){
