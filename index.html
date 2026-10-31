@@ -5212,6 +5212,14 @@
       box-shadow:0 2px 8px rgba(255,45,118,.35);
     }
     .alter-mark.gross{font-size:.8rem;padding:4px 9px;border-radius:9px}
+    /* Kleiner in Zeilen (Kalender, Chat, Karte), oben links auf Profil-Kacheln */
+    .alter-mark.klein{font-size:.6rem;padding:1px 5px;border-radius:5px;margin-right:6px;vertical-align:1px;box-shadow:none}
+    .popup-when .alter-mark.klein{margin:0 0 0 6px}
+    .insta-tile>.alter-mark{position:absolute;top:6px;left:6px;z-index:2;font-size:.6rem;padding:1px 6px}
+    .cal-next-kopf .alter-mark{margin-left:6px}
+    /* In der Zeile "Erst ab 18" brach "18+" auf zwei Zeilen um */
+    .dc-row>.alter-mark{flex:none;white-space:nowrap;min-width:38px}
+    .alter-mark{white-space:nowrap}
     .alter-zeile{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--text2)}
     .einw-s{font-size:.78rem;line-height:1.5;color:var(--text2);margin-top:3px}
     .einw-hinweis{
@@ -8540,7 +8548,7 @@
       </div>
       <div class="fg">
         <label class="ep-box" for="ep-username"><span class="ep-lbl">Benutzername</span>
-          <span class="ep-at"><span>@</span><input type="text" id="ep-username" placeholder="maxmuster" maxlength="24" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
+          <span class="ep-at"><span>@</span><input type="text" id="ep-username" placeholder="max.muster" maxlength="24" autocapitalize="off" autocorrect="off" spellcheck="false" oninput="epUserSauber(this)"/></span>
           <svg class="ep-schloss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3"/></svg>
         </label>
         <div class="ep-help" id="ep-username-help">So finden dich andere in der Suche.</div>
@@ -11896,15 +11904,15 @@ function alterNachtragen(){
      erlaubt die Datenbank, Name und Benutzername frei zu setzen. */
   const meta=(cUser&&cUser.user_metadata)||{};
   const startName=(cProfile.full_name||meta.full_name||meta.name||'').trim();
-  const ausName=n=>String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
-    .replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20);
+  // Vorschlag aus dem Namen; getippt wird mit denselben Regeln wie ueberall
+  const ausName=n=>benutzernameSauber(String(n||'').replace(/\s+/g,'_'));
   const el=document.createElement('div');
   el.id='alterNach'; el.className='pw an'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label','Konto einrichten');
   el.innerHTML='<div class="an-inhalt">'
       +'<h2 class="pw-t">Fast geschafft.</h2>'
       +'<p class="pw-s">Noch drei Angaben, dann bist du drin. Dein Geburtsdatum sieht niemand.</p>'
       +'<label class="an-feld"><span>Name</span><input type="text" id="anName" autocomplete="name" autocapitalize="words" maxlength="40" placeholder="Vor- und Nachname"/></label>'
-      +'<label class="an-feld"><span>Benutzername</span><div class="an-at"><b>@</b><input type="text" id="anUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20" placeholder="dein_name"/></div></label>'
+      +'<label class="an-feld"><span>Benutzername</span><div class="an-at"><b>@</b><input type="text" id="anUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="24" placeholder="dein.name"/></div></label>'
       +'<label class="an-feld"><span>Geburtsdatum</span><input type="text" id="anDatum" inputmode="numeric" autocomplete="bday" maxlength="10" placeholder="TT.MM.JJJJ"/></label>'
       +'<div class="an-fehler" id="anFehler" hidden></div>'
     +'</div>'
@@ -11934,7 +11942,7 @@ function alterNachtragen(){
   knopf.onclick=async()=>{
     const name=fName.value.trim(), user=ausName(fUser.value);
     if(!name){ fehler('Wie heisst du?'); fName.focus(); return; }
-    if(user.length<3){ fehler('Der Benutzername braucht mindestens 3 Zeichen.'); fUser.focus(); return; }
+    if(benutzernameFehler(user)){ fehler(benutzernameFehler(user)); fUser.focus(); return; }
     const m=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(fDatum.value.trim());
     const d=m&&new Date(+m[3],+m[2]-1,+m[1]);
     if(!m||!d||d.getDate()!==+m[1]||d.getMonth()!==+m[2]-1){ fehler('Bitte gib dein Geburtsdatum so ein: TT.MM.JJJJ'); fDatum.focus(); return; }
@@ -14470,7 +14478,10 @@ async function loadEvts(opt){
     return;
   }
   evts=(data||[])
-    .filter(e=>!istBlockiert(e.created_by)&&alterErlaubt(e))
+    /* Partys ab 18 oder 21 sieht seit dem 31.10. jeder, auch Juengere –
+       mit dem Abzeichen auf jeder Karte. Anmelden geht nur, wer alt
+       genug ist (buildAttendBtn, und die Datenbank prueft es nochmals). */
+    .filter(e=>!istBlockiert(e.created_by))
     /* gaeste_zahl zaehlt Begleitpersonen mit, die Zeilenzahl nicht.
        Der Rueckfall auf die Zeilenzahl ist nur fuer Partys da, die vor
        der Umstellung angelegt und seither nicht angefasst wurden. */
@@ -15855,7 +15866,7 @@ function efZeichnen(){
       +'<div>Quelle: <a href="https://eventfrog.ch" target="_blank" rel="noopener">Eventfrog</a></div>'
     +'</div>'
     +'</div>';
-  // Uebersetzt wird von selbst (MutationObserver, planeUebersetzung)
+  // Uebersetzt wird von selbst (MutationObserver, langAenderungen)
 }
 /* Rund ein Fuenftel der Events verkauft nicht ueber Eventfrog, sondern
    ueber Ticketcorner, Kulturticket & Co. Dort stand trotzdem "Tickets
@@ -16396,6 +16407,13 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
       +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="m5 12.5 5 5 9-10"/></svg>'
       +'Du bist dabei<span class="attend-sub">Tippen zum Austragen</span></button>';
   }
+  // Zu jung fuer diese Party: sehen ja, anmelden nein
+  if(cUser&&!alterErlaubt(e)){
+    const a=Number(e.mindestalter);
+    return attNote(cProfile?.birthdate
+      ? 'Erst ab '+a+' – anmelden kannst du dich, sobald du '+a+' bist.'
+      : 'Erst ab '+a+'. Zum Anmelden braucht dein Profil ein Geburtsdatum.','warn');
+  }
   // Private Party, sichtbar fuer Freunde: erst klaeren, ob eingeladen (anfrageStandLaden)
   if(e.type==='private'&&e.offen_anfragen)
     return '<div id="anfrageStand" data-ev="'+e.id+'">'+attNote('Einen Moment …')+'</div>';
@@ -16485,7 +16503,7 @@ async function openDetail(id){
   const dDist=(userLat!=null&&userLng!=null&&e.lat!=null&&e.lng!=null)?distKm(userLat,userLng,e.lat,e.lng):null;
   const distP=entfernungText(dDist)||null;
   const typeLabel=e.type==='events'?'Event':e.type==='public'?'Öffentlich':'Privat';
-  const typePill=`<span class="world-pill" style="color:${w.accent};border-color:${w.border};font-size:.72rem;padding:5px 12px">${typeLabel}</span>`;
+  const typePill=`<span class="world-pill" style="color:${w.accent};border-color:${w.border};font-size:.72rem;padding:5px 12px">${typeLabel}</span>`+alterMark(e);
   const verP=e.verified?'<span class="pill pill-verified">Verifiziert</span>':'';
   const isPrivEv=e.type==='private';
   // Einladen darf nur der Gastgeber. Gäste fragen über die Begleitungs-Karte an,
@@ -17222,7 +17240,7 @@ async function renderCalendar(){
     const w=worldVars(e.type);
     const kopf='<div class="cal-next-kopf">'
       +'<span class="cal-next-tag" style="color:'+w.accent+';border-color:'+w.border+'">'
-        +(e._mine?'Deine Party':e._ef?'Eventfrog':'Als Nächstes')+'</span>'
+        +(e._mine?'Deine Party':e._ef?'Eventfrog':'Als Nächstes')+'</span>'+alterMark(e)
       +'<div class="cal-count"><div class="cal-count-num" id="calCountNum" data-ts="'+e._start.getTime()+'">–</div>'
       +'<div class="cal-count-lbl" id="calCountLbl">bis Start</div></div></div>';
     html+='<div class="cal-next" onclick="'+calKlick(e)+'" style="--w-akzent:'+w.accent+'">'
@@ -17289,7 +17307,7 @@ function calRow(e,isPast){
       +(e._mine?'<span class="cal-host-badge">Gastgeber</span>':'')
       +'</div>'
     // Hinweis in der zweiten Zeile – im Namen schnitt ihn die Ellipse ab
-    +'<div class="cal-meta">'+(e._ef?'<span class="cal-ef-badge" style="margin:0 6px 0 0">Eventfrog</span>':'')+zeitText(d.toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'}))
+    +'<div class="cal-meta">'+(e._ef?'<span class="cal-ef-badge" style="margin:0 6px 0 0">Eventfrog</span>':'')+alterKlein(e)+zeitText(d.toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'}))
       +(ort?' · '+ort:'')+'</div></div>'
     +'<svg class="cal-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 6 15 12 9 18"/></svg>'
     +'</div>';
@@ -17952,7 +17970,7 @@ async function renderProf(){
       <div id="prof-panel-mine" class="insta-grid">
         ${(myEvts||[]).length?myEvts.map(e=>{
           const img=e.image_url?('<img alt="" loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'"/>'):('<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>');
-          return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(e.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(e.date)+'</div></div></div>';
+          return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img+alterMark(e)+'<div class="insta-tile-overlay"><div style="font-size:.8rem;font-weight:700;color:#fff;line-height:1.3">'+esc(e.name)+'</div><div style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px">'+fmtD(e.date)+'</div></div></div>';
         }).join(''):'<div class="insta-empty"><svg class="pk" width="40" height="40" opacity=".3" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="13" y="4" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="13" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="13" y="13" width="7" height="7" rx="2" fill="url(#pkViolett)" opacity=".45"/><rect x="13" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Noch keine Partys erstellt</div>'}
       </div>
       <div id="prof-panel-visited" class="insta-grid" style="display:none">
@@ -18576,7 +18594,7 @@ function openEditProfile(){
     }else{
       unHelp.textContent=frei
         ?'Der Benutzername lässt sich einmal pro Woche ändern. Wieder ab '+nameDatum(frei)+'.'
-        :'So finden dich andere in der Suche. Danach eine Woche lang fest.';
+        :'Erlaubt: Buchstaben, Zahlen, Punkt, Unterstrich und Bindestrich. Danach eine Woche lang fest.';
     }
   }
   epGenderVal=cProfile.gender||'';
@@ -18633,6 +18651,35 @@ function epCount(){
   const t=document.getElementById('ep-bio');
   const c=document.getElementById('ep-bio-count');
   if(t&&c)c.textContent=(t.value.length)+' / 160';
+}
+
+/* ── Benutzername: welche Zeichen? (31.10.) ─────────────────────────
+   Vorher nur a–z, 0–9 und _. Jetzt auch Punkt und Bindestrich und
+   Buchstaben mit Akzent oder Umlaut (müller, rené). Bewusst NICHT
+   erlaubt: Leerzeichen, Emojis, @ # / ? und Schriften wie Kyrillisch –
+   damit brechen Profil-Links und die Suche, und mit Zeichen, die wie
+   ein lateinisches a aussehen, liesse sich jedes Konto nachmachen.
+   Immer klein geschrieben, sonst gaebe es @Max und @max nebeneinander.
+   Wie bei Instagram: kein Punkt am Anfang oder Ende, keine zwei Punkte
+   hintereinander. */
+const BN_ERLAUBT=/[^a-z0-9._\-\u00DF-\u00F6\u00F8-\u00FF]/g;
+function benutzernameSauber(v){
+  let x=String(v||'').trim().normalize('NFC').toLowerCase();
+  x=x.replace(/^@+/,'').replace(/\s+/g,'_').replace(BN_ERLAUBT,'').replace(/\.{2,}/g,'.');
+  return x.slice(0,24);
+}
+// Leer = in Ordnung, sonst der Satz, der dem Nutzer gezeigt wird
+function benutzernameFehler(x){
+  if(x.length<3)return 'Der Benutzername braucht mindestens 3 Zeichen.';
+  if(/^[.]|[.]$/.test(x))return 'Der Benutzername darf nicht mit einem Punkt beginnen oder enden.';
+  return '';
+}
+function epUserSauber(el){
+  const pos=el.selectionStart, vor=el.value, nach=benutzernameSauber(vor);
+  if(nach!==vor){
+    el.value=nach;
+    try{ const p=Math.max(0,pos-(vor.length-nach.length)); el.setSelectionRange(p,p); }catch(e){}
+  }
 }
 
 // Wer einen ganzen Link einfügt, soll ihn nicht von Hand kürzen müssen
@@ -18697,12 +18744,12 @@ async function saveProfileEdit(){
   if(epBusy)return;
   const btn=document.querySelector('#editProfOverlay .sub-btn');
   const name=document.getElementById('ep-name').value.trim();
-  const username=cleanHandle(document.getElementById('ep-username').value);
+  const username=benutzernameSauber(document.getElementById('ep-username').value);
   const bd=document.getElementById('ep-bd').value;
 
   if(!name&&darfNamenAendern()){toast('Wie heisst du?','warn');return;}
-  if(darfNamenAendern()&&username.length<3){
-    toast('Der Benutzername braucht mindestens 3 Zeichen','warn');return;}
+  if(darfNamenAendern()&&username!==cProfile.username&&benutzernameFehler(username)){
+    toast(benutzernameFehler(username),'warn');return;}
 
   epBusy=true;
   const label=btn?btn.innerHTML:'';
@@ -19830,7 +19877,7 @@ async function partyKartenFuellen(){
   if(fehlen.length){
     try{
       const{data,error}=await sb.from('events')
-        .select('id,name,date,time,address,image_url,type,category,created_by')
+        .select('id,name,date,time,address,image_url,type,category,created_by,mindestalter')
         .in('id',fehlen);
       if(error)throw error;
       (data||[]).forEach(e=>bekannt.set(e.id,e));
@@ -19867,7 +19914,7 @@ async function partyKartenFuellen(){
     k.onclick=(ev)=>{ ev.stopPropagation(); openDetail(e.id); };
     k.innerHTML='<div class="bp-bild">'+bild+'</div>'
       +'<div class="bp-text"><div class="bp-name">'+esc(e.name||'Party')+'</div>'
-      +'<div class="bp-wann">'+esc(wannText(e.date,e.time))+'</div>'
+      +'<div class="bp-wann">'+alterKlein(e)+esc(wannText(e.date,e.time))+'</div>'
       +(e.address?'<div class="bp-wo">'+esc(String(e.address).split(',')[0])+'</div>':'')
       +'</div>'
       +'<svg class="bp-pfeil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
@@ -20890,9 +20937,11 @@ function fehlerText(error){
 }
 
 /* ── Altersgrenze (16+, 18+, 21+) ──────────────────────────────────
-   null heisst "alle" (SPOTOUT ist ab 16). Ob jemand die Party sieht,
-   entscheidet die Datenbank anhand des Geburtsdatums (RLS auf events);
-   die Seite filtert nur zusaetzlich, damit nichts aufblitzt. */
+   null heisst "alle" (SPOTOUT ist ab 16). Sehen darf die Party jeder
+   (seit 31.10., Wunsch Sebastian) – sie steht mit "18+" bzw. "21+" auf
+   jeder Karte, im Kalender, auf der Karte und in den Details. Anmelden
+   darf sich nur, wer alt genug ist; das entscheidet die Datenbank
+   anhand des Geburtsdatums (Regel auf event_attendees). */
 let alterWahl=null;
 function alterSetzen(v){
   alterWahl=(v===18||v===21)?v:null;
@@ -20904,14 +20953,19 @@ function setAlter(v,el){
   nativeHaptik('leicht');
   cPrevUpdate();
 }
+/* Kleine Fassung fuer Zeilen (Kalender, Chat, Karte). */
+function alterKlein(e){
+  const m=alterMark(e);
+  return m?m.replace('class="alter-mark"','class="alter-mark klein"'):'';
+}
 /* Das Abzeichen fuer Karten, Details und Karte. Leer, wenn alle duerfen. */
 function alterMark(e,gross){
   const a=Number(e?.mindestalter||0);
   if(a!==18&&a!==21)return '';
   return '<span class="alter-mark'+(gross?' gross':'')+'" title="Erst ab '+a+' Jahren" aria-label="Erst ab '+a+' Jahren">'+a+'+</span>';
 }
-/* Darf die angemeldete Person diese Party sehen? Ohne Geburtsdatum
-   (Gast, Konto noch nicht fertig) nur Partys ohne Grenze. */
+/* Darf sich die angemeldete Person fuer diese Party anmelden? Ohne
+   Geburtsdatum (Konto noch nicht fertig) nur bei Partys ohne Grenze. */
 function alterErlaubt(e){
   const a=Number(e?.mindestalter||0);
   if(!a)return true;
@@ -21950,7 +22004,7 @@ async function openUserProf(userId,zurueck){
         const img=e.image_url
           ? '<img loading="lazy" decoding="async" src="'+escAttr(e.image_url)+'" alt=""/>'
           : '<div class="insta-tile-icon" style="background:'+gradBg(e.type,e.category)+'">'+iconSvg(evIconKey(e),26)+'</div>';
-        return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img
+        return '<div class="insta-tile" onclick="openDetail(\''+e.id+'\')">'+img+alterMark(e)
           +'<div class="insta-tile-overlay"><div class="up-kachel-n">'+esc(e.name||'Party')+'</div>'
           +'<div class="up-kachel-d">'+fmtD(e.date)+'</div></div></div>';
       }).join('')+'</div>'
@@ -24146,7 +24200,7 @@ async function checkProfilLink(){
    Text). Sie laden nur, wenn nicht Deutsch gewählt ist – auf Deutsch
    sparte das beim Start ein Drittel des JavaScripts (gemessen 73 ms am
    Mac, auf dem iPhone ein Mehrfaches). */
-let LANG='de',langBusy=false,langTimer=null;
+let LANG='de',langBusy=false,langBeob=null;
 
 const LOCALE={de:'de-CH',en:'en-GB',fr:'fr-CH',it:'it-CH'};
 
@@ -24423,49 +24477,107 @@ const LANG_SKIP=new Set(['SCRIPT','STYLE','TEXTAREA','SVG','PATH','CIRCLE','RECT
 // nach der ersten Übersetzung weg.
 const langOrig=new WeakMap();
 const langAttr=new WeakMap();
+const LANG_ATTRS=['placeholder','aria-label','title'];
 
+/* Ein Textknoten. neueQuelle: die App hat den Text eben selbst
+   geaendert – dann ist der jetzige Inhalt das neue deutsche Original,
+   nicht mehr das gemerkte. Vorher wurde in diesem Fall das alte
+   Original wieder eingesetzt (ein Zaehler sprang zurueck). */
+function textUebersetzen(t,neueQuelle){
+  if(!t||t.nodeType!==3)return;
+  if(neueQuelle)langOrig.delete(t);
+  const jetzt=t.nodeValue;
+  if(!jetzt||!jetzt.trim())return;
+  if(LANG_SKIP.has((t.parentNode?.nodeName||'').toUpperCase()))return;
+  const quelle=langOrig.has(t)?langOrig.get(t):jetzt;
+  const ziel=(LANG==='de')?quelle:tr(quelle);
+  if(ziel!==jetzt){
+    if(!langOrig.has(t))langOrig.set(t,quelle);
+    t.nodeValue=ziel;
+  }
+  // Zurueck auf Deutsch: nichts mehr zu merken
+  if(LANG==='de')langOrig.delete(t);
+}
+
+function attrUebersetzen(el,att,neueQuelle){
+  const jetzt=el.getAttribute(att);
+  if(jetzt===null)return;
+  const gespeichert=langAttr.get(el)||{};
+  if(neueQuelle)delete gespeichert[att];
+  const quelle=(att in gespeichert)?gespeichert[att]:jetzt;
+  const ziel=(LANG==='de')?quelle:tr(quelle);
+  if(ziel!==jetzt){
+    gespeichert[att]=quelle;
+    el.setAttribute(att,ziel);
+  }
+  if(LANG==='de')delete gespeichert[att];
+  langAttr.set(el,gespeichert);
+}
+
+// Ein Teilbaum: alle Texte und Beschriftungen darin
+function teilUebersetzen(wurzel){
+  if(!wurzel)return;
+  if(wurzel.nodeType===3){ textUebersetzen(wurzel,false); return; }
+  if(wurzel.nodeType!==1&&wurzel.nodeType!==9&&wurzel.nodeType!==11)return;
+  if(wurzel.nodeType===1&&LANG_SKIP.has(wurzel.nodeName.toUpperCase()))return;
+  const gehe=document.createTreeWalker(wurzel,NodeFilter.SHOW_TEXT,{
+    acceptNode(n){
+      if(!n.nodeValue||!n.nodeValue.trim())return NodeFilter.FILTER_REJECT;
+      if(LANG_SKIP.has((n.parentNode?.nodeName||'').toUpperCase()))return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const treffer=[];
+  let n; while((n=gehe.nextNode()))treffer.push(n);
+  treffer.forEach(t=>textUebersetzen(t,false));
+  const mitAttr=[];
+  if(wurzel.nodeType===1&&wurzel.matches('[placeholder],[aria-label],[title]'))mitAttr.push(wurzel);
+  wurzel.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>mitAttr.push(el));
+  mitAttr.forEach(el=>LANG_ATTRS.forEach(att=>attrUebersetzen(el,att,false)));
+}
+
+/* Die ganze Seite – nur beim Start und beim Wechsel der Sprache. */
 function applyLang(){
   if(langBusy)return;
   langBusy=true;
-  try{
-    const gehe=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
-      acceptNode(n){
-        if(!n.nodeValue||!n.nodeValue.trim())return NodeFilter.FILTER_REJECT;
-        if(LANG_SKIP.has((n.parentNode?.nodeName||'').toUpperCase()))return NodeFilter.FILTER_REJECT;
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    });
-    const treffer=[];
-    let n; while((n=gehe.nextNode()))treffer.push(n);
-    treffer.forEach(t=>{
-      const quelle=langOrig.has(t)?langOrig.get(t):t.nodeValue;
-      const neu=preisEinsetzen((LANG==='de')?quelle:tr(quelle));
-      if(neu!==t.nodeValue){
-        if(!langOrig.has(t))langOrig.set(t,quelle);
-        t.nodeValue=neu;
-      }
-    });
-    document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el=>{
-      const gespeichert=langAttr.get(el)||{};
-      ['placeholder','aria-label','title'].forEach(att=>{
-        const jetzt=el.getAttribute(att);
-        if(jetzt===null)return;
-        const quelle=(att in gespeichert)?gespeichert[att]:jetzt;
-        const neu=(LANG==='de')?quelle:tr(quelle);
-        if(neu!==jetzt){
-          gespeichert[att]=quelle;
-          langAttr.set(el,gespeichert);
-          el.setAttribute(att,neu);
-        }
-      });
-    });
-  }finally{ langBusy=false; }
+  try{ teilUebersetzen(document.body); }
+  finally{
+    langBusy=false;
+    // Was wir eben selbst geaendert haben, ist keine neue Quelle
+    if(langBeob)langBeob.takeRecords();
+  }
 }
 
-function planeUebersetzung(){
-  if(langBusy)return;
-  clearTimeout(langTimer);
-  langTimer=setTimeout(applyLang,30);
+/* ── Uebersetzen, bevor der Bildschirm etwas zeigt (31.10.) ─────────
+   Vorher wartete die App nach JEDER Aenderung irgendwo auf der Seite
+   30 ms und ging dann ALLE Texte der ganzen Seite durch. In einer
+   anderen Sprache als Deutsch – auch wenn nur das iPhone so eingestellt
+   ist – sah man darum bei jedem Neuzeichnen kurz Deutsch, dann sprang
+   der Text um, und weil die Woerter anders lang sind, verschob sich
+   alles. Gemessen: 20 kleine Aenderungen = 140 Durchgaenge durch die
+   ganze Seite in 2 Sekunden. Das war das Blitzen und Ruckeln.
+
+   Jetzt meldet der Beobachter genau, was neu ist, und das noch bevor
+   der Browser malt. Uebersetzt wird nur dieses Stueck; Deutsch kommt
+   nie auf den Bildschirm. Auf Deutsch laeuft gar nichts. */
+function langAenderungen(records){
+  if(LANG==='de'||langBusy)return;
+  langBusy=true;
+  try{
+    for(const r of records){
+      if(r.type==='childList'){
+        r.addedNodes.forEach(n=>{ if(n.isConnected)teilUebersetzen(n); });
+      }else if(r.type==='characterData'){
+        if(r.target.isConnected)textUebersetzen(r.target,true);
+      }else if(r.type==='attributes'){
+        if(r.target.isConnected&&LANG_ATTRS.includes(r.attributeName))attrUebersetzen(r.target,r.attributeName,true);
+      }
+    }
+  }catch(e){ console.warn('[sprache]',e); }
+  finally{
+    langBusy=false;
+    if(langBeob)langBeob.takeRecords();
+  }
 }
 
 function setLang(code){
@@ -24505,10 +24617,11 @@ function initLang(){
     if(window.SPOTOUT_I18N)applyLang();
     else i18nLaden().then(applyLang).catch(()=>{});
   }
-  // Jede Neuzeichnung nachziehen – auch auf Deutsch, damit ein Wechsel
-  // zurück nichts stehen lässt.
-  new MutationObserver(planeUebersetzung)
-    .observe(document.body,{childList:true,subtree:true,characterData:true});
+  // Jede Neuzeichnung sofort mitnehmen (siehe langAenderungen).
+  // Auf Deutsch kehrt der Beobachter gleich zurueck.
+  langBeob=new MutationObserver(langAenderungen);
+  langBeob.observe(document.body,{childList:true,subtree:true,characterData:true,
+    attributes:true,attributeFilter:LANG_ATTRS});
 }
 
 /* ══════════ BRÜCKE ZUR IPHONE-APP ══════════
@@ -28183,7 +28296,7 @@ function updMarkers(){
         const distTxt=dist==null?'':(entfernungText(dist)+' entfernt');
         const when=lv?'Läuft gerade':fyWhen({...ev,_start:s2});
         const tot=(ev.price||0)+(ev.drink_price||0);
-        return '<div class="popup-when" style="color:'+w2.accent+'">'+when+'</div>'+
+        return '<div class="popup-when" style="color:'+w2.accent+'">'+when+alterKlein(ev)+'</div>'+
           '<div class="popup-name">'+esc(ev.name||'Party')+'</div>'+
           '<div class="popup-meta">'+esc((ev.address||'').split(',')[0]||'Schweiz')+
             (distTxt?'<br>'+distTxt:'')+

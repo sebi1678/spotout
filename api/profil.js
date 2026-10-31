@@ -20,7 +20,8 @@ const esc = (t) => String(t == null ? '' : t)
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 // Benutzernamen bestehen aus a–z, 0–9 und _ ; alte Links tragen die Kennung.
-const IST_NAME = /^[A-Za-z0-9_.]{1,40}$/;
+// Seit 31.10. auch Bindestrich und Buchstaben mit Umlaut/Akzent (wie index.html, benutzernameSauber)
+const IST_NAME = /^[A-Za-z0-9_.\-ß-öø-ÿ]{1,40}$/;
 const IST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function profilZu(wer, holen = fetch) {
