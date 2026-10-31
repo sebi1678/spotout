@@ -18565,6 +18565,7 @@ async function avHochladen(f){
     await bildVorladen(url);
     cProfile.avatar_url=url; ok=true;
     updNavAv();renderProf();epAvZeichnen();profilMerken();
+    if(istVerein())renderVereinHome();   // sonst stand der Logo-Hinweis noch da
     nativeHaptik('erfolg');
   }catch(err){
     console.warn('[bild] profilbild',err);
@@ -20278,6 +20279,9 @@ function openCreate(type){
   goCreateStep(1,true);
   // Pre-select type
   selTypePro(currentType,document.querySelector('.type-card-pro[data-type="'+currentType+'"]'));
+  // Ein Verein postet nur oeffentlich. Die Karte "Privat" sah waehlbar aus, der Anlass wurde aber oeffentlich.
+  const privatKarte=document.querySelector('.type-card-pro[data-type="private"]');
+  if(privatKarte)privatKarte.style.display=istVerein()?'none':'';
   // Vorbelegung: in zwei Stunden, auf die nächste halbe Stunde gerundet.
   // Ein festes 20:00 hätte nach 20 Uhr die eigene Vergangenheitsprüfung ausgelöst.
   const local=(d)=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString();
@@ -24073,7 +24077,7 @@ async function openShare(eventId,opts){
     +(priv&&!istHost?'':'<div class="mg-sec">'+((priv||!pro)?'Direkt einladen':'In SPOTOUT senden')+'</div>'
       +'<div id="shareList">'+skelettZeilen(4)+'</div>')
     +aussen
-    +(nachErstellen?'<button class="sec-btn" style="width:100%;margin-top:12px" onclick="closeShare()">Fertig</button>':'');
+    +(nachErstellen?'<button class="sec-btn" style="display:block;width:100%;margin-top:12px;padding:12px;text-align:center" onclick="closeShare()">Fertig</button>':'');
 
   if(priv&&!istHost)return;
 
