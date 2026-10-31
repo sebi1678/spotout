@@ -7783,6 +7783,7 @@
       background:linear-gradient(135deg,#FF2D76,#FF5A45);border:3px solid rgb(14,19,48)}
     #editProfOverlay .ep-av-kamera svg{width:14px;height:14px}
     #detailKopf .modal-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #oeFilterOverlay [hidden]{display:none}
     #editProfOverlay .ep-gross{display:flex;align-items:center;gap:12px;margin:2px 0 8px;padding:11px 13px;
       border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
     #editProfOverlay .ep-gross[hidden]{display:none}
@@ -9056,7 +9057,7 @@
         <button data-h="0"   class="on" onclick="setOeFilter('h',0,this)">Alle</button>
       </div>
       <div class="oe-gruppe" id="oeWeiterTitel">Weiteres</div>
-      <div class="oe-zeile" id="oeWeiter">
+      <div class="oe-zeile" id="oeRest">
         <button data-f="frei"   onclick="setOeFilter('frei',null,this)">Nur freie Plätze</button>
         <button data-f="gratis" onclick="setOeFilter('gratis',null,this)">Nur gratis</button>
       </div>
@@ -15562,7 +15563,7 @@ function oeFilterOeffnen(){
   const t=document.getElementById('oeArtTitel'), z=document.getElementById('oeArt');
   if(t)t.hidden=!ev; if(z)z.hidden=!ev;
   // Eventfrog liefert weder Preis noch freie Plaetze: "Nur gratis" fand dort nie etwas
-  const wt=document.getElementById('oeWeiterTitel'), wz=document.getElementById('oeWeiter');
+  const wt=document.getElementById('oeWeiterTitel'), wz=document.getElementById('oeRest');
   if(wt)wt.hidden=ev; if(wz)wz.hidden=ev;
   document.getElementById('oeFilterOverlay').classList.add('open');
   oeFilterStand();
