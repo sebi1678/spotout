@@ -4,6 +4,9 @@
 // Partybeginn, oder sofort, wenn es entfernt wurde. Dazu Dateien, zu denen es
 // nie einen Eintrag gab (abgebrochenes Hochladen).
 //
+// Dazu die Titelbilder von Partys, die es nicht mehr gibt. Ein Bild bleibt,
+// solange eine Party oder das Archiv "Besucht" darauf zeigt.
+//
 // Aufrufer: nur die Datenbank – pg_cron alle 15 Minuten und foto_entfernen()
 // direkt nach dem Entfernen. Erkannt am Geheimnis aus dem Vault.
 
@@ -69,5 +72,13 @@ Deno.serve(async (req) => {
     if (!error) waisen = w.length;
   }
 
-  return json({ ok: true, geloescht, waisen });
+  let titelbilder = 0;
+  const { data: t } = await admin.rpc("titelbilder_waisen", { p_limit: 200 });
+  if (Array.isArray(t) && t.length) {
+    const { error } = await admin.storage.from("event-images").remove(t.map((x: { name: string }) => x.name));
+    if (error) console.error("[fotos-aufraeumen] Titelbilder", error.message);
+    else titelbilder = t.length;
+  }
+
+  return json({ ok: true, geloescht, waisen, titelbilder });
 });
