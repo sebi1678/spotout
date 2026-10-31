@@ -1548,17 +1548,18 @@
       border:1px solid rgba(255,255,255,.07);flex:none;
     }
     .nt-schieber-fuell{
-      position:absolute;top:4px;left:4px;width:calc(50% - 6px);height:calc(100% - 8px);
+      position:absolute;top:4px;left:4px;width:calc((100% - 20px) / 4);height:calc(100% - 8px);
       border-radius:10px;background:var(--grad-cta);
       transition:transform .24s var(--kurve);pointer-events:none;
     }
     .nt-tab{
-      position:relative;z-index:1;flex:1;padding:9px 6px;border:none;background:none;cursor:pointer;
-      font-family:var(--font);font-size:.82rem;font-weight:700;color:rgba(255,255,255,.55);
-      display:flex;align-items:center;justify-content:center;gap:6px;transition:color .2s;
+      position:relative;z-index:1;flex:1 1 0;min-width:0;padding:9px 1px;border:none;background:none;cursor:pointer;
+      font-family:var(--font);font-size:.75rem;font-weight:700;color:rgba(255,255,255,.55);white-space:nowrap;
+      display:flex;align-items:center;justify-content:center;transition:color .2s;
     }
     .nt-tab.active{color:#fff}
     .nt-tab-zahl{
+      position:absolute;top:-3px;right:-1px;
       display:none;min-width:17px;height:17px;padding:0 5px;border-radius:999px;
       background:rgba(255,255,255,.22);color:#fff;font-size:.64rem;font-weight:800;
       align-items:center;justify-content:center;line-height:1;
@@ -2171,6 +2172,8 @@
       z-index:1;isolation:isolate;
     }
     #mapWrap.show{display:block;animation:mapIn var(--takt) var(--kurve)}
+    /* Vorgewaermt: gleich gross, aber ausserhalb des Bildschirms */
+    #mapWrap.warm{display:block;position:fixed;left:-200vw;top:0;width:calc(100vw - 32px);margin:0;pointer-events:none}
     #mapWrap.voll{
       /* Unter den Fenstern (200): eine Party, die man auf der Karte
          antippt, oeffnet sich ueber der Karte und nicht darunter. */
@@ -4741,6 +4744,13 @@
     /* ── Folgen ── */
     .fl-row{display:flex;align-items:center;gap:12px}
     .fl-row>div:nth-child(2){flex:1;min-width:0}
+    .fl-weg{
+      flex:none;min-width:30px;height:30px;padding:0;border:none;border-radius:999px;cursor:pointer;
+      display:inline-flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);
+      font-family:var(--font);font-size:.76rem;font-weight:700;
+    }
+    .fl-weg.scharf{padding:0 11px;background:rgba(255,90,69,.18);color:#FF5A45}
     .fl-knopf{
       flex-shrink:0;margin-left:auto;min-width:92px;padding:8px 12px;border-radius:10px;cursor:pointer;
       border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;
@@ -7772,6 +7782,12 @@
       display:flex;align-items:center;justify-content:center;color:#fff;
       background:linear-gradient(135deg,#FF2D76,#FF5A45);border:3px solid rgb(14,19,48)}
     #editProfOverlay .ep-av-kamera svg{width:14px;height:14px}
+    #editProfOverlay .ep-gross{display:flex;align-items:center;gap:12px;margin:2px 0 8px;padding:11px 13px;
+      border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
+    #editProfOverlay .ep-gross[hidden]{display:none}
+    #editProfOverlay .ep-gross>div{flex:1;min-width:0}
+    #editProfOverlay .ep-gross b{display:block;font-size:.84rem;color:#fff}
+    #editProfOverlay .ep-gross span span,#editProfOverlay .ep-gross div span{display:block;margin-top:2px;font-size:.73rem;line-height:1.35;color:rgba(255,255,255,.55)}
     #editProfOverlay .ep-av-link{border:0;background:none;padding:6px 10px;cursor:pointer;
       font-family:var(--font);font-size:.9rem;font-weight:700;color:#FF5C8D}
     #editProfOverlay .ep-av-link:active{opacity:.55}
@@ -8536,6 +8552,10 @@
         </button>
         <button type="button" class="ep-av-link" onclick="profilbildMenue()">Profilbild bearbeiten</button>
         <input type="file" id="avFile" accept="image/*" style="display:none" onchange="upAv(event)"/>
+      </div>
+      <div class="ep-gross" id="epGrossZeile" hidden>
+        <div><b>Profilbild vergrössern</b><span>Andere können dein Bild gross ansehen, wenn sie es gedrückt halten.</span></div>
+        <span id="epGrossSchalter"></span>
       </div>
 
       <div class="ep-sec">Über dich</div>
@@ -9629,8 +9649,10 @@
     </div>
     <div class="nt-schieber" id="ntSchieber">
       <span class="nt-schieber-fuell" id="ntFuell"></span>
-      <button class="nt-tab active" data-tab="einladungen" onclick="ntTab('einladungen')">Einladungen<span class="nt-tab-zahl" id="ntZahlEin"></span></button>
-      <button class="nt-tab" data-tab="sonstiges" onclick="ntTab('sonstiges')">Sonstiges<span class="nt-tab-zahl" id="ntZahlSonst"></span></button>
+      <button class="nt-tab active" data-tab="einladungen" onclick="ntTab('einladungen')">Einladungen<span class="nt-tab-zahl" id="ntZahl-einladungen"></span></button>
+      <button class="nt-tab" data-tab="partys" onclick="ntTab('partys')">Partys<span class="nt-tab-zahl" id="ntZahl-partys"></span></button>
+      <button class="nt-tab" data-tab="leute" onclick="ntTab('leute')">Leute<span class="nt-tab-zahl" id="ntZahl-leute"></span></button>
+      <button class="nt-tab" data-tab="mehr" onclick="ntTab('mehr')">Mehr<span class="nt-tab-zahl" id="ntZahl-mehr"></span></button>
     </div>
     <div class="modal-body" id="notifBody"></div>
   </div>
@@ -18473,7 +18495,7 @@ async function avHochladen(f){
     if(error){toast(bildFehlerText(error,klein),'error');return;}
     const{data:u}=sb.storage.from('avatars').getPublicUrl(path);
     // Zeitstempel dran, sonst zeigt der Browser das alte Bild aus dem Zwischenspeicher
-    const url=u.publicUrl+'?v='+Date.now();
+    const url=u.publicUrl+'?v='+Date.now()+(avNurKlein(cProfile?.avatar_url)?AV_NUR_KLEIN:'');
     const{error:pErr}=await sb.from('profiles').update({avatar_url:url}).eq('id',cUser.id);
     if(pErr){toast('Profilbild nicht gespeichert. Versuch es nochmals.','error');return;}
     await bildVorladen(url);
@@ -18535,6 +18557,32 @@ function epAvZeichnen(){
   el.classList.toggle('pro-glow',!!cProfile?.is_pro);
   const link=document.querySelector('#editProfOverlay .ep-av-link');
   if(link)link.textContent=cProfile?.avatar_url?'Profilbild bearbeiten':'Profilbild hinzufügen';
+  const zeile=document.getElementById('epGrossZeile');
+  if(zeile)zeile.hidden=!cProfile?.avatar_url;
+  const sw=document.getElementById('epGrossSchalter');
+  if(sw)sw.innerHTML=schalter(!avNurKlein(cProfile?.avatar_url),'avGrossSetzen(this)',false,'Profilbild vergrössern');
+}
+/* Ob andere das Profilbild gross ansehen duerfen, steht als Zusatz in der
+   Bild-Adresse. So kommt die Wahl ueberall mit, wo ein Profilbild geladen
+   wird, ohne eigene Spalte. Das Bild selbst laedt mit dem Zusatz gleich. */
+const AV_NUR_KLEIN='#nur-klein';
+const avNurKlein=(url)=>String(url||'').endsWith(AV_NUR_KLEIN);
+async function avGrossSetzen(btn){
+  if(!cUser||!cProfile?.avatar_url||btn.disabled)return;
+  const vorher=cProfile.avatar_url;
+  const neu=avNurKlein(vorher)?vorher.slice(0,-AV_NUR_KLEIN.length):vorher+AV_NUR_KLEIN;
+  const erlaubt=!avNurKlein(neu);
+  btn.disabled=true;
+  btn.classList.toggle('an',erlaubt);btn.setAttribute('aria-checked',erlaubt?'true':'false');
+  nativeHaptik('leicht');
+  const{error}=await sb.from('profiles').update({avatar_url:neu}).eq('id',cUser.id);
+  btn.disabled=false;
+  if(error){
+    btn.classList.toggle('an',!erlaubt);btn.setAttribute('aria-checked',erlaubt?'false':'true');
+    toast(fehlerText(error),'error'); return;
+  }
+  cProfile.avatar_url=neu;
+  updNavAv();profilMerken();
 }
 /* Profilbild wieder entfernen – das fehlte: wer einmal ein Bild hatte,
    konnte es nur ersetzen. Die Datei wird geloescht, das Profil zeigt
@@ -22097,7 +22145,7 @@ async function renderFolgeAnfragen(){
         +'<div class="av-sm" onclick="openUserProf(\''+pr.id+'\')" style="cursor:pointer">'+av+'</div>'
         +'<div class="fa-txt"><b>'+esc(nm)+'</b><span>möchte dir folgen</span></div>'
         +'<button class="fa-ja" onclick="beantworteAnfrage(\''+a.von+'\',true,this)" aria-label="Bestätigen">'+ja+'</button>'
-        +'<button class="fa-nein" onclick="beantworteAnfrage(\''+a.von+'\',false,this)" aria-label="Löschen">'+nein+'</button>'
+        +'<button class="fa-nein" onclick="beantworteAnfrage(\''+a.von+'\',false,this)" aria-label="Ablehnen">'+nein+'</button>'
         +'</div>';
     }).join('');
 }
@@ -22114,7 +22162,7 @@ async function beantworteAnfrage(von, ja, btn){
     zeile?.querySelectorAll('button').forEach(b=>b.disabled=false);
     return;
   }
-  const erledigt=data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Gelöscht');
+  const erledigt=data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Abgelehnt');
   ntErledigt.set(von,erledigt);
   if(ja&&data==='angenommen')await anfrageFolgeStand(von);
   anfrageErledigtZeigen(von,ja&&data==='angenommen',data==='keine_anfrage');
@@ -22143,7 +22191,7 @@ function anfrageErledigtZeigen(von,angenommen,schonErledigt){
       const st=ntFolge.get(von)||{};
       zeile.insertAdjacentHTML('beforeend',flKnopf(von,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true));
     }else{
-      if(txt)txt.textContent=schonErledigt?'Schon erledigt':'Anfrage gelöscht';
+      if(txt)txt.textContent=schonErledigt?'Schon erledigt':'Anfrage abgelehnt';
       setTimeout(()=>{ zeileWeg(zeile).then(()=>{
         const box=document.getElementById('faBox');
         if(box&&!box.querySelector('.fa-zeile'))box.innerHTML='';
@@ -22240,8 +22288,8 @@ async function toggleFollow(btnOrId,legacyFlag){
   const userId=typeof btnOrId==='string'?btnOrId:btn?.dataset.uid;
   if(!userId||followBusy)return;
   const wasFollowing=btn?btn.classList.contains('following'):!!legacyFlag;
-  // Privat: nach dem Entfolgen muss man neu anfragen – darum einmal nachfragen
-  if(wasFollowing&&btn&&upUser?.id===userId&&upUser?.privat){
+  // Ein versehentlicher Tipp soll niemanden entfolgen – darum einmal nachfragen
+  if(wasFollowing&&btn){
     if(knopfScharf(btn,'Nicht mehr folgen?'))return;
     knopfEntschaerfen(btn);
   }
@@ -22330,18 +22378,49 @@ async function openFollowList(userId,mode){
     const knopf=(cUser&&u.id!==cUser.id&&st)
       ? flKnopf(u.id, st.ich_folge?'folge':st.angefragt?'angefragt':(st.folgt_mir?'auch':'folgen'), st.folgt_mir)
       : '';
+    // In der eigenen Follower-Liste laesst sich jemand auch wieder entfernen
+    const weg=(mode==='followers'&&cUser&&userId===cUser.id&&u.id!==cUser.id)
+      ? '<button class="fl-weg" aria-label="Follower entfernen" onclick="event.stopPropagation();followerEntfernen(this,\''+u.id+'\')">'+FL_WEG+'</button>'
+      : '';
     const av=u.avatar_url?('<img alt="" loading="lazy" decoding="async" src="'+escAttr(u.avatar_url)+'"/>'):anfang(u.full_name||u.username||'?');
     return '<div class="fl-row" onclick="document.getElementById(\'followListOverlay\').classList.remove(\'open\');openUserProf(\''+u.id+'\')">'
       +'<div class="av-sm">'+av+'</div>'
-      +'<div style="min-width:0"><div class="att-name">'+esc(u.full_name||u.username||'Unbekannt')
+      +'<div style="min-width:0;flex:1"><div class="att-name">'+esc(u.full_name||u.username||'Unbekannt')
         +(u.is_pro?' '+proMarke(true):'')+'</div>'
       +'<div class="att-user">@'+esc(u.username||'')+(st?.folgt_mir&&u.id!==cUser?.id?' · Folgt dir':'')+'</div></div>'
-      +knopf+'</div>';
+      +knopf+weg+'</div>';
   }).join('');
 }
 
+/* Follower entfernen: die Person erfaehrt es nicht. Bei einem privaten
+   Profil muss sie danach neu anfragen. Zwei Tipps, wie beim Entfolgen. */
+const FL_WEG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+async function followerEntfernen(btn,uid){
+  if(!cUser||btn.disabled)return;
+  if(!btn.classList.contains('scharf')){
+    btn.classList.add('scharf'); btn.textContent='Entfernen?';
+    nativeHaptik('leicht');
+    clearTimeout(btn._armUhr);
+    btn._armUhr=setTimeout(()=>{ btn.classList.remove('scharf'); btn.innerHTML=FL_WEG; },3000);
+    return;
+  }
+  clearTimeout(btn._armUhr);
+  btn.disabled=true;
+  const{error}=await sb.from('follows').delete().eq('follower_id',uid).eq('following_id',cUser.id);
+  if(error){
+    btn.disabled=false; btn.classList.remove('scharf'); btn.innerHTML=FL_WEG;
+    toast(fehlerText(error),'error'); return;
+  }
+  const f=document.getElementById('myFollowers');
+  if(f)f.textContent=Math.max(0,(parseInt(f.textContent,10)||0)-1);
+  zeileWeg(btn.closest('.fl-row')).then(()=>{
+    const body=document.getElementById('flBody');
+    if(body&&!body.querySelector('.fl-row'))body.innerHTML='<div class="up-empty">Noch keine Follower</div>';
+  });
+}
+
 /* Ein Knopf fuer Listen und Benachrichtigungen: Folgen, Auch folgen,
-   Gefolgt, Angefragt. Tipp auf "Gefolgt" entfolgt wieder. */
+   Gefolgt, Angefragt. Zwei Tipps auf "Gefolgt" entfolgen wieder. */
 function flKnopf(uid,stand,folgtMir){
   const text={folge:'Gefolgt',angefragt:'Angefragt',auch:'Zurückfolgen',folgen:'Folgen'}[stand]||'Folgen';
   const haupt=(stand==='auch'||stand==='folgen');
@@ -22360,6 +22439,15 @@ async function flFolgen(btn,uid){
   btn.disabled=true;
   try{
     if(btn.dataset.stand==='folge'){
+      // Zweimal tippen entfolgt – wie im Profil, damit nichts aus Versehen passiert
+      if(!btn.dataset.arm){
+        btn.dataset.arm='1'; btn.textContent='Entfolgen?';
+        nativeHaptik('leicht');
+        clearTimeout(btn._armUhr);
+        btn._armUhr=setTimeout(()=>{ if(btn.dataset.arm){delete btn.dataset.arm; flKnopfSetzen(btn,'folge');} },3000);
+        return;
+      }
+      clearTimeout(btn._armUhr); delete btn.dataset.arm;
       const{error}=await sb.from('follows').delete().eq('follower_id',cUser.id).eq('following_id',uid);
       if(error)throw error;
       flKnopfSetzen(btn,btn.dataset.folgtMir?'auch':'folgen');
@@ -24871,7 +24959,7 @@ async function anfrageImBlatt(btn,von,ja){
   if(error){ toast(fehlerText(error),'error'); knoepfe.querySelectorAll('button').forEach(b=>b.disabled=false); return; }
   window.__anfragen=(window.__anfragen||[]).filter(x=>x.von!==von);
   const angenommen=ja&&data==='angenommen';
-  ntErledigt.set(von,data==='keine_anfrage'?'Schon erledigt':(angenommen?'Bestätigt':'Gelöscht'));
+  ntErledigt.set(von,data==='keine_anfrage'?'Schon erledigt':(angenommen?'Bestätigt':'Abgelehnt'));
   const status=zeile.querySelector('.anfr-status');
   if(angenommen){
     await anfrageFolgeStand(von);
@@ -24879,7 +24967,7 @@ async function anfrageImBlatt(btn,von,ja){
     if(status)status.textContent='folgt dir jetzt';
     knoepfe.innerHTML=flKnopf(von,st.ich_folge?'folge':st.angefragt?'angefragt':'auch',true);
   }else{
-    if(status)status.textContent=data==='keine_anfrage'?'Schon erledigt':'Anfrage gelöscht';
+    if(status)status.textContent=data==='keine_anfrage'?'Schon erledigt':'Anfrage abgelehnt';
     knoepfe.innerHTML='';
     setTimeout(()=>{ zeileWeg(zeile).then(()=>{ if(!(window.__anfragen||[]).length&&!document.querySelector('#anfragenListe .anfr-zeile'))anfragenZeichnen(); }); },700);
   }
@@ -26331,13 +26419,19 @@ function ntAnfragenZeile(){
     +'</button>';
 }
 
-/* ── Einladungen oder alles andere ────────────────────────────────
-   Eine Einladung ist das Einzige hier, was von einem etwas will und
-   ablaeuft. Zwischen zwanzig "folgt dir jetzt" ging sie unter. Darum
-   zwei Seiten statt einer langen Liste - und die Einladungen zuerst,
-   solange welche da sind. */
-const NT_EINLADUNG=new Set(['invite','gruppe_einladung','guest_ok','beitritt_ok']);
-const ntIstEinladung=(n)=>NT_EINLADUNG.has(n.art);
+/* ── Vier Seiten statt Einladungen und "Sonstiges" ─────────────────
+   Unter "Sonstiges" lag alles durcheinander: wer an die eigene Party
+   moechte, zwischen zwanzig "folgt dir jetzt". Jetzt: was man selbst
+   bekommen hat (Einladungen), was an Partys passiert (Partys), was
+   Menschen tun (Leute), der Rest (Mehr). Beim Oeffnen geht die erste
+   Seite auf, auf der etwas Neues wartet. */
+const NT_SEITEN=['einladungen','partys','leute','mehr'];
+const NT_ZU_SEITE={};
+[['einladungen',['invite','gruppe_einladung','guest_ok','guest_no','beitritt_ok','beitritt_nein']],
+ ['partys',['guest_request','beitritt_anfrage','event_changed','event_gone','foto_entfernt','warteliste_frei','freund_dabei','gruppe_party']],
+ ['leute',['neuer_follower','folge_anfrage','folge_zusage','nachricht','nachricht_anfrage','gruppe_anfrage','gruppe_ok','gruppe_weg']],
+].forEach(([seite,arten])=>arten.forEach(a=>{NT_ZU_SEITE[a]=seite;}));
+const ntSeite=(n)=>NT_ZU_SEITE[n.art]||'mehr';
 let ntAnsicht=null;      // wird beim ersten Zeichnen gesetzt
 
 function ntTab(welche){
@@ -26349,31 +26443,32 @@ function renderNotifs(){
   const box=document.getElementById('notifBody');
   if(!box)return;
   const alle=ntSichtbar(window.__notifs||[]);
-  const einladungen=alle.filter(ntIstEinladung);
-  const sonstige=alle.filter(n=>!ntIstEinladung(n));
+  const anfragen=(window.__anfragen||[]).length;
+  const offen={};
+  NT_SEITEN.forEach(s=>{ offen[s]=alle.filter(n=>ntSeite(n)===s&&(!n.gelesen||notifWarNeu.has(n.id))).length; });
+  offen.leute+=anfragen;
 
-  /* Beim Oeffnen dort landen, wo etwas wartet: liegt eine Einladung
-     bereit, zeigt sie sich von selbst. Sonst waere die erste Seite
-     regelmaessig leer. */
-  if(ntAnsicht===null)ntAnsicht=einladungen.length?'einladungen':'sonstiges';
+  /* Beim Oeffnen dort landen, wo etwas wartet. Ist nichts neu, die erste
+     Seite mit Inhalt - sonst waere sie regelmaessig leer. */
+  if(ntAnsicht===null){
+    ntAnsicht=NT_SEITEN.find(s=>offen[s])
+      ||NT_SEITEN.find(s=>alle.some(n=>ntSeite(n)===s))
+      ||'einladungen';
+  }
 
-  const offen=(l)=>l.filter(n=>!n.gelesen).length;
-  const setzeZahl=(id,zahl)=>{
-    const el=document.getElementById(id);
+  NT_SEITEN.forEach(s=>{
+    const el=document.getElementById('ntZahl-'+s);
     if(!el)return;
-    el.textContent=zahl>9?'9+':(zahl||'');
-    el.style.display=zahl?'inline-flex':'none';
-  };
-  setzeZahl('ntZahlEin',offen(einladungen));
-  setzeZahl('ntZahlSonst',offen(sonstige));
+    el.textContent=offen[s]>9?'9+':(offen[s]||'');
+    el.style.display=offen[s]?'inline-flex':'none';
+  });
   document.querySelectorAll('#ntSchieber .nt-tab').forEach(b=>
     b.classList.toggle('active',b.dataset.tab===ntAnsicht));
   const fuell=document.getElementById('ntFuell');
-  if(fuell)fuell.style.transform=ntAnsicht==='einladungen'?'translateX(0)':'translateX(100%)';
+  if(fuell)fuell.style.transform='translateX(calc('+NT_SEITEN.indexOf(ntAnsicht)+' * (100% + 4px)))';
 
-  const list=ntAnsicht==='einladungen'?einladungen:sonstige;
-  // Die Folge-Anfragen gehoeren zu "Sonstiges" - sie sind keine Einladung
-  const anfrZeile=ntAnsicht==='einladungen'?'':ntAnfragenZeile();
+  const list=alle.filter(n=>ntSeite(n)===ntAnsicht);
+  const anfrZeile=ntAnsicht==='leute'?ntAnfragenZeile():'';
 
   /* Die Liste wird im Hintergrund neu gezeichnet. Ein halb geschriebenes
      Antwortfeld darf dabei nicht verschwinden. */
@@ -26404,13 +26499,19 @@ function renderNotifs(){
   }
 
   if(!list.length&&!anfrZeile){
+    const leer={
+      einladungen:'<b>Keine offenen Einladungen</b>'
+        +'<span>Lädt dich jemand zu einer Party oder in eine Gruppe ein, steht sie hier.</span>',
+      partys:'<b>Noch nichts zu deinen Partys</b>'
+        +'<span>Möchte jemand an deine Party oder ändert sich eine Party, steht es hier.</span>',
+      leute:'<b>Hier wird’s gleich lebendig</b>'
+        +'<span>Nachrichten und neue Follower landen hier.</span>',
+      mehr:'<b>Alles ruhig</b>'
+        +'<span>Abzeichen und Hinweise von SPOTOUT stehen hier.</span>',
+    }[ntAnsicht];
     box.innerHTML=sys+'<div class="nt-leer"><div class="nt-leer-ic">'+pikto('glocke',30,'pk-bunt')+'</div>'
-      +(ntAnsicht==='einladungen'
-        ? '<b>Keine offenen Einladungen</b>'
-          +'<span>Lädt dich jemand zu einer Party oder in eine Gruppe ein, steht sie hier.</span>'
-        : '<b>Hier wird’s gleich lebendig</b>'
-          +'<span>Nachrichten, neue Follower und wer von deinen Leuten wohin geht – alles landet hier.</span>')
-      +'<button class="nt-knopf haupt" onclick="closeNotifs();showPage(\'search\')">Leute finden</button></div>';
+      +leer
+      +(ntAnsicht==='leute'?'<button class="nt-knopf haupt" onclick="closeNotifs();showPage(\'search\')">Leute finden</button>':'')+'</div>';
     return;
   }
 
@@ -26481,7 +26582,7 @@ async function ntAnfrage(btn,von,ja){
     akt?.querySelectorAll('button').forEach(b=>b.disabled=false);
     return;
   }
-  ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Gelöscht'));
+  ntErledigt.set(von, data==='keine_anfrage'?'Schon erledigt':(ja?'Bestätigt':'Abgelehnt'));
   if(ja&&data==='angenommen')await anfrageFolgeStand(von);
   renderNotifs();
   // Das Profil dahinter nur an der Stelle nachfuehren, nicht neu aufbauen
@@ -27803,6 +27904,8 @@ let mapVoll=false;
 function toggleMap(){
   mapVis=!mapVis;
   const wrap=document.getElementById('mapWrap');
+  wrap.classList.remove('warm');
+  if(mapVis){ try{ localStorage.setItem('spotout_karte_zuletzt',String(Date.now())); }catch(e){} }
   wrap.classList.toggle('show',mapVis);
   document.getElementById('mapBtn')?.classList.toggle('active',mapVis);
   // Zugeklappt heisst auch: aus dem Vollbild raus. Sonst geht sie beim
@@ -27994,12 +28097,27 @@ window.addEventListener('load',()=>{
      davor. Google rechnet erst ab einer erzeugten Karte ab, das
      Vorladen der Skripte kostet nichts. */
   const los=()=>leafletLaden().then(()=>{
-    const g=()=>{ try{ if(karteHatGoogle())googleKarteLaden().catch(()=>{}); }catch(e){} };
+    const g=()=>{ try{ if(karteHatGoogle())googleKarteLaden().then(karteVorwaermen).catch(()=>{}); }catch(e){} };
     if('requestIdleCallback' in window)requestIdleCallback(g,{timeout:8000}); else setTimeout(g,4000);
   }).catch(()=>{});
   if('requestIdleCallback' in window)requestIdleCallback(los,{timeout:4000});
   else setTimeout(los,2500);
 });
+
+/* Wer die Karte in den letzten zwei Wochen benutzt hat, bekommt sie schon
+   im Hintergrund fertig gebaut. Der Knopf zeigt sie dann sofort. Google
+   rechnet pro erzeugter Karte ab, darum nur fuer diese Leute. */
+function karteVorwaermen(){
+  if(mapInst||mapVis)return;
+  let zuletzt=0;
+  try{ zuletzt=Number(localStorage.getItem('spotout_karte_zuletzt'))||0; }catch(e){}
+  if(Date.now()-zuletzt>14*864e5)return;
+  if(!document.getElementById('page-main')?.classList.contains('active'))return;
+  const wrap=document.getElementById('mapWrap');
+  if(!wrap)return;
+  wrap.classList.add('warm');
+  try{ initMap(); }catch(e){ console.warn('[karte] vorwaermen',e); wrap.classList.remove('warm'); }
+}
 
 /* Pro Adresse ein Skript: ein zweiter Versuch nach Zeitueberschreitung
    wartet auf das noch laufende statt es doppelt einzubinden. */
@@ -28102,16 +28220,19 @@ function applyMapTheme(){
      sonst sah man zuerst die umgedrehte OpenStreetMap und einen Moment
      spaeter eine andere Karte darueber. */
   if(googleBereit){
-    wrapEl?.classList.remove('map-osm','map-laedt');
+    wrapEl?.classList.remove('map-osm');
+    // Der Schimmer sagt: es laedt. Vorher stand hier ein leerer Kasten.
+    wrapEl?.classList.add('map-laedt');
     const g=L.gridLayer.googleMutant({type:'roadmap',styles:mapTheme==='light'?[]:GOOGLE_DUNKEL,maxZoom:20});
     setzen(g);
     /* Liefert Google nach 2.5 s noch nichts (Schluessel abgelehnt, kein
        Netz), lieber OpenStreetMap als ein grauer Kasten. */
     let da=false;
-    g.once('load',()=>{da=true;});
+    g.once('load',()=>{da=true;wrapEl?.classList.remove('map-laedt');});
     setTimeout(()=>{
       if(da||mapTiles!==g||!mapInst)return;
       console.warn('[karte] Google liefert keine Kacheln, nehme OpenStreetMap');
+      wrapEl?.classList.remove('map-laedt');
       wrapEl?.classList.add('map-osm');
       mapTiles=osmEbene().addTo(mapInst);
       g.remove();
@@ -29607,6 +29728,7 @@ function avGrossKandidat(ziel){
   if(!el||el.closest('#bildEditor,#avGross'))return null;
   const img=el.querySelector('img');
   if(!img||!img.complete||!img.naturalWidth)return null;
+  if(avNurKlein(img.src))return null;      // die Person moechte das nicht
   return {el,img};
 }
 

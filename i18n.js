@@ -4,6 +4,17 @@
    den Schlüssel hier mit. */
 window.SPOTOUT_I18N={
 en:{
+  "Leute":"People",
+  "Noch nichts zu deinen Partys":"Nothing about your parties yet",
+  "Möchte jemand an deine Party oder ändert sich eine Party, steht es hier.":"If someone wants to come to your party or a party changes, you’ll see it here.",
+  "Nachrichten und neue Follower landen hier.":"Messages and new followers land here.",
+  "Alles ruhig":"All quiet",
+  "Abzeichen und Hinweise von SPOTOUT stehen hier.":"Badges and notices from SPOTOUT show up here.",
+  "Entfolgen?":"Unfollow?",
+  "Entfernen?":"Remove?",
+  "Follower entfernen":"Remove follower",
+  "Profilbild vergrössern":"Enlarge profile picture",
+  "Andere können dein Bild gross ansehen, wenn sie es gedrückt halten.":"Others can view your picture large by pressing and holding it.",
   "Ohne Pro fortfahren":"Continue without Pro",
   /* Social Media für alle (30.10.) */
   "Social Media":"Social media",
@@ -2195,6 +2206,17 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Leute":"Personnes",
+  "Noch nichts zu deinen Partys":"Rien sur tes soirées pour l’instant",
+  "Möchte jemand an deine Party oder ändert sich eine Party, steht es hier.":"Si quelqu’un veut venir à ta soirée ou si une soirée change, c’est ici.",
+  "Nachrichten und neue Follower landen hier.":"Les messages et les nouveaux abonnés arrivent ici.",
+  "Alles ruhig":"Tout est calme",
+  "Abzeichen und Hinweise von SPOTOUT stehen hier.":"Les badges et les avis de SPOTOUT sont ici.",
+  "Entfolgen?":"Ne plus suivre ?",
+  "Entfernen?":"Retirer ?",
+  "Follower entfernen":"Retirer l’abonné",
+  "Profilbild vergrössern":"Agrandir la photo de profil",
+  "Andere können dein Bild gross ansehen, wenn sie es gedrückt halten.":"Les autres peuvent voir ta photo en grand en appuyant longuement dessus.",
   "Ohne Pro fortfahren":"Continuer sans Pro",
   /* Social Media für alle (30.10.) */
   "Social Media":"Réseaux sociaux",
@@ -4387,6 +4409,17 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Leute":"Persone",
+  "Noch nichts zu deinen Partys":"Ancora niente sulle tue feste",
+  "Möchte jemand an deine Party oder ändert sich eine Party, steht es hier.":"Se qualcuno vuole venire alla tua festa o una festa cambia, lo trovi qui.",
+  "Nachrichten und neue Follower landen hier.":"Messaggi e nuovi follower arrivano qui.",
+  "Alles ruhig":"Tutto tranquillo",
+  "Abzeichen und Hinweise von SPOTOUT stehen hier.":"Badge e avvisi di SPOTOUT sono qui.",
+  "Entfolgen?":"Non seguire più?",
+  "Entfernen?":"Rimuovere?",
+  "Follower entfernen":"Rimuovi follower",
+  "Profilbild vergrössern":"Ingrandire la foto profilo",
+  "Andere können dein Bild gross ansehen, wenn sie es gedrückt halten.":"Gli altri possono vedere la tua foto in grande tenendola premuta.",
   "Ohne Pro fortfahren":"Continua senza Pro",
   /* Social Media für alle (30.10.) */
   "Social Media":"Social media",
