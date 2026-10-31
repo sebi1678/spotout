@@ -1382,7 +1382,7 @@
       display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 16px;
     }
     .prof-action-btn{
-      flex:1 1 auto;min-width:0;
+      flex:1 1 0;min-width:0;
       background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
       border-radius:12px;padding:10px;cursor:pointer;
       font-family:var(--font);font-size:.84rem;font-weight:700;color:#fff;
@@ -5301,7 +5301,7 @@
     @media (max-width:380px){
       .ein-neu{flex-wrap:wrap}
       .ein-neu input{flex:1 1 100%}
-      .ein-neu button{flex:1}
+      .ein-neu button{flex:1;min-height:44px}
       .ein-zeile{gap:9px;padding:10px 11px}
       .ein-mini{width:30px;height:30px}
       .ein-send{padding:8px 11px;font-size:.74rem}
@@ -6958,7 +6958,7 @@
     .recht-frame{flex:1;width:100%;border:none;background:#090D24;border-radius:0 0 18px 18px}
     .modal-body{padding-bottom:calc(28px + var(--safe-bottom, env(safe-area-inset-bottom)))}
     .mg-sec,.sec-lbl,.vh-sec{font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.5)}
-    @media(max-width:360px){ .prof-actions .prof-action-btn>svg{display:none} }
+    @media(max-width:360px){ .prof-actions .prof-action-btn:not(.prof-action-quadrat)>svg{display:none} }
 
     .c.yes svg,.c.no svg{width:15px;height:15px;display:block;margin:0 auto}
     .c.no svg{opacity:.5}
@@ -7782,6 +7782,7 @@
       display:flex;align-items:center;justify-content:center;color:#fff;
       background:linear-gradient(135deg,#FF2D76,#FF5A45);border:3px solid rgb(14,19,48)}
     #editProfOverlay .ep-av-kamera svg{width:14px;height:14px}
+    #detailKopf .modal-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     #editProfOverlay .ep-gross{display:flex;align-items:center;gap:12px;margin:2px 0 8px;padding:11px 13px;
       border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07)}
     #editProfOverlay .ep-gross[hidden]{display:none}
@@ -9054,8 +9055,8 @@
         <button data-h="168" onclick="setOeFilter('h',168,this)">Diese Woche</button>
         <button data-h="0"   class="on" onclick="setOeFilter('h',0,this)">Alle</button>
       </div>
-      <div class="oe-gruppe">Weiteres</div>
-      <div class="oe-zeile" id="oeRest">
+      <div class="oe-gruppe" id="oeWeiterTitel">Weiteres</div>
+      <div class="oe-zeile" id="oeWeiter">
         <button data-f="frei"   onclick="setOeFilter('frei',null,this)">Nur freie Plätze</button>
         <button data-f="gratis" onclick="setOeFilter('gratis',null,this)">Nur gratis</button>
       </div>
@@ -14507,6 +14508,7 @@ async function loadEvts(opt){
        Der Rueckfall auf die Zeilenzahl ist nur fuer Partys da, die vor
        der Umstellung angelegt und seither nicht angefasst wurden. */
     .map(e=>({...e,attending:e.gaeste_zahl ?? (e.event_attendees?.[0]?.count||0)}));
+  evtsDa=true; startReiterWaehlen();
   /* Zuerst zeichnen, dann die Freunde nachtragen. Vorher wartete die
      ganze Liste auf eine zweite Abfrage, die nur eine Zeile pro Karte
      ergaenzt ("Lena ist dabei") – die Partys standen also einen
@@ -14899,7 +14901,15 @@ function zaehleAufruf(id, typ){
 
 /* Oeffentliche Partys sind der Grund, warum jemand die App oeffnet.
    Events von Veranstaltern kommen erst spaeter dazu. */
-let curCol='public';
+let curCol='public', reiterGewaehlt=false, evtsDa=false;
+/* Zum Start nicht auf einer leeren Seite landen: gibt es keine oeffentliche
+   Party, aber Events, geht die App unter Events auf. Wer selbst einen Reiter
+   gewaehlt hat, bleibt dort. */
+function startReiterWaehlen(){
+  if(reiterGewaehlt||curCol!=='public'||!evtsDa||!externeEvents.length)return;
+  if(evts.some(e=>e.type==='public'&&!istVorbei(e)))return;
+  switchTab('events',document.querySelector('.segbtn[data-col="events"]'));
+}
 const COL_LABEL={events:'Events',public:'Öffentliche Partys',private:'Private Partys'};
 const COL_SHORT={events:'Events',public:'Öffentlich',private:'Privat'};
 
@@ -14915,6 +14925,10 @@ function fyLeerWeiter(col){
     return '<p>In '+COL_SHORT[beste]+' '+(n===1?'steht eine Party':'stehen '+n+' Partys')+' an.</p>'
       +'<button class="fy-empty-btn" onclick="switchTab(\''+beste+'\',document.querySelector(\'.segbtn[data-col='+beste+']\'))">'
       +COL_SHORT[beste]+' ansehen</button>';
+  }
+  if(col!=='events'&&externeEvents.length){
+    return '<p>Unter Events stehen '+externeEvents.length+' Konzerte, Clubs und Feste an.</p>'
+      +'<button class="fy-empty-btn" onclick="switchTab(\'events\',document.querySelector(\'.segbtn[data-col=events]\'))">Events ansehen</button>';
   }
   return '<p>Sei die erste Person in deiner Gegend.</p>'
     +'<button class="fy-empty-btn" onclick="plusMenue()">Party erstellen</button>';
@@ -15547,6 +15561,9 @@ function oeFilterOeffnen(){
   const ev=curCol==='events';
   const t=document.getElementById('oeArtTitel'), z=document.getElementById('oeArt');
   if(t)t.hidden=!ev; if(z)z.hidden=!ev;
+  // Eventfrog liefert weder Preis noch freie Plaetze: "Nur gratis" fand dort nie etwas
+  const wt=document.getElementById('oeWeiterTitel'), wz=document.getElementById('oeWeiter');
+  if(wt)wt.hidden=ev; if(wz)wz.hidden=ev;
   document.getElementById('oeFilterOverlay').classList.add('open');
   oeFilterStand();
 }
@@ -15627,7 +15644,7 @@ function oePasst(e){
   }
   if(oeFilter.frei && istVoll(e))return false;
   // Bei Eventfrog steht price:0 nur, weil der Preis unbekannt ist
-  if(oeFilter.gratis && (e.extern || ((e.price||0)+(e.drink_price||0))>0))return false;
+  if(oeFilter.gratis && curCol!=='events' && (e.extern || ((e.price||0)+(e.drink_price||0))>0))return false;
   return true;
 }
 
@@ -15724,6 +15741,7 @@ async function externeLaden(){
     const{data,error}=await q.order('beginn',{ascending:true}).limit(1000);
     if(error){ if(/PGRST205|42P01|does not exist|schema cache/i.test(error.message+error.code))externeAus=true; else console.warn('[eventfrog]',error.message); return; }
     externeEvents=(data||[]).filter(efPasst).map(efAufbereiten);
+    startReiterWaehlen();
     if(document.getElementById('page-main')?.classList.contains('active'))filterAll(false);
   }catch(e){ console.warn('[eventfrog]',e); }
 }
@@ -19800,7 +19818,7 @@ async function loadMsgs(){
   /* Einmal am Ende, nicht in jeder Blase: wer ohne Pro schreibt, soll
      wissen, dass es die Anzeige gibt – aber nicht bei jeder Nachricht
      daran erinnert werden. */
-  if(!sichtPro&&msgs.some(m=>m.sender_id===cUser.id)){
+  if(!sichtPro&&!convGruppe&&msgs.some(m=>m.sender_id===cUser.id)){
     html+='<div class="bub-prohinweis" onclick="showPage(\'pro\')">'
       +'<svg viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">'
       +'<path d="M1 6.5 4.2 9.8 10 3.2"/><path d="M8 6.5l3.2 3.3L19 3.2"/></svg>'
@@ -22717,7 +22735,7 @@ async function einladungTeilen(code,eventId,label){
   try{
     await navigator.clipboard.writeText(txt+'\n'+url);
     amKnopfMelden('Kopiert');
-  }catch(err){ einladungKopieren(code); }
+  }catch(err){ toast('Einladung erstellt. Tipp in der Liste auf «Senden».','info'); }
 }
 
 async function einladungKopieren(code){
@@ -23998,7 +24016,7 @@ async function openShare(eventId,opts){
     +(priv&&!istHost?'':'<div class="mg-sec">'+((priv||!pro)?'Direkt einladen':'In SPOTOUT senden')+'</div>'
       +'<div id="shareList">'+skelettZeilen(4)+'</div>')
     +aussen
-    +(nachErstellen?'<button class="sub-btn sub-public" style="margin-top:18px" onclick="closeShare()">Fertig</button>':'');
+    +(nachErstellen?'<button class="sec-btn" style="width:100%;margin-top:12px" onclick="closeShare()">Fertig</button>':'');
 
   if(priv&&!istHost)return;
 
@@ -24044,7 +24062,7 @@ async function renderShareContacts(alsEinladung){
     .filter(id=>id&&id!==cUser.id);
   if(!ids.length){
     box.innerHTML='<div class="mg-empty">Du hast noch keine Kontakte. Folge jemandem über die Suche – '
-      +'oder teil die Party unten über «Teilen».</div>';
+      +'oder lade unten per Link ein.</div>';
     return;
   }
   const{data:leute}=await sb.from('profiles')
@@ -24457,6 +24475,7 @@ const I18N_PAT=[
   [/^(.+) Du kannst trotzdem ein Konto erstellen – wir prüfen es dann von Hand, das dauert ein paar Tage\. Schneller geht es mit einer Adresse auf$/,{en:"$1 You can still sign up – we’ll check it by hand, which takes a few days. It’s quicker with an address at", fr:"$1 Tu peux quand même t’inscrire – on vérifie à la main, ce qui prend quelques jours. C’est plus rapide avec une adresse sur", it:"$1 Puoi comunque registrarti – controlliamo a mano e ci vogliono alcuni giorni. Più veloce con un indirizzo su"}],
   [/^Fürs Veröffentlichen wird einmalig (.+) fällig\. Danach erscheint die Party sofort in der Liste und auf der Karte\.$/,{en:"Publishing costs a one-off $1. After that the party appears in the feed and on the map right away.", fr:"La publication coûte $1 une seule fois. Ensuite la soirée apparaît tout de suite dans le fil et sur la carte.", it:"Pubblicare costa $1 una tantum. Poi la festa compare subito nel feed e sulla mappa."}],
   [/^(.+) – liegt nach der Party$/,{en:"$1 – after the party", fr:"$1 – après la soirée", it:"$1 – dopo la festa"}],
+  [/^Unter Events stehen (\d+) Konzerte, Clubs und Feste an\.$/,{en:"$1 concerts, clubs and festivals coming up in Events.", fr:"$1 concerts, clubs et fêtes à venir dans Événements.", it:"$1 concerti, club e feste in arrivo in Eventi."}],
   [/^Unter Events ist gerade nichts los$/,{en:"Nothing on in Events right now", fr:"Rien en ce moment dans Événements", it:"Al momento niente in Eventi"}],
   [/^Events ansehen$/,{en:"See Events", fr:"Voir Événements", it:"Vedi Eventi"}],
   [/^In Events steht eine Party an\.$/,{en:"There’s one party in Events.", fr:"Il y a une soirée dans Événements.", it:"C’è una festa in Eventi."}],
@@ -28611,6 +28630,7 @@ function requestLocation(){ standortHolen(true); }
 
 const SEG_COLS=['events','public','private'];
 function switchTab(tab,btn){
+  reiterGewaehlt=true;
   curCol=tab;
   document.querySelectorAll('.segbtn').forEach(b=>b.classList.toggle('active',b.dataset.col===tab));
   const thumb=document.getElementById('segThumb');

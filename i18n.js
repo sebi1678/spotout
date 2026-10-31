@@ -4,6 +4,10 @@
    den Schlüssel hier mit. */
 window.SPOTOUT_I18N={
 en:{
+  "oder lade unten per Link ein.":"or invite by link below.",
+  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder lade unten per Link ein.":"You have no contacts yet. Follow someone via search – or invite by link below.",
+  "Einladung erstellt. Tipp in der Liste auf «Senden».":"Invitation created. Tap “Send” in the list.",
+  "Events ansehen":"View events",
   "Leute":"People",
   "Noch nichts zu deinen Partys":"Nothing about your parties yet",
   "Möchte jemand an deine Party oder ändert sich eine Party, steht es hier.":"If someone wants to come to your party or a party changes, you’ll see it here.",
@@ -2206,6 +2210,10 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "oder lade unten per Link ein.":"ou invite par lien ci-dessous.",
+  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder lade unten per Link ein.":"Tu n’as pas encore de contacts. Suis quelqu’un via la recherche – ou invite par lien ci-dessous.",
+  "Einladung erstellt. Tipp in der Liste auf «Senden».":"Invitation créée. Touche « Envoyer » dans la liste.",
+  "Events ansehen":"Voir les événements",
   "Leute":"Personnes",
   "Noch nichts zu deinen Partys":"Rien sur tes soirées pour l’instant",
   "Möchte jemand an deine Party oder ändert sich eine Party, steht es hier.":"Si quelqu’un veut venir à ta soirée ou si une soirée change, c’est ici.",
@@ -4409,6 +4417,10 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "oder lade unten per Link ein.":"oppure invita con il link qui sotto.",
+  "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder lade unten per Link ein.":"Non hai ancora contatti. Segui qualcuno dalla ricerca – oppure invita con il link qui sotto.",
+  "Einladung erstellt. Tipp in der Liste auf «Senden».":"Invito creato. Tocca «Invia» nell’elenco.",
+  "Events ansehen":"Vedi eventi",
   "Leute":"Persone",
   "Noch nichts zu deinen Partys":"Ancora niente sulle tue feste",
   "Möchte jemand an deine Party oder ändert sich eine Party, steht es hier.":"Se qualcuno vuole venire alla tua festa o una festa cambia, lo trovi qui.",
