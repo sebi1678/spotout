@@ -6541,6 +6541,7 @@
     .vv-marke{padding:3px 9px;border-radius:999px;font-size:.7rem;font-weight:800;background:rgba(255,255,255,.08);color:var(--text2)}
     .vv-marke.gut{background:rgba(74,222,128,.14);color:#4ade80}
     .vv-marke.fehlt{background:rgba(255,176,32,.14);color:#FFB020}
+    .vv-naechster{margin-top:9px;font-size:.8rem;font-weight:700;color:#fff}
     .vv-gratis{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;font-size:.8rem;color:var(--text2)}
     .vv-weg{display:block;width:100%;margin-top:9px;padding:8px;border:none;background:none;cursor:pointer;
       font-family:var(--font);font-size:.76rem;font-weight:700;color:var(--muted)}
@@ -9600,11 +9601,11 @@
       <form class="vv-form" id="vvForm" hidden onsubmit="event.preventDefault();vvAnlegen()">
         <input id="vvName" placeholder="Name des Vereins" maxlength="60" autocomplete="off"/>
         <input id="vvOrt" placeholder="Ort" maxlength="60" autocomplete="off"/>
-        <input id="vvWebsite" placeholder="Website, z. B. tvlenzburg.ch" autocapitalize="none" autocorrect="off" autocomplete="off"/>
         <input id="vvEmail" type="email" placeholder="E-Mail des Vereins" autocapitalize="none" autocorrect="off" autocomplete="off"/>
-        <div class="vv-hinweis">Die E-Mail wird zum Login. Es geht keine Mail hinaus. Lege das Konto erst an, wenn der Verein zugesagt hat.</div>
+        <input id="vvWebsite" placeholder="Website (freiwillig)" autocapitalize="none" autocorrect="off" autocomplete="off"/>
+        <div class="vv-hinweis">Die E-Mail wird zum Login, es geht keine Mail hinaus. Danach bist du direkt im Vereinskonto: Logo hochladen, Anlass posten, zurück und übergeben.</div>
         <div class="vp-knoepfe">
-          <button type="submit" class="sec-btn" id="vvAnlegenKnopf">Anlegen</button>
+          <button type="submit" class="sec-btn" id="vvAnlegenKnopf">Anlegen und öffnen</button>
           <button type="button" class="sec-btn" onclick="vvFormular(false)">Abbrechen</button>
         </div>
       </form>
@@ -29087,6 +29088,7 @@ function vvZeichnen(){
           :(v.logo?'<span class="vv-marke gut">Bereit zum Posten</span>':'<span class="vv-marke fehlt">Logo fehlt</span>'))
         +'<span class="vv-marke">'+v.kommend+' kommend · '+v.partys+' total</span>'
       +'</div>'
+      +(uebergeben?'':'<div class="vv-naechster">Nächster Schritt: '+(!v.logo?'Logo hochladen':!v.partys?'Anlass posten':'übergeben')+'</div>')
       +'<div class="vv-gratis"><span>Gratis posten</span>'+schalter(v.gratis,'vvGratis(this,\''+v.id+'\')',false,'Gratis posten')+'</div>'
       +'<div class="vp-knoepfe">'
       +(uebergeben
@@ -29106,13 +29108,12 @@ async function vvAnlegen(){
   if(btn.disabled)return;
   btn.disabled=true; btn.textContent='Moment…';
   try{
-    await vvRufen('anlegen',{name:wert('vvName'),ort:wert('vvOrt'),website:wert('vvWebsite'),email:wert('vvEmail')});
+    const neu=await vvRufen('anlegen',{name:wert('vvName'),ort:wert('vvOrt'),website:wert('vvWebsite'),email:wert('vvEmail')});
     ['vvName','vvOrt','vvWebsite','vvEmail'].forEach(id=>{document.getElementById(id).value='';});
     vvFormular(false);
-    toast('Vereinskonto angelegt','success');
-    await vvLaden();
+    await vvOeffnen(btn,neu.id);
   }catch(e){ toast(e.message,'warn'); }
-  finally{ btn.disabled=false; btn.textContent='Anlegen'; }
+  finally{ btn.disabled=false; btn.textContent='Anlegen und öffnen'; }
 }
 /* Oeffnet das Vereinskonto ueber den normalen Kontowechsel. Von betreuten
    Konten steht immer nur eines in der Liste, sonst schoebe es nach ein paar
