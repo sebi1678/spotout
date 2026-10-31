@@ -8074,7 +8074,7 @@
             <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
             <input type="text" id="reg-vo" placeholder="z. B. Rohr AG" autocomplete="address-level2" autocapitalize="words" enterkeyhint="next"/>
           </div>
-          <div class="rhinweis">Mit einer E-Mail auf dieser Website ist der Verein sofort bestätigt.</div>
+          <div class="rhinweis">Die Website steht danach auf eurem Profil.</div>
         </div>
 
         <!-- ── letzter Schritt · Zugang ── -->
@@ -8623,7 +8623,12 @@
           <span class="ep-at ep-tt"><span class="ep-social-ic"></span><input type="text" id="ep-tiktok" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
         </label>
       </div>
-      <div class="fg">
+      <div class="fg" id="ep-website-fg" hidden>
+        <label class="ep-box" for="ep-website"><span class="ep-lbl">Website</span>
+          <input type="text" id="ep-website" inputmode="url" placeholder="turnverein-rohr.ch" autocapitalize="off" spellcheck="false"/>
+        </label>
+      </div>
+      <div class="fg" id="ep-snapchat-fg">
         <label class="ep-box" for="ep-snapchat"><span class="ep-lbl">Snapchat</span>
           <span class="ep-at ep-sc"><span class="ep-social-ic"></span><input type="text" id="ep-snapchat" placeholder="deinusername" autocapitalize="off" spellcheck="false" oninput="epCleanHandle(this)"/></span>
         </label>
@@ -9405,11 +9410,6 @@
           <span class="s-label">Vereinskonten</span>
           <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
         </button>
-        <button class="settings-btn" onclick="vereinePruefenOeffnen()">
-          <i data-pk="verein" data-pk-g="20" data-pk-schlicht></i>
-          <span class="s-label">Vereine prüfen</span><span class="s-wert" id="setVereinZahl"></span>
-          <svg stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="s-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9.5 5.8 6.2 6.2-6.2 6.2"/></svg>
-        </button>
         <button class="settings-btn" onclick="moderationOeffnen()">
           <i data-pk="gefahr" data-pk-g="20" data-pk-schlicht></i>
           <span class="s-label">Meldungen</span>
@@ -9602,7 +9602,7 @@
         <input id="vvName" placeholder="Name des Vereins" maxlength="60" autocomplete="off"/>
         <input id="vvOrt" placeholder="Ort" maxlength="60" autocomplete="off"/>
         <input id="vvEmail" type="email" placeholder="E-Mail des Vereins" autocapitalize="none" autocorrect="off" autocomplete="off"/>
-        <input id="vvWebsite" placeholder="Website (freiwillig)" autocapitalize="none" autocorrect="off" autocomplete="off"/>
+        <input id="vvWebsite" placeholder="Website, z. B. tvlenzburg.ch" autocapitalize="none" autocorrect="off" autocomplete="off"/>
         <div class="vv-hinweis">Die E-Mail wird zum Login, es geht keine Mail hinaus. Danach bist du direkt im Vereinskonto: Logo hochladen, Anlass posten, zurück und übergeben.</div>
         <div class="vp-knoepfe">
           <button type="submit" class="sec-btn" id="vvAnlegenKnopf">Anlegen und öffnen</button>
@@ -13622,28 +13622,8 @@ function hinweisSetzen(box,html){
 function vereinDomainPruefen(){
   const box=document.getElementById('reg-domain-hinweis');
   if(!box)return;
-  if(regArt!=='verein'){hinweisSetzen(box,'');return;}
-
-  const mail=(document.getElementById('reg-em')?.value||'').trim();
-  const web =(document.getElementById('reg-web')?.value||'').trim();
-  const md=mail.split('@')[1]?.toLowerCase();
-  const ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/></svg>';
-  const ok='<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m5 12.5 5 5 9-10"/></svg>';
-
-  if(!md||!web){hinweisSetzen(box,'');return;}
-
-  if(domainPasst(mail,web)){
-    hinweisSetzen(box,'<div class="art-hinweis gut">'+ok
-      +'<span>Passt zusammen. Sobald du die Bestätigungsmail öffnest, ist der Verein bestätigt.</span></div>');
-    return;
-  }
-  const grund=FREIMAIL.has(md)
-    ? 'Das ist eine allgemeine Adresse und beweist nichts über den Verein.'
-    : 'Diese Adresse gehört nicht zur angegebenen Website.';
-  hinweisSetzen(box,'<div class="art-hinweis warn">'+ic
-    +'<span>'+grund+' Du kannst trotzdem ein Konto erstellen – wir prüfen es dann '
-    +'von Hand, das dauert ein paar Tage. Schneller geht es mit einer '
-    +'Adresse auf <b>'+esc(domainAusUrl(web)||'deiner Website')+'</b>.</span></div>');
+  // Vereine werden nicht mehr geprueft, zu E-Mail und Website gibt es nichts zu sagen
+  hinweisSetzen(box,'');
 }
 
 // Der Datumswähler soll gar nicht erst in die Zukunft zeigen.
@@ -15188,7 +15168,8 @@ async function renderVereinHome(){
     +'<div class="vh-kopf">'
       +'<div class="vh-av">'+av+'</div>'
       +'<div class="vh-name"><b>'+esc(cProfile.full_name||cProfile.username||'Verein')+'</b>'
-      +'<span>'+esc(cProfile.verein_ort||'')+(cProfile.verein_ort?' · ':'')+'Vereinskonto</span></div>'
+      +'<span>'+esc(cProfile.verein_ort||'')+(cProfile.verein_ort?' · ':'')+'Vereinskonto</span>'
+      +(cProfile.website?'<span>'+esc(cProfile.website.replace(/^https?:\/\//,'').replace(/\/$/,''))+'</span>':'')+'</div>'
     +'</div>'
     +status
     +'<div class="vh-zahlen">'
@@ -15262,9 +15243,11 @@ function heroSetzen(){
   if(wochenende){ bis=new Date(jetzt); bis.setDate(bis.getDate()+(7-tag)%7); bis.setHours(23,59,0,0); }
   else{ bis=new Date(jetzt); bis.setDate(bis.getDate()+1); bis.setHours(6,0,0,0); }
   const imFenster=e=>{ const st=evStart(e); return st&&st<=bis&&!istVorbei(e)&&(st>=von||isLive(e)); };
-  const n=(evts||[]).filter(e=>imFenster(e)&&(e.type!=='private'||e.created_by!==cUser?.id)).length;
-  // Konzerte, Clubs und Festivals von Eventfrog in der Gegend zaehlen mit
-  const nEf=externNachNaehe(externeEvents).filter(imFenster).length;
+  /* Eventfrog bleibt eine eigene Welt: unter Events zaehlt nur Eventfrog,
+     sonst nur, was auf SPOTOUT selbst steht. */
+  const ef=curCol==='events';
+  const n=ef?0:(evts||[]).filter(e=>imFenster(e)&&e.type===curCol&&(e.type!=='private'||e.created_by!==cUser?.id)).length;
+  const nEf=ef?externNachNaehe(externeEvents).filter(imFenster).length:0;
   let z=document.getElementById('heroZahl');
   if(!n&&!nEf){ if(z)z.remove(); return; }
   if(!z){ z=document.createElement('p'); z.id='heroZahl'; z.className='hero-zahl'; h.after(z); }
@@ -16432,7 +16415,7 @@ function buildSocialLinks(p,opts){
   const items=[
     p.instagram_handle&&{k:'instagram',url:'https://instagram.com/'+p.instagram_handle,txt:p.instagram_handle,cls:'sl-ig'},
     p.tiktok_handle   &&{k:'tiktok',   url:'https://www.tiktok.com/@'+p.tiktok_handle,txt:p.tiktok_handle,cls:'sl-tt'},
-    p.snapchat_handle &&{k:'snapchat', url:'https://snapchat.com/add/'+p.snapchat_handle,txt:p.snapchat_handle,cls:'sl-sc'},
+    p.snapchat_handle&&p.kontoart!=='verein'&&{k:'snapchat', url:'https://snapchat.com/add/'+p.snapchat_handle,txt:p.snapchat_handle,cls:'sl-sc'},
     p.facebook_handle &&{k:'facebook', url:'https://facebook.com/'+p.facebook_handle, txt:p.facebook_handle,cls:'sl-fb'}
   ].filter(Boolean);
   if(!items.length)return'';
@@ -18741,6 +18724,11 @@ function openEditProfile(){
   document.getElementById('ep-instagram').value=cProfile.instagram_handle||'';
   document.getElementById('ep-snapchat').value=cProfile.snapchat_handle||'';
   document.getElementById('ep-facebook').value=cProfile.facebook_handle||'';
+  // Vereine: Website ja, Snapchat nein. Die Datenbank setzt das ebenso durch.
+  const webFg=document.getElementById('ep-website-fg'), scFg=document.getElementById('ep-snapchat-fg');
+  if(webFg)webFg.hidden=!istVerein();
+  if(scFg)scFg.hidden=istVerein();
+  document.getElementById('ep-website').value=istVerein()?(cProfile.website||''):'';
   /* TikTok erscheint, sobald die Datenbank die Spalte tiktok_handle hat
      (mein_profil liefert dann das Feld mit). Bis dahin bleibt es weg,
      statt einen Wert anzunehmen, der nirgends gespeichert wird. */
@@ -18901,7 +18889,13 @@ async function saveProfileEdit(){
       if(v!==(cProfile[feld]||null))updates[feld]=v;
     };
     kanal('instagram_handle','ep-instagram');
-    kanal('snapchat_handle','ep-snapchat');
+    if(!istVerein())kanal('snapchat_handle','ep-snapchat');
+    if(istVerein()){
+      const web=(document.getElementById('ep-website')?.value||'').trim();
+      if(!web){toast('Die Website gehört zum Vereinsprofil.','warn');return;}
+      const url=/^https?:\/\//i.test(web)?web:'https://'+web;
+      if(url!==cProfile.website)updates.website=url;
+    }
     kanal('facebook_handle','ep-facebook');
     if('tiktok_handle' in cProfile)kanal('tiktok_handle','ep-tiktok');
     if(cProfile.is_pro){
@@ -28695,6 +28689,7 @@ const SEG_COLS=['events','public','private'];
 function switchTab(tab,btn){
   reiterGewaehlt=true;
   curCol=tab;
+  try{ heroSetzen(); }catch(e){ console.warn('[feed] Ueberschrift',e); }
   document.querySelectorAll('.segbtn').forEach(b=>b.classList.toggle('active',b.dataset.col===tab));
   const thumb=document.getElementById('segThumb');
   if(thumb){

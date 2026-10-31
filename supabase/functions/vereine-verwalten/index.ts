@@ -37,7 +37,6 @@ function passwortNeu(): string {
 
 function websiteSauber(w: string): string {
   const t = w.trim();
-  if (!t) return "";
   return /^https?:\/\//i.test(t) ? t : `https://${t}`;
 }
 
@@ -97,14 +96,14 @@ Deno.serve(async (req) => {
       const email = String(e.email ?? "").trim().toLowerCase();
       if (name.length < 2) return fehler("Wie heisst der Verein?");
       if (!ort) return fehler("Wo ist der Verein?");
+      if (!website) return fehler("Die Website fehlt.");
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return fehler("Diese E-Mail-Adresse sieht nicht richtig aus.");
 
       // E-Mail gilt als bestaetigt, es geht keine Mail hinaus. Das Passwort
       // ist Zufall und wird nie gezeigt: gezeigt wird erst das der Uebergabe.
       const { data: neu, error } = await sb.auth.admin.createUser({
         email, password: passwortNeu(), email_confirm: true,
-        // Die Registrierung verlangt eine Website. Ohne Angabe steht hier ein Platzhalter, der gleich danach wieder geht.
-        user_metadata: { kontoart: "verein", full_name: name, username: name, website: websiteSauber(website) || "https://spotoutapp.ch", verein_ort: ort },
+        user_metadata: { kontoart: "verein", full_name: name, username: name, website: websiteSauber(website), verein_ort: ort },
       });
       if (error || !neu?.user) {
         const m = String(error?.message ?? "");
@@ -114,7 +113,7 @@ Deno.serve(async (req) => {
       const uid = neu.user.id;
       try {
         const { error: pf } = await sb.from("profiles")
-          .update({ verein_status: "bestaetigt", gebuehrenfrei: true, website: websiteSauber(website) }).eq("id", uid);
+          .update({ verein_status: "bestaetigt", gebuehrenfrei: true }).eq("id", uid);
         if (pf) throw pf;
         const { error: tf } = await sb.from("vereine_betreut")
           .insert({ user_id: uid, email, angelegt_von: wer.user.id });

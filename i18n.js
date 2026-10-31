@@ -4,6 +4,9 @@
    den Schlüssel hier mit. */
 window.SPOTOUT_I18N={
 en:{
+  "Die Website steht danach auf eurem Profil.":"The website then appears on your profile.",
+  "Die Website gehört zum Vereinsprofil.":"A club profile needs a website.",
+  "Website":"Website",
   "oder lade unten per Link ein.":"or invite by link below.",
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder lade unten per Link ein.":"You have no contacts yet. Follow someone via search – or invite by link below.",
   "Einladung erstellt. Tipp in der Liste auf «Senden».":"Invitation created. Tap “Send” in the list.",
@@ -2210,6 +2213,9 @@ en:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Max. 10 photos per party"
 },
 fr:{
+  "Die Website steht danach auf eurem Profil.":"Le site web figurera ensuite sur votre profil.",
+  "Die Website gehört zum Vereinsprofil.":"Un profil de société a besoin d’un site web.",
+  "Website":"Site web",
   "oder lade unten per Link ein.":"ou invite par lien ci-dessous.",
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder lade unten per Link ein.":"Tu n’as pas encore de contacts. Suis quelqu’un via la recherche – ou invite par lien ci-dessous.",
   "Einladung erstellt. Tipp in der Liste auf «Senden».":"Invitation créée. Touche « Envoyer » dans la liste.",
@@ -4417,6 +4423,9 @@ fr:{
   "Mehr als 10 Fotos pro Party gehen nicht":"Pas plus de 10 photos par soirée"
 },
 it:{
+  "Die Website steht danach auf eurem Profil.":"Il sito web apparirà poi sul vostro profilo.",
+  "Die Website gehört zum Vereinsprofil.":"Un profilo di associazione ha bisogno di un sito web.",
+  "Website":"Sito web",
   "oder lade unten per Link ein.":"oppure invita con il link qui sotto.",
   "Du hast noch keine Kontakte. Folge jemandem über die Suche – oder lade unten per Link ein.":"Non hai ancora contatti. Segui qualcuno dalla ricerca – oppure invita con il link qui sotto.",
   "Einladung erstellt. Tipp in der Liste auf «Senden».":"Invito creato. Tocca «Invia» nell’elenco.",
