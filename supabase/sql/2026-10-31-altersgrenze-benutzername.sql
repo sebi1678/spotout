@@ -1,4 +1,7 @@
--- SPOTOUT · 31.10.2026 · im Supabase-Dashboard → SQL Editor einfügen und "Run"
+-- SPOTOUT · 31.10.2026 · EINGESPIELT am 31.10.2026
+-- Teil 1 wurde am selben Tag zurückgenommen (Migration
+-- altersgrenze_sichtregel_zurueck): 18+/21+ sehen nur, die alt genug sind.
+-- Teil 2 (Benutzername) gilt. Nicht nochmals ausführen.
 -- Zwei Änderungen. Beide lassen sich rückgängig machen (siehe unten).
 
 begin;

@@ -13639,7 +13639,7 @@ async function doRegister(){
   const btn=document.querySelector('#auth-register .auth-submit-btn');
   if(btn){btn.textContent='Wird erstellt…';btn.disabled=true;}
   // Auto-generate username from name
-  const un=fullName.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20)+'_'+Math.floor(Math.random()*999);
+  const un=benutzernameSauber(fullName).slice(0,20)+'_'+Math.floor(Math.random()*999);
   const{data,error}=await sb.auth.signUp({
     email:em,password:pw,
     options:{emailRedirectTo:'https://spotoutapp.ch/?bestaetigt=1',
@@ -13678,7 +13678,7 @@ async function registriereVerein(em,pw){
   const btn=document.querySelector('#auth-register .auth-submit-btn');
   if(btn){btn.textContent='Wird erstellt…';btn.disabled=true;}
 
-  const un=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,20)
+  const un=benutzernameSauber(name).slice(0,20)
     +'_'+Math.floor(Math.random()*999);
 
   const{data,error}=await sb.auth.signUp({
@@ -14478,10 +14478,9 @@ async function loadEvts(opt){
     return;
   }
   evts=(data||[])
-    /* Partys ab 18 oder 21 sieht seit dem 31.10. jeder, auch Juengere –
-       mit dem Abzeichen auf jeder Karte. Anmelden geht nur, wer alt
-       genug ist (buildAttendBtn, und die Datenbank prueft es nochmals). */
-    .filter(e=>!istBlockiert(e.created_by))
+    /* Partys ab 18 oder 21 sehen nur, die alt genug sind. Das entscheidet
+       die Datenbank; der Filter deckt zusaetzlich Zwischengespeichertes ab. */
+    .filter(e=>!istBlockiert(e.created_by)&&alterErlaubt(e))
     /* gaeste_zahl zaehlt Begleitpersonen mit, die Zeilenzahl nicht.
        Der Rueckfall auf die Zeilenzahl ist nur fuer Partys da, die vor
        der Umstellung angelegt und seither nicht angefasst wurden. */
@@ -16407,7 +16406,7 @@ function buildAttendBtn(e,isAtt,isOver,isFull,deadline,deadlinePassed,tot,w,attC
       +'<svg stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="m5 12.5 5 5 9-10"/></svg>'
       +'Du bist dabei<span class="attend-sub">Tippen zum Austragen</span></button>';
   }
-  // Zu jung fuer diese Party: sehen ja, anmelden nein
+  // Zu jung fuer diese Party: anmelden nein (Rueckfall, die Datenbank blendet sie schon aus)
   if(cUser&&!alterErlaubt(e)){
     const a=Number(e.mindestalter);
     return attNote(cProfile?.birthdate
@@ -20937,11 +20936,11 @@ function fehlerText(error){
 }
 
 /* ── Altersgrenze (16+, 18+, 21+) ──────────────────────────────────
-   null heisst "alle" (SPOTOUT ist ab 16). Sehen darf die Party jeder
-   (seit 31.10., Wunsch Sebastian) – sie steht mit "18+" bzw. "21+" auf
-   jeder Karte, im Kalender, auf der Karte und in den Details. Anmelden
-   darf sich nur, wer alt genug ist; das entscheidet die Datenbank
-   anhand des Geburtsdatums (Regel auf event_attendees). */
+   null heisst "alle" (SPOTOUT ist ab 16). Sehen und anmelden darf nur,
+   wer alt genug ist; das entscheidet die Datenbank anhand des
+   Geburtsdatums (Regeln auf events und event_attendees). Wer sie sieht,
+   findet "18+" bzw. "21+" auf jeder Karte, im Kalender, auf der Karte
+   und in den Details. */
 let alterWahl=null;
 function alterSetzen(v){
   alterWahl=(v===18||v===21)?v:null;
@@ -20964,8 +20963,8 @@ function alterMark(e,gross){
   if(a!==18&&a!==21)return '';
   return '<span class="alter-mark'+(gross?' gross':'')+'" title="Erst ab '+a+' Jahren" aria-label="Erst ab '+a+' Jahren">'+a+'+</span>';
 }
-/* Darf sich die angemeldete Person fuer diese Party anmelden? Ohne
-   Geburtsdatum (Konto noch nicht fertig) nur bei Partys ohne Grenze. */
+/* Darf die Person diese Party sehen und sich anmelden? Ohne Geburtsdatum
+   (Gast, Konto noch nicht fertig) nur bei Partys ohne Grenze. */
 function alterErlaubt(e){
   const a=Number(e?.mindestalter||0);
   if(!a)return true;
